@@ -34,6 +34,8 @@
   :where(button, input, select, textarea) {
     font: inherit;
     color: inherit;
+    border-radius: 0;
+    /* NES: square everything — kill UA rounding so the system stays consistent */
   }
 
   :where(img, svg, canvas) {
@@ -219,6 +221,31 @@
     --accent-d: var(--purple-d);
   }
 
+  [data-accent="lime"] {
+    --accent: var(--lime);
+    --accent-d: var(--lime-d);
+  }
+
+  [data-accent="teal"] {
+    --accent: var(--teal);
+    --accent-d: var(--teal-d);
+  }
+
+  [data-accent="indigo"] {
+    --accent: var(--indigo);
+    --accent-d: var(--indigo-d);
+  }
+
+  [data-accent="pink"] {
+    --accent: var(--pink);
+    --accent-d: var(--pink-d);
+  }
+
+  [data-accent="steel"] {
+    --accent: var(--steel);
+    --accent-d: var(--steel-d);
+  }
+
   [data-accent="good"] {
     --accent: var(--good);
     --accent-d: var(--good-d);
@@ -234,13 +261,11 @@
     --accent-d: var(--crit-d);
   }
 
-  :root,
-  [data-accent]:not([data-accent]) {
+  /* default when no ancestor sets one */
+  :root {
     --accent: var(--gold);
     --accent-d: var(--gold-d);
   }
-
-  /* default */
 
   .mono {
     font-family: var(--font-mono);

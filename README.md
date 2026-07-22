@@ -4,17 +4,28 @@ NES arcade CRT, dark-only, modern-crisp. Cross-framework by design.
 
 ## Install
 
+Reusable across every project in the studio — install it into any repo, no build step.
+
 ```bash
-pnpm add @yourscope/8bit-dopamine
+# from npm (once published)
+pnpm add 8bit-nes
+
+# or straight from GitHub — no publish needed
+pnpm add github:TuTranMVP/8bit-components
 ```
 
 ```js
 // once, at app entry:
-import "@yourscope/8bit-dopamine/all.css";   // tokens + base + components
-import "@yourscope/8bit-dopamine";           // registers <mvp-*> web components
+import "8bit-nes/all.css";   // tokens + base + components
+import "8bit-nes";           // registers <mvp-*> web components
 ```
 
-Or granular: `@yourscope/8bit-dopamine/tokens.css`, `.../base.css`, `.../components.css`.
+Or granular: `8bit-nes/tokens.css`, `8bit-nes/base.css`, `8bit-nes/components.css`,
+`8bit-nes/elements.js`. The `exports` map keeps every entry addressable; `sideEffects` is
+declared so bundlers keep the CSS and the custom-element registration.
+
+> **Zero build, zero runtime deps.** It ships plain CSS + one ES module, so it drops into a
+> Vite/Nuxt/Next app, a plain HTML page, or another design-system package all the same.
 
 ## Release flow (maintainer)
 
@@ -37,14 +48,14 @@ Or granular: `@yourscope/8bit-dopamine/tokens.css`, `.../base.css`, `.../compone
 
 ### Component catalog
 
-| Category   | Components                                                           |
-|------------|----------------------------------------------------------------------|
-| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator              |
-| Form       | Input · Textarea · Select · Checkbox · Radio · Switch · Field        |
-| Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast           |
-| Navigation | Tabs (`<mvp-tabs>`) · Breadcrumb · Pagination                        |
-| Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) |
-| Data       | Table · Code block · Accordion (`<mvp-collapsible>`) · Stat          |
+| Category   | Components                                                                     |
+|------------|--------------------------------------------------------------------------------|
+| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator                        |
+| Form       | Input · Textarea · Select · Checkbox · Radio · Switch · Field · Range · Segmented control |
+| Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast · Spinner · Meter · Empty state |
+| Navigation | Tabs (`<mvp-tabs>`) · Breadcrumb · Pagination · Steps                          |
+| Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) |
+| Data       | Table · Code block · Accordion (`<mvp-collapsible>`) · Stat · Rating           |
 
 Run the docs site locally with `pnpm demo`, then open `/docs.html`.
 
@@ -56,10 +67,10 @@ button / card / chip downstream picks it up via `--accent`.
 
 ## Signature
 
-The **button** is the one bold element: notched pixel bevel (`clip-path`) + hard shadow
-(`box-shadow: Npx Npx 0`, zero blur) + press-in on `:active`. Every other surface stays quiet —
-**square** 90° corners (never a radius), hard border, hard shadow. Full rationale in
-[DESIGN.md](DESIGN.md).
+The **button** is the one bold element — but by **hard shadow** (`box-shadow: Npx Npx 0`, zero
+blur) + **press-in on `:active`**, not a corner trick. Every surface, buttons included, is a
+**square** 90° corner (never a radius, never a chamfer), hard border, hard shadow. Full rationale
+in [DESIGN.md](DESIGN.md).
 
 ## Fonts (bundled, self-hosted)
 
@@ -130,6 +141,6 @@ JS helpers (named exports): `store`, `bleep(seq)`, `SFX`, `setMute/isMuted`, `gr
 ## Extend
 
 New component → add a recipe in `components.css`, add a token in `tokens.css` if needed.
-Keep the Do/Don't: square surfaces & beveled buttons (never a radius), hard shadow not blur,
-`steps()` not smooth easing, one accent per block, dark text on solid accents, everything via
-token. Full guidance in [DESIGN.md](DESIGN.md).
+Keep the Do/Don't: square 90° surfaces everywhere, buttons included (never a radius or chamfer),
+hard shadow not blur, `steps()` not smooth easing, one accent per block, dark text on solid
+accents, everything via token. Full guidance in [DESIGN.md](DESIGN.md).

@@ -30,9 +30,7 @@
     box-shadow: var(--sh-3);
     padding: var(--sp-3) var(--sp-4);
     cursor: pointer;
-    clip-path: polygon(var(--notch) 0, calc(100% - var(--notch)) 0, 100% var(--notch),
-        100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, var(--notch) 100%,
-        0 calc(100% - var(--notch)), 0 var(--notch));
+    /* square 90° corners — hard shadow + press-in do the work, no bevel */
     transition: transform var(--dur-fast) var(--ease-step),
       box-shadow var(--dur-fast) var(--ease-step),
       background var(--dur-fast);
@@ -75,6 +73,97 @@
       background: var(--accent);
       color: var(--ink-on-accent);
       border-color: var(--accent-d);
+    }
+
+    /* ---- variants (solid is the default above; these opt out of the fill) ---- */
+
+    /* outline: transparent, accent edge + accent text */
+    &.outline {
+      background: none;
+      color: var(--accent);
+      border-color: var(--accent);
+      box-shadow: var(--sh-2);
+
+      &:hover {
+        background: color-mix(in srgb, var(--accent) 14%, transparent);
+        filter: none;
+      }
+    }
+
+    /* soft: low-tint accent fill, accent text — quiet but still colored */
+    &.soft {
+      background: color-mix(in srgb, var(--accent) 18%, transparent);
+      color: var(--accent);
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      box-shadow: var(--sh-2);
+
+      &:hover {
+        background: color-mix(in srgb, var(--accent) 26%, transparent);
+        filter: none;
+      }
+    }
+
+    /* link: text-only action — drops the border, shadow, and press */
+    &.link {
+      background: none;
+      color: var(--accent);
+      border-color: transparent;
+      box-shadow: none;
+      padding-inline: 0;
+
+      &:hover {
+        filter: none;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      &:active {
+        transform: none;
+        box-shadow: none;
+      }
+    }
+
+    /* ---- sizes (default height sits in a --ctrl-h row) ---- */
+    &.sm {
+      font-size: var(--fs-label);
+      padding: var(--sp-2) var(--sp-3);
+    }
+
+    &.lg {
+      font-size: var(--fs-h3);
+      padding: var(--sp-4) var(--sp-5);
+      box-shadow: var(--sh-4);
+    }
+
+    /* ---- layout modifiers ---- */
+    &.block {
+      display: flex;
+      inline-size: 100%;
+      justify-content: center;
+    }
+
+    /* icon-only: square tap target, equal padding — pair with aria-label */
+    &.icon {
+      padding: var(--sp-3);
+      aspect-ratio: 1;
+      justify-content: center;
+    }
+
+    /* ---- loading: spinner ticks in, clicks blocked. Toggle aria-busy. ---- */
+    &[aria-busy="true"] {
+      cursor: progress;
+      pointer-events: none;
+
+      &::before {
+        content: "";
+        flex: none;
+        inline-size: 1em;
+        block-size: 1em;
+        border: var(--bw-2) solid currentColor;
+        border-inline-end-color: transparent;
+        border-block-end-color: transparent;
+        animation: spinner .8s steps(8) infinite;
+      }
     }
   }
 
@@ -420,7 +509,7 @@
       & .key {
         background: var(--crit);
         border-color: var(--crit-d);
-        color: #fff;
+        color: var(--ink);
       }
     }
 
@@ -839,7 +928,7 @@
     &[aria-current="page"] {
       background: var(--gold);
       color: var(--ink-on-accent);
-      border-color: var(--accent-d);
+      border-color: var(--gold-d);
       cursor: default;
     }
 
@@ -1079,6 +1168,338 @@
     }
   }
 
+  /* ===================================================================== */
+  /*  WAVE 2 — extended set. Same contract: every value from tokens, notch  */
+  /*  only on buttons, hard shadow, steps() motion, one accent per block.   */
+  /* ===================================================================== */
+
+  /* ----------------------------------------------------------------- SPINNER */
+  /* square by design: a hard-edged block whose lit top/right edges tick around
+     in steps() — a loader with no curve. Accent-ready, three sizes.           */
+  .spinner {
+    --sz: 1.5rem;
+    --accent: var(--gold);
+    display: inline-block;
+    flex: none;
+    inline-size: var(--sz);
+    block-size: var(--sz);
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    border-block-start-color: var(--accent);
+    border-inline-end-color: var(--accent);
+    animation: spinner .8s steps(8) infinite;
+
+    &.sm {
+      --sz: 1rem;
+    }
+
+    &.lg {
+      --sz: 2.5rem;
+      border-width: var(--bw);
+    }
+  }
+
+  @keyframes spinner {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* ------------------------------------------------------------------- RANGE */
+  /* styled <input type="range">. Recessed track + square accent thumb with the
+     hard shadow. Accent-ready; focus comes from the global :focus-visible.
+     (Thumb centering needs physical margin-top — a known vendor hack.)         */
+  .range {
+    --accent: var(--gold);
+    --accent-d: var(--gold-d);
+    --track-h: .5rem;
+    --thumb: 1.15rem;
+    inline-size: 100%;
+    block-size: var(--thumb);
+    appearance: none;
+    -webkit-appearance: none;
+    background: none;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: .6;
+    }
+
+    &::-webkit-slider-runnable-track {
+      block-size: var(--track-h);
+      background: var(--slot);
+      border: var(--bw-2) solid var(--line-hi);
+    }
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      inline-size: var(--thumb);
+      block-size: var(--thumb);
+      margin-top: calc((var(--track-h) - var(--thumb)) / 2 - var(--bw-2));
+      background: var(--accent);
+      border: var(--bw-2) solid var(--accent-d);
+      box-shadow: var(--sh-2);
+    }
+
+    &::-moz-range-track {
+      block-size: var(--track-h);
+      background: var(--slot);
+      border: var(--bw-2) solid var(--line-hi);
+    }
+
+    &::-moz-range-thumb {
+      inline-size: var(--thumb);
+      block-size: var(--thumb);
+      background: var(--accent);
+      border: var(--bw-2) solid var(--accent-d);
+      border-radius: 0;
+      box-shadow: var(--sh-2);
+    }
+  }
+
+  /* ------------------------------------------------------- SEGMENTED CONTROL */
+  /* a row of connected buttons; the pressed one fills with the accent. Put
+     role="group" on the wrapper and aria-pressed="true" on the active button. */
+  .segment {
+    --accent: var(--gold);
+    --accent-d: var(--gold-d);
+    display: inline-flex;
+    background: var(--panel);
+    border: var(--bw-2) solid var(--line-hi);
+    box-shadow: var(--sh-2);
+
+    &>button {
+      font-family: var(--font-mono);
+      font-size: var(--fs-chip);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--muted);
+      background: none;
+      border: 0;
+      border-inline-start: var(--bw-2) solid var(--line-hi);
+      padding: var(--sp-2) var(--sp-4);
+      cursor: pointer;
+      transition: color var(--dur-fast), background var(--dur-fast);
+    }
+
+    &>button:first-child {
+      border-inline-start: 0;
+    }
+
+    &>button:hover {
+      color: var(--ink);
+    }
+
+    &>button[aria-pressed="true"] {
+      color: var(--ink-on-accent);
+      background: var(--accent);
+    }
+
+    &>button:disabled {
+      color: var(--dim);
+      cursor: not-allowed;
+    }
+  }
+
+  /* ------------------------------------------------------------------- STEPS */
+  /* stage progression: <ol class="steps"> of <li>. Mark cleared stages .done
+     and the active one [aria-current] — reads as NES "STAGE 1 · 2 · 3".        */
+  .steps {
+    --accent: var(--gold);
+    --accent-d: var(--gold-d);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-3);
+    counter-reset: step;
+
+    &>li {
+      counter-increment: step;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--dim);
+    }
+
+    &>li::before {
+      content: counter(step);
+      flex: none;
+      display: grid;
+      place-items: center;
+      inline-size: 1.6rem;
+      block-size: 1.6rem;
+      font-weight: 700;
+      color: var(--muted);
+      background: var(--slot);
+      border: var(--bw-2) solid var(--line-hi);
+      box-shadow: var(--sh-1);
+    }
+
+    &>li.done {
+      color: var(--muted);
+    }
+
+    &>li.done::before {
+      content: "\2713";
+      color: var(--ink-on-accent);
+      background: var(--accent);
+      border-color: var(--accent-d);
+    }
+
+    &>li[aria-current] {
+      color: var(--ink);
+    }
+
+    &>li[aria-current]::before {
+      color: var(--ink-on-accent);
+      background: var(--accent);
+      border-color: var(--accent-d);
+    }
+  }
+
+  /* ------------------------------------------------------------------- METER */
+  /* discrete segmented gauge (health / energy). A flex row of .cell blocks;
+     add .on to filled cells. Accent-ready — good/warn/crit read as HP states. */
+  .meter {
+    --accent: var(--good);
+    --accent-d: var(--good-d);
+    display: inline-flex;
+    gap: 2px;
+
+    &>.cell {
+      inline-size: .85rem;
+      block-size: 1.1rem;
+      background: var(--slot);
+      border: var(--bw-2) solid var(--line-hi);
+    }
+
+    &>.cell.on {
+      background: var(--accent);
+      border-color: var(--accent-d);
+    }
+  }
+
+  /* ------------------------------------------------------------- EMPTY STATE */
+  /* "no data" / "game over" panel. Square, dashed edge, centered mono copy.    */
+  .empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-3);
+    text-align: center;
+    color: var(--muted);
+    background: var(--slot);
+    border: var(--bw-2) dashed var(--line-hi);
+    padding: var(--sp-6) var(--sp-5);
+
+    & .icon {
+      font-size: var(--fs-h1);
+      line-height: 1;
+    }
+
+    & .title {
+      font-family: var(--font-mono);
+      font-size: var(--fs-h3);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--ink);
+    }
+
+    & p {
+      font-size: var(--fs-body);
+      color: var(--dim);
+      max-inline-size: 42ch;
+    }
+  }
+
+  /* ------------------------------------------------------------------ RATING */
+  /* read-only score: a row of star glyphs filled up to .on. Gold by default;
+     give the wrapper an aria-label ("4 of 5") so it isn't colour-only.         */
+  .rating {
+    --accent: var(--gold);
+    display: inline-flex;
+    gap: var(--sp-1);
+    font-size: var(--fs-h3);
+    line-height: 1;
+    color: var(--line-hi);
+
+    &>.s.on {
+      color: var(--accent);
+    }
+  }
+
+  /* ------------------------------------------------------------------ DRAWER */
+  /* native <dialog class="drawer"> that slides in from the inline-end edge.
+     Open with el.showModal(); add .start to slide from the inline-start.       */
+  .drawer {
+    --accent: var(--gold);
+    position: fixed;
+    inset-block: 0;
+    inset-inline-end: 0;
+    margin: 0;
+    block-size: 100dvh;
+    max-block-size: 100dvh;
+    inline-size: min(90vw, 22rem);
+    color: var(--text);
+    background: var(--panel);
+    border: 0;
+    border-inline-start: var(--bw) solid var(--line-hi);
+    box-shadow: var(--sh-5);
+    padding: var(--sp-5);
+
+    &::backdrop {
+      background: color-mix(in srgb, var(--bg) 72%, transparent);
+    }
+
+    &[open] {
+      animation: drawer-in var(--dur-mid) var(--ease-step);
+    }
+
+    &.start {
+      inset-inline-end: auto;
+      inset-inline-start: 0;
+      border-inline-start: 0;
+      border-inline-end: var(--bw) solid var(--line-hi);
+    }
+
+    &.start[open] {
+      animation: drawer-in-start var(--dur-mid) var(--ease-step);
+    }
+
+    & .head {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      margin-block-end: var(--sp-4);
+    }
+
+    & .title {
+      flex: 1;
+      font-family: var(--font-mono);
+      font-size: var(--fs-h2);
+      font-weight: 700;
+      color: var(--ink);
+    }
+  }
+
+  @keyframes drawer-in {
+    from {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes drawer-in-start {
+    from {
+      transform: translateX(-100%);
+    }
+  }
+
   /* ---- touch targets: on coarse pointers, controls grow to a ~44px tap zone
      (WCAG 2.5.8). Sizes only bump up, so nothing shifts on desktop. ---- */
   @media (pointer: coarse) {
@@ -1090,7 +1511,8 @@
     }
 
     .chip,
-    .pg {
+    .pg,
+    .segment>button {
       min-block-size: 2.5rem;
     }
 

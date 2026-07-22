@@ -91,7 +91,7 @@ const GS = [
         catalog() +
         h2("The signature") +
         `<div class="grid-cards">
-          <div class="callout memo"><b>Bevel the button.</b> The button cuts its corners with <code>clip-path</code> — the pixel bevel is the one flourish; every other surface stays square and sharp.</div>
+          <div class="callout memo"><b>Press the button.</b> Square 90° corners like everything else — the button's flourish is the hard shadow + press-in on <code>:active</code>, never a cut or rounded corner.</div>
           <div class="callout memo"><b>Hard shadow.</b> <code>box-shadow: Npx Npx 0</code> — zero blur, pure black. Depth like a sprite.</div>
           <div class="callout tip"><b>Steps motion.</b> <code>steps()</code> easing only. Movement ticks like a sprite sheet.</div>
           <div class="callout quest"><b>One accent per block.</b> Set <code>data-accent</code> once; everything downstream inherits it.</div>
@@ -117,7 +117,7 @@ const GS = [
         catalog() +
         h2("Chữ ký") +
         `<div class="grid-cards">
-          <div class="callout memo"><b>Nút vát góc.</b> Nút cắt góc bằng <code>clip-path</code> — vát pixel là điểm nhấn duy nhất; mọi bề mặt khác giữ góc vuông sắc.</div>
+          <div class="callout memo"><b>Nhấn lún nút.</b> Góc vuông 90° như mọi thứ khác — điểm nhấn của nút là bóng cứng + nhấn lún khi <code>:active</code>, không phải góc cắt hay bo tròn.</div>
           <div class="callout memo"><b>Bóng cứng.</b> <code>box-shadow: Npx Npx 0</code> — không blur, đen tuyền. Chiều sâu như một sprite.</div>
           <div class="callout tip"><b>Chuyển động theo bước.</b> Chỉ dùng easing <code>steps()</code>. Chuyển động giật như sprite sheet.</div>
           <div class="callout quest"><b>Một màu nhấn mỗi khối.</b> Đặt <code>data-accent</code> một lần; mọi thứ bên dưới kế thừa.</div>
@@ -135,7 +135,7 @@ const GS = [
     body: {
       en: () =>
         h2("Add the package") +
-        cb("pnpm add @yourscope/8bit-dopamine") +
+        cb("pnpm add 8bit-nes") +
         h2("Wire it up") +
         `<mvp-tabs style="display:block">
           <section data-label="Plain HTML" selected>${cb(
@@ -146,15 +146,15 @@ const GS = [
           )}</section>
           <section data-label="Vue 3 · Nuxt">${cb(
             `// import once (main.ts / nuxt.config)
-import "@yourscope/8bit-dopamine/all.css";
-import "@yourscope/8bit-dopamine";
+import "8bit-nes/all.css";
+import "8bit-nes";
 
 // tell the compiler mvp-* are custom elements
 compilerOptions: { isCustomElement: (t) => t.startsWith("mvp-") }`,
           )}</section>
           <section data-label="React 19">${cb(
-            `import "@yourscope/8bit-dopamine/all.css";
-import "@yourscope/8bit-dopamine";
+            `import "8bit-nes/all.css";
+import "8bit-nes";
 
 // React 19 passes props + listens to custom-element events natively
 <mvp-hud ns="quest" per-level="150" max-xp="600" />`,
@@ -163,9 +163,9 @@ import "@yourscope/8bit-dopamine";
         h2("Granular imports") +
         p("Prefer the pieces? Import only what you need — order matters: tokens → base → components.") +
         cb(
-          `import "@yourscope/8bit-dopamine/tokens.css";
-import "@yourscope/8bit-dopamine/base.css";
-import "@yourscope/8bit-dopamine/components.css";`,
+          `import "8bit-nes/tokens.css";
+import "8bit-nes/base.css";
+import "8bit-nes/components.css";`,
         ) +
         h2("Fonts") +
         p(
@@ -179,7 +179,7 @@ import "@yourscope/8bit-dopamine/components.css";`,
         ),
       vi: () =>
         h2("Cài package") +
-        cb("pnpm add @yourscope/8bit-dopamine") +
+        cb("pnpm add 8bit-nes") +
         h2("Kết nối") +
         `<mvp-tabs style="display:block">
           <section data-label="HTML thuần" selected>${cb(
@@ -190,15 +190,15 @@ import "@yourscope/8bit-dopamine/components.css";`,
           )}</section>
           <section data-label="Vue 3 · Nuxt">${cb(
             `// import một lần (main.ts / nuxt.config)
-import "@yourscope/8bit-dopamine/all.css";
-import "@yourscope/8bit-dopamine";
+import "8bit-nes/all.css";
+import "8bit-nes";
 
 // báo compiler biết mvp-* là custom element
 compilerOptions: { isCustomElement: (t) => t.startsWith("mvp-") }`,
           )}</section>
           <section data-label="React 19">${cb(
-            `import "@yourscope/8bit-dopamine/all.css";
-import "@yourscope/8bit-dopamine";
+            `import "8bit-nes/all.css";
+import "8bit-nes";
 
 // React 19 truyền prop + nghe event custom-element sẵn
 <mvp-hud ns="quest" per-level="150" max-xp="600" />`,
@@ -207,9 +207,9 @@ import "@yourscope/8bit-dopamine";
         h2("Import lẻ") +
         p("Chỉ cần vài phần? Import đúng thứ bạn dùng — thứ tự quan trọng: tokens → base → components.") +
         cb(
-          `import "@yourscope/8bit-dopamine/tokens.css";
-import "@yourscope/8bit-dopamine/base.css";
-import "@yourscope/8bit-dopamine/components.css";`,
+          `import "8bit-nes/tokens.css";
+import "8bit-nes/base.css";
+import "8bit-nes/components.css";`,
         ) +
         h2("Font") +
         p(
@@ -264,6 +264,7 @@ import "@yourscope/8bit-dopamine/components.css";`,
             ["<code>gold</code>", "XP · highlight · default CTA"],
             ["<code>cyan</code>", "code · info"],
             ["<code>purple</code>", "special · magic"],
+            ["<code>lime / teal / indigo / pink / steel</code>", "extended wheel — extra categories, tags, charts"],
             ["<code>good / warn / crit</code>", "success · caution · error"],
           ],
         ) +
@@ -304,6 +305,7 @@ import "@yourscope/8bit-dopamine/components.css";`,
             ["<code>gold</code>", "XP · nổi bật · CTA mặc định"],
             ["<code>cyan</code>", "code · thông tin"],
             ["<code>purple</code>", "đặc biệt · phép thuật"],
+            ["<code>lime / teal / indigo / pink / steel</code>", "vòng màu mở rộng — thêm nhóm, tag, biểu đồ"],
             ["<code>good / warn / crit</code>", "thành công · cảnh báo · lỗi"],
           ],
         ) +
@@ -353,6 +355,19 @@ import "@yourscope/8bit-dopamine/components.css";`,
           ["--purple", "#b357e0", "special"],
           ["--purple-d", "#7d33a8", "hover / border"],
         ]) +
+        h2("Extended wheel") +
+        swatches([
+          ["--lime", "#b8e62e", "fresh · level-up"],
+          ["--lime-d", "#75980f", "hover / border"],
+          ["--teal", "#2ad8b8", "calm info"],
+          ["--teal-d", "#158f78", "hover / border"],
+          ["--indigo", "#7c7cff", "deep primary · link"],
+          ["--indigo-d", "#4a45c8", "hover / border"],
+          ["--pink", "#ff6ec7", "playful · like"],
+          ["--pink-d", "#c23d90", "hover / border"],
+          ["--steel", "#9aa2d8", "neutral tag"],
+          ["--steel-d", "#565d95", "hover / border"],
+        ]) +
         h2("Semantic") +
         swatches([
           ["--good", "#56d364", "success"],
@@ -395,6 +410,19 @@ import "@yourscope/8bit-dopamine/components.css";`,
           ["--purple", "#b357e0", "đặc biệt"],
           ["--purple-d", "#7d33a8", "hover / viền"],
         ]) +
+        h2("Vòng màu mở rộng") +
+        swatches([
+          ["--lime", "#b8e62e", "tươi · lên cấp"],
+          ["--lime-d", "#75980f", "hover / viền"],
+          ["--teal", "#2ad8b8", "info dịu"],
+          ["--teal-d", "#158f78", "hover / viền"],
+          ["--indigo", "#7c7cff", "primary sâu · link"],
+          ["--indigo-d", "#4a45c8", "hover / viền"],
+          ["--pink", "#ff6ec7", "vui · thích"],
+          ["--pink-d", "#c23d90", "hover / viền"],
+          ["--steel", "#9aa2d8", "tag trung tính"],
+          ["--steel-d", "#565d95", "hover / viền"],
+        ]) +
         h2("Ngữ nghĩa") +
         swatches([
           ["--good", "#56d364", "thành công"],
@@ -428,58 +456,96 @@ const COMPONENTS = [
       en: () =>
         stage(
           "BUTTON",
-          `<button class="btn">Copy settings</button>
-           <button class="btn ghost">Reset</button>
-           <button class="btn" data-accent="cyan">Free play</button>
+          `<button class="btn">Solid</button>
+           <button class="btn outline">Outline</button>
+           <button class="btn soft">Soft</button>
+           <button class="btn ghost">Ghost</button>
+           <button class="btn link">Link</button>
+           <button class="btn" data-accent="cyan">Cyan</button>
+           <button class="btn sm">SM</button>
+           <button class="btn lg">LG</button>
+           <button class="btn icon" aria-label="Play">▶</button>
+           <button class="btn" aria-busy="true">Saving</button>
            <button class="btn" disabled>Locked</button>`,
         ) +
         cb(
-          `<button class="btn">Copy settings</button>
-<button class="btn ghost">Reset</button>
-<button class="btn" data-accent="cyan">Free play</button>
-<button class="btn" disabled>Locked</button>`,
+          `<button class="btn">Solid</button>
+<button class="btn outline">Outline</button>
+<button class="btn soft">Soft</button>
+<button class="btn ghost">Ghost</button>
+<button class="btn link">Link</button>
+
+<button class="btn lg" data-accent="cyan">Large</button>
+<button class="btn icon" aria-label="Play">▶</button>
+<button class="btn" aria-busy="true">Saving…</button>`,
         ) +
         h2("API") +
         api(
           ["Class / attr", "Effect"],
           [
-            ["<code>.btn</code>", "solid accent button"],
+            ["<code>.btn</code>", "solid accent fill (default)"],
+            ["<code>.btn.outline</code>", "transparent, accent edge + text"],
+            ["<code>.btn.soft</code>", "low-tint accent fill"],
             ["<code>.btn.ghost</code>", "quiet outline on dark"],
+            ["<code>.btn.link</code>", "text-only — no bevel or shadow"],
+            ["<code>.sm</code> / <code>.lg</code>", "smaller / larger size"],
+            ["<code>.block</code>", "full-width"],
+            ["<code>.icon</code>", "square icon-only (add aria-label)"],
+            ["<code>[aria-busy=true]</code>", "loading spinner, clicks blocked"],
             ["<code>[aria-pressed=true]</code>", "toggle-on fills with accent"],
             ["<code>[disabled]</code>", "muted, no shadow"],
             ["<code>data-accent</code>", "recolor (blue/gold/cyan/…)"],
           ],
         ) +
         a11y(
-          "Renders a native <code>&lt;button&gt;</code>, so keyboard and screen-reader behaviour come free. Use <code>aria-pressed</code> for toggles and give icon-only buttons an <code>aria-label</code>.",
+          "Renders a native <code>&lt;button&gt;</code>, so keyboard and screen-reader behaviour come free. Use <code>aria-pressed</code> for toggles, <code>aria-busy</code> for loading, and give icon-only buttons an <code>aria-label</code>.",
         ),
       vi: () =>
         stage(
           "BUTTON",
-          `<button class="btn">Copy settings</button>
-           <button class="btn ghost">Reset</button>
-           <button class="btn" data-accent="cyan">Free play</button>
-           <button class="btn" disabled>Locked</button>`,
+          `<button class="btn">Solid</button>
+           <button class="btn outline">Outline</button>
+           <button class="btn soft">Soft</button>
+           <button class="btn ghost">Ghost</button>
+           <button class="btn link">Link</button>
+           <button class="btn" data-accent="cyan">Cyan</button>
+           <button class="btn sm">SM</button>
+           <button class="btn lg">LG</button>
+           <button class="btn icon" aria-label="Chơi">▶</button>
+           <button class="btn" aria-busy="true">Đang lưu</button>
+           <button class="btn" disabled>Khoá</button>`,
         ) +
         cb(
-          `<button class="btn">Copy settings</button>
-<button class="btn ghost">Reset</button>
-<button class="btn" data-accent="cyan">Free play</button>
-<button class="btn" disabled>Locked</button>`,
+          `<button class="btn">Solid</button>
+<button class="btn outline">Outline</button>
+<button class="btn soft">Soft</button>
+<button class="btn ghost">Ghost</button>
+<button class="btn link">Link</button>
+
+<button class="btn lg" data-accent="cyan">Large</button>
+<button class="btn icon" aria-label="Chơi">▶</button>
+<button class="btn" aria-busy="true">Đang lưu…</button>`,
         ) +
         h2("API") +
         api(
           ["Class / thuộc tính", "Tác dụng"],
           [
-            ["<code>.btn</code>", "nút tô đầy màu nhấn"],
+            ["<code>.btn</code>", "tô đầy màu nhấn (mặc định)"],
+            ["<code>.btn.outline</code>", "trong suốt, viền + chữ theo màu nhấn"],
+            ["<code>.btn.soft</code>", "nền màu nhấn nhạt"],
             ["<code>.btn.ghost</code>", "viền mờ trên nền tối"],
+            ["<code>.btn.link</code>", "chỉ chữ — bỏ vát góc & bóng"],
+            ["<code>.sm</code> / <code>.lg</code>", "cỡ nhỏ / lớn"],
+            ["<code>.block</code>", "rộng hết dòng"],
+            ["<code>.icon</code>", "vuông chỉ-icon (thêm aria-label)"],
+            ["<code>[aria-busy=true]</code>", "spinner loading, chặn click"],
             ["<code>[aria-pressed=true]</code>", "toggle bật, tô đầy màu nhấn"],
             ["<code>[disabled]</code>", "mờ đi, bỏ bóng"],
             ["<code>data-accent</code>", "đổi màu (blue/gold/cyan/…)"],
           ],
         ) +
         a11y(
-          "Render ra <code>&lt;button&gt;</code> gốc nên bàn phím và screen reader hoạt động sẵn. Dùng <code>aria-pressed</code> cho nút toggle và đặt <code>aria-label</code> cho nút chỉ có icon.",
+          "Render ra <code>&lt;button&gt;</code> gốc nên bàn phím và screen reader hoạt động sẵn. Dùng <code>aria-pressed</code> cho toggle, <code>aria-busy</code> cho loading, và đặt <code>aria-label</code> cho nút chỉ có icon.",
         ),
     },
   },
@@ -1231,7 +1297,7 @@ const COMPONENTS = [
            <button class="btn ghost" data-toast="Nothing to undo." data-toast-accent="warn">Try warn</button>`,
         ) +
         cb(
-          `import { toast } from "@yourscope/8bit-dopamine";
+          `import { toast } from "8bit-nes";
 
 toast("Settings saved.", { accent: "good" });`,
         ) +
@@ -1254,7 +1320,7 @@ toast("Settings saved.", { accent: "good" });`,
            <button class="btn ghost" data-toast="Không có gì để hoàn tác." data-toast-accent="warn">Thử warn</button>`,
         ) +
         cb(
-          `import { toast } from "@yourscope/8bit-dopamine";
+          `import { toast } from "8bit-nes";
 
 toast("Đã lưu cấu hình.", { accent: "good" });`,
         ) +
@@ -1740,6 +1806,320 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
         ),
     },
   },
+
+  /* -------------------------------------------------------- WAVE 2 · FORM */
+  {
+    id: "range",
+    cat: "Form",
+    name: "Range",
+    desc: {
+      en: "Slider on a native <input type=range>. Recessed track, square accent thumb. Set data-accent to recolor.",
+      vi: "Thanh trượt trên <input type=range> gốc. Rãnh chìm, núm vuông màu nhấn. Đặt data-accent để đổi màu.",
+    },
+    body: {
+      en: () =>
+        rangeStage("Volume") +
+        cb(
+          `<label class="field">
+  <span class="label">Volume</span>
+  <input class="range" type="range" min="0" max="100" value="70">
+</label>
+<input class="range" type="range" value="40" data-accent="cyan">`,
+        ) +
+        a11y(
+          "It's a native <code>&lt;input type=\"range\"&gt;</code>: arrow keys, Home/End, and screen-reader value come free. Add an <code>aria-label</code> (or a <code>.field</code> label) when there's no visible one.",
+        ),
+      vi: () =>
+        rangeStage("Âm lượng") +
+        cb(
+          `<label class="field">
+  <span class="label">Âm lượng</span>
+  <input class="range" type="range" min="0" max="100" value="70">
+</label>
+<input class="range" type="range" value="40" data-accent="cyan">`,
+        ) +
+        a11y(
+          "Là <code>&lt;input type=\"range\"&gt;</code> gốc: phím mũi tên, Home/End và giá trị đọc màn hình có sẵn. Thêm <code>aria-label</code> (hoặc nhãn <code>.field</code>) khi không có nhãn hiển thị.",
+        ),
+    },
+  },
+  {
+    id: "segment",
+    cat: "Form",
+    name: "Segmented control",
+    desc: {
+      en: "A row of connected buttons for a single choice — the pressed one fills with the accent. Great for a difficulty or view switch.",
+      vi: "Một hàng nút liền nhau cho một lựa chọn — nút đang chọn tô đầy màu nhấn. Hợp cho chọn độ khó hay đổi chế độ xem.",
+    },
+    body: {
+      en: () =>
+        segmentStage(["Easy", "Normal", "Hard"]) +
+        cb(
+          `<div class="segment" role="group" aria-label="Difficulty">
+  <button type="button">Easy</button>
+  <button type="button" aria-pressed="true">Normal</button>
+  <button type="button">Hard</button>
+</div>`,
+        ) +
+        a11y(
+          "Wrap in <code>role=\"group\"</code> with an <code>aria-label</code>, and reflect the active button with <code>aria-pressed=\"true\"</code> — the fill is not read by itself. Toggle <code>aria-pressed</code> in your click handler.",
+        ),
+      vi: () =>
+        segmentStage(["Dễ", "Thường", "Khó"]) +
+        cb(
+          `<div class="segment" role="group" aria-label="Độ khó">
+  <button type="button">Dễ</button>
+  <button type="button" aria-pressed="true">Thường</button>
+  <button type="button">Khó</button>
+</div>`,
+        ) +
+        a11y(
+          "Bọc trong <code>role=\"group\"</code> có <code>aria-label</code>, và phản ánh nút đang chọn bằng <code>aria-pressed=\"true\"</code> — chỉ màu tô thì screen reader không đọc. Đổi <code>aria-pressed</code> trong handler click.",
+        ),
+    },
+  },
+
+  /* ---------------------------------------------------- WAVE 2 · FEEDBACK */
+  {
+    id: "spinner",
+    cat: "Feedback",
+    name: "Spinner",
+    desc: {
+      en: "A square loader whose lit edges tick around in steps() — a loader with no curve. Three sizes; accent-ready.",
+      vi: "Bộ loader vuông với các cạnh sáng quay theo bước steps() — loader không có đường cong. Ba cỡ; đổi được màu nhấn.",
+    },
+    body: {
+      en: () =>
+        spinnerStage() +
+        cb(
+          `<span class="spinner sm"></span>
+<span class="spinner"></span>
+<span class="spinner lg" data-accent="cyan"></span>`,
+        ) +
+        a11y(
+          "A spinner is decorative on its own. Put the live status in text near it (e.g. <code>&lt;span role=\"status\"&gt;Loading…&lt;/span&gt;</code>) and give the spinner <code>aria-hidden=\"true\"</code>.",
+        ),
+      vi: () =>
+        spinnerStage() +
+        cb(
+          `<span class="spinner sm"></span>
+<span class="spinner"></span>
+<span class="spinner lg" data-accent="cyan"></span>`,
+        ) +
+        a11y(
+          "Spinner tự thân chỉ để trang trí. Đặt trạng thái động vào chữ bên cạnh (vd. <code>&lt;span role=\"status\"&gt;Đang tải…&lt;/span&gt;</code>) và cho spinner <code>aria-hidden=\"true\"</code>.",
+        ),
+    },
+  },
+  {
+    id: "meter",
+    cat: "Feedback",
+    name: "Meter",
+    desc: {
+      en: "A discrete segmented gauge — HP / energy in blocks. Add .on to filled cells; good/warn/crit read as health states.",
+      vi: "Đồng hồ dạng ô rời — HP / năng lượng theo khối. Thêm .on cho ô đã đầy; good/warn/crit đọc như trạng thái máu.",
+    },
+    body: {
+      en: () =>
+        meterStage() +
+        cb(
+          `<div class="meter" data-accent="good" role="meter"
+     aria-valuenow="7" aria-valuemin="0" aria-valuemax="10" aria-label="Health">
+  <span class="cell on"></span><span class="cell on"></span>
+  <span class="cell on"></span><span class="cell"></span>
+</div>`,
+        ) +
+        a11y(
+          "Unlike a continuous bar, cells are countable at a glance. Expose the value with <code>role=\"meter\"</code> + <code>aria-valuenow/min/max</code> so it isn't shape-only.",
+        ),
+      vi: () =>
+        meterStage() +
+        cb(
+          `<div class="meter" data-accent="good" role="meter"
+     aria-valuenow="7" aria-valuemin="0" aria-valuemax="10" aria-label="Máu">
+  <span class="cell on"></span><span class="cell on"></span>
+  <span class="cell on"></span><span class="cell"></span>
+</div>`,
+        ) +
+        a11y(
+          "Khác thanh liền, các ô đếm được trong một cái liếc. Bộc lộ giá trị bằng <code>role=\"meter\"</code> + <code>aria-valuenow/min/max</code> để không chỉ dựa vào hình.",
+        ),
+    },
+  },
+  {
+    id: "empty",
+    cat: "Feedback",
+    name: "Empty state",
+    desc: {
+      en: "The \"no data\" / \"game over\" panel. Square dashed edge, centered mono copy, and always an action out.",
+      vi: "Bảng \"chưa có dữ liệu\" / \"game over\". Viền đứt nét vuông, chữ mono canh giữa, và luôn có một hành động thoát ra.",
+    },
+    body: {
+      en: () =>
+        emptyStage({
+          icon: "🕹️",
+          title: "No runs yet",
+          body: "Your cleared stages will show up here. Start one to put a number on the board.",
+          action: "New run",
+        }) +
+        cb(
+          `<div class="empty">
+  <div class="icon">🕹️</div>
+  <div class="title">No runs yet</div>
+  <p>Your cleared stages show up here. Start one to put a number on the board.</p>
+  <button class="btn">New run</button>
+</div>`,
+        ) +
+        a11y(
+          "An empty state is not an error — it invites the next action. Lead with what to do; keep the emoji <code>aria-hidden</code> and let the title carry the meaning.",
+        ),
+      vi: () =>
+        emptyStage({
+          icon: "🕹️",
+          title: "Chưa có lượt nào",
+          body: "Các stage đã clear sẽ hiện ở đây. Bắt đầu một lượt để ghi tên lên bảng.",
+          action: "Lượt mới",
+        }) +
+        cb(
+          `<div class="empty">
+  <div class="icon">🕹️</div>
+  <div class="title">Chưa có lượt nào</div>
+  <p>Các stage đã clear sẽ hiện ở đây. Bắt đầu một lượt để ghi tên lên bảng.</p>
+  <button class="btn">Lượt mới</button>
+</div>`,
+        ) +
+        a11y(
+          "Empty state không phải lỗi — nó mời hành động kế tiếp. Dẫn bằng việc cần làm; để emoji <code>aria-hidden</code> và cho tiêu đề tải nghĩa.",
+        ),
+    },
+  },
+
+  /* -------------------------------------------------- WAVE 2 · NAVIGATION */
+  {
+    id: "steps",
+    cat: "Navigation",
+    name: "Steps",
+    desc: {
+      en: "Stage progression. Mark cleared stages .done and the active one aria-current — reads as NES \"STAGE 1 · 2 · 3\".",
+      vi: "Tiến trình theo chặng. Đánh dấu chặng đã xong bằng .done và chặng hiện tại bằng aria-current — đọc như \"STAGE 1 · 2 · 3\" kiểu NES.",
+    },
+    body: {
+      en: () =>
+        stepsStage(["Config", "Connect", "Test", "Ship"]) +
+        cb(
+          `<ol class="steps">
+  <li class="done">Config</li>
+  <li class="done">Connect</li>
+  <li aria-current="step">Test</li>
+  <li>Ship</li>
+</ol>`,
+        ) +
+        a11y(
+          "Use an ordered list <code>&lt;ol&gt;</code> for real sequence semantics and mark the active stage with <code>aria-current=\"step\"</code>. The check on a done stage is decorative — the <code>.done</code> label carries it.",
+        ),
+      vi: () =>
+        stepsStage(["Cấu hình", "Kết nối", "Kiểm thử", "Xuất bản"]) +
+        cb(
+          `<ol class="steps">
+  <li class="done">Cấu hình</li>
+  <li class="done">Kết nối</li>
+  <li aria-current="step">Kiểm thử</li>
+  <li>Xuất bản</li>
+</ol>`,
+        ) +
+        a11y(
+          "Dùng danh sách có thứ tự <code>&lt;ol&gt;</code> cho đúng ngữ nghĩa trình tự và đánh dấu chặng hiện tại bằng <code>aria-current=\"step\"</code>. Dấu tick ở chặng xong chỉ để trang trí — nhãn <code>.done</code> mới tải nghĩa.",
+        ),
+    },
+  },
+
+  /* ----------------------------------------------------- WAVE 2 · OVERLAY */
+  {
+    id: "drawer",
+    cat: "Overlay",
+    name: "Drawer",
+    desc: {
+      en: "A side sheet on the native <dialog>. Slides in from the edge with showModal(); add .start to come from the left.",
+      vi: "Tấm trượt bên, dựng trên <dialog> gốc. Trượt vào từ mép bằng showModal(); thêm .start để vào từ bên trái.",
+    },
+    body: {
+      en: () =>
+        drawerStage({
+          open: "Open drawer",
+          title: "Filters",
+          body: "Any content fits — fields, a menu, a form. Esc closes it and focus is trapped inside.",
+          close: "Done",
+        }) +
+        cb(
+          `<button onclick="document.getElementById('d').showModal()">Open</button>
+
+<dialog class="drawer" id="d">
+  <div class="head"><span class="title">Filters</span></div>
+  <!-- fields / menu / form -->
+  <form method="dialog"><button class="btn ghost">Done</button></form>
+</dialog>`,
+        ) +
+        a11y(
+          "Same native <code>&lt;dialog&gt;</code> as the modal: focus is trapped, <kbd class=\"kbd\">Esc</kbd> closes, and focus returns to the opener. Slide-in is skipped under reduced-motion.",
+        ),
+      vi: () =>
+        drawerStage({
+          open: "Mở drawer",
+          title: "Bộ lọc",
+          body: "Nội dung gì cũng vừa — field, menu, form. Esc để đóng và focus bị giữ bên trong.",
+          close: "Xong",
+        }) +
+        cb(
+          `<button onclick="document.getElementById('d').showModal()">Mở</button>
+
+<dialog class="drawer" id="d">
+  <div class="head"><span class="title">Bộ lọc</span></div>
+  <!-- field / menu / form -->
+  <form method="dialog"><button class="btn ghost">Xong</button></form>
+</dialog>`,
+        ) +
+        a11y(
+          "Cùng <code>&lt;dialog&gt;</code> gốc như modal: giữ focus, <kbd class=\"kbd\">Esc</kbd> đóng, và focus trả về nút mở. Hiệu ứng trượt bị bỏ khi reduced-motion.",
+        ),
+    },
+  },
+
+  /* -------------------------------------------------------- WAVE 2 · DATA */
+  {
+    id: "rating",
+    cat: "Data",
+    name: "Rating",
+    desc: {
+      en: "A read-only score as a row of stars, filled up to .on. Gold by default; recolor with data-accent.",
+      vi: "Điểm số chỉ đọc dạng hàng sao, tô đến .on. Mặc định gold; đổi màu bằng data-accent.",
+    },
+    body: {
+      en: () =>
+        ratingStage() +
+        cb(
+          `<span class="rating" role="img" aria-label="4 out of 5">
+  <span class="s on">★</span><span class="s on">★</span>
+  <span class="s on">★</span><span class="s on">★</span>
+  <span class="s">★</span>
+</span>`,
+        ) +
+        a11y(
+          "Colour alone doesn't say the score, so give the wrapper <code>role=\"img\"</code> + an <code>aria-label</code> like <code>\"4 out of 5\"</code>. For an editable rating, use radio inputs instead.",
+        ),
+      vi: () =>
+        ratingStage() +
+        cb(
+          `<span class="rating" role="img" aria-label="4 trên 5">
+  <span class="s on">★</span><span class="s on">★</span>
+  <span class="s on">★</span><span class="s on">★</span>
+  <span class="s">★</span>
+</span>`,
+        ) +
+        a11y(
+          "Chỉ màu thì không nói ra điểm, nên cho wrapper <code>role=\"img\"</code> + <code>aria-label</code> kiểu <code>\"4 trên 5\"</code>. Nếu cho chấm điểm được, hãy dùng radio thay thế.",
+        ),
+    },
+  },
 ];
 
 /* --------------------------------------- shared, language-neutral demos */
@@ -1757,13 +2137,25 @@ function swatches(items) {
 }
 
 function accentStage() {
+  const names = [
+    "blue",
+    "gold",
+    "cyan",
+    "purple",
+    "lime",
+    "teal",
+    "indigo",
+    "pink",
+    "steel",
+    "good",
+    "warn",
+    "crit",
+  ];
   return stage(
     "data-accent",
-    `<button class="btn" data-accent="blue">BLUE</button>
-     <button class="btn" data-accent="gold">GOLD</button>
-     <button class="btn" data-accent="cyan">CYAN</button>
-     <button class="btn" data-accent="good">GOOD</button>
-     <button class="btn" data-accent="crit">CRIT</button>`,
+    names
+      .map((a) => `<button class="btn" data-accent="${a}">${a.toUpperCase()}</button>`)
+      .join("\n     "),
   );
 }
 function badgeStage() {
@@ -1891,6 +2283,104 @@ function statStage(labels) {
     `<div class="stat" data-accent="gold"><div class="n">1,240</div><div class="l">${labels[0]}</div></div>
      <div class="stat" data-accent="good"><div class="n">7</div><div class="l">${labels[1]}</div></div>
      <div class="stat" data-accent="cyan"><div class="n">98%</div><div class="l">${labels[2]}</div></div>`,
+  );
+}
+
+function spinnerStage() {
+  return stage(
+    "SPINNER",
+    `<span class="spinner sm" aria-hidden="true"></span>
+     <span class="spinner" aria-hidden="true"></span>
+     <span class="spinner lg" data-accent="cyan" aria-hidden="true"></span>
+     <span class="spinner lg" data-accent="pink" aria-hidden="true"></span>`,
+  );
+}
+function rangeStage(label) {
+  return stage(
+    "RANGE",
+    `<div style="inline-size:100%;max-inline-size:420px;display:flex;flex-direction:column;gap:var(--sp-4)">
+      <label class="field">
+        <span class="label">${label}</span>
+        <input class="range" type="range" min="0" max="100" value="70" aria-label="${label}">
+      </label>
+      <input class="range" type="range" value="40" data-accent="cyan" aria-label="${label} 2">
+    </div>`,
+    "col",
+  );
+}
+function segmentStage(labels) {
+  return stage(
+    "SEGMENT",
+    `<div class="segment" role="group" aria-label="Difficulty">
+      <button type="button">${labels[0]}</button>
+      <button type="button" aria-pressed="true">${labels[1]}</button>
+      <button type="button">${labels[2]}</button>
+    </div>`,
+  );
+}
+function stepsStage(labels) {
+  return stage(
+    "STEPS",
+    `<ol class="steps">
+      <li class="done">${labels[0]}</li>
+      <li class="done">${labels[1]}</li>
+      <li aria-current="step">${labels[2]}</li>
+      <li>${labels[3]}</li>
+    </ol>`,
+    "col",
+  );
+}
+function meterStage() {
+  const bar = (n, on, accent) =>
+    `<div class="meter" data-accent="${accent}" role="meter" aria-valuenow="${on}" aria-valuemin="0" aria-valuemax="${n}" aria-label="${on}/${n}">` +
+    Array.from({ length: n }, (_, i) => `<span class="cell${i < on ? " on" : ""}"></span>`).join("") +
+    "</div>";
+  return stage(
+    "METER",
+    `<div style="display:flex;flex-direction:column;gap:var(--sp-3)">
+      ${bar(10, 8, "good")}
+      ${bar(10, 4, "warn")}
+      ${bar(10, 2, "crit")}
+    </div>`,
+    "col",
+  );
+}
+function emptyStage(t) {
+  return stage(
+    "EMPTY",
+    `<div class="empty" style="inline-size:100%;max-inline-size:440px">
+      <div class="icon" aria-hidden="true">${t.icon}</div>
+      <div class="title">${t.title}</div>
+      <p>${t.body}</p>
+      <button class="btn">${t.action}</button>
+    </div>`,
+    "col",
+  );
+}
+function ratingStage() {
+  const stars = (on) =>
+    Array.from({ length: 5 }, (_, i) => `<span class="s${i < on ? " on" : ""}">★</span>`).join("");
+  return stage(
+    "RATING",
+    `<div style="display:flex;flex-direction:column;gap:var(--sp-2)">
+      <span class="rating" role="img" aria-label="4 of 5">${stars(4)}</span>
+      <span class="rating" data-accent="cyan" role="img" aria-label="3 of 5">${stars(3)}</span>
+      <span class="rating" data-accent="crit" role="img" aria-label="5 of 5">${stars(5)}</span>
+    </div>`,
+    "col",
+  );
+}
+function drawerStage(t) {
+  return stage(
+    "DRAWER",
+    `<button class="btn" data-open="demo-drawer">${t.open}</button>
+     <dialog class="drawer" id="demo-drawer" data-accent="cyan">
+       <div class="head"><span class="title">${t.title}</span></div>
+       <p class="doc-p" style="margin:0">${t.body}</p>
+       <form method="dialog" style="margin-block-start:var(--sp-5)">
+         <button class="btn ghost">${t.close}</button>
+       </form>
+     </dialog>`,
   );
 }
 

@@ -14,10 +14,11 @@ by design (plain CSS + light-DOM web components; no build step).
 
 1. **One source of truth.** Every color, size, shadow, and motion value lives in `tokens.css`.
    Change the look there — never hard-code a value inside a component.
-2. **One accent per block.** Set `data-accent="blue|gold|cyan|purple|good|warn|crit"` on a
-   container; the button, card, chip, and badge inside inherit `--accent`. Color carries meaning.
-3. **Spend boldness in one place.** The **button** is the signature (bevel + press). Everything
-   else stays quiet so the page reads, not shouts.
+2. **One accent per block.** Set `data-accent` (brand `blue|gold|cyan|purple|lime|teal|indigo|pink|steel`
+   or semantic `good|warn|crit`) on a container; the button, card, chip, and badge inside inherit
+   `--accent`. Color carries meaning.
+3. **Spend boldness in one place.** The **button** is the signature (hard shadow + press-in on
+   square corners). Everything else stays quiet so the page reads, not shouts.
 4. **Crisp over cute.** If an effect softens text or an edge, it loses. Sharpness wins.
 5. **Quality floor, always.** Keyboard-navigable, visible focus, ARIA wired, reduced-motion
    respected, responsive to mobile.
@@ -42,6 +43,7 @@ high-contrast — well above WCAG AA on `--panel`.
 | `--ink` / `--text`                    | `#f8f9ff` / `#e8eaff`                   | titles·numbers / body                    |
 | `--muted` / `--dim`                   | `#c2c6f3` / `#a7ace1`                   | labels·meta / hints·captions             |
 | `--blue` `--gold` `--cyan` `--purple` | `#5c94fc` `#fbd000` `#33e0e0` `#b357e0` | brand accents                            |
+| `--lime` `--teal` `--indigo` `--pink` `--steel` | `#b8e62e` `#2ad8b8` `#7c7cff` `#ff6ec7` `#9aa2d8` | extended-wheel accents (fill the hue gaps) |
 | `--good` `--warn` `--crit`            | `#56d364` `#ff9e2c` `#e6394a`           | success / caution / error                |
 | `--ink-on-accent`                     | `#0a0a1a`                               | dark ink drawn **on** a solid accent     |
 
@@ -72,18 +74,20 @@ Chrome is mono-uppercase; body is sans sentence-case. Don't mix the roles.
 
 ### Shape & corners  ← *the decision*
 
-The bevel is a **spotlight, not a texture**:
+**Everything is a clean 90° square** — buttons included. No corner is ever cut or rounded:
 
-- **Buttons** get the notched pixel bevel (`clip-path` cutting all four corners) + press-in. This
-  is the one memorable move.
+- **Buttons** are square like every other surface. What makes them the signature is the
+  **hard shadow + press-in** on `:active` (translate + shadow drop), not a beveled corner.
 - **Every other surface** — card, callout, code block, input, select, table, modal, the docs demo
-  stage — is a **clean 90° square**. Hard border + hard shadow do the work.
-- **Never a `border-radius`.** The only rounded thing allowed is a nav pill (`--nav-radius`),
-  chrome only.
+  stage — is the same **clean 90° square**. Hard border + hard shadow do the work.
+- **Never a `border-radius`.** No exceptions — the base reset even zeroes UA rounding on
+  `button/input/select/textarea` so the system stays square everywhere.
+- The `--notch` bevel survives only as an **opt-in `.pixel-box` helper** for authors who want a
+  chamfered panel; no default component uses it.
 
-*Why:* an asymmetric notch on large surfaces reads as a rendering glitch and its diagonals
-anti-alias (soft edges). Square surfaces are sharper, uniform, and unmistakably NES (think NES
-dialog boxes). Concentrating the bevel on the button makes it the signature instead of noise.
+*Why:* right-angle corners are the sharpest, most uniform read and unmistakably NES (think NES
+dialog boxes). A chamfer or radius on a control softens its diagonals (anti-aliasing) and breaks
+the grid; keeping the whole system square makes the press-in — not a corner trick — the signature.
 
 ### Elevation — hard shadow
 
@@ -151,7 +155,7 @@ Words are design material — they help someone use the thing.
 
 | Do                                     | Don't                                           |
 |----------------------------------------|-------------------------------------------------|
-| Square surfaces; bevel the button only | Add `border-radius`, or notch large surfaces    |
+| Square surfaces everywhere, buttons too | Add `border-radius`, or chamfer a control      |
 | Hard shadow (`Npx Npx 0`, black)       | Soft/blurred shadows or glows                   |
 | `steps()` motion; honor reduced-motion | Smooth easing; motion over text                 |
 | Bright text on a solid ground          | Text over a scanline/striped layer              |
@@ -163,14 +167,14 @@ Words are design material — they help someone use the thing.
 
 ## 7 · Component catalog
 
-| Category   | Components                                                           |
-|------------|----------------------------------------------------------------------|
-| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator              |
-| Form       | Input · Textarea · Select · Checkbox · Radio · Switch · Field        |
-| Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast           |
-| Navigation | Tabs (`<mvp-tabs>`) · Breadcrumb · Pagination                        |
-| Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) |
-| Data       | Table · Code block · Accordion (`<mvp-collapsible>`) · Stat          |
+| Category   | Components                                                                     |
+|------------|--------------------------------------------------------------------------------|
+| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator                        |
+| Form       | Input · Textarea · Select · Checkbox · Radio · Switch · Field · Range · Segmented control |
+| Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast · Spinner · Meter · Empty state |
+| Navigation | Tabs (`<mvp-tabs>`) · Breadcrumb · Pagination · Steps                          |
+| Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) |
+| Data       | Table · Code block · Accordion (`<mvp-collapsible>`) · Stat · Rating           |
 
 Live docs: `pnpm demo`, then open `/docs.html`.
 
@@ -198,8 +202,8 @@ formats/lints JS (`elements.js`); CSS + `demo.html`/`docs.*` are ignored (see `b
 2. **Watch specificity.** Prefer one class per component. Avoid a type-based selector and a
    class-based selector fighting over the same property (a classic source of padding/margin
    cancellation). Scope internals under the parent (`.card .title`, not a bare `.title`).
-3. **Signature check.** Square surface + hard black border + hard shadow; bevel only if it's a
-   button-like control. No radius. Motion in `steps()`.
+3. **Signature check.** Square surface + hard black border + hard shadow; press-in on interactive
+   controls. No radius, no chamfer. Motion in `steps()`.
 4. **Accent-ready.** Default `--accent` locally; let `data-accent` override.
 5. **A11y.** Native element if one exists; visible focus; ARIA to fill gaps; reduced-motion safe.
 6. **Document it** as a page in `docs.js` (desc · live preview · usage · API table · a11y note).

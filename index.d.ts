@@ -29,10 +29,25 @@ export declare function floatXP(el: HTMLElement, text?: string, color?: string):
 /** Dispatch XP on the `mvp:xp` document bus (an <mvp-hud> listens) + optional floater. */
 export declare function grantXP(amount: number, srcEl?: HTMLElement): void;
 
+/** Accent names mapped in base.css (`--accent` + `--accent-d`). `gold` is the default. */
+export type Accent =
+  | "blue"
+  | "gold"
+  | "cyan"
+  | "purple"
+  | "lime"
+  | "teal"
+  | "indigo"
+  | "pink"
+  | "steel"
+  | "good"
+  | "warn"
+  | "crit";
+
 /** Options for {@link toast}. */
 export interface ToastOptions {
   /** Accent name mapped in base.css (`gold` default). */
-  accent?: "blue" | "gold" | "cyan" | "purple" | "good" | "warn" | "crit";
+  accent?: Accent;
   /** Auto-dismiss delay in ms; `0` keeps it until removed. Default 3200. */
   timeout?: number;
 }
