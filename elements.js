@@ -1,5 +1,5 @@
 /* ==========================================================================
-   8-BIT DOPAMINE · elements.js  —  stateful layer
+   8-BIT NES · elements.js  —  stateful layer
    Light-DOM Web Components: global tokens.css/components.css apply directly.
    Cross-framework: <mvp-*> works in HTML, Vue3/Nuxt, React 19 with no wrapper.
    Import once:  <script type="module" src="./elements.js"></script>

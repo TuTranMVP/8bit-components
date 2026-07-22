@@ -1,159 +1,398 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>8-BIT DOPAMINE · docs</title>
-<meta name="description" content="Cross-framework NES-arcade component system. Design tokens + class-based CSS + light-DOM web components.">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>8-BIT NES · tài liệu</title>
+  <meta name="description"
+    content="Bộ component NES-arcade cross-framework. Design tokens + CSS class + light-DOM web components.">
 
-<link rel="preload" as="font" type="font/woff2" href="./fonts/ioskeley-mono-400.woff2" crossorigin>
-<link rel="preload" as="font" type="font/woff2" href="./fonts/space-grotesk-var.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="./fonts/ioskeley-mono-400.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="./fonts/space-grotesk-var.woff2" crossorigin>
 
-<link rel="stylesheet" href="./tokens.css">
-<link rel="stylesheet" href="./base.css">
-<link rel="stylesheet" href="./components.css">
+  <link rel="stylesheet" href="./tokens.css">
+  <link rel="stylesheet" href="./base.css">
+  <link rel="stylesheet" href="./components.css">
 
-<style>
-  /* =============================================================== */
-  /*  docs SHELL only — layout + navigation chrome.                  */
-  /*  Zero component restyling: every widget below is a real class.  */
-  /* =============================================================== */
-  :root{ --top-h:53px; --side-w:244px; --doc-maxw:820px; }
+  <style>
+    /* =============================================================== */
+    /*  docs SHELL only — layout + navigation chrome.                  */
+    /*  Zero component restyling: every widget below is a real class.  */
+    /* =============================================================== */
+    :root {
+      --top-h: 53px;
+      --side-w: 244px;
+      --doc-maxw: 820px;
+    }
 
-  /* ---- top bar ---- */
-  .topbar{
-    position:sticky; inset-block-start:0; z-index:40;
-    display:flex; align-items:center; gap:var(--sp-4);
-    block-size:var(--top-h); padding-inline:var(--sp-4);
-    background:color-mix(in srgb, var(--screen) 85%, transparent);
-    backdrop-filter:blur(8px);
-    border-block-end:var(--bw) solid var(--line-hi);
-  }
-  .brand{ display:flex; align-items:center; gap:var(--sp-2); white-space:nowrap;
-    font-family:var(--font-mono); font-weight:700; font-size:var(--fs-chip);
-    letter-spacing:var(--ls-chrome); color:var(--ink); cursor:pointer; }
-  .brand .sq{ color:var(--gold); }
-  .topbar .search{ inline-size:min(200px, 34vw); block-size:2rem; }
-  .spacer{ flex:1; }
-  .top-links{ display:flex; align-items:center; gap:var(--sp-4); }
-  .top-link{ font-family:var(--font-mono); font-size:var(--fs-label);
-    text-transform:uppercase; letter-spacing:var(--ls-chrome); color:var(--muted); }
-  .top-link:hover{ color:var(--gold); }
-  .menu-btn{ display:none; }
+    /* ---- top bar ---- */
+    .topbar {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-4);
+      block-size: var(--top-h);
+      padding-inline: var(--sp-4);
+      background: color-mix(in srgb, var(--screen) 94%, transparent);
+      backdrop-filter: blur(6px);
+      border-block-end: var(--bw) solid var(--line-hi);
+    }
 
-  /* ---- app grid: sidebar + content ---- */
-  .app{ display:grid; grid-template-columns:var(--side-w) 1fr; align-items:start; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      white-space: nowrap;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: var(--fs-chip);
+      letter-spacing: var(--ls-chrome);
+      color: var(--ink);
+      cursor: pointer;
+    }
 
-  .side{
-    position:sticky; inset-block-start:var(--top-h);
-    block-size:calc(100dvh - var(--top-h)); overflow-y:auto;
-    border-inline-end:var(--bw) solid var(--line-hi);
-    padding:var(--sp-5) var(--sp-3) var(--sp-7);
-  }
-  .side-grp{ margin-block-end:var(--sp-5); }
-  .side-lab{ display:block; padding-inline:var(--sp-3); margin-block-end:var(--sp-2);
-    font-family:var(--font-mono); font-size:var(--fs-label);
-    text-transform:uppercase; letter-spacing:var(--ls-chrome); color:var(--gold); }
-  .navlink{
-    display:flex; align-items:center; justify-content:space-between; gap:var(--sp-2);
-    font-family:var(--font-mono); font-size:var(--fs-chip); color:var(--muted);
-    padding:var(--sp-2) var(--sp-3);
-    border-inline-start:var(--accent-bar) solid transparent; cursor:pointer;
-    transition:color var(--dur-fast);
-  }
-  .navlink:hover{ color:var(--ink);
-    background:color-mix(in srgb, var(--line-hi) 14%, transparent); }
-  .navlink[aria-current="page"]{ color:var(--gold);
-    border-inline-start-color:var(--gold);
-    background:color-mix(in srgb, var(--gold) 10%, transparent); }
-  .navlink .tag{ font-size:var(--fs-label); color:var(--dim); }
-  .navlink.hide{ display:none; }
+    .brand .sq {
+      color: var(--gold);
+    }
 
-  /* ---- content column ---- */
-  .content{ min-inline-size:0; padding:var(--sp-6) clamp(var(--sp-4),4vw,var(--sp-7)); }
-  .doc-wrap{ max-inline-size:var(--doc-maxw); margin-inline:auto; }
-  .doc-page{ animation:power-on .2s steps(3); }
-  @keyframes power-on{ 0%{opacity:.2} 55%{opacity:.65} 100%{opacity:1} }
-  /* the article is focused on route change for a11y — but it's a scroll target,
+    .topbar .search {
+      inline-size: min(200px, 34vw);
+      block-size: 2rem;
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    .top-links {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-4);
+    }
+
+    .top-link {
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--muted);
+    }
+
+    .top-link:hover {
+      color: var(--gold);
+    }
+
+    .menu-btn {
+      display: none;
+    }
+
+    /* ---- EN / VI language switch ---- */
+    .langsw {
+      display: inline-flex;
+      border: var(--bw-2) solid var(--line-hi);
+    }
+
+    .langbtn {
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      letter-spacing: var(--ls-chrome);
+      color: var(--muted);
+      background: var(--panel);
+      border: 0;
+      padding: var(--sp-2) var(--sp-3);
+      cursor: pointer;
+    }
+
+    .langbtn + .langbtn {
+      border-inline-start: var(--bw-2) solid var(--line-hi);
+    }
+
+    .langbtn:hover:not([aria-pressed="true"]) {
+      color: var(--ink);
+    }
+
+    .langbtn[aria-pressed="true"] {
+      background: var(--gold);
+      color: var(--ink-on-accent);
+    }
+
+    /* ---- app grid: sidebar + content ---- */
+    .app {
+      display: grid;
+      grid-template-columns: var(--side-w) 1fr;
+      align-items: start;
+    }
+
+    .side {
+      position: sticky;
+      inset-block-start: var(--top-h);
+      block-size: calc(100dvh - var(--top-h));
+      overflow-y: auto;
+      border-inline-end: var(--bw) solid var(--line-hi);
+      padding: var(--sp-5) var(--sp-3) var(--sp-7);
+    }
+
+    .side-grp {
+      margin-block-end: var(--sp-5);
+    }
+
+    .side-lab {
+      display: block;
+      padding-inline: var(--sp-3);
+      margin-block-end: var(--sp-2);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--gold);
+    }
+
+    .navlink {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-2);
+      font-family: var(--font-mono);
+      font-size: var(--fs-chip);
+      color: var(--muted);
+      padding: var(--sp-2) var(--sp-3);
+      border-inline-start: var(--accent-bar) solid transparent;
+      cursor: pointer;
+      transition: color var(--dur-fast);
+    }
+
+    .navlink:hover {
+      color: var(--ink);
+      background: color-mix(in srgb, var(--line-hi) 14%, transparent);
+    }
+
+    .navlink[aria-current="page"] {
+      color: var(--gold);
+      border-inline-start-color: var(--gold);
+      background: color-mix(in srgb, var(--gold) 10%, transparent);
+    }
+
+    .navlink .tag {
+      font-size: var(--fs-label);
+      color: var(--dim);
+    }
+
+    .navlink.hide {
+      display: none;
+    }
+
+    /* ---- content column ---- */
+    .content {
+      min-inline-size: 0;
+      padding: var(--sp-6) clamp(var(--sp-4), 4vw, var(--sp-7));
+    }
+
+    .doc-wrap {
+      max-inline-size: var(--doc-maxw);
+      margin-inline: auto;
+    }
+
+    .doc-page {
+      animation: power-on .2s steps(3);
+    }
+
+    @keyframes power-on {
+      0% {
+        opacity: .2
+      }
+
+      55% {
+        opacity: .65
+      }
+
+      100% {
+        opacity: 1
+      }
+    }
+
+    /* the article is focused on route change for a11y — but it's a scroll target,
      not a control, so it must not paint the gold focus ring. */
-  #page:focus, #page:focus-visible{ outline:none; box-shadow:none; border-color:transparent; }
+    #page:focus,
+    #page:focus-visible {
+      outline: none;
+      box-shadow: none;
+      border-color: transparent;
+    }
 
-  .doc-cat{ color:var(--gold); }
-  .doc-lead{ color:var(--text); font-size:1rem; line-height:var(--lh-body);
-    max-inline-size:62ch; margin-block:var(--sp-3) var(--sp-5); }
-  .doc-h2{ margin-block:var(--sp-6) var(--sp-3);
-    font-family:var(--font-mono); font-size:var(--fs-h3); font-weight:700;
-    text-transform:uppercase; letter-spacing:var(--ls-chrome); color:var(--muted); }
-  .doc-p{ color:var(--text); max-inline-size:62ch; margin-block:var(--sp-3); }
-  .doc-p code{ font-size:.9em; }
+    .doc-cat {
+      color: var(--gold);
+    }
 
-  /* ---- SIGNATURE of the docs: every demo plays on a recessed CRT screen ---- */
-  .stage{
-    position:relative; display:flex; flex-wrap:wrap; align-items:center; gap:var(--sp-4);
-    background:var(--slot); border:var(--bw) solid var(--line-hi);
-    padding:var(--sp-6) var(--sp-5) var(--sp-5); margin-block:var(--sp-3);
-    clip-path:polygon(var(--notch) 0,100% 0,100% calc(100% - var(--notch)),
-      calc(100% - var(--notch)) 100%,0 100%,0 var(--notch));
-    filter:drop-shadow(4px 4px 0 var(--line));   /* notched hard shadow (docs chrome) */
-  }
-  .stage.col{ flex-direction:column; align-items:stretch; }
-  .stage.center{ justify-content:center; }
-  .stage::before{ content:attr(data-cap); position:absolute; inset-block-start:0; inset-inline-start:0;
-    font-family:var(--font-mono); font-size:var(--fs-label);
-    text-transform:uppercase; letter-spacing:var(--ls-chrome); color:var(--dim);
-    background:var(--line); padding:.25em .7em; }
-  .stage::after{ content:""; position:absolute; inset:0; pointer-events:none;
-    background:repeating-linear-gradient(0deg, rgba(0,0,0,.15) 0 1px, transparent 1px 3px); }
-  @media (prefers-reduced-motion:reduce){ .stage::after{ display:none; } }
+    .doc-lead {
+      color: var(--ink);
+      font-size: 1.02rem;
+      font-weight: 450;
+      line-height: var(--lh-body);
+      max-inline-size: 62ch;
+      margin-block: var(--sp-3) var(--sp-5);
+    }
 
-  .grid-cards{ display:grid; gap:var(--sp-4);
-    grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr)); }
-  .catrow{ display:flex; flex-wrap:wrap; gap:var(--sp-2); align-items:baseline; }
+    .doc-h2 {
+      margin-block: var(--sp-6) var(--sp-3);
+      font-family: var(--font-mono);
+      font-size: var(--fs-h3);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--muted);
+    }
 
-  .doc-foot{ margin-block-start:var(--sp-7); padding-block-start:var(--sp-4);
-    border-block-start:var(--bw-2) solid var(--line);
-    font-family:var(--font-mono); font-size:var(--fs-label); color:var(--dim);
-    display:flex; justify-content:space-between; flex-wrap:wrap; gap:var(--sp-3); }
+    .doc-p {
+      color: var(--text);
+      font-weight: 450;
+      max-inline-size: 62ch;
+      margin-block: var(--sp-3);
+    }
 
-  .scrim{ display:none; }
+    .doc-p code {
+      font-size: .9em;
+    }
 
-  /* ---- responsive: sidebar becomes a drawer ---- */
-  @media (max-width:860px){
-    .app{ grid-template-columns:1fr; }
-    .side{ position:fixed; inset-block-start:var(--top-h); inset-inline-start:0; z-index:38;
-      inline-size:min(82vw,300px); background:var(--screen);
-      transform:translateX(-100%); transition:transform var(--dur-mid) var(--ease-step); }
-    body[data-nav-open] .side{ transform:none; }
-    body[data-nav-open] .scrim{ display:block; position:fixed; inset:var(--top-h) 0 0; z-index:37;
-      background:color-mix(in srgb, var(--bg) 60%, transparent); }
-    .menu-btn{ display:inline-flex; }
-    .topbar .search{ display:none; }
-  }
-</style>
+    /* ---- demo surface: a recessed "screen". Square + hard shadow, no scanlines,
+         so every widget and its text stays 4K-crisp (no striped overlay on text). ---- */
+    .stage {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--sp-4);
+      background: var(--slot);
+      border: var(--bw) solid var(--line-hi);
+      box-shadow: var(--sh-4);
+      padding: var(--sp-6) var(--sp-5) var(--sp-5);
+      margin-block: var(--sp-3);
+    }
+
+    .stage.col {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .stage.center {
+      justify-content: center;
+    }
+
+    .stage::before {
+      content: attr(data-cap);
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--dim);
+      background: var(--line);
+      padding: .25em .7em;
+    }
+
+    .grid-cards {
+      display: grid;
+      gap: var(--sp-4);
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+    }
+
+    .catrow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-2);
+      align-items: baseline;
+    }
+
+    .doc-foot {
+      margin-block-start: var(--sp-7);
+      padding-block-start: var(--sp-4);
+      border-block-start: var(--bw-2) solid var(--line);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      color: var(--dim);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--sp-3);
+    }
+
+    .scrim {
+      display: none;
+    }
+
+    /* ---- responsive: sidebar becomes a drawer ---- */
+    @media (max-width:860px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .side {
+        position: fixed;
+        inset-block-start: var(--top-h);
+        inset-inline-start: 0;
+        z-index: 38;
+        inline-size: min(82vw, 300px);
+        background: var(--screen);
+        transform: translateX(-100%);
+        transition: transform var(--dur-mid) var(--ease-step);
+      }
+
+      body[data-nav-open] .side {
+        transform: none;
+      }
+
+      body[data-nav-open] .scrim {
+        display: block;
+        position: fixed;
+        inset: var(--top-h) 0 0;
+        z-index: 37;
+        background: color-mix(in srgb, var(--bg) 60%, transparent);
+      }
+
+      .menu-btn {
+        display: inline-flex;
+      }
+
+      .topbar .search {
+        display: none;
+      }
+    }
+  </style>
 </head>
 
-<body class="scanlines">
+<body>
 
-<header class="topbar">
-  <button class="menu-btn btn ghost" aria-label="Toggle navigation" data-menu>☰</button>
-  <span class="brand" data-home tabindex="0" role="link"><span class="sq">◈</span> 8-BIT DOPAMINE</span>
-  <span class="badge" style="--accent:var(--panel-2)">v0.1</span>
-  <input class="input search" type="search" placeholder="SEARCH…" aria-label="Filter components" data-search>
-  <span class="spacer"></span>
-  <nav class="top-links">
-    <a class="top-link" href="https://github.com/YOURUSER/8bit-dopamine" target="_blank" rel="noopener">GitHub ↗</a>
-  </nav>
-  <mvp-sound></mvp-sound>
-</header>
+  <header class="topbar">
+    <button class="menu-btn btn ghost" aria-label="Bật/tắt điều hướng" data-menu>☰</button>
+    <span class="brand" data-home tabindex="0" role="link"><span class="sq">◈</span> 8-BIT NES</span>
+    <span class="badge" style="--accent:var(--panel-2)">v0.1</span>
+    <input class="input search" type="search" placeholder="TÌM…" aria-label="Lọc component" data-search>
+    <span class="spacer"></span>
+    <nav class="top-links">
+      <a class="top-link" href="https://github.com/YOURUSER/8bit-dopamine" target="_blank" rel="noopener">GitHub ↗</a>
+    </nav>
+    <div class="langsw" role="group" aria-label="Language / Ngôn ngữ">
+      <button class="langbtn" type="button" data-lang="en">EN</button>
+      <button class="langbtn" type="button" data-lang="vi">VI</button>
+    </div>
+    <mvp-sound></mvp-sound>
+  </header>
 
-<div class="app">
-  <aside class="side" id="side" aria-label="Documentation"></aside>
-  <div class="scrim" data-menu></div>
-  <main class="content" id="main">
-    <div class="doc-wrap"><article id="page" tabindex="-1"></article></div>
-  </main>
-</div>
+  <div class="app">
+    <aside class="side" id="side" aria-label="Tài liệu"></aside>
+    <div class="scrim" data-menu></div>
+    <main class="content" id="main">
+      <div class="doc-wrap">
+        <article id="page" tabindex="-1"></article>
+      </div>
+    </main>
+  </div>
 
-<script type="module" src="./docs.js"></script>
+  <script type="module" src="./docs.js"></script>
 </body>
+
 </html>

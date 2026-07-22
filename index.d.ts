@@ -1,4 +1,4 @@
-/* 8-BIT DOPAMINE — type surface (hand-written; the package ships zero-build ESM). */
+/* 8-BIT NES — type surface (hand-written; the package ships zero-build ESM). */
 
 /** [freqHz, durationSec] pairs played as a square-wave sequence. */
 export type SfxSeq = ReadonlyArray<readonly [number, number]>;

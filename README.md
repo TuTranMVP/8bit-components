@@ -1,4 +1,4 @@
-# 8-BIT DOPAMINE — component system
+# 8-BIT NES — component system
 
 NES arcade CRT, dark-only, modern-crisp. Cross-framework by design.
 
@@ -24,27 +24,27 @@ Or granular: `@yourscope/8bit-dopamine/tokens.css`, `.../base.css`, `.../compone
 
 ## Files (ROI order — stop anywhere, still useful)
 
-| File | Layer | Contains | Depends on |
-|---|---|---|---|
-| `tokens.css` | source of truth | `:root` vars, 3 `@font-face`, `@layer` order | — |
-| `base.css` | reset + primitives | reset, focus→gold, reduced-motion, `.pixel-box` (notch), elevation, accent mapper, motion | tokens |
-| `components.css` | stateless recipes | Element/Form/Feedback/Nav/Overlay/Data recipes (see catalog below) | tokens, base |
-| `elements.js` | stateful | `<mvp-quiz> <mvp-hud> <mvp-collapsible> <mvp-sound> <mvp-tabs>` + `store/bleep/grantXP/toast` | tokens, components |
-| `demo.html` | gallery + test | every component wired together | all |
-| `docs.html` + `docs.js` | documentation site | Nuxt-UI-style sidebar + per-component pages (Usage / preview / API / a11y) | all |
+| File                    | Layer              | Contains                                                                                      | Depends on         |
+|-------------------------|--------------------|-----------------------------------------------------------------------------------------------|--------------------|
+| `tokens.css`            | source of truth    | `:root` vars, 3 `@font-face`, `@layer` order                                                  | —                  |
+| `base.css`              | reset + primitives | reset, focus→gold, reduced-motion, `.pixel-box` (notch), elevation, accent mapper, motion     | tokens             |
+| `components.css`        | stateless recipes  | Element/Form/Feedback/Nav/Overlay/Data recipes (see catalog below)                            | tokens, base       |
+| `elements.js`           | stateful           | `<mvp-quiz> <mvp-hud> <mvp-collapsible> <mvp-sound> <mvp-tabs>` + `store/bleep/grantXP/toast` | tokens, components |
+| `demo.html`             | gallery + test     | every component wired together                                                                | all                |
+| `docs.html` + `docs.js` | documentation site | Nuxt-UI-style sidebar + per-component pages (Usage / preview / API / a11y)                    | all                |
 
 **80% of the value is CSS.** `elements.js` is only for things that hold state.
 
 ### Component catalog
 
-| Category | Components |
-|---|---|
-| Element | Button · Badge · Chip · Card · Avatar · Kbd · Separator |
-| Form | Input · Textarea · Select · Checkbox · Radio · Switch · Field |
-| Feedback | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast |
-| Navigation | Tabs (`<mvp-tabs>`) · Breadcrumb · Pagination |
-| Overlay | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) |
-| Data | Table · Code block · Accordion (`<mvp-collapsible>`) · Stat |
+| Category   | Components                                                           |
+|------------|----------------------------------------------------------------------|
+| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator              |
+| Form       | Input · Textarea · Select · Checkbox · Radio · Switch · Field        |
+| Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast           |
+| Navigation | Tabs (`<mvp-tabs>`) · Breadcrumb · Pagination                        |
+| Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) |
+| Data       | Table · Code block · Accordion (`<mvp-collapsible>`) · Stat          |
 
 Run the docs site locally with `pnpm demo`, then open `/docs.html`.
 
@@ -56,8 +56,10 @@ button / card / chip downstream picks it up via `--accent`.
 
 ## Signature
 
-Notched pixel box (`clip-path`) + hard shadow (`box-shadow: Npx Npx 0`, zero blur) + press-in on
-`:active`. That's the one memorable thing — everything else stays quiet.
+The **button** is the one bold element: notched pixel bevel (`clip-path`) + hard shadow
+(`box-shadow: Npx Npx 0`, zero blur) + press-in on `:active`. Every other surface stays quiet —
+**square** 90° corners (never a radius), hard border, hard shadow. Full rationale in
+[DESIGN.md](DESIGN.md).
 
 ## Fonts (bundled, self-hosted)
 
@@ -128,5 +130,6 @@ JS helpers (named exports): `store`, `bleep(seq)`, `SFX`, `setMute/isMuted`, `gr
 ## Extend
 
 New component → add a recipe in `components.css`, add a token in `tokens.css` if needed.
-Keep the Do/Don't: notch not radius, hard shadow not blur, `steps()` not smooth easing,
-one accent per block, dark text on solid accents, everything via token.
+Keep the Do/Don't: square surfaces & beveled buttons (never a radius), hard shadow not blur,
+`steps()` not smooth easing, one accent per block, dark text on solid accents, everything via
+token. Full guidance in [DESIGN.md](DESIGN.md).

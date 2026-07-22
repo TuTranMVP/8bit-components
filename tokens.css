@@ -1,5 +1,5 @@
 /* ==========================================================================
-   8-BIT DOPAMINE · tokens.css  —  SINGLE SOURCE OF TRUTH
+   8-BIT NES · tokens.css  —  SINGLE SOURCE OF TRUTH
    NES arcade CRT, dark-only. Modern-crisp: hi-res mono, not lo-res pixel font.
    Change the look here, never in components. Every hex/space flows from :root.
    ========================================================================== */
@@ -11,102 +11,162 @@
    Crisp-render note: preload the two critical files in <head> for zero-FOUT:
    <link rel="preload" as="font" type="font/woff2" href="./fonts/ioskeley-mono-400.woff2" crossorigin>
    <link rel="preload" as="font" type="font/woff2" href="./fonts/space-grotesk-var.woff2" crossorigin> ---- */
-@font-face{
-  font-family:"IoskeleyMono";
-  src:url("./fonts/ioskeley-mono-400.woff2") format("woff2");
-  font-weight:400; font-style:normal; font-display:swap;
-  unicode-range:U+0000-024F,U+0259,U+1E00-1EFF,U+2000-206F,U+20AB,U+2190-21FF,U+25A0-25FF;
-}
-@font-face{
-  font-family:"IoskeleyMono";
-  src:url("./fonts/ioskeley-mono-700.woff2") format("woff2");
-  font-weight:700; font-style:normal; font-display:swap;
-  unicode-range:U+0000-024F,U+0259,U+1E00-1EFF,U+2000-206F,U+20AB,U+2190-21FF,U+25A0-25FF;
-}
-@font-face{
-  font-family:"Space Grotesk";
-  src:url("./fonts/space-grotesk-var.woff2") format("woff2");
-  font-weight:300 700; font-style:normal; font-display:swap;
-  unicode-range:U+0000-024F,U+0259,U+1E00-1EFF,U+2000-206F,U+20AB;
+@font-face {
+  font-family: "IoskeleyMono";
+  src: url("./fonts/ioskeley-mono-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-024F, U+0259, U+1E00-1EFF, U+2000-206F, U+20AB, U+2190-21FF, U+25A0-25FF;
 }
 
-@layer tokens{
-  :root{
+@font-face {
+  font-family: "IoskeleyMono";
+  src: url("./fonts/ioskeley-mono-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-024F, U+0259, U+1E00-1EFF, U+2000-206F, U+20AB, U+2190-21FF, U+25A0-25FF;
+}
+
+@font-face {
+  font-family: "Space Grotesk";
+  src: url("./fonts/space-grotesk-var.woff2") format("woff2");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-024F, U+0259, U+1E00-1EFF, U+2000-206F, U+20AB;
+}
+
+@layer tokens {
+  :root {
     /* ---- grounds: navy, chosen (not grey). The cabinet → screen → panels ---- */
-    --bg:#07071c;          /* outer cabinet */
-    --screen:#0a0a24;      /* the "screen" surface, page bg */
-    --panel:#15153f;       /* raised card face */
-    --panel-2:#1c1c56;     /* layer-2 / secondary control */
-    --slot:#0d0d2b;        /* recessed: code, input, empty seg */
-    --line:#04041a;        /* dark border */
-    --line-hi:#3b3b86;     /* inner highlight border / hover */
+    --bg: #07071c;
+    /* outer cabinet */
+    --screen: #0a0a24;
+    /* the "screen" surface, page bg */
+    --panel: #15153f;
+    /* raised card face */
+    --panel-2: #1c1c56;
+    /* layer-2 / secondary control */
+    --slot: #0d0d2b;
+    /* recessed: code, input, empty seg */
+    --line: #000000;
+    /* dark border + hard shadow — pure black for crisp definition */
+    --line-hi: #4646a0;
+    /* inner highlight border / hover — brighter for definition */
 
-    /* ---- ink hierarchy: contrast-tuned, all AA on --panel ---- */
-    --ink:#f4f5ff;         /* titles, numbers */
-    --text:#daddfb;        /* body / description */
-    --muted:#adb2e8;       /* labels, meta */
-    --dim:#9096d4;         /* scope, hints, captions */
+    /* ---- ink hierarchy: high-contrast on dark, all well above AA on --panel ---- */
+    --ink: #f8f9ff;
+    /* titles, numbers */
+    --text: #e8eaff;
+    /* body / description — bright, high contrast */
+    --muted: #c2c6f3;
+    /* labels, meta */
+    --dim: #a7ace1;
+    /* scope, hints, captions */
 
     /* ---- brand accents: spend boldness here, 3 only ---- */
-    --blue:#5c94fc;   --blue-d:#2f4fb0;   /* primary (Mario sky) */
-    --gold:#fbd000;   --gold-d:#c99700;   /* XP / highlight / eyebrow / CTA */
-    --cyan:#33e0e0;                       /* code / gem / info */
-    --purple:#b357e0;                     /* special / magic */
+    --blue: #5c94fc;
+    --blue-d: #2f4fb0;
+    /* primary (Mario sky) */
+    --gold: #fbd000;
+    --gold-d: #c99700;
+    /* XP / highlight / eyebrow / CTA */
+    --cyan: #33e0e0;
+    /* code / gem / info */
+    --purple: #b357e0;
+    /* special / magic */
 
     /* ---- semantic status: TALKS meaning, kept apart from brand ---- */
-    --good:#56d364;   /* active / success / stage clear */
-    --warn:#ff9e2c;   /* pending / caution */
-    --crit:#e6394a;   /* critical / error / blocked / boss */
+    --good: #56d364;
+    /* active / success / stage clear */
+    --warn: #ff9e2c;
+    /* pending / caution */
+    --crit: #e6394a;
+    /* critical / error / blocked / boss */
 
     /* ink drawn ON TOP of a solid accent (never white on gold/green/cyan) */
-    --ink-on-accent:#0a0a1a;
+    --ink-on-accent: #0a0a1a;
 
     /* ---- typography roles: 2 faces, deliberate pairing ---- */
-    --font-mono:"IoskeleyMono",ui-monospace,"Cascadia Code",Menlo,monospace;
-    --font-body:"Space Grotesk",system-ui,-apple-system,sans-serif;
+    --font-mono: "IoskeleyMono", ui-monospace, "Cascadia Code", Menlo, monospace;
+    --font-body: "Space Grotesk", system-ui, -apple-system, sans-serif;
 
     /* type scale (rem, 16px base). Only the rungs actually used. */
-    --fs-label:.5625rem;   /* 9px  · eyebrow / scope / uppercase mono   */
-    --fs-chip:.6875rem;    /* 11px · chip / value / code inline         */
-    --fs-body:.84375rem;   /* 13.5px · sans body                        */
-    --fs-h3:.75rem;        /* 12px · section mono heading               */
-    --fs-h2:1.0625rem;     /* 17px · world / card title                 */
-    --fs-h1:1.625rem;      /* 26px · hero / power number                */
-    --lh-tight:1.25; --lh-body:1.65; --lh-heading:1.4;
-    --ls-chrome:.06em;     /* letter-spacing for uppercase mono chrome  */
+    --fs-label: .5625rem;
+    /* 9px  · eyebrow / scope / uppercase mono   */
+    --fs-chip: .6875rem;
+    /* 11px · chip / value / code inline         */
+    --fs-body: .84375rem;
+    /* 13.5px · sans body                        */
+    --fs-h3: .75rem;
+    /* 12px · section mono heading               */
+    --fs-h2: 1.0625rem;
+    /* 17px · world / card title                 */
+    --fs-h1: 1.625rem;
+    /* 26px · hero / power number                */
+    --lh-tight: 1.25;
+    --lh-body: 1.65;
+    --lh-heading: 1.4;
+    --ls-chrome: .06em;
+    /* letter-spacing for uppercase mono chrome  */
 
     /* ---- spacing scale (4-based, DRY) ---- */
-    --sp-1:.25rem; --sp-2:.5rem; --sp-3:.75rem; --sp-4:1rem;
-    --sp-5:1.5rem; --sp-6:2rem;  --sp-7:3rem;
+    --sp-1: .25rem;
+    --sp-2: .5rem;
+    --sp-3: .75rem;
+    --sp-4: 1rem;
+    --sp-5: 1.5rem;
+    --sp-6: 2rem;
+    --sp-7: 3rem;
 
     /* ---- shape: SIGNATURE = notched pixel bevel. Never a radius. ---- */
-    --notch:6px;           /* corner cut size */
-    --bw:3px;              /* standard "pixel box" border */
-    --bw-2:2px;            /* small elements */
-    --accent-bar:6px;      /* left classifier bar */
-    --nav-radius:999px;    /* ONLY chrome (nav pill) may round */
+    --notch: 6px;
+    /* corner cut size */
+    --bw: 3px;
+    /* standard "pixel box" border */
+    --bw-2: 2px;
+    /* small elements */
+    --accent-bar: 6px;
+    /* left classifier bar */
+    --nav-radius: 999px;
+    /* ONLY chrome (nav pill) may round */
 
     /* ---- SIGNATURE elevation: hard shadow, zero blur, pure black ---- */
-    --sh-1:1px 1px 0 var(--line);   /* pressed */
-    --sh-2:2px 2px 0 var(--line);   /* badge / small control */
-    --sh-3:3px 3px 0 var(--line);   /* button / logo */
-    --sh-4:4px 4px 0 var(--line);   /* standard card */
-    --sh-5:6px 6px 0 var(--line);   /* hero / big card */
+    --sh-1: 1px 1px 0 var(--line);
+    /* pressed */
+    --sh-2: 2px 2px 0 var(--line);
+    /* badge / small control */
+    --sh-3: 3px 3px 0 var(--line);
+    /* button / logo */
+    --sh-4: 4px 4px 0 var(--line);
+    /* standard card */
+    --sh-5: 6px 6px 0 var(--line);
+    /* hero / big card */
 
     /* ---- motion: pixel-stepped, not smooth ---- */
-    --dur-fast:.1s; --dur-mid:.2s; --dur-slow:.4s;
-    --ease-step:steps(3);      /* chrome moves in ticks */
-    --ease-fill:steps(8);      /* XP bar fills in blocks */
+    --dur-fast: .1s;
+    --dur-mid: .2s;
+    --dur-slow: .4s;
+    --ease-step: steps(3);
+    /* chrome moves in ticks */
+    --ease-fill: steps(8);
+    /* XP bar fills in blocks */
 
     /* ---- form controls: one height, everything aligns to it ---- */
-    --ctrl-h:2.25rem;          /* input / select / button-in-a-row height */
-    --ctrl-pad:var(--sp-3);    /* control inline padding */
+    --ctrl-h: 2.25rem;
+    /* input / select / button-in-a-row height */
+    --ctrl-pad: var(--sp-3);
+    /* control inline padding */
 
     /* ---- stacking: overlays sit above chrome, below scanlines (9999) ---- */
-    --z-overlay:100;           /* dropdown menu / tooltip / toast / dialog */
+    --z-overlay: 100;
+    /* dropdown menu / tooltip / toast / dialog */
 
     /* ---- atmosphere (kept restrained · Chanel rule) ---- */
-    --scanline-opacity:.06;    /* CRT lines, subtle */
-    --maxw:960px;
+    --scanline-opacity: .06;
+    /* CRT lines, subtle */
+    --maxw: 960px;
   }
 }
