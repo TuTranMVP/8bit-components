@@ -102,7 +102,7 @@ export function floatXP(el, text = "+50 XP", color = "var(--gold)") {
       { opacity: 1, transform: "translate(-50%,0)" },
       { opacity: 0, transform: "translate(-50%,-38px)" },
     ],
-    { duration: 900, easing: "steps(6)", fill: "forwards" },
+    { duration: 900, easing: "cubic-bezier(.22,1,.36,1)", fill: "forwards" },
   ).finished.finally(() => f.remove());
 }
 
@@ -115,7 +115,7 @@ export function grantXP(amount, srcEl) {
 /* ----------------------------------------------------------------- toast */
 let _toastHost = null;
 export function toast(msg, opts = {}) {
-  const { accent = "gold", timeout = 3200 } = opts;
+  const { accent = "good", timeout = 3200 } = opts;
   if (!_toastHost) {
     _toastHost = document.createElement("div");
     _toastHost.className = "toast-host";
@@ -130,7 +130,7 @@ export function toast(msg, opts = {}) {
   _toastHost.appendChild(t);
   bleep(SFX.coin);
   const kill = () => {
-    t.style.transition = "opacity var(--dur-mid) steps(3)";
+    t.style.transition = "opacity var(--dur-mid) var(--ease)";
     t.style.opacity = "0";
     setTimeout(() => t.remove(), 220);
   };
@@ -320,7 +320,7 @@ class MvpQuiz extends HTMLElement {
           { transform: "translateX(5px)" },
           { transform: "translateX(0)" },
         ],
-        { duration: 300, easing: "steps(4)", iterations: 2 },
+        { duration: 260, easing: "ease-in-out", iterations: 2 },
       );
     }
     this.dispatchEvent(

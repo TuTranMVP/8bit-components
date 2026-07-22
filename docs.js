@@ -105,7 +105,7 @@ const GS = [
         `<div class="grid-cards">
           <div class="callout memo"><b>Press the button.</b> Square 90° corners like everything else — the button's flourish is the hard shadow + press-in on <code>:active</code>, never a cut or rounded corner.</div>
           <div class="callout memo"><b>Hard shadow.</b> <code>box-shadow: Npx Npx 0</code> — zero blur, pure black. Depth like a sprite.</div>
-          <div class="callout tip"><b>Steps motion.</b> <code>steps()</code> easing only. Movement ticks like a sprite sheet.</div>
+          <div class="callout tip"><b>Smooth motion.</b> One ease-out curve (<code>--ease</code>) on transform/opacity — high-FPS, no stutter.</div>
           <div class="callout quest"><b>One accent per block.</b> Set <code>data-accent</code> once; everything downstream inherits it.</div>
         </div>`,
       vi: () =>
@@ -131,7 +131,7 @@ const GS = [
         `<div class="grid-cards">
           <div class="callout memo"><b>Nhấn lún nút.</b> Góc vuông 90° như mọi thứ khác — điểm nhấn của nút là bóng cứng + nhấn lún khi <code>:active</code>, không phải góc cắt hay bo tròn.</div>
           <div class="callout memo"><b>Bóng cứng.</b> <code>box-shadow: Npx Npx 0</code> — không blur, đen tuyền. Chiều sâu như một sprite.</div>
-          <div class="callout tip"><b>Chuyển động theo bước.</b> Chỉ dùng easing <code>steps()</code>. Chuyển động giật như sprite sheet.</div>
+          <div class="callout tip"><b>Chuyển động mượt.</b> Một đường ease-out (<code>--ease</code>) trên transform/opacity — FPS cao, không giật.</div>
           <div class="callout quest"><b>Một màu nhấn mỗi khối.</b> Đặt <code>data-accent</code> một lần; mọi thứ bên dưới kế thừa.</div>
         </div>`,
     },
@@ -265,19 +265,20 @@ import "8bit-nes/components.css";`,
             ["<code>--ink</code>", "#f8f9ff", "titles, numbers"],
             ["<code>--bw</code>", "3px", "hard border"],
             ["<code>--sh-4</code>", "4px 4px 0", "standard card shadow"],
-            ["<code>--ease-step</code>", "steps(3)", "chrome motion"],
+            ["<code>--ease</code>", "cubic-bezier(.22,1,.36,1)", "smooth ease-out"],
           ],
         ) +
         h2("Accents") +
         api(
           ["Accent", "Use"],
           [
-            ["<code>blue</code>", "primary action"],
-            ["<code>gold</code>", "XP · highlight · default CTA"],
+            ["<code>good</code> <b>= primary</b>", "primary / positive — the default accent"],
+            ["<code>blue</code>", "secondary action · links"],
+            ["<code>gold</code>", "XP · highlight · attention"],
             ["<code>cyan</code>", "code · info"],
             ["<code>purple</code>", "special · magic"],
             ["<code>lime / teal / indigo / pink / steel</code>", "extended wheel — extra categories, tags, charts"],
-            ["<code>good / warn / crit</code>", "success · caution · error"],
+            ["<code>warn / crit</code>", "caution · error"],
           ],
         ) +
         h2("Do / don't") +
@@ -306,19 +307,20 @@ import "8bit-nes/components.css";`,
             ["<code>--ink</code>", "#f8f9ff", "tiêu đề, số"],
             ["<code>--bw</code>", "3px", "viền cứng"],
             ["<code>--sh-4</code>", "4px 4px 0", "bóng card chuẩn"],
-            ["<code>--ease-step</code>", "steps(3)", "chuyển động chrome"],
+            ["<code>--ease</code>", "cubic-bezier(.22,1,.36,1)", "ease-out mượt"],
           ],
         ) +
         h2("Màu nhấn") +
         api(
           ["Màu nhấn", "Dùng cho"],
           [
-            ["<code>blue</code>", "hành động chính"],
-            ["<code>gold</code>", "XP · nổi bật · CTA mặc định"],
+            ["<code>good</code> <b>= primary</b>", "primary / tích cực — màu accent mặc định"],
+            ["<code>blue</code>", "hành động phụ · link"],
+            ["<code>gold</code>", "XP · nổi bật · chú ý"],
             ["<code>cyan</code>", "code · thông tin"],
             ["<code>purple</code>", "đặc biệt · phép thuật"],
             ["<code>lime / teal / indigo / pink / steel</code>", "vòng màu mở rộng — thêm nhóm, tag, biểu đồ"],
-            ["<code>good / warn / crit</code>", "thành công · cảnh báo · lỗi"],
+            ["<code>warn / crit</code>", "cảnh báo · lỗi"],
           ],
         ) +
         h2("Nên / Không") +
@@ -360,7 +362,7 @@ import "8bit-nes/components.css";`,
         swatches([
           ["--blue", "#5c94fc", "primary"],
           ["--blue-d", "#2f4fb0", "hover / border"],
-          ["--gold", "#fbd000", "CTA · XP"],
+          ["--gold", "#fbd000", "XP · highlight"],
           ["--gold-d", "#c99700", "hover / border"],
           ["--cyan", "#33e0e0", "info · code"],
           ["--cyan-d", "#1f9e9e", "hover / border"],
@@ -415,7 +417,7 @@ import "8bit-nes/components.css";`,
         swatches([
           ["--blue", "#5c94fc", "chính"],
           ["--blue-d", "#2f4fb0", "hover / viền"],
-          ["--gold", "#fbd000", "CTA · XP"],
+          ["--gold", "#fbd000", "XP · highlight"],
           ["--gold-d", "#c99700", "hover / viền"],
           ["--cyan", "#33e0e0", "info · code"],
           ["--cyan-d", "#1f9e9e", "hover / viền"],
@@ -461,8 +463,8 @@ const COMPONENTS = [
     cat: "Element",
     name: "Button",
     desc: {
-      en: "Primary action. Gold by default; set data-accent to recolor. Presses in on :active — the signature move.",
-      vi: "Hành động chính. Mặc định màu gold; đặt data-accent để đổi màu. Nhấn lún khi :active — chính là chữ ký.",
+      en: "Primary action. Green (the primary accent) by default; set data-accent to recolor. Presses in on :active — the signature move.",
+      vi: "Hành động chính. Mặc định màu green (màu primary); đặt data-accent để đổi màu. Nhấn lún khi :active — chính là chữ ký.",
     },
     body: {
       en: () =>
@@ -1236,8 +1238,8 @@ const COMPONENTS = [
     cat: "Feedback",
     name: "Progress",
     desc: {
-      en: "Determinate bar. Fills in eight discrete blocks — steps(), not a smooth sweep.",
-      vi: "Thanh xác định. Tô đầy theo tám khối rời — steps(), không lướt mượt.",
+      en: "Determinate bar. Fills with a smooth ease so progress glides — striped so the amount reads at a glance.",
+      vi: "Thanh xác định. Tô đầy mượt theo ease để tiến trình lướt êm — có sọc để đọc mức nhanh.",
     },
     body: {
       en: () =>
@@ -1318,7 +1320,7 @@ toast("Settings saved.", { accent: "good" });`,
           ["Argument", "Meaning"],
           [
             ["<code>msg</code>", "HTML string shown in the toast"],
-            ["<code>opts.accent</code>", "gold (default) · good · warn · crit · …"],
+            ["<code>opts.accent</code>", "good (default) · warn · crit · gold · …"],
             ["<code>opts.timeout</code>", "auto-dismiss ms (0 = keep)"],
           ],
         ) +
@@ -1445,8 +1447,8 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
     cat: "Navigation",
     name: "Pagination",
     desc: {
-      en: "Page through a list. The current page fills gold; ends disable.",
-      vi: "Lật qua danh sách. Trang hiện tại tô đầy gold; hai đầu bị vô hiệu.",
+      en: "Page through a list. The current page fills with the primary accent; ends disable.",
+      vi: "Lật qua danh sách. Trang hiện tại tô đầy màu primary; hai đầu bị vô hiệu.",
     },
     body: {
       en: () =>
@@ -1897,8 +1899,8 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
     cat: "Feedback",
     name: "Spinner",
     desc: {
-      en: "A square loader whose lit edges tick around in steps() — a loader with no curve. Three sizes; accent-ready.",
-      vi: "Bộ loader vuông với các cạnh sáng quay theo bước steps() — loader không có đường cong. Ba cỡ; đổi được màu nhấn.",
+      en: "A square loader whose lit edges spin smoothly — a loader with no curve. Three sizes; accent-ready.",
+      vi: "Bộ loader vuông với các cạnh sáng quay mượt — loader không có đường cong. Ba cỡ; đổi được màu nhấn.",
     },
     body: {
       en: () =>
