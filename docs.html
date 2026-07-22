@@ -23,6 +23,7 @@
     :root {
       --top-h: 53px;
       --side-w: 244px;
+      --toc-w: 216px;
       --doc-maxw: 820px;
     }
 
@@ -122,7 +123,7 @@
     /* ---- app grid: sidebar + content ---- */
     .app {
       display: grid;
-      grid-template-columns: var(--side-w) 1fr;
+      grid-template-columns: var(--side-w) minmax(0, 1fr) var(--toc-w);
       align-items: start;
     }
 
@@ -237,6 +238,7 @@
 
     .doc-h2 {
       margin-block: var(--sp-6) var(--sp-3);
+      scroll-margin-top: calc(var(--top-h) + var(--sp-4));
       font-family: var(--font-mono);
       font-size: var(--fs-h3);
       font-weight: 700;
@@ -333,6 +335,65 @@
       display: none;
     }
 
+    /* ---- "On this page" table of contents (right rail) ---- */
+    .toc {
+      position: sticky;
+      inset-block-start: var(--top-h);
+      align-self: start;
+      block-size: calc(100dvh - var(--top-h));
+      overflow-y: auto;
+      padding: var(--sp-6) var(--sp-4) var(--sp-7) 0;
+    }
+
+    .toc[hidden] {
+      display: none;
+    }
+
+    .toc-lab {
+      display: block;
+      margin-block-end: var(--sp-3);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--gold);
+    }
+
+    .toc-link {
+      display: block;
+      inline-size: 100%;
+      text-align: start;
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      color: var(--dim);
+      background: none;
+      border: 0;
+      border-inline-start: var(--bw-2) solid var(--line-hi);
+      padding: var(--sp-1) 0 var(--sp-1) var(--sp-3);
+      cursor: pointer;
+      transition: color var(--dur-fast);
+    }
+
+    .toc-link:hover {
+      color: var(--ink);
+    }
+
+    .toc-link[aria-current="true"] {
+      color: var(--gold);
+      border-inline-start-color: var(--gold);
+    }
+
+    /* ---- drop the TOC rail before it crowds the content ---- */
+    @media (max-width:1180px) {
+      .app {
+        grid-template-columns: var(--side-w) minmax(0, 1fr);
+      }
+
+      .toc {
+        display: none;
+      }
+    }
+
     /* ---- responsive: sidebar becomes a drawer ---- */
     @media (max-width:860px) {
       .app {
@@ -426,6 +487,7 @@
         <article id="page" tabindex="-1"></article>
       </div>
     </main>
+    <aside class="toc" id="toc" aria-label="On this page" hidden></aside>
   </div>
 
   <script type="module" src="./docs.js"></script>
