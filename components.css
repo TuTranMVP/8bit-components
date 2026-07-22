@@ -14,8 +14,8 @@
 
   /* ----------------------------------------------------------------- BUTTON */
   .btn {
-    --accent: var(--gold);
-    --accent-d: var(--gold-d);
+    --accent: var(--primary);
+    --accent-d: var(--primary-d);
     display: inline-flex;
     align-items: center;
     gap: var(--sp-2);
@@ -31,8 +31,8 @@
     padding: var(--sp-3) var(--sp-4);
     cursor: pointer;
     /* square 90° corners — hard shadow + press-in do the work, no bevel */
-    transition: transform var(--dur-fast) var(--ease-step),
-      box-shadow var(--dur-fast) var(--ease-step),
+    transition: transform var(--dur-fast) var(--ease),
+      box-shadow var(--dur-fast) var(--ease),
       background var(--dur-fast);
 
     &:hover {
@@ -63,7 +63,7 @@
 
       &:hover {
         color: var(--ink);
-        border-color: var(--gold);
+        border-color: var(--primary);
         filter: none;
       }
     }
@@ -162,15 +162,15 @@
         border: var(--bw-2) solid currentColor;
         border-inline-end-color: transparent;
         border-block-end-color: transparent;
-        animation: spinner .8s steps(8) infinite;
+        animation: spinner .7s linear infinite;
       }
     }
   }
 
   /* ------------------------------------------------------------------- CARD */
   .card {
-    --accent: var(--gold);
-    --accent-d: var(--gold-d);
+    --accent: var(--primary);
+    --accent-d: var(--primary-d);
     container-type: inline-size;
     background: var(--panel);
     border: var(--bw) solid var(--line-hi);
@@ -295,8 +295,8 @@
 
   /* ------------------------------------------------------------------- CHIP */
   .chip {
-    --accent: var(--gold);
-    --accent-d: var(--gold-d);
+    --accent: var(--primary);
+    --accent-d: var(--primary-d);
     display: inline-flex;
     align-items: baseline;
     gap: var(--sp-2);
@@ -310,8 +310,8 @@
     box-shadow: var(--sh-2);
     padding: var(--sp-2) var(--sp-3);
     cursor: pointer;
-    transition: transform var(--dur-fast) var(--ease-step),
-      box-shadow var(--dur-fast) var(--ease-step);
+    transition: transform var(--dur-fast) var(--ease),
+      box-shadow var(--dur-fast) var(--ease);
 
     & .dot {
       inline-size: .5rem;
@@ -375,7 +375,7 @@
 
       &:hover {
         color: var(--ink);
-        border-color: var(--gold);
+        border-color: var(--primary);
       }
 
       &:active {
@@ -383,9 +383,11 @@
       }
     }
 
-    /* syntax tokens */
+    /* syntax tokens — VSCode Dark+ families mapped onto 8-bit brand hues:
+       keyword→blue · control/selector→purple · string→amber · number→lime ·
+       function→gold · punctuation/at→cyan · comment→dim. */
     & .t-sel {
-      color: var(--gold);
+      color: var(--purple);
     }
 
     & .t-key {
@@ -393,11 +395,11 @@
     }
 
     & .t-str {
-      color: var(--good);
+      color: var(--warn);
     }
 
     & .t-num {
-      color: var(--cyan);
+      color: var(--lime);
     }
 
     & .t-com {
@@ -406,7 +408,7 @@
     }
 
     & .t-at {
-      color: var(--purple);
+      color: var(--cyan);
     }
 
     & .t-fn {
@@ -427,7 +429,7 @@
       block-size: 100%;
       inline-size: var(--fill);
       background: repeating-linear-gradient(90deg,
-          var(--gold) 0 6px, var(--gold-d) 6px 8px);
+          var(--primary) 0 6px, var(--primary-d) 6px 8px);
       transition: --fill var(--dur-slow) var(--ease-fill);
     }
   }
@@ -437,7 +439,7 @@
     & .n {
       font-family: var(--font-mono);
       font-weight: 700;
-      color: var(--accent, var(--gold));
+      color: var(--accent, var(--primary));
       font-size: var(--fs-h1);
       font-variant-numeric: tabular-nums;
       line-height: var(--lh-tight);
@@ -467,7 +469,7 @@
     cursor: pointer;
     font-family: var(--font-body);
     font-size: var(--fs-body);
-    transition: transform var(--dur-fast) var(--ease-step);
+    transition: transform var(--dur-fast) var(--ease);
 
     & .key {
       flex: none;
@@ -483,7 +485,7 @@
     }
 
     &:hover {
-      border-color: var(--gold);
+      border-color: var(--primary);
     }
 
     &:active {
@@ -524,14 +526,14 @@
 
   /* ===================================================================== */
   /*  CORE WAVE — added components. Same contract: every value from tokens, */
-  /*  notch not radius, hard shadow, steps() motion, one accent per block.  */
+  /*  notch not radius, hard shadow, smooth motion, one accent per block.  */
   /* ===================================================================== */
 
   /* ------------------------------------------------------------------ AVATAR */
   /* square by design (NES): keeps the hard shadow crisp, no clip-path.        */
   .avatar {
     --sz: 2.5rem;
-    --accent: var(--gold);
+    --accent: var(--primary);
     display: inline-grid;
     place-items: center;
     overflow: hidden;
@@ -699,7 +701,7 @@
     -webkit-appearance: none;
     background-repeat: no-repeat;
     background-position: right var(--ctrl-pad) center;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23fbd000' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2356d364' stroke-width='2' fill='none'/%3E%3C/svg%3E");
     transition: border-color var(--dur-fast);
 
     &:hover {
@@ -716,8 +718,8 @@
   /* ---------------------------------------------------------- CHECKBOX / RADIO */
   .checkbox,
   .radio {
-    --accent: var(--gold);
-    --accent-d: var(--gold-d);
+    --accent: var(--primary);
+    --accent-d: var(--primary-d);
     appearance: none;
     -webkit-appearance: none;
     flex: none;
@@ -781,7 +783,7 @@
     block-size: 1.4rem;
     background: var(--slot);
     border: var(--bw-2) solid var(--line-hi);
-    transition: background var(--dur-fast) var(--ease-step),
+    transition: background var(--dur-fast) var(--ease),
       border-color var(--dur-fast);
 
     &::after {
@@ -792,7 +794,7 @@
       inline-size: 1.05rem;
       background: var(--line-hi);
       border: 1px solid var(--line);
-      transition: transform var(--dur-fast) var(--ease-step), background var(--dur-fast);
+      transition: transform var(--dur-fast) var(--ease), background var(--dur-fast);
     }
 
     &:checked {
@@ -820,7 +822,7 @@
     background-image: linear-gradient(90deg, transparent 0,
         color-mix(in srgb, var(--line-hi) 45%, transparent) 50%, transparent 100%);
     background-size: 220% 100%;
-    animation: skeleton 1.2s steps(8) infinite;
+    animation: skeleton 1.4s linear infinite;
   }
 
   @keyframes skeleton {
@@ -884,7 +886,7 @@
     }
 
     & a:hover {
-      color: var(--gold);
+      color: var(--primary);
     }
 
     & [aria-current] {
@@ -913,10 +915,10 @@
     border: var(--bw-2) solid var(--line-hi);
     box-shadow: var(--sh-1);
     cursor: pointer;
-    transition: transform var(--dur-fast) var(--ease-step);
+    transition: transform var(--dur-fast) var(--ease);
 
     &:hover {
-      border-color: var(--gold);
+      border-color: var(--primary);
       color: var(--ink);
     }
 
@@ -926,9 +928,9 @@
     }
 
     &[aria-current="page"] {
-      background: var(--gold);
+      background: var(--primary);
       color: var(--ink-on-accent);
-      border-color: var(--gold-d);
+      border-color: var(--primary-d);
       cursor: default;
     }
 
@@ -969,8 +971,8 @@
     }
 
     &[aria-selected="true"] {
-      color: var(--gold);
-      border-block-end-color: var(--gold);
+      color: var(--primary);
+      border-block-end-color: var(--primary);
     }
   }
 
@@ -1048,7 +1050,7 @@
   /* ------------------------------------------------------------------- MODAL */
   /* native <dialog class="modal"> — open with el.showModal().                 */
   .modal {
-    --accent: var(--gold);
+    --accent: var(--primary);
     inline-size: min(92vw, 32rem);
     color: var(--text);
     background: var(--panel);
@@ -1142,7 +1144,7 @@
   }
 
   .toast {
-    --accent: var(--gold);
+    --accent: var(--primary);
     pointer-events: auto;
     display: flex;
     align-items: center;
@@ -1154,7 +1156,7 @@
     border-left: var(--accent-bar) solid var(--accent);
     box-shadow: var(--sh-4);
     padding: var(--sp-3) var(--sp-4);
-    animation: toast-in var(--dur-mid) var(--ease-step);
+    animation: toast-in var(--dur-mid) var(--ease);
 
     & b {
       color: var(--accent);
@@ -1170,15 +1172,15 @@
 
   /* ===================================================================== */
   /*  WAVE 2 — extended set. Same contract: every value from tokens, notch  */
-  /*  only on buttons, hard shadow, steps() motion, one accent per block.   */
+  /*  only on buttons, hard shadow, smooth motion, one accent per block.   */
   /* ===================================================================== */
 
   /* ----------------------------------------------------------------- SPINNER */
-  /* square by design: a hard-edged block whose lit top/right edges tick around
-     in steps() — a loader with no curve. Accent-ready, three sizes.           */
+  /* square by design: a hard-edged block whose lit top/right edges spin
+     smoothly (linear) — a loader with no curve. Accent-ready, three sizes.    */
   .spinner {
     --sz: 1.5rem;
-    --accent: var(--gold);
+    --accent: var(--primary);
     display: inline-block;
     flex: none;
     inline-size: var(--sz);
@@ -1187,7 +1189,7 @@
     border: var(--bw-2) solid var(--line-hi);
     border-block-start-color: var(--accent);
     border-inline-end-color: var(--accent);
-    animation: spinner .8s steps(8) infinite;
+    animation: spinner .7s linear infinite;
 
     &.sm {
       --sz: 1rem;
@@ -1210,8 +1212,8 @@
      hard shadow. Accent-ready; focus comes from the global :focus-visible.
      (Thumb centering needs physical margin-top — a known vendor hack.)         */
   .range {
-    --accent: var(--gold);
-    --accent-d: var(--gold-d);
+    --accent: var(--primary);
+    --accent-d: var(--primary-d);
     --track-h: .5rem;
     --thumb: 1.15rem;
     inline-size: 100%;
@@ -1262,8 +1264,8 @@
   /* a row of connected buttons; the pressed one fills with the accent. Put
      role="group" on the wrapper and aria-pressed="true" on the active button. */
   .segment {
-    --accent: var(--gold);
-    --accent-d: var(--gold-d);
+    --accent: var(--primary);
+    --accent-d: var(--primary-d);
     display: inline-flex;
     background: var(--panel);
     border: var(--bw-2) solid var(--line-hi);
@@ -1306,8 +1308,8 @@
   /* stage progression: <ol class="steps"> of <li>. Mark cleared stages .done
      and the active one [aria-current] — reads as NES "STAGE 1 · 2 · 3".        */
   .steps {
-    --accent: var(--gold);
-    --accent-d: var(--gold-d);
+    --accent: var(--primary);
+    --accent-d: var(--primary-d);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -1422,6 +1424,7 @@
   /* read-only score: a row of star glyphs filled up to .on. Gold by default;
      give the wrapper an aria-label ("4 of 5") so it isn't colour-only.         */
   .rating {
+    /* gold stars by convention (reward), not the green primary */
     --accent: var(--gold);
     display: inline-flex;
     gap: var(--sp-1);
@@ -1438,7 +1441,7 @@
   /* native <dialog class="drawer"> that slides in from the inline-end edge.
      Open with el.showModal(); add .start to slide from the inline-start.       */
   .drawer {
-    --accent: var(--gold);
+    --accent: var(--primary);
     position: fixed;
     inset-block: 0;
     inset-inline-end: 0;
@@ -1458,7 +1461,7 @@
     }
 
     &[open] {
-      animation: drawer-in var(--dur-mid) var(--ease-step);
+      animation: drawer-in var(--dur-mid) var(--ease);
     }
 
     &.start {
@@ -1469,7 +1472,7 @@
     }
 
     &.start[open] {
-      animation: drawer-in-start var(--dur-mid) var(--ease-step);
+      animation: drawer-in-start var(--dur-mid) var(--ease);
     }
 
     & .head {

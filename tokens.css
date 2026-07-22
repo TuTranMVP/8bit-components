@@ -102,6 +102,13 @@
     /* ink drawn ON TOP of a solid accent (never white on gold/green/cyan) */
     --ink-on-accent: #0a0a1a;
 
+    /* ---- primary = the go / active color. Green (success) by design so the
+       palette maps to intuition: green = primary/positive, gold = warn/reward,
+       red = error. Every component's default --accent points here — retheme in
+       one line. ---- */
+    --primary: var(--good);
+    --primary-d: var(--good-d);
+
     /* ---- typography roles: 2 faces, deliberate pairing ---- */
     --font-mono: "IoskeleyMono", ui-monospace, "Cascadia Code", Menlo, monospace;
     --font-body: "Space Grotesk", system-ui, -apple-system, sans-serif;
@@ -158,14 +165,18 @@
     --sh-5: 6px 6px 0 var(--line);
     /* hero / big card */
 
-    /* ---- motion: pixel-stepped, not smooth ---- */
-    --dur-fast: .1s;
+    /* ---- motion: smooth & high-FPS. Short durations + a single ease-out curve.
+       Prefer animating transform/opacity (compositor-only) for 60fps+ feel. ---- */
+    --dur-fast: .12s;
+    /* hover / press micro-motion */
     --dur-mid: .2s;
-    --dur-slow: .4s;
-    --ease-step: steps(3);
-    /* chrome moves in ticks */
-    --ease-fill: steps(8);
-    /* XP bar fills in blocks */
+    /* enters / toasts */
+    --dur-slow: .34s;
+    /* progress fills */
+    --ease: cubic-bezier(.22, 1, .36, 1);
+    /* ease-out (quint) — snappy start, soft landing */
+    --ease-fill: cubic-bezier(.22, 1, .36, 1);
+    /* progress glides, no stutter */
 
     /* ---- form controls: one height, everything aligns to it ---- */
     --ctrl-h: 2.25rem;

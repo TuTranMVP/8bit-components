@@ -57,8 +57,8 @@
       gap: var(--sp-4);
       block-size: var(--top-h);
       padding-inline: var(--sp-4);
-      background: color-mix(in srgb, var(--screen) 94%, transparent);
-      backdrop-filter: blur(6px);
+      background: var(--screen);
+      /* opaque (no backdrop-filter) → the sticky bar never repaints on scroll */
       border-block-end: var(--bw) solid var(--line-hi);
     }
 
@@ -103,7 +103,7 @@
     }
 
     .top-link:hover {
-      color: var(--gold);
+      color: var(--primary);
     }
 
     .menu-btn {
@@ -136,7 +136,7 @@
     }
 
     .langbtn[aria-pressed="true"] {
-      background: var(--gold);
+      background: var(--primary);
       color: var(--ink-on-accent);
     }
 
@@ -168,7 +168,7 @@
       font-size: var(--fs-label);
       text-transform: uppercase;
       letter-spacing: var(--ls-chrome);
-      color: var(--gold);
+      color: var(--primary);
     }
 
     .navlink {
@@ -191,9 +191,9 @@
     }
 
     .navlink[aria-current="page"] {
-      color: var(--gold);
-      border-inline-start-color: var(--gold);
-      background: color-mix(in srgb, var(--gold) 10%, transparent);
+      color: var(--primary);
+      border-inline-start-color: var(--primary);
+      background: color-mix(in srgb, var(--primary) 10%, transparent);
     }
 
     .navlink .tag {
@@ -217,20 +217,19 @@
     }
 
     .doc-page {
-      animation: power-on .2s steps(3);
+      animation: power-on .24s var(--ease);
     }
 
+    /* smooth fade + slight rise (transform/opacity only → composited, 60fps+) */
     @keyframes power-on {
-      0% {
-        opacity: .2
+      from {
+        opacity: 0;
+        transform: translateY(6px);
       }
 
-      55% {
-        opacity: .65
-      }
-
-      100% {
-        opacity: 1
+      to {
+        opacity: 1;
+        transform: none;
       }
     }
 
@@ -244,7 +243,7 @@
     }
 
     .doc-cat {
-      color: var(--gold);
+      color: var(--primary);
     }
 
     .doc-lead {
@@ -376,7 +375,7 @@
       font-size: var(--fs-label);
       text-transform: uppercase;
       letter-spacing: var(--ls-chrome);
-      color: var(--gold);
+      color: var(--primary);
     }
 
     .toc-link {
@@ -399,8 +398,8 @@
     }
 
     .toc-link[aria-current="true"] {
-      color: var(--gold);
-      border-inline-start-color: var(--gold);
+      color: var(--primary);
+      border-inline-start-color: var(--primary);
     }
 
     /* ---- drop the TOC rail before it crowds the content ---- */
@@ -428,7 +427,7 @@
         inline-size: min(82vw, 300px);
         background: var(--screen);
         transform: translateX(-100%);
-        transition: transform var(--dur-mid) var(--ease-step);
+        transition: transform var(--dur-mid) var(--ease);
       }
 
       body[data-nav-open] .side {

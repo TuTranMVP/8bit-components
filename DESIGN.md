@@ -45,10 +45,13 @@ high-contrast — well above WCAG AA on `--panel`.
 | `--blue` `--gold` `--cyan` `--purple` | `#5c94fc` `#fbd000` `#33e0e0` `#b357e0` | brand accents                            |
 | `--lime` `--teal` `--indigo` `--pink` `--steel` | `#b8e62e` `#2ad8b8` `#7c7cff` `#ff6ec7` `#9aa2d8` | extended-wheel accents (fill the hue gaps) |
 | `--good` `--warn` `--crit`            | `#56d364` `#ff9e2c` `#e6394a`           | success / caution / error                |
+| `--primary` `--primary-d`             | → `--good` `--good-d`                   | the go/active color (green)              |
 | `--ink-on-accent`                     | `#0a0a1a`                               | dark ink drawn **on** a solid accent     |
 
 **Rules.** Never white text on gold/green/cyan — use `--ink-on-accent`. Accents are for meaning,
-never decoration. Semantic (`good/warn/crit`) stays separate from brand.
+never decoration. **`--primary` is green (`--good`)** so the palette maps to intuition —
+green = primary/positive, gold = warn/highlight, red = error; every component's default `--accent`
+points at `--primary`, so retheme in one line. Semantic (`good/warn/crit`) stays separate from brand.
 
 **Borders vs shadows (important).** `--line` (`#000`) is for **offset shadows only** — it's
 invisible as a border on the dark ground. The border **on a filled/selected element** must be the
@@ -97,8 +100,10 @@ interactive elements drop to `--sh-1` and `translate(2px,2px)` — the press.
 
 ### Motion
 
-`steps()` only — movement ticks like a sprite sheet; smooth easing is banned (`--ease-step`,
-`--ease-fill`). Durations `--dur-fast/-mid/-slow`. Every animation must no-op under
+**Smooth & high-FPS.** One ease-out curve — `--ease` (`cubic-bezier(.22,1,.36,1)`) and `--ease-fill`.
+Animate `transform`/`opacity` where possible (compositor-only → 60fps+); avoid transitioning
+layout/paint props on scroll (the docs topbar is opaque, no `backdrop-filter`). Loaders spin
+`linear`. Durations `--dur-fast/-mid/-slow`. Every animation must no-op under
 `prefers-reduced-motion: reduce` (handled globally in `base.css`).
 
 ### Spacing
@@ -157,7 +162,7 @@ Words are design material — they help someone use the thing.
 |----------------------------------------|-------------------------------------------------|
 | Square surfaces everywhere, buttons too | Add `border-radius`, or chamfer a control      |
 | Hard shadow (`Npx Npx 0`, black)       | Soft/blurred shadows or glows                   |
-| `steps()` motion; honor reduced-motion | Smooth easing; motion over text                 |
+| Smooth `--ease` on transform/opacity   | Janky `steps()` easing; animating layout/paint  |
 | Bright text on a solid ground          | Text over a scanline/striped layer              |
 | One `data-accent` per block            | Multiple competing accents; color as decoration |
 | `--ink-on-accent` on solid accents     | White text on gold/green/cyan                   |
@@ -203,7 +208,7 @@ formats/lints JS (`elements.js`); CSS + `demo.html`/`docs.*` are ignored (see `b
    class-based selector fighting over the same property (a classic source of padding/margin
    cancellation). Scope internals under the parent (`.card .title`, not a bare `.title`).
 3. **Signature check.** Square surface + hard black border + hard shadow; press-in on interactive
-   controls. No radius, no chamfer. Motion in `steps()`.
+   controls. No radius, no chamfer. Motion smooth (`--ease`, transform/opacity).
 4. **Accent-ready.** Default `--accent` locally; let `data-accent` override.
 5. **A11y.** Native element if one exists; visible focus; ARIA to fill gaps; reduced-motion safe.
 6. **Document it** as a page in `docs.js` (desc · live preview · usage · API table · a11y note).

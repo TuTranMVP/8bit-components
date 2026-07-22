@@ -46,7 +46,7 @@ export type Accent =
 
 /** Options for {@link toast}. */
 export interface ToastOptions {
-  /** Accent name mapped in base.css (`gold` default). */
+  /** Accent name mapped in base.css (`good`/green default — the primary accent). */
   accent?: Accent;
   /** Auto-dismiss delay in ms; `0` keeps it until removed. Default 3200. */
   timeout?: number;
