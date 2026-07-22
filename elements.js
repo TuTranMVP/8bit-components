@@ -398,6 +398,50 @@ class MvpTabs extends HTMLElement {
   }
 }
 
+/* ========================================================================== */
+/*  <mvp-code>  —  drop-in syntax highlight + copy. Hides all complexity:      */
+/*  <mvp-code>{ "model": "haiku" }</mvp-code>  → highlighted, copyable.         */
+/*  One tiny universal tokenizer (comments · strings · tags · numbers · keys); */
+/*  no language attr, no dependency. Escape < in raw markup, or it's parsed.    */
+/* ========================================================================== */
+const _cesc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const _cre =
+  /(\/\*[\s\S]*?\*\/|\/\/[^\n]*|<!--[\s\S]*?-->)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`)|(<\/?[A-Za-z][\w-]*|\/?>)|(\b\d[\d._]*\b)|(\b(?:const|let|var|function|return|import|export|from|default|new|class|extends|async|await|if|else|for|of|in|true|false|null|undefined|this)\b)/g;
+export function highlightCode(code) {
+  let out = "";
+  let last = 0;
+  let m = _cre.exec(code);
+  while (m) {
+    out += _cesc(code.slice(last, m.index));
+    const cls = m[1] ? "t-com" : m[2] ? "t-str" : m[3] ? "t-key" : m[4] ? "t-num" : "t-sel";
+    out += `<span class="${cls}">${_cesc(m[0])}</span>`;
+    last = m.index + m[0].length;
+    if (_cre.lastIndex === m.index) _cre.lastIndex++;
+    m = _cre.exec(code);
+  }
+  _cre.lastIndex = 0;
+  return out + _cesc(code.slice(last));
+}
+
+class MvpCode extends HTMLElement {
+  connectedCallback() {
+    if (this._done) return;
+    this._done = true;
+    const raw = this.textContent.replace(/^\n+/, "").replace(/\s+$/, "");
+    this.innerHTML =
+      `<div class="codeblock"><button class="cp" type="button" aria-label="Copy code">COPY</button>` +
+      `<pre>${highlightCode(raw)}</pre></div>`;
+    this.querySelector(".cp").addEventListener("click", (e) => {
+      const btn = e.currentTarget;
+      navigator.clipboard?.writeText(raw);
+      btn.textContent = "COPIED!";
+      setTimeout(() => {
+        btn.textContent = "COPY";
+      }, 900);
+    });
+  }
+}
+
 /* ------------------------------------------------------------- self-register */
 const defs = {
   "mvp-sound": MvpSound,
@@ -405,6 +449,7 @@ const defs = {
   "mvp-hud": MvpHud,
   "mvp-quiz": MvpQuiz,
   "mvp-tabs": MvpTabs,
+  "mvp-code": MvpCode,
 };
 for (const [tag, cls] of Object.entries(defs)) {
   if (!customElements.get(tag)) customElements.define(tag, cls);

@@ -34,8 +34,8 @@ const UI = {
 
 /* --------------------------------------------------------------- helpers */
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-const cb = (code) =>
-  `<div class="codeblock"><button class="cp" type="button" aria-label="Copy code">COPY</button><pre>${esc(code)}</pre></div>`;
+// abstraction: <mvp-code> highlights + wires copy itself — docs just hand it code.
+const cb = (code) => `<mvp-code>${esc(code)}</mvp-code>`;
 const stage = (cap, html, mod = "") => `<div class="stage ${mod}" data-cap="${cap}">${html}</div>`;
 const h2 = (t) => `<h2 class="doc-h2">${t}</h2>`;
 const p = (t) => `<p class="doc-p">${t}</p>`;
@@ -312,6 +312,101 @@ import "@yourscope/8bit-dopamine/components.css";`,
           <div class="callout tip"><b>Nên.</b> Đổi màu qua <code>data-accent</code> và sửa giá trị trong <code>tokens.css</code>.</div>
           <div class="callout gotcha"><b>Không.</b> Hard-code hex hay thêm <code>border-radius</code> trong component — nó phá vỡ hợp đồng.</div>
         </div>`,
+    },
+  },
+  {
+    id: "colors",
+    cat: { en: "Getting Started", vi: "Bắt đầu" },
+    name: { en: "Colors", vi: "Bảng màu" },
+    desc: {
+      en: "The full palette. Grounds, ink, and a base + deep pair for every brand and semantic accent — all tokens in tokens.css.",
+      vi: "Toàn bộ bảng màu. Nền, chữ, và cặp base + deep cho mọi màu thương hiệu và ngữ nghĩa — đều là token trong tokens.css.",
+    },
+    body: {
+      en: () =>
+        p(
+          "Every color is a token. Each accent ships a <b>base</b> and a <b>deep (-d)</b> — deep is for hover, borders on a fill, gradients, and charts.",
+        ) +
+        h2("Grounds") +
+        swatches([
+          ["--bg", "#07071c", "cabinet"],
+          ["--screen", "#0a0a24", "page"],
+          ["--panel", "#15153f", "card"],
+          ["--panel-2", "#1c1c56", "control"],
+          ["--slot", "#0d0d2b", "recessed"],
+        ]) +
+        h2("Ink") +
+        swatches([
+          ["--ink", "#f8f9ff", "titles"],
+          ["--text", "#e8eaff", "body"],
+          ["--muted", "#c2c6f3", "labels"],
+          ["--dim", "#a7ace1", "hints"],
+        ]) +
+        h2("Brand") +
+        swatches([
+          ["--blue", "#5c94fc", "primary"],
+          ["--blue-d", "#2f4fb0", "hover / border"],
+          ["--gold", "#fbd000", "CTA · XP"],
+          ["--gold-d", "#c99700", "hover / border"],
+          ["--cyan", "#33e0e0", "info · code"],
+          ["--cyan-d", "#1f9e9e", "hover / border"],
+          ["--purple", "#b357e0", "special"],
+          ["--purple-d", "#7d33a8", "hover / border"],
+        ]) +
+        h2("Semantic") +
+        swatches([
+          ["--good", "#56d364", "success"],
+          ["--good-d", "#2f9e3f", "hover / border"],
+          ["--warn", "#ff9e2c", "caution"],
+          ["--warn-d", "#c46e00", "hover / border"],
+          ["--crit", "#e6394a", "error"],
+          ["--crit-d", "#a81f2e", "hover / border"],
+        ]) +
+        p(
+          "Draw dark ink on any solid accent with <code>--ink-on-accent</code> — never white on gold/green/cyan.",
+        ),
+      vi: () =>
+        p(
+          "Mọi màu đều là token. Mỗi accent có <b>base</b> và <b>deep (-d)</b> — deep dùng cho hover, viền trên nền tô, gradient và biểu đồ.",
+        ) +
+        h2("Nền") +
+        swatches([
+          ["--bg", "#07071c", "cabinet"],
+          ["--screen", "#0a0a24", "trang"],
+          ["--panel", "#15153f", "card"],
+          ["--panel-2", "#1c1c56", "control"],
+          ["--slot", "#0d0d2b", "chìm"],
+        ]) +
+        h2("Chữ") +
+        swatches([
+          ["--ink", "#f8f9ff", "tiêu đề"],
+          ["--text", "#e8eaff", "thân"],
+          ["--muted", "#c2c6f3", "nhãn"],
+          ["--dim", "#a7ace1", "gợi ý"],
+        ]) +
+        h2("Thương hiệu") +
+        swatches([
+          ["--blue", "#5c94fc", "chính"],
+          ["--blue-d", "#2f4fb0", "hover / viền"],
+          ["--gold", "#fbd000", "CTA · XP"],
+          ["--gold-d", "#c99700", "hover / viền"],
+          ["--cyan", "#33e0e0", "info · code"],
+          ["--cyan-d", "#1f9e9e", "hover / viền"],
+          ["--purple", "#b357e0", "đặc biệt"],
+          ["--purple-d", "#7d33a8", "hover / viền"],
+        ]) +
+        h2("Ngữ nghĩa") +
+        swatches([
+          ["--good", "#56d364", "thành công"],
+          ["--good-d", "#2f9e3f", "hover / viền"],
+          ["--warn", "#ff9e2c", "cảnh báo"],
+          ["--warn-d", "#c46e00", "hover / viền"],
+          ["--crit", "#e6394a", "lỗi"],
+          ["--crit-d", "#a81f2e", "hover / viền"],
+        ]) +
+        p(
+          "Vẽ chữ tối trên mọi nền accent bằng <code>--ink-on-accent</code> — đừng để chữ trắng trên gold/green/cyan.",
+        ),
     },
   },
 ];
@@ -1505,21 +1600,51 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
     cat: "Data",
     name: "Code block",
     desc: {
-      en: "Copyable code sample. The COPY button lifts the text to the clipboard.",
-      vi: "Mẫu code copy được. Nút COPY đưa nội dung lên clipboard.",
+      en: "Drop code in — <mvp-code> highlights it and wires the copy button. No manual markup, no dependency.",
+      vi: "Bỏ code vào — <mvp-code> tự tô màu và gắn nút copy. Không markup thủ công, không phụ thuộc.",
     },
     body: {
       en: () =>
+        stage(
+          "MVP-CODE",
+          `<mvp-code style="inline-size:100%">{
+  "model": "claude-haiku-4-5",
+  "maxOutputTokens": 512,
+  "temperature": 0
+}</mvp-code>`,
+          "col",
+        ) +
+        cb(`<mvp-code>
+{ "model": "claude-haiku-4-5" }
+</mvp-code>`) +
+        h2("Manual control") +
+        p(
+          "Need full control? Use <code>.codeblock</code> and wrap tokens yourself: <code>.t-sel .t-key .t-str .t-num .t-com .t-at .t-fn</code>.",
+        ) +
         codeStage("// clamp the token budget") +
-        p("Wrap syntax in token spans for colour: <code>.t-sel .t-key .t-str .t-num .t-com .t-at .t-fn</code>.") +
         a11y(
-          "The copy control is a real <code>&lt;button&gt;</code> with a label. Give long samples a heading or caption for context.",
+          "Both variants use a real <code>&lt;button&gt;</code> to copy. Escape <code>&lt;</code> in raw markup you pass to <code>&lt;mvp-code&gt;</code>, or the browser parses it as elements.",
         ),
       vi: () =>
+        stage(
+          "MVP-CODE",
+          `<mvp-code style="inline-size:100%">{
+  "model": "claude-haiku-4-5",
+  "maxOutputTokens": 512,
+  "temperature": 0
+}</mvp-code>`,
+          "col",
+        ) +
+        cb(`<mvp-code>
+{ "model": "claude-haiku-4-5" }
+</mvp-code>`) +
+        h2("Tùy biến thủ công") +
+        p(
+          "Cần kiểm soát hoàn toàn? Dùng <code>.codeblock</code> và tự bọc token: <code>.t-sel .t-key .t-str .t-num .t-com .t-at .t-fn</code>.",
+        ) +
         codeStage("// kẹp ngân sách token") +
-        p("Bọc cú pháp trong các span token để tô màu: <code>.t-sel .t-key .t-str .t-num .t-com .t-at .t-fn</code>.") +
         a11y(
-          "Nút copy là <code>&lt;button&gt;</code> thật có nhãn. Mẫu code dài nên có tiêu đề hoặc chú thích để có ngữ cảnh.",
+          "Cả hai cách đều dùng <code>&lt;button&gt;</code> thật để copy. Escape <code>&lt;</code> trong markup thô đưa vào <code>&lt;mvp-code&gt;</code>, nếu không trình duyệt sẽ hiểu là element.",
         ),
     },
   },
@@ -1618,6 +1743,19 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
 ];
 
 /* --------------------------------------- shared, language-neutral demos */
+function swatch(v, hex, use) {
+  return `<div style="display:flex;align-items:center;gap:var(--sp-3)">
+    <span style="inline-size:2.25rem;block-size:2.25rem;flex:none;background:var(${v});border:var(--bw-2) solid var(--line);box-shadow:var(--sh-2)"></span>
+    <div style="min-inline-size:0">
+      <div class="mono" style="color:var(--ink);font-size:var(--fs-chip)">${v}</div>
+      <div class="mono" style="color:var(--dim);font-size:var(--fs-label)">${hex}${use ? " · " + use : ""}</div>
+    </div>
+  </div>`;
+}
+function swatches(items) {
+  return `<div class="grid-cards">${items.map((it) => swatch(it[0], it[1], it[2])).join("")}</div>`;
+}
+
 function accentStage() {
   return stage(
     "data-accent",
@@ -1806,7 +1944,7 @@ function render(id) {
   pageEl.innerHTML = `<div class="doc-page">
       <span class="eyebrow doc-cat">${tr(pg.cat)}</span>
       <h1>${tr(pg.name)}</h1>
-      <p class="doc-lead">${tr(pg.desc)}</p>
+      <p class="doc-lead">${esc(tr(pg.desc))}</p>
       ${body}
       ${foot}
     </div>`;
@@ -1857,7 +1995,8 @@ document.addEventListener("click", (e) => {
     return;
   }
   const cp = e.target.closest(".cp");
-  if (cp) {
+  if (cp && !cp.closest("mvp-code")) {
+    // <mvp-code> wires its own copy; only handle manual .codeblock here.
     const pre = cp.parentElement.querySelector("pre");
     navigator.clipboard?.writeText(pre.innerText);
     const was = cp.textContent;

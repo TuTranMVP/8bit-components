@@ -111,11 +111,14 @@
     color: var(--ink-on-accent);
   }
 
-  /* ---- focus: never a blurry outline — flip the border to gold ---- */
+  /* ---- focus: gold edge that never changes the element's size or elevation.
+     border-color flips (same width) + an INSET outline (no layout/footprint
+     change) — and we deliberately DON'T touch box-shadow, so the component
+     keeps its hard shadow. Consistent for every control. ---- */
   :where(a, button, input, select, textarea, [tabindex]):focus-visible {
-    outline: none;
+    outline: var(--bw-2) solid var(--gold);
+    outline-offset: calc(-1 * var(--bw-2));
     border-color: var(--gold);
-    box-shadow: 0 0 0 var(--bw-2) var(--gold);
   }
 
   /* ---- custom scrollbar ---- */

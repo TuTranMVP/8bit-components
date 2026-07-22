@@ -40,6 +40,9 @@ export interface ToastOptions {
 /** Show a transient toast (auto-creates a live-region host on first call). */
 export declare function toast(msg: string, opts?: ToastOptions): HTMLElement;
 
+/** Highlight code to HTML with `.t-*` token spans (used by <mvp-code>). */
+export declare function highlightCode(code: string): string;
+
 /* ---- custom elements ---- */
 
 export declare class MvpSoundElement extends HTMLElement {}
@@ -50,6 +53,7 @@ export declare class MvpHudElement extends HTMLElement {
 }
 export declare class MvpQuizElement extends HTMLElement {}
 export declare class MvpTabsElement extends HTMLElement {}
+export declare class MvpCodeElement extends HTMLElement {}
 
 /** Detail of the `mvp:answer` event bubbled by <mvp-quiz>. */
 export interface MvpAnswerDetail {
@@ -64,6 +68,7 @@ declare global {
     "mvp-hud": MvpHudElement;
     "mvp-quiz": MvpQuizElement;
     "mvp-tabs": MvpTabsElement;
+    "mvp-code": MvpCodeElement;
   }
   interface DocumentEventMap {
     "mvp:xp": CustomEvent<{ amount: number }>;

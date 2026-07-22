@@ -66,25 +66,25 @@
     --dim: #a7ace1;
     /* scope, hints, captions */
 
-    /* ---- brand accents: spend boldness here, 3 only ---- */
+    /* ---- brand palette: each accent = base + deep pair.
+       base   → fills, dots, bars, text-on-dark
+       -d     → hover / pressed / borders-on-fill / gradients / charts ---- */
     --blue: #5c94fc;
-    --blue-d: #2f4fb0;
-    /* primary (Mario sky) */
+    --blue-d: #2f4fb0;    /* primary (Mario sky) */
     --gold: #fbd000;
-    --gold-d: #c99700;
-    /* XP / highlight / eyebrow / CTA */
+    --gold-d: #c99700;    /* XP / highlight / eyebrow / CTA */
     --cyan: #33e0e0;
-    /* code / gem / info */
+    --cyan-d: #1f9e9e;    /* code / gem / info */
     --purple: #b357e0;
-    /* special / magic */
+    --purple-d: #7d33a8;  /* special / magic */
 
-    /* ---- semantic status: TALKS meaning, kept apart from brand ---- */
+    /* ---- semantic palette: same base + deep contract, kept apart from brand ---- */
     --good: #56d364;
-    /* active / success / stage clear */
+    --good-d: #2f9e3f;    /* active / success / stage clear */
     --warn: #ff9e2c;
-    /* pending / caution */
+    --warn-d: #c46e00;    /* pending / caution */
     --crit: #e6394a;
-    /* critical / error / blocked / boss */
+    --crit-d: #a81f2e;    /* critical / error / blocked / boss */
 
     /* ink drawn ON TOP of a solid accent (never white on gold/green/cyan) */
     --ink-on-accent: #0a0a1a;

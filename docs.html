@@ -280,6 +280,14 @@
       justify-content: center;
     }
 
+    /* flex items default to min-width:auto and refuse to shrink — that lets a
+       long code line blow out the whole column. Let them shrink; inner
+       overflow (pre/table) scrolls instead. */
+    .stage>* {
+      min-inline-size: 0;
+      max-inline-size: 100%;
+    }
+
     .stage::before {
       content: attr(data-cap);
       position: absolute;
@@ -296,8 +304,9 @@
 
     .grid-cards {
       display: grid;
-      gap: var(--sp-4);
+      gap: var(--sp-5);
       grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+      margin-block: var(--sp-2);
     }
 
     .catrow {
@@ -357,8 +366,35 @@
         display: inline-flex;
       }
 
-      .topbar .search {
+      /* declutter the top bar on phones — keep brand · lang · sound */
+      .topbar {
+        gap: var(--sp-2);
+        padding-inline: var(--sp-3);
+      }
+
+      .topbar .search,
+      .top-links,
+      .topbar .badge {
         display: none;
+      }
+
+      /* the sound toggle is decorative chrome — drop it on phones so
+         brand · language switch always fit cleanly */
+      .topbar mvp-sound {
+        display: none;
+      }
+
+      /* bigger tap targets in the drawer */
+      .navlink {
+        padding-block: var(--sp-3);
+      }
+
+      .content {
+        padding: var(--sp-5) var(--sp-4);
+      }
+
+      .doc-lead {
+        font-size: 1rem;
       }
     }
   </style>

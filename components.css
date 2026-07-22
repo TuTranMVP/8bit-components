@@ -175,7 +175,7 @@
     background: var(--accent);
     border: var(--bw-2) solid var(--line);
     box-shadow: var(--sh-2);
-    padding: .1em .55em;
+    padding: 0.3rem 0.5rem;
     line-height: var(--lh-tight);
 
     &.todo {
@@ -236,8 +236,16 @@
     }
   }
 
+  /* custom elements are inline by default — make the block-level ones fill
+     their container so long code scrolls INSIDE (no page-wide overflow). */
+  mvp-code,
+  mvp-tabs {
+    display: block;
+  }
+
   /* --------------------------------------------------------------- CODE BLOCK */
   .codeblock {
+    max-inline-size: 100%;
     position: relative;
     background: var(--slot);
     border: var(--bw) solid var(--line);
@@ -1057,6 +1065,32 @@
     from {
       opacity: 0;
       transform: translateY(10px);
+    }
+  }
+
+  /* ---- touch targets: on coarse pointers, controls grow to a ~44px tap zone
+     (WCAG 2.5.8). Sizes only bump up, so nothing shifts on desktop. ---- */
+  @media (pointer: coarse) {
+
+    .btn,
+    .select,
+    .input {
+      min-block-size: 2.75rem;
+    }
+
+    .chip,
+    .pg {
+      min-block-size: 2.5rem;
+    }
+
+    .checkbox,
+    .radio {
+      inline-size: 1.4rem;
+      block-size: 1.4rem;
+    }
+
+    .menuitem {
+      padding-block: var(--sp-3);
     }
   }
 }
