@@ -78,6 +78,19 @@
     --purple: #b357e0;
     --purple-d: #7d33a8;  /* special / magic */
 
+    /* ---- extended wheel: fills the hue gaps so `data-accent` spans the circle.
+       Same base + -d contract; each vivid enough for --ink-on-accent on the fill. */
+    --lime: #b8e62e;
+    --lime-d: #75980f;    /* fresh / eco / level-up */
+    --teal: #2ad8b8;
+    --teal-d: #158f78;    /* calm info / secondary */
+    --indigo: #7c7cff;
+    --indigo-d: #4a45c8;  /* deep primary / link */
+    --pink: #ff6ec7;
+    --pink-d: #c23d90;    /* playful / accent-2 / like */
+    --steel: #9aa2d8;
+    --steel-d: #565d95;   /* neutral chip / muted tag */
+
     /* ---- semantic palette: same base + deep contract, kept apart from brand ---- */
     --good: #56d364;
     --good-d: #2f9e3f;    /* active / success / stage clear */

@@ -37,14 +37,14 @@ Or granular: `@yourscope/8bit-dopamine/tokens.css`, `.../base.css`, `.../compone
 
 ### Component catalog
 
-| Category   | Components                                                           |
-|------------|----------------------------------------------------------------------|
-| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator              |
-| Form       | Input · Textarea · Select · Checkbox · Radio · Switch · Field        |
-| Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast           |
-| Navigation | Tabs (`<mvp-tabs>`) · Breadcrumb · Pagination                        |
-| Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) |
-| Data       | Table · Code block · Accordion (`<mvp-collapsible>`) · Stat          |
+| Category   | Components                                                                     |
+|------------|--------------------------------------------------------------------------------|
+| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator                        |
+| Form       | Input · Textarea · Select · Checkbox · Radio · Switch · Field · Range · Segmented control |
+| Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast · Spinner · Meter · Empty state |
+| Navigation | Tabs (`<mvp-tabs>`) · Breadcrumb · Pagination · Steps                          |
+| Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) |
+| Data       | Table · Code block · Accordion (`<mvp-collapsible>`) · Stat · Rating           |
 
 Run the docs site locally with `pnpm demo`, then open `/docs.html`.
 

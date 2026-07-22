@@ -36,10 +36,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YOURUSER/8bit-dopamine.git"
+    "url": "git+https://github.com/TuTranMVP/8bit-components.git"
   },
-  "homepage": "https://github.com/YOURUSER/8bit-dopamine#readme",
-  "bugs": "https://github.com/YOURUSER/8bit-dopamine/issues",
+  "homepage": "https://github.com/TuTranMVP/8bit-components#readme",
+  "bugs": "https://github.com/TuTranMVP/8bit-components/issues",
   "keywords": [
     "design-system",
     "design-tokens",

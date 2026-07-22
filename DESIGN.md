@@ -14,8 +14,9 @@ by design (plain CSS + light-DOM web components; no build step).
 
 1. **One source of truth.** Every color, size, shadow, and motion value lives in `tokens.css`.
    Change the look there — never hard-code a value inside a component.
-2. **One accent per block.** Set `data-accent="blue|gold|cyan|purple|good|warn|crit"` on a
-   container; the button, card, chip, and badge inside inherit `--accent`. Color carries meaning.
+2. **One accent per block.** Set `data-accent` (brand `blue|gold|cyan|purple|lime|teal|indigo|pink|steel`
+   or semantic `good|warn|crit`) on a container; the button, card, chip, and badge inside inherit
+   `--accent`. Color carries meaning.
 3. **Spend boldness in one place.** The **button** is the signature (bevel + press). Everything
    else stays quiet so the page reads, not shouts.
 4. **Crisp over cute.** If an effect softens text or an edge, it loses. Sharpness wins.
@@ -42,6 +43,7 @@ high-contrast — well above WCAG AA on `--panel`.
 | `--ink` / `--text`                    | `#f8f9ff` / `#e8eaff`                   | titles·numbers / body                    |
 | `--muted` / `--dim`                   | `#c2c6f3` / `#a7ace1`                   | labels·meta / hints·captions             |
 | `--blue` `--gold` `--cyan` `--purple` | `#5c94fc` `#fbd000` `#33e0e0` `#b357e0` | brand accents                            |
+| `--lime` `--teal` `--indigo` `--pink` `--steel` | `#b8e62e` `#2ad8b8` `#7c7cff` `#ff6ec7` `#9aa2d8` | extended-wheel accents (fill the hue gaps) |
 | `--good` `--warn` `--crit`            | `#56d364` `#ff9e2c` `#e6394a`           | success / caution / error                |
 | `--ink-on-accent`                     | `#0a0a1a`                               | dark ink drawn **on** a solid accent     |
 
@@ -163,14 +165,14 @@ Words are design material — they help someone use the thing.
 
 ## 7 · Component catalog
 
-| Category   | Components                                                           |
-|------------|----------------------------------------------------------------------|
-| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator              |
-| Form       | Input · Textarea · Select · Checkbox · Radio · Switch · Field        |
-| Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast           |
-| Navigation | Tabs (`<mvp-tabs>`) · Breadcrumb · Pagination                        |
-| Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) |
-| Data       | Table · Code block · Accordion (`<mvp-collapsible>`) · Stat          |
+| Category   | Components                                                                     |
+|------------|--------------------------------------------------------------------------------|
+| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator                        |
+| Form       | Input · Textarea · Select · Checkbox · Radio · Switch · Field · Range · Segmented control |
+| Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast · Spinner · Meter · Empty state |
+| Navigation | Tabs (`<mvp-tabs>`) · Breadcrumb · Pagination · Steps                          |
+| Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) |
+| Data       | Table · Code block · Accordion (`<mvp-collapsible>`) · Stat · Rating           |
 
 Live docs: `pnpm demo`, then open `/docs.html`.
 
