@@ -98,6 +98,13 @@
     --ease-step:steps(3);      /* chrome moves in ticks */
     --ease-fill:steps(8);      /* XP bar fills in blocks */
 
+    /* ---- form controls: one height, everything aligns to it ---- */
+    --ctrl-h:2.25rem;          /* input / select / button-in-a-row height */
+    --ctrl-pad:var(--sp-3);    /* control inline padding */
+
+    /* ---- stacking: overlays sit above chrome, below scanlines (9999) ---- */
+    --z-overlay:100;           /* dropdown menu / tooltip / toast / dialog */
+
     /* ---- atmosphere (kept restrained · Chanel rule) ---- */
     --scanline-opacity:.06;    /* CRT lines, subtle */
     --maxw:960px;

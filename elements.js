@@ -112,6 +112,32 @@ export function grantXP(amount, srcEl) {
   if (srcEl) floatXP(srcEl, `+${amount} XP`);
 }
 
+/* ----------------------------------------------------------------- toast */
+let _toastHost = null;
+export function toast(msg, opts = {}) {
+  const { accent = "gold", timeout = 3200 } = opts;
+  if (!_toastHost) {
+    _toastHost = document.createElement("div");
+    _toastHost.className = "toast-host";
+    _toastHost.setAttribute("role", "status");
+    _toastHost.setAttribute("aria-live", "polite");
+    document.body.appendChild(_toastHost);
+  }
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.dataset.accent = accent;
+  t.innerHTML = msg;
+  _toastHost.appendChild(t);
+  bleep(SFX.coin);
+  const kill = () => {
+    t.style.transition = "opacity var(--dur-mid) steps(3)";
+    t.style.opacity = "0";
+    setTimeout(() => t.remove(), 220);
+  };
+  if (timeout) setTimeout(kill, timeout);
+  return t;
+}
+
 /* ========================================================================== */
 /*  <mvp-sound>  —  mute toggle button                                        */
 /*  <mvp-sound></mvp-sound>                                                    */
@@ -303,12 +329,82 @@ class MvpQuiz extends HTMLElement {
   }
 }
 
+/* ========================================================================== */
+/*  <mvp-tabs>  —  accessible tabs, built from children with [data-label]      */
+/*  <mvp-tabs>                                                                  */
+/*    <section data-label="Install" selected>...</section>                      */
+/*    <section data-label="Usage">...</section>                                 */
+/*  </mvp-tabs>                                                                 */
+/* ========================================================================== */
+class MvpTabs extends HTMLElement {
+  connectedCallback() {
+    const panels = [...this.children].filter((el) => el.hasAttribute("data-label"));
+    if (!panels.length) return;
+    MvpTabs._n = (MvpTabs._n || 0) + 1;
+    const uid = `tabs-${MvpTabs._n}`;
+
+    const list = document.createElement("div");
+    list.className = "tablist";
+    list.setAttribute("role", "tablist");
+
+    const tabs = panels.map((p, i) => {
+      p.classList.add("tabpanel");
+      p.setAttribute("role", "tabpanel");
+      p.id = p.id || `${uid}-p${i}`;
+      p.setAttribute("tabindex", "0");
+      const t = document.createElement("button");
+      t.className = "tab";
+      t.type = "button";
+      t.setAttribute("role", "tab");
+      t.id = `${uid}-t${i}`;
+      t.textContent = p.getAttribute("data-label");
+      t.setAttribute("aria-controls", p.id);
+      p.setAttribute("aria-labelledby", t.id);
+      list.appendChild(t);
+      return t;
+    });
+
+    const activate = (i) => {
+      tabs.forEach((t, j) => {
+        const on = j === i;
+        t.setAttribute("aria-selected", String(on));
+        t.tabIndex = on ? 0 : -1;
+        panels[j].hidden = !on;
+      });
+    };
+
+    tabs.forEach((t, i) => {
+      t.addEventListener("click", () => {
+        activate(i);
+        bleep(SFX.unlock);
+      });
+      t.addEventListener("keydown", (e) => {
+        const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (!d) return;
+        e.preventDefault();
+        const n = (i + d + tabs.length) % tabs.length;
+        activate(n);
+        tabs[n].focus();
+      });
+    });
+
+    this.prepend(list);
+    activate(
+      Math.max(
+        0,
+        panels.findIndex((p) => p.hasAttribute("selected")),
+      ),
+    );
+  }
+}
+
 /* ------------------------------------------------------------- self-register */
 const defs = {
   "mvp-sound": MvpSound,
   "mvp-collapsible": MvpCollapsible,
   "mvp-hud": MvpHud,
   "mvp-quiz": MvpQuiz,
+  "mvp-tabs": MvpTabs,
 };
 for (const [tag, cls] of Object.entries(defs)) {
   if (!customElements.get(tag)) customElements.define(tag, cls);

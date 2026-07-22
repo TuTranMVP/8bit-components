@@ -26,13 +26,27 @@ Or granular: `@yourscope/8bit-dopamine/tokens.css`, `.../base.css`, `.../compone
 
 | File | Layer | Contains | Depends on |
 |---|---|---|---|
-| `tokens.css` | source of truth | `:root` vars, 2 `@font-face`, `@layer` order | — |
+| `tokens.css` | source of truth | `:root` vars, 3 `@font-face`, `@layer` order | — |
 | `base.css` | reset + primitives | reset, focus→gold, reduced-motion, `.pixel-box` (notch), elevation, accent mapper, motion | tokens |
-| `components.css` | stateless recipes | `.btn .card .callout .badge .chip .codeblock .pbar .stat .opt` | tokens, base |
-| `elements.js` | stateful | `<mvp-quiz> <mvp-hud> <mvp-collapsible> <mvp-sound>` + `store/bleep/grantXP` | tokens, components |
+| `components.css` | stateless recipes | Element/Form/Feedback/Nav/Overlay/Data recipes (see catalog below) | tokens, base |
+| `elements.js` | stateful | `<mvp-quiz> <mvp-hud> <mvp-collapsible> <mvp-sound> <mvp-tabs>` + `store/bleep/grantXP/toast` | tokens, components |
 | `demo.html` | gallery + test | every component wired together | all |
+| `docs.html` + `docs.js` | documentation site | Nuxt-UI-style sidebar + per-component pages (Usage / preview / API / a11y) | all |
 
 **80% of the value is CSS.** `elements.js` is only for things that hold state.
+
+### Component catalog
+
+| Category | Components |
+|---|---|
+| Element | Button · Badge · Chip · Card · Avatar · Kbd · Separator |
+| Form | Input · Textarea · Select · Checkbox · Radio · Switch · Field |
+| Feedback | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast |
+| Navigation | Tabs (`<mvp-tabs>`) · Breadcrumb · Pagination |
+| Overlay | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) |
+| Data | Table · Code block · Accordion (`<mvp-collapsible>`) · Stat |
+
+Run the docs site locally with `pnpm demo`, then open `/docs.html`.
 
 ## The contract
 
@@ -101,8 +115,15 @@ import './tokens.css'; import './base.css'; import './components.css'; import '.
 </mvp-quiz>                                  <!-- correct → +XP flies into the HUD -->
 ```
 
+```html
+<mvp-tabs>                                  <!-- roving-focus tabs, arrow keys -->
+  <section data-label="Install" selected>…</section>
+  <section data-label="Usage">…</section>
+</mvp-tabs>
+```
+
 JS helpers (named exports): `store`, `bleep(seq)`, `SFX`, `setMute/isMuted`, `grantXP(n, el)`,
-`floatXP(el, text)`.
+`floatXP(el, text)`, `toast(msg, { accent, timeout })`.
 
 ## Extend
 

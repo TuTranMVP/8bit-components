@@ -29,6 +29,17 @@ export declare function floatXP(el: HTMLElement, text?: string, color?: string):
 /** Dispatch XP on the `mvp:xp` document bus (an <mvp-hud> listens) + optional floater. */
 export declare function grantXP(amount: number, srcEl?: HTMLElement): void;
 
+/** Options for {@link toast}. */
+export interface ToastOptions {
+  /** Accent name mapped in base.css (`gold` default). */
+  accent?: "blue" | "gold" | "cyan" | "purple" | "good" | "warn" | "crit";
+  /** Auto-dismiss delay in ms; `0` keeps it until removed. Default 3200. */
+  timeout?: number;
+}
+
+/** Show a transient toast (auto-creates a live-region host on first call). */
+export declare function toast(msg: string, opts?: ToastOptions): HTMLElement;
+
 /* ---- custom elements ---- */
 
 export declare class MvpSoundElement extends HTMLElement {}
@@ -38,6 +49,7 @@ export declare class MvpHudElement extends HTMLElement {
   add(amount: number): void;
 }
 export declare class MvpQuizElement extends HTMLElement {}
+export declare class MvpTabsElement extends HTMLElement {}
 
 /** Detail of the `mvp:answer` event bubbled by <mvp-quiz>. */
 export interface MvpAnswerDetail {
@@ -51,6 +63,7 @@ declare global {
     "mvp-collapsible": MvpCollapsibleElement;
     "mvp-hud": MvpHudElement;
     "mvp-quiz": MvpQuizElement;
+    "mvp-tabs": MvpTabsElement;
   }
   interface DocumentEventMap {
     "mvp:xp": CustomEvent<{ amount: number }>;
