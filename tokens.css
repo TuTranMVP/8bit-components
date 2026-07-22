@@ -7,17 +7,27 @@
 @layer tokens, base, components, utilities;
 
 /* ---- fonts: self-host woff2 subset (Latin + Vietnamese). Drop files in ./fonts ---- */
+/* ---- fonts: self-hosted woff2, Latin + Vietnamese subset (verified full VN coverage).
+   Crisp-render note: preload the two critical files in <head> for zero-FOUT:
+   <link rel="preload" as="font" type="font/woff2" href="./fonts/ioskeley-mono-400.woff2" crossorigin>
+   <link rel="preload" as="font" type="font/woff2" href="./fonts/space-grotesk-var.woff2" crossorigin> ---- */
 @font-face{
   font-family:"IoskeleyMono";
-  src:url("./fonts/ioskeley-mono.woff2") format("woff2");
-  font-weight:400 700; font-style:normal; font-display:swap;
-  unicode-range:U+0000-024F,U+0259,U+1E00-1EFF,U+2000-206F,U+2190-21FF,U+2C60-2C7F;
+  src:url("./fonts/ioskeley-mono-400.woff2") format("woff2");
+  font-weight:400; font-style:normal; font-display:swap;
+  unicode-range:U+0000-024F,U+0259,U+1E00-1EFF,U+2000-206F,U+20AB,U+2190-21FF,U+25A0-25FF;
+}
+@font-face{
+  font-family:"IoskeleyMono";
+  src:url("./fonts/ioskeley-mono-700.woff2") format("woff2");
+  font-weight:700; font-style:normal; font-display:swap;
+  unicode-range:U+0000-024F,U+0259,U+1E00-1EFF,U+2000-206F,U+20AB,U+2190-21FF,U+25A0-25FF;
 }
 @font-face{
   font-family:"Space Grotesk";
-  src:url("./fonts/space-grotesk.woff2") format("woff2");
-  font-weight:400 700; font-style:normal; font-display:swap;
-  unicode-range:U+0000-024F,U+0259,U+1E00-1EFF,U+2000-206F;
+  src:url("./fonts/space-grotesk-var.woff2") format("woff2");
+  font-weight:300 700; font-style:normal; font-display:swap;
+  unicode-range:U+0000-024F,U+0259,U+1E00-1EFF,U+2000-206F,U+20AB;
 }
 
 @layer tokens{

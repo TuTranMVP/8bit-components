@@ -1,0 +1,14 @@
+Bundled fonts — both licensed under SIL Open Font License 1.1:
+
+1. IoskeleyMono (Iosevka-based custom build)
+   Source: https://github.com/ahatem/IoskeleyMono (release v2.0.0)
+   Subset: Latin + Vietnamese + punctuation + arrows + geometric shapes
+   Files: ioskeley-mono-400.woff2, ioskeley-mono-700.woff2
+
+2. Space Grotesk (variable, wght 300-700)
+   Source: https://github.com/floriankarsten/space-grotesk
+   Subset: Latin + Vietnamese + punctuation
+   File: space-grotesk-var.woff2
+
+Subsetting: fonttools/pyftsubset, all OpenType layout features preserved.
+Full Vietnamese diacritic coverage verified post-subset.

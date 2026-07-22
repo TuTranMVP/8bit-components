@@ -31,10 +31,8 @@
   ],
   "scripts": {
     "check": "biome ci . && node --check elements.js",
-    "lint": "biome check .",
     "format": "biome check --write .",
-    "demo": "pnpm dlx serve .",
-    "release": "node -e \"const v=process.env.npm_package_version;console.log('git tag v'+v+' && git push --follow-tags')\""
+    "demo": "pnpm dlx serve ."
   },
   "repository": {
     "type": "git",

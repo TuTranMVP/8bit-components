@@ -45,15 +45,13 @@ button / card / chip downstream picks it up via `--accent`.
 Notched pixel box (`clip-path`) + hard shadow (`box-shadow: Npx Npx 0`, zero blur) + press-in on
 `:active`. That's the one memorable thing — everything else stays quiet.
 
-## Fonts (drop-in)
+## Fonts (bundled, self-hosted)
 
-Self-host two woff2 (Latin + Vietnamese subset) into `./fonts/`:
-- `ioskeley-mono.woff2` — IoskeleyMono (Iosevka build). Chrome, labels, numbers, code, JSON.
-- `space-grotesk.woff2` — Space Grotesk variable. Body (đọc tiếng Việt có dấu).
+- `fonts/ioskeley-mono-400.woff2` / `-700.woff2` — IoskeleyMono (Iosevka build): chrome, labels, numbers, code.
+- `fonts/space-grotesk-var.woff2` — Space Grotesk variable (wght 300–700): body, đọc tiếng Việt có dấu.
 
-Both are SIL OFL. `@font-face` is already declared in `tokens.css`; until the files exist the
-stack falls back to `ui-monospace` / `system-ui` (the demo does this via Google Fonts).
-
+Latin + Vietnamese subset (~171KB tổng), full diacritic coverage verified. License: `fonts/LICENSE-FONTS.txt` (SIL OFL 1.1).
+Zero-FOUT: preload 2 file critical — snippet trong comment đầu `tokens.css`.
 ## Wire it up
 
 ### Plain HTML
