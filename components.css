@@ -15,6 +15,7 @@
   /* ----------------------------------------------------------------- BUTTON */
   .btn {
     --accent: var(--gold);
+    --accent-d: var(--gold-d);
     display: inline-flex;
     align-items: center;
     gap: var(--sp-2);
@@ -25,7 +26,7 @@
     letter-spacing: var(--ls-chrome);
     color: var(--ink-on-accent);
     background: var(--accent);
-    border: var(--bw) solid var(--line);
+    border: var(--bw) solid var(--accent-d);
     box-shadow: var(--sh-3);
     padding: var(--sp-3) var(--sp-4);
     cursor: pointer;
@@ -49,6 +50,7 @@
     &:disabled {
       background: var(--panel-2);
       color: var(--dim);
+      border-color: var(--line-hi);
       box-shadow: none;
       cursor: not-allowed;
       filter: none;
@@ -72,13 +74,14 @@
     &[aria-pressed="true"] {
       background: var(--accent);
       color: var(--ink-on-accent);
-      border-color: var(--line);
+      border-color: var(--accent-d);
     }
   }
 
   /* ------------------------------------------------------------------- CARD */
   .card {
     --accent: var(--gold);
+    --accent-d: var(--gold-d);
     container-type: inline-size;
     background: var(--panel);
     border: var(--bw) solid var(--line-hi);
@@ -114,7 +117,7 @@
       font-weight: 700;
       color: var(--ink-on-accent);
       background: var(--accent);
-      border: var(--bw-2) solid var(--line);
+      border: var(--bw-2) solid var(--accent-d);
       box-shadow: var(--sh-2);
     }
 
@@ -165,6 +168,7 @@
   /* ------------------------------------------------------------------ BADGE */
   .badge {
     --accent: var(--panel-2);
+    --accent-d: var(--line-hi);
     display: inline-block;
     font-family: var(--font-mono);
     font-size: var(--fs-label);
@@ -173,7 +177,7 @@
     letter-spacing: var(--ls-chrome);
     color: var(--ink-on-accent);
     background: var(--accent);
-    border: var(--bw-2) solid var(--line);
+    border: var(--bw-2) solid var(--accent-d);
     box-shadow: var(--sh-2);
     padding: 0.3rem 0.5rem;
     line-height: var(--lh-tight);
@@ -186,20 +190,24 @@
 
     &.clear {
       --accent: var(--good);
+      --accent-d: var(--good-d);
     }
 
     &.warn {
       --accent: var(--warn);
+      --accent-d: var(--warn-d);
     }
 
     &.crit {
       --accent: var(--crit);
+      --accent-d: var(--crit-d);
     }
   }
 
   /* ------------------------------------------------------------------- CHIP */
   .chip {
     --accent: var(--gold);
+    --accent-d: var(--gold-d);
     display: inline-flex;
     align-items: baseline;
     gap: var(--sp-2);
@@ -220,7 +228,7 @@
       inline-size: .5rem;
       block-size: .5rem;
       background: var(--accent);
-      border: 1px solid var(--line);
+      border: 1px solid var(--accent-d);
     }
 
     &:active {
@@ -230,9 +238,9 @@
 
     &.active,
     &[aria-pressed="true"] {
-      background: var(--gold);
+      background: var(--accent);
       color: var(--ink-on-accent);
-      border-color: var(--line);
+      border-color: var(--accent-d);
     }
   }
 
@@ -248,7 +256,7 @@
     max-inline-size: 100%;
     position: relative;
     background: var(--slot);
-    border: var(--bw) solid var(--line);
+    border: var(--bw) solid var(--line-hi);
     box-shadow: var(--sh-3);
 
     & pre {
@@ -382,7 +390,7 @@
       font-weight: 700;
       color: var(--muted);
       background: var(--panel-2);
-      border: var(--bw-2) solid var(--line);
+      border: var(--bw-2) solid var(--line-hi);
     }
 
     &:hover {
@@ -400,6 +408,7 @@
 
       & .key {
         background: var(--good);
+        border-color: var(--good-d);
         color: var(--ink-on-accent);
       }
     }
@@ -410,6 +419,7 @@
 
       & .key {
         background: var(--crit);
+        border-color: var(--crit-d);
         color: #fff;
       }
     }
@@ -618,6 +628,7 @@
   .checkbox,
   .radio {
     --accent: var(--gold);
+    --accent-d: var(--gold-d);
     appearance: none;
     -webkit-appearance: none;
     flex: none;
@@ -633,7 +644,7 @@
 
     &:checked {
       background: var(--accent);
-      border-color: var(--line);
+      border-color: var(--accent-d);
     }
 
     &:disabled {
@@ -828,7 +839,7 @@
     &[aria-current="page"] {
       background: var(--gold);
       color: var(--ink-on-accent);
-      border-color: var(--line);
+      border-color: var(--accent-d);
       cursor: default;
     }
 
@@ -1013,7 +1024,7 @@
 
     & td {
       padding: var(--sp-3);
-      border-block-end: var(--bw-2) solid var(--line);
+      border-block-end: var(--bw-2) solid color-mix(in srgb, var(--line-hi) 45%, transparent);
       font-variant-numeric: tabular-nums;
     }
 

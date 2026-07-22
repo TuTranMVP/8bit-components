@@ -194,38 +194,50 @@
     box-shadow: var(--sh-5);
   }
 
-  /* one accent per block: sets --accent, everything downstream reads it */
+  /* one accent per block: sets --accent + its deep companion --accent-d.
+     --accent   → fills, dots, bars
+     --accent-d → the border ON a filled element (visible same-hue edge, never
+                  black-on-dark which would hide the outer edge and make a
+                  selected item read smaller than its outlined siblings). */
   [data-accent="blue"] {
     --accent: var(--blue);
+    --accent-d: var(--blue-d);
   }
 
   [data-accent="gold"] {
     --accent: var(--gold);
+    --accent-d: var(--gold-d);
   }
 
   [data-accent="cyan"] {
     --accent: var(--cyan);
+    --accent-d: var(--cyan-d);
   }
 
   [data-accent="purple"] {
     --accent: var(--purple);
+    --accent-d: var(--purple-d);
   }
 
   [data-accent="good"] {
     --accent: var(--good);
+    --accent-d: var(--good-d);
   }
 
   [data-accent="warn"] {
     --accent: var(--warn);
+    --accent-d: var(--warn-d);
   }
 
   [data-accent="crit"] {
     --accent: var(--crit);
+    --accent-d: var(--crit-d);
   }
 
   :root,
   [data-accent]:not([data-accent]) {
     --accent: var(--gold);
+    --accent-d: var(--gold-d);
   }
 
   /* default */
