@@ -1,0 +1,192 @@
+/* ==========================================================================
+   8-BIT DOPAMINE · components.css  —  stateless recipes, class-based
+   Cross-framework: plain classes, no runtime. Soft fills via color-mix().
+   Every value flows from tokens.css. Uses native CSS nesting.
+   ========================================================================== */
+
+@property --fill{ syntax:"<percentage>"; inherits:false; initial-value:0%; }
+
+@layer components{
+
+  /* ----------------------------------------------------------------- BUTTON */
+  .btn{
+    --accent:var(--gold);
+    display:inline-flex; align-items:center; gap:var(--sp-2);
+    font-family:var(--font-mono); font-size:var(--fs-chip); font-weight:700;
+    text-transform:uppercase; letter-spacing:var(--ls-chrome);
+    color:var(--ink-on-accent);
+    background:var(--accent);
+    border:var(--bw) solid var(--line);
+    box-shadow:var(--sh-3);
+    padding:var(--sp-3) var(--sp-4); cursor:pointer;
+    clip-path:polygon(var(--notch) 0,calc(100% - var(--notch)) 0,100% var(--notch),
+      100% calc(100% - var(--notch)),calc(100% - var(--notch)) 100%,var(--notch) 100%,
+      0 calc(100% - var(--notch)),0 var(--notch));
+    transition:transform var(--dur-fast) var(--ease-step),
+               box-shadow var(--dur-fast) var(--ease-step),
+               background var(--dur-fast);
+
+    &:hover{ filter:brightness(1.08); }
+    &:active{ transform:translate(2px,2px); box-shadow:var(--sh-1); }  /* SIGNATURE press */
+    &:disabled{ background:var(--panel-2); color:var(--dim); box-shadow:none;
+                cursor:not-allowed; filter:none; }
+
+    /* ghost: quiet control on dark */
+    &.ghost{ background:var(--panel); color:var(--muted); border-color:var(--line-hi);
+             box-shadow:var(--sh-2);
+             &:hover{ color:var(--ink); border-color:var(--gold); filter:none; } }
+
+    /* toggle-on: fills with its accent */
+    &[aria-pressed="true"]{ background:var(--accent); color:var(--ink-on-accent);
+                            border-color:var(--line); }
+  }
+
+  /* ------------------------------------------------------------------- CARD */
+  .card{
+    --accent:var(--gold);
+    container-type:inline-size;
+    background:var(--panel);
+    border:var(--bw) solid var(--line-hi);
+    border-left:var(--accent-bar) solid var(--accent);
+    box-shadow:var(--sh-4);
+    padding:var(--sp-4);
+    clip-path:polygon(var(--notch) 0,100% 0,100% calc(100% - var(--notch)),
+      calc(100% - var(--notch)) 100%,0 100%,0 var(--notch));
+    transition:border-color var(--dur-fast);
+
+    &:hover{ border-inline-color:var(--line-hi); }
+    &.lg{ box-shadow:var(--sh-5); padding:var(--sp-5); }
+
+    & > .head{ display:flex; align-items:center; gap:var(--sp-3);
+               margin-block-end:var(--sp-3); }
+    & .num{ flex:none; display:grid; place-items:center;
+            inline-size:1.75rem; block-size:1.75rem;
+            font-family:var(--font-mono); font-size:var(--fs-chip); font-weight:700;
+            color:var(--ink-on-accent); background:var(--accent);
+            border:var(--bw-2) solid var(--line); box-shadow:var(--sh-2); }
+    & .title{ font-family:var(--font-mono); font-size:var(--fs-h2);
+              font-weight:700; color:var(--ink); line-height:var(--lh-tight); }
+  }
+  @container (max-width:280px){ .card .num{ display:none; } }
+
+  /* ---------------------------------------------------------------- CALLOUT */
+  .callout{
+    --accent:var(--gold);
+    border:var(--bw-2) solid var(--accent);
+    background:color-mix(in srgb, var(--accent) 12%, transparent);
+    padding:var(--sp-3) var(--sp-4);
+    font-size:var(--fs-body);
+    clip-path:polygon(var(--notch) 0,100% 0,100% calc(100% - var(--notch)),
+      calc(100% - var(--notch)) 100%,0 100%,0 var(--notch));
+
+    & b{ color:var(--accent); }
+    &.tip   { --accent:var(--good); }
+    &.gotcha{ --accent:var(--crit); }
+    &.memo  { --accent:var(--gold); }
+    &.quest { --accent:var(--purple); }
+  }
+
+  /* ------------------------------------------------------------------ BADGE */
+  .badge{
+    --accent:var(--panel-2);
+    display:inline-block; font-family:var(--font-mono); font-size:var(--fs-label);
+    font-weight:700; text-transform:uppercase; letter-spacing:var(--ls-chrome);
+    color:var(--ink-on-accent); background:var(--accent);
+    border:var(--bw-2) solid var(--line); box-shadow:var(--sh-2);
+    padding:.1em .55em; line-height:var(--lh-tight);
+
+    &.todo{ background:var(--panel-2); color:var(--muted); border-color:var(--line-hi); }
+    &.clear{ --accent:var(--good); }
+    &.warn { --accent:var(--warn); }
+    &.crit { --accent:var(--crit); }
+  }
+
+  /* ------------------------------------------------------------------- CHIP */
+  .chip{
+    --accent:var(--gold);
+    display:inline-flex; align-items:center; gap:var(--sp-2);
+    font-family:var(--font-mono); font-size:var(--fs-chip);
+    text-transform:uppercase; letter-spacing:var(--ls-chrome);
+    color:var(--muted); background:var(--panel);
+    border:var(--bw-2) solid var(--line-hi); box-shadow:var(--sh-2);
+    padding:var(--sp-2) var(--sp-3); cursor:pointer;
+    transition:transform var(--dur-fast) var(--ease-step),
+               box-shadow var(--dur-fast) var(--ease-step);
+
+    & .dot{ inline-size:.5rem; block-size:.5rem; background:var(--accent);
+            border:1px solid var(--line); }
+    &:active{ transform:translate(1px,1px); box-shadow:var(--sh-1); }
+    &.active,&[aria-pressed="true"]{ background:var(--gold); color:var(--ink-on-accent);
+              border-color:var(--line); }
+  }
+
+  /* --------------------------------------------------------------- CODE BLOCK */
+  .codeblock{
+    position:relative; background:var(--slot);
+    border:var(--bw) solid var(--line); box-shadow:var(--sh-3);
+    clip-path:polygon(var(--notch) 0,100% 0,100% calc(100% - var(--notch)),
+      calc(100% - var(--notch)) 100%,0 100%,0 var(--notch));
+
+    & pre{ margin:0; padding:var(--sp-4); overflow-x:auto;
+           font-family:var(--font-mono); font-size:var(--fs-chip);
+           line-height:1.65; color:var(--text); }
+    & .cp{ position:absolute; inset-block-start:var(--sp-2); inset-inline-end:var(--sp-2);
+           font-family:var(--font-mono); font-size:var(--fs-label);
+           text-transform:uppercase; letter-spacing:var(--ls-chrome);
+           color:var(--muted); background:var(--panel-2);
+           border:var(--bw-2) solid var(--line-hi); box-shadow:var(--sh-1);
+           padding:.2em .5em; cursor:pointer;
+           &:hover{ color:var(--ink); border-color:var(--gold); }
+           &:active{ transform:translate(1px,1px); } }
+
+    /* syntax tokens */
+    & .t-sel{ color:var(--gold); }   & .t-key{ color:var(--blue); }
+    & .t-str{ color:var(--good); }   & .t-num{ color:var(--cyan); }
+    & .t-com{ color:var(--dim); font-style:italic; }
+    & .t-at { color:var(--purple); } & .t-fn { color:var(--gold); }
+  }
+
+  /* --------------------------------------------------------- PROGRESS / XP BAR */
+  .pbar{
+    --fill:0%;
+    block-size:1rem; background:var(--slot);
+    border:var(--bw-2) solid var(--line-hi); overflow:hidden;
+
+    & > i{ display:block; block-size:100%; inline-size:var(--fill);
+           background:repeating-linear-gradient(90deg,
+             var(--gold) 0 6px, var(--gold-d) 6px 8px);
+           transition:--fill var(--dur-slow) var(--ease-fill); }
+  }
+
+  /* ------------------------------------------------------------------- STAT */
+  .stat{
+    & .n{ font-family:var(--font-mono); font-weight:700; color:var(--accent,var(--gold));
+          font-size:var(--fs-h1); font-variant-numeric:tabular-nums;
+          line-height:var(--lh-tight); }
+    & .l{ font-family:var(--font-mono); font-size:var(--fs-label);
+          text-transform:uppercase; letter-spacing:var(--ls-chrome); color:var(--muted); }
+  }
+
+  /* --------------------------------------------------------- QUIZ OPTION (visual) */
+  .opt{
+    display:flex; align-items:center; gap:var(--sp-3); inline-size:100%;
+    text-align:start; color:var(--text); background:var(--slot);
+    border:var(--bw-2) solid var(--line-hi); box-shadow:var(--sh-2);
+    padding:var(--sp-3); cursor:pointer;
+    font-family:var(--font-body); font-size:var(--fs-body);
+    transition:transform var(--dur-fast) var(--ease-step);
+
+    & .key{ flex:none; display:grid; place-items:center;
+            inline-size:1.6rem; block-size:1.6rem;
+            font-family:var(--font-mono); font-weight:700; color:var(--muted);
+            background:var(--panel-2); border:var(--bw-2) solid var(--line); }
+    &:hover{ border-color:var(--gold); }
+    &:active{ transform:translate(1px,1px); box-shadow:var(--sh-1); }
+
+    &.ok{  border-color:var(--good); background:color-mix(in srgb,var(--good) 12%,transparent);
+           & .key{ background:var(--good); color:var(--ink-on-accent); } }
+    &.bad{ border-color:var(--crit); background:color-mix(in srgb,var(--crit) 12%,transparent);
+           & .key{ background:var(--crit); color:#fff; } }
+    &:disabled{ cursor:default; &:hover{ border-color:var(--line-hi); } }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "name": "@yourscope/8bit-dopamine",
+  "version": "0.1.0",
+  "description": "NES 8-bit retro-modern design system. Design tokens + class-based CSS components + light-DOM web components. Cross-framework: HTML, Vue 3, Nuxt, React.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "*.css",
+    "./elements.js"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./elements.js"
+    },
+    "./all.css": "./all.css",
+    "./tokens.css": "./tokens.css",
+    "./base.css": "./base.css",
+    "./components.css": "./components.css",
+    "./fonts/*": "./fonts/*"
+  },
+  "types": "./index.d.ts",
+  "files": [
+    "all.css",
+    "tokens.css",
+    "base.css",
+    "components.css",
+    "elements.js",
+    "index.d.ts",
+    "fonts/"
+  ],
+  "scripts": {
+    "check": "biome ci . && node --check elements.js",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "demo": "pnpm dlx serve .",
+    "release": "node -e \"const v=process.env.npm_package_version;console.log('git tag v'+v+' && git push --follow-tags')\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YOURUSER/8bit-dopamine.git"
+  },
+  "homepage": "https://github.com/YOURUSER/8bit-dopamine#readme",
+  "bugs": "https://github.com/YOURUSER/8bit-dopamine/issues",
+  "keywords": [
+    "design-system",
+    "design-tokens",
+    "css",
+    "web-components",
+    "8bit",
+    "retro",
+    "nes",
+    "dark-theme",
+    "vue",
+    "react",
+    "nuxt"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "packageManager": "pnpm@10.12.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.0"
+  }
+}
