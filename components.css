@@ -30,9 +30,7 @@
     box-shadow: var(--sh-3);
     padding: var(--sp-3) var(--sp-4);
     cursor: pointer;
-    clip-path: polygon(var(--notch) 0, calc(100% - var(--notch)) 0, 100% var(--notch),
-        100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, var(--notch) 100%,
-        0 calc(100% - var(--notch)), 0 var(--notch));
+    /* square 90° corners — hard shadow + press-in do the work, no bevel */
     transition: transform var(--dur-fast) var(--ease-step),
       box-shadow var(--dur-fast) var(--ease-step),
       background var(--dur-fast);
@@ -105,13 +103,12 @@
       }
     }
 
-    /* link: text-only action — drops the bevel, shadow, and press */
+    /* link: text-only action — drops the border, shadow, and press */
     &.link {
       background: none;
       color: var(--accent);
       border-color: transparent;
       box-shadow: none;
-      clip-path: none;
       padding-inline: 0;
 
       &:hover {

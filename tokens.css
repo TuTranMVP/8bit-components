@@ -134,9 +134,10 @@
     --sp-6: 2rem;
     --sp-7: 3rem;
 
-    /* ---- shape: SIGNATURE = notched pixel bevel. Never a radius. ---- */
+    /* ---- shape: system is square (90° corners), never a radius.
+       --notch only drives the optional .pixel-box helper — not buttons. ---- */
     --notch: 6px;
-    /* corner cut size */
+    /* corner cut size for the .pixel-box utility */
     --bw: 3px;
     /* standard "pixel box" border */
     --bw-2: 2px;

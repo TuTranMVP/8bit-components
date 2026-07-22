@@ -91,7 +91,7 @@ const GS = [
         catalog() +
         h2("The signature") +
         `<div class="grid-cards">
-          <div class="callout memo"><b>Bevel the button.</b> The button cuts its corners with <code>clip-path</code> — the pixel bevel is the one flourish; every other surface stays square and sharp.</div>
+          <div class="callout memo"><b>Press the button.</b> Square 90° corners like everything else — the button's flourish is the hard shadow + press-in on <code>:active</code>, never a cut or rounded corner.</div>
           <div class="callout memo"><b>Hard shadow.</b> <code>box-shadow: Npx Npx 0</code> — zero blur, pure black. Depth like a sprite.</div>
           <div class="callout tip"><b>Steps motion.</b> <code>steps()</code> easing only. Movement ticks like a sprite sheet.</div>
           <div class="callout quest"><b>One accent per block.</b> Set <code>data-accent</code> once; everything downstream inherits it.</div>
@@ -117,7 +117,7 @@ const GS = [
         catalog() +
         h2("Chữ ký") +
         `<div class="grid-cards">
-          <div class="callout memo"><b>Nút vát góc.</b> Nút cắt góc bằng <code>clip-path</code> — vát pixel là điểm nhấn duy nhất; mọi bề mặt khác giữ góc vuông sắc.</div>
+          <div class="callout memo"><b>Nhấn lún nút.</b> Góc vuông 90° như mọi thứ khác — điểm nhấn của nút là bóng cứng + nhấn lún khi <code>:active</code>, không phải góc cắt hay bo tròn.</div>
           <div class="callout memo"><b>Bóng cứng.</b> <code>box-shadow: Npx Npx 0</code> — không blur, đen tuyền. Chiều sâu như một sprite.</div>
           <div class="callout tip"><b>Chuyển động theo bước.</b> Chỉ dùng easing <code>steps()</code>. Chuyển động giật như sprite sheet.</div>
           <div class="callout quest"><b>Một màu nhấn mỗi khối.</b> Đặt <code>data-accent</code> một lần; mọi thứ bên dưới kế thừa.</div>

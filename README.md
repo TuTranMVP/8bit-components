@@ -67,10 +67,10 @@ button / card / chip downstream picks it up via `--accent`.
 
 ## Signature
 
-The **button** is the one bold element: notched pixel bevel (`clip-path`) + hard shadow
-(`box-shadow: Npx Npx 0`, zero blur) + press-in on `:active`. Every other surface stays quiet —
-**square** 90° corners (never a radius), hard border, hard shadow. Full rationale in
-[DESIGN.md](DESIGN.md).
+The **button** is the one bold element — but by **hard shadow** (`box-shadow: Npx Npx 0`, zero
+blur) + **press-in on `:active`**, not a corner trick. Every surface, buttons included, is a
+**square** 90° corner (never a radius, never a chamfer), hard border, hard shadow. Full rationale
+in [DESIGN.md](DESIGN.md).
 
 ## Fonts (bundled, self-hosted)
 
@@ -141,6 +141,6 @@ JS helpers (named exports): `store`, `bleep(seq)`, `SFX`, `setMute/isMuted`, `gr
 ## Extend
 
 New component → add a recipe in `components.css`, add a token in `tokens.css` if needed.
-Keep the Do/Don't: square surfaces & beveled buttons (never a radius), hard shadow not blur,
-`steps()` not smooth easing, one accent per block, dark text on solid accents, everything via
-token. Full guidance in [DESIGN.md](DESIGN.md).
+Keep the Do/Don't: square 90° surfaces everywhere, buttons included (never a radius or chamfer),
+hard shadow not blur, `steps()` not smooth easing, one accent per block, dark text on solid
+accents, everything via token. Full guidance in [DESIGN.md](DESIGN.md).
