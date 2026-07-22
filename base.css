@@ -34,6 +34,8 @@
   :where(button, input, select, textarea) {
     font: inherit;
     color: inherit;
+    border-radius: 0;
+    /* NES: square everything — kill UA rounding so the system stays consistent */
   }
 
   :where(img, svg, canvas) {

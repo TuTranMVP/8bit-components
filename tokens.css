@@ -143,8 +143,7 @@
     /* small elements */
     --accent-bar: 6px;
     /* left classifier bar */
-    --nav-radius: 999px;
-    /* ONLY chrome (nav pill) may round */
+    /* No radius token by design — the whole system is square, no exceptions. */
 
     /* ---- SIGNATURE elevation: hard shadow, zero blur, pure black ---- */
     --sh-1: 1px 1px 0 var(--line);

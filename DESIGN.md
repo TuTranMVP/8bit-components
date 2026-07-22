@@ -80,8 +80,8 @@ The bevel is a **spotlight, not a texture**:
   is the one memorable move.
 - **Every other surface** — card, callout, code block, input, select, table, modal, the docs demo
   stage — is a **clean 90° square**. Hard border + hard shadow do the work.
-- **Never a `border-radius`.** The only rounded thing allowed is a nav pill (`--nav-radius`),
-  chrome only.
+- **Never a `border-radius`.** No exceptions — the base reset even zeroes UA rounding on
+  `button/input/select/textarea` so the system stays square everywhere.
 
 *Why:* an asymmetric notch on large surfaces reads as a rendering glitch and its diagonals
 anti-alias (soft edges). Square surfaces are sharper, uniform, and unmistakably NES (think NES

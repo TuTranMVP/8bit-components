@@ -76,6 +76,98 @@
       color: var(--ink-on-accent);
       border-color: var(--accent-d);
     }
+
+    /* ---- variants (solid is the default above; these opt out of the fill) ---- */
+
+    /* outline: transparent, accent edge + accent text */
+    &.outline {
+      background: none;
+      color: var(--accent);
+      border-color: var(--accent);
+      box-shadow: var(--sh-2);
+
+      &:hover {
+        background: color-mix(in srgb, var(--accent) 14%, transparent);
+        filter: none;
+      }
+    }
+
+    /* soft: low-tint accent fill, accent text — quiet but still colored */
+    &.soft {
+      background: color-mix(in srgb, var(--accent) 18%, transparent);
+      color: var(--accent);
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      box-shadow: var(--sh-2);
+
+      &:hover {
+        background: color-mix(in srgb, var(--accent) 26%, transparent);
+        filter: none;
+      }
+    }
+
+    /* link: text-only action — drops the bevel, shadow, and press */
+    &.link {
+      background: none;
+      color: var(--accent);
+      border-color: transparent;
+      box-shadow: none;
+      clip-path: none;
+      padding-inline: 0;
+
+      &:hover {
+        filter: none;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      &:active {
+        transform: none;
+        box-shadow: none;
+      }
+    }
+
+    /* ---- sizes (default height sits in a --ctrl-h row) ---- */
+    &.sm {
+      font-size: var(--fs-label);
+      padding: var(--sp-2) var(--sp-3);
+    }
+
+    &.lg {
+      font-size: var(--fs-h3);
+      padding: var(--sp-4) var(--sp-5);
+      box-shadow: var(--sh-4);
+    }
+
+    /* ---- layout modifiers ---- */
+    &.block {
+      display: flex;
+      inline-size: 100%;
+      justify-content: center;
+    }
+
+    /* icon-only: square tap target, equal padding — pair with aria-label */
+    &.icon {
+      padding: var(--sp-3);
+      aspect-ratio: 1;
+      justify-content: center;
+    }
+
+    /* ---- loading: spinner ticks in, clicks blocked. Toggle aria-busy. ---- */
+    &[aria-busy="true"] {
+      cursor: progress;
+      pointer-events: none;
+
+      &::before {
+        content: "";
+        flex: none;
+        inline-size: 1em;
+        block-size: 1em;
+        border: var(--bw-2) solid currentColor;
+        border-inline-end-color: transparent;
+        border-block-end-color: transparent;
+        animation: spinner .8s steps(8) infinite;
+      }
+    }
   }
 
   /* ------------------------------------------------------------------- CARD */

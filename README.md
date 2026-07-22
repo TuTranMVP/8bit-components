@@ -4,17 +4,28 @@ NES arcade CRT, dark-only, modern-crisp. Cross-framework by design.
 
 ## Install
 
+Reusable across every project in the studio — install it into any repo, no build step.
+
 ```bash
-pnpm add @yourscope/8bit-dopamine
+# from npm (once published)
+pnpm add 8bit-nes
+
+# or straight from GitHub — no publish needed
+pnpm add github:TuTranMVP/8bit-components
 ```
 
 ```js
 // once, at app entry:
-import "@yourscope/8bit-dopamine/all.css";   // tokens + base + components
-import "@yourscope/8bit-dopamine";           // registers <mvp-*> web components
+import "8bit-nes/all.css";   // tokens + base + components
+import "8bit-nes";           // registers <mvp-*> web components
 ```
 
-Or granular: `@yourscope/8bit-dopamine/tokens.css`, `.../base.css`, `.../components.css`.
+Or granular: `8bit-nes/tokens.css`, `8bit-nes/base.css`, `8bit-nes/components.css`,
+`8bit-nes/elements.js`. The `exports` map keeps every entry addressable; `sideEffects` is
+declared so bundlers keep the CSS and the custom-element registration.
+
+> **Zero build, zero runtime deps.** It ships plain CSS + one ES module, so it drops into a
+> Vite/Nuxt/Next app, a plain HTML page, or another design-system package all the same.
 
 ## Release flow (maintainer)
 

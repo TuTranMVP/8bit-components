@@ -1,5 +1,5 @@
 {
-  "name": "@yourscope/8bit-dopamine",
+  "name": "8bit-nes",
   "version": "0.1.0",
   "description": "NES 8-bit retro-modern design system. Design tokens + class-based CSS components + light-DOM web components. Cross-framework: HTML, Vue 3, Nuxt, React.",
   "license": "MIT",
@@ -13,11 +13,13 @@
       "types": "./index.d.ts",
       "default": "./elements.js"
     },
+    "./elements.js": "./elements.js",
     "./all.css": "./all.css",
     "./tokens.css": "./tokens.css",
     "./base.css": "./base.css",
     "./components.css": "./components.css",
-    "./fonts/*": "./fonts/*"
+    "./fonts/*": "./fonts/*",
+    "./package.json": "./package.json"
   },
   "types": "./index.d.ts",
   "files": [
@@ -32,7 +34,8 @@
   "scripts": {
     "check": "biome ci . && node --check elements.js",
     "format": "biome check --write .",
-    "demo": "pnpm dlx serve ."
+    "demo": "pnpm dlx serve .",
+    "prepublishOnly": "pnpm check"
   },
   "repository": {
     "type": "git",

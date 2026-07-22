@@ -135,7 +135,7 @@ const GS = [
     body: {
       en: () =>
         h2("Add the package") +
-        cb("pnpm add @yourscope/8bit-dopamine") +
+        cb("pnpm add 8bit-nes") +
         h2("Wire it up") +
         `<mvp-tabs style="display:block">
           <section data-label="Plain HTML" selected>${cb(
@@ -146,15 +146,15 @@ const GS = [
           )}</section>
           <section data-label="Vue 3 · Nuxt">${cb(
             `// import once (main.ts / nuxt.config)
-import "@yourscope/8bit-dopamine/all.css";
-import "@yourscope/8bit-dopamine";
+import "8bit-nes/all.css";
+import "8bit-nes";
 
 // tell the compiler mvp-* are custom elements
 compilerOptions: { isCustomElement: (t) => t.startsWith("mvp-") }`,
           )}</section>
           <section data-label="React 19">${cb(
-            `import "@yourscope/8bit-dopamine/all.css";
-import "@yourscope/8bit-dopamine";
+            `import "8bit-nes/all.css";
+import "8bit-nes";
 
 // React 19 passes props + listens to custom-element events natively
 <mvp-hud ns="quest" per-level="150" max-xp="600" />`,
@@ -163,9 +163,9 @@ import "@yourscope/8bit-dopamine";
         h2("Granular imports") +
         p("Prefer the pieces? Import only what you need — order matters: tokens → base → components.") +
         cb(
-          `import "@yourscope/8bit-dopamine/tokens.css";
-import "@yourscope/8bit-dopamine/base.css";
-import "@yourscope/8bit-dopamine/components.css";`,
+          `import "8bit-nes/tokens.css";
+import "8bit-nes/base.css";
+import "8bit-nes/components.css";`,
         ) +
         h2("Fonts") +
         p(
@@ -179,7 +179,7 @@ import "@yourscope/8bit-dopamine/components.css";`,
         ),
       vi: () =>
         h2("Cài package") +
-        cb("pnpm add @yourscope/8bit-dopamine") +
+        cb("pnpm add 8bit-nes") +
         h2("Kết nối") +
         `<mvp-tabs style="display:block">
           <section data-label="HTML thuần" selected>${cb(
@@ -190,15 +190,15 @@ import "@yourscope/8bit-dopamine/components.css";`,
           )}</section>
           <section data-label="Vue 3 · Nuxt">${cb(
             `// import một lần (main.ts / nuxt.config)
-import "@yourscope/8bit-dopamine/all.css";
-import "@yourscope/8bit-dopamine";
+import "8bit-nes/all.css";
+import "8bit-nes";
 
 // báo compiler biết mvp-* là custom element
 compilerOptions: { isCustomElement: (t) => t.startsWith("mvp-") }`,
           )}</section>
           <section data-label="React 19">${cb(
-            `import "@yourscope/8bit-dopamine/all.css";
-import "@yourscope/8bit-dopamine";
+            `import "8bit-nes/all.css";
+import "8bit-nes";
 
 // React 19 truyền prop + nghe event custom-element sẵn
 <mvp-hud ns="quest" per-level="150" max-xp="600" />`,
@@ -207,9 +207,9 @@ import "@yourscope/8bit-dopamine";
         h2("Import lẻ") +
         p("Chỉ cần vài phần? Import đúng thứ bạn dùng — thứ tự quan trọng: tokens → base → components.") +
         cb(
-          `import "@yourscope/8bit-dopamine/tokens.css";
-import "@yourscope/8bit-dopamine/base.css";
-import "@yourscope/8bit-dopamine/components.css";`,
+          `import "8bit-nes/tokens.css";
+import "8bit-nes/base.css";
+import "8bit-nes/components.css";`,
         ) +
         h2("Font") +
         p(
@@ -456,58 +456,96 @@ const COMPONENTS = [
       en: () =>
         stage(
           "BUTTON",
-          `<button class="btn">Copy settings</button>
-           <button class="btn ghost">Reset</button>
-           <button class="btn" data-accent="cyan">Free play</button>
+          `<button class="btn">Solid</button>
+           <button class="btn outline">Outline</button>
+           <button class="btn soft">Soft</button>
+           <button class="btn ghost">Ghost</button>
+           <button class="btn link">Link</button>
+           <button class="btn" data-accent="cyan">Cyan</button>
+           <button class="btn sm">SM</button>
+           <button class="btn lg">LG</button>
+           <button class="btn icon" aria-label="Play">▶</button>
+           <button class="btn" aria-busy="true">Saving</button>
            <button class="btn" disabled>Locked</button>`,
         ) +
         cb(
-          `<button class="btn">Copy settings</button>
-<button class="btn ghost">Reset</button>
-<button class="btn" data-accent="cyan">Free play</button>
-<button class="btn" disabled>Locked</button>`,
+          `<button class="btn">Solid</button>
+<button class="btn outline">Outline</button>
+<button class="btn soft">Soft</button>
+<button class="btn ghost">Ghost</button>
+<button class="btn link">Link</button>
+
+<button class="btn lg" data-accent="cyan">Large</button>
+<button class="btn icon" aria-label="Play">▶</button>
+<button class="btn" aria-busy="true">Saving…</button>`,
         ) +
         h2("API") +
         api(
           ["Class / attr", "Effect"],
           [
-            ["<code>.btn</code>", "solid accent button"],
+            ["<code>.btn</code>", "solid accent fill (default)"],
+            ["<code>.btn.outline</code>", "transparent, accent edge + text"],
+            ["<code>.btn.soft</code>", "low-tint accent fill"],
             ["<code>.btn.ghost</code>", "quiet outline on dark"],
+            ["<code>.btn.link</code>", "text-only — no bevel or shadow"],
+            ["<code>.sm</code> / <code>.lg</code>", "smaller / larger size"],
+            ["<code>.block</code>", "full-width"],
+            ["<code>.icon</code>", "square icon-only (add aria-label)"],
+            ["<code>[aria-busy=true]</code>", "loading spinner, clicks blocked"],
             ["<code>[aria-pressed=true]</code>", "toggle-on fills with accent"],
             ["<code>[disabled]</code>", "muted, no shadow"],
             ["<code>data-accent</code>", "recolor (blue/gold/cyan/…)"],
           ],
         ) +
         a11y(
-          "Renders a native <code>&lt;button&gt;</code>, so keyboard and screen-reader behaviour come free. Use <code>aria-pressed</code> for toggles and give icon-only buttons an <code>aria-label</code>.",
+          "Renders a native <code>&lt;button&gt;</code>, so keyboard and screen-reader behaviour come free. Use <code>aria-pressed</code> for toggles, <code>aria-busy</code> for loading, and give icon-only buttons an <code>aria-label</code>.",
         ),
       vi: () =>
         stage(
           "BUTTON",
-          `<button class="btn">Copy settings</button>
-           <button class="btn ghost">Reset</button>
-           <button class="btn" data-accent="cyan">Free play</button>
-           <button class="btn" disabled>Locked</button>`,
+          `<button class="btn">Solid</button>
+           <button class="btn outline">Outline</button>
+           <button class="btn soft">Soft</button>
+           <button class="btn ghost">Ghost</button>
+           <button class="btn link">Link</button>
+           <button class="btn" data-accent="cyan">Cyan</button>
+           <button class="btn sm">SM</button>
+           <button class="btn lg">LG</button>
+           <button class="btn icon" aria-label="Chơi">▶</button>
+           <button class="btn" aria-busy="true">Đang lưu</button>
+           <button class="btn" disabled>Khoá</button>`,
         ) +
         cb(
-          `<button class="btn">Copy settings</button>
-<button class="btn ghost">Reset</button>
-<button class="btn" data-accent="cyan">Free play</button>
-<button class="btn" disabled>Locked</button>`,
+          `<button class="btn">Solid</button>
+<button class="btn outline">Outline</button>
+<button class="btn soft">Soft</button>
+<button class="btn ghost">Ghost</button>
+<button class="btn link">Link</button>
+
+<button class="btn lg" data-accent="cyan">Large</button>
+<button class="btn icon" aria-label="Chơi">▶</button>
+<button class="btn" aria-busy="true">Đang lưu…</button>`,
         ) +
         h2("API") +
         api(
           ["Class / thuộc tính", "Tác dụng"],
           [
-            ["<code>.btn</code>", "nút tô đầy màu nhấn"],
+            ["<code>.btn</code>", "tô đầy màu nhấn (mặc định)"],
+            ["<code>.btn.outline</code>", "trong suốt, viền + chữ theo màu nhấn"],
+            ["<code>.btn.soft</code>", "nền màu nhấn nhạt"],
             ["<code>.btn.ghost</code>", "viền mờ trên nền tối"],
+            ["<code>.btn.link</code>", "chỉ chữ — bỏ vát góc & bóng"],
+            ["<code>.sm</code> / <code>.lg</code>", "cỡ nhỏ / lớn"],
+            ["<code>.block</code>", "rộng hết dòng"],
+            ["<code>.icon</code>", "vuông chỉ-icon (thêm aria-label)"],
+            ["<code>[aria-busy=true]</code>", "spinner loading, chặn click"],
             ["<code>[aria-pressed=true]</code>", "toggle bật, tô đầy màu nhấn"],
             ["<code>[disabled]</code>", "mờ đi, bỏ bóng"],
             ["<code>data-accent</code>", "đổi màu (blue/gold/cyan/…)"],
           ],
         ) +
         a11y(
-          "Render ra <code>&lt;button&gt;</code> gốc nên bàn phím và screen reader hoạt động sẵn. Dùng <code>aria-pressed</code> cho nút toggle và đặt <code>aria-label</code> cho nút chỉ có icon.",
+          "Render ra <code>&lt;button&gt;</code> gốc nên bàn phím và screen reader hoạt động sẵn. Dùng <code>aria-pressed</code> cho toggle, <code>aria-busy</code> cho loading, và đặt <code>aria-label</code> cho nút chỉ có icon.",
         ),
     },
   },
@@ -1259,7 +1297,7 @@ const COMPONENTS = [
            <button class="btn ghost" data-toast="Nothing to undo." data-toast-accent="warn">Try warn</button>`,
         ) +
         cb(
-          `import { toast } from "@yourscope/8bit-dopamine";
+          `import { toast } from "8bit-nes";
 
 toast("Settings saved.", { accent: "good" });`,
         ) +
@@ -1282,7 +1320,7 @@ toast("Settings saved.", { accent: "good" });`,
            <button class="btn ghost" data-toast="Không có gì để hoàn tác." data-toast-accent="warn">Thử warn</button>`,
         ) +
         cb(
-          `import { toast } from "@yourscope/8bit-dopamine";
+          `import { toast } from "8bit-nes";
 
 toast("Đã lưu cấu hình.", { accent: "good" });`,
         ) +
