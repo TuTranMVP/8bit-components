@@ -48,6 +48,13 @@ high-contrast — well above WCAG AA on `--panel`.
 **Rules.** Never white text on gold/green/cyan — use `--ink-on-accent`. Accents are for meaning,
 never decoration. Semantic (`good/warn/crit`) stays separate from brand.
 
+**Borders vs shadows (important).** `--line` (`#000`) is for **offset shadows only** — it's
+invisible as a border on the dark ground. The border **on a filled/selected element** must be the
+deep same-hue `--accent-d` (set beside `--accent` in the mapper), so the outer edge stays visible
+and the item never reads smaller than an outlined sibling. Borders on recessed/neutral surfaces
+(input, code, table-wrap) use `--line-hi`. Any recipe that sets `--accent` locally must also set
+`--accent-d`, or an ancestor `data-accent` will split the fill from its border.
+
 ### Typography
 
 Two faces, deliberately paired. Self-hosted woff2 (Latin + Vietnamese subset, full diacritics).
