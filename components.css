@@ -201,7 +201,7 @@
   .chip {
     --accent: var(--gold);
     display: inline-flex;
-    align-items: center;
+    align-items: baseline;
     gap: var(--sp-2);
     font-family: var(--font-mono);
     font-size: var(--fs-chip);
