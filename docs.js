@@ -18,28 +18,40 @@ const tr = (v) => (v && typeof v === "object" && !Array.isArray(v) ? v[LANG] : v
 const UI = {
   en: {
     gs: "Getting Started",
-    search: "SEARCH…",
+    search: "SEARCH…  ⌘K",
     menu: "Toggle navigation",
     filter: "Filter components",
     side: "Documentation",
+    onpage: "On this page",
   },
   vi: {
     gs: "Bắt đầu",
-    search: "TÌM…",
+    search: "TÌM…  ⌘K",
     menu: "Bật/tắt điều hướng",
     filter: "Lọc component",
     side: "Tài liệu",
+    onpage: "Trên trang này",
   },
 };
 
 /* --------------------------------------------------------------- helpers */
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const TOP_H = 53; // keep in sync with --top-h in docs.html
+/** URL-safe id from heading text (strips diacritics so VN headings still slug). */
+const slug = (s) =>
+  s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "sec";
 // abstraction: <mvp-code> highlights + wires copy itself — docs just hand it code.
 const cb = (code) => `<mvp-code>${esc(code)}</mvp-code>`;
 const stage = (cap, html, mod = "") => `<div class="stage ${mod}" data-cap="${cap}">${html}</div>`;
 const h2 = (t) => `<h2 class="doc-h2">${t}</h2>`;
 const p = (t) => `<p class="doc-p">${t}</p>`;
-const a11y = (t) => `<div class="callout tip"><b>A11y.</b> ${t}</div>`;
+const a11y = (t) =>
+  `${h2(LANG === "vi" ? "Tiếp cận" : "Accessibility")}<div class="callout tip">${t}</div>`;
 const api = (cols, rows) =>
   `<div class="table-wrap"><table class="table"><thead><tr>${cols
     .map((c) => `<th>${c}</th>`)
@@ -2405,7 +2417,9 @@ function catalog() {
 function renderSidebar() {
   const link = (pg) => {
     const name = tr(pg.name);
-    return `<a class="navlink" href="#/${pg.id}" data-id="${pg.id}" data-name="${name.toLowerCase()}">${name}</a>`;
+    // search haystack = name + description (quotes stripped so it's attr-safe)
+    const hay = `${name} ${tr(pg.desc) || ""}`.toLowerCase().replace(/["<>]/g, " ");
+    return `<a class="navlink" href="#/${pg.id}" data-id="${pg.id}" data-name="${hay}">${name}</a>`;
   };
   const group = (label, items) =>
     `<div class="side-grp" data-grp><span class="side-lab">${label}</span>${items.map(link).join("")}</div>`;
@@ -2419,6 +2433,44 @@ function renderSidebar() {
 
 /* ------------------------------------------------------------- router */
 const pageEl = document.getElementById("page");
+
+/* --------------------- "On this page" TOC + scroll-spy --------------------- */
+let tocObs = null;
+function buildToc() {
+  const toc = document.getElementById("toc");
+  if (!toc) return;
+  tocObs?.disconnect();
+  const heads = [...pageEl.querySelectorAll(".doc-h2")];
+  if (heads.length < 2) {
+    toc.hidden = true;
+    toc.innerHTML = "";
+    return;
+  }
+  const used = {};
+  const links = heads.map((h) => {
+    let id = slug(h.textContent);
+    if (used[id]) id += `-${used[id]++}`;
+    else used[id] = 1;
+    h.id = id;
+    return `<button class="toc-link" type="button" data-to="${id}">${esc(h.textContent)}</button>`;
+  });
+  toc.hidden = false;
+  toc.innerHTML = `<span class="toc-lab">${UI[LANG].onpage}</span>${links.join("")}`;
+
+  const map = new Map([...toc.querySelectorAll(".toc-link")].map((a) => [a.dataset.to, a]));
+  map.get(heads[0].id)?.setAttribute("aria-current", "true"); // sensible default
+  tocObs = new IntersectionObserver(
+    (entries) => {
+      for (const en of entries) {
+        if (!en.isIntersecting) continue;
+        for (const a of map.values()) a.removeAttribute("aria-current");
+        map.get(en.target.id)?.setAttribute("aria-current", "true");
+      }
+    },
+    { rootMargin: `-${TOP_H + 8}px 0px -68% 0px`, threshold: 0 },
+  );
+  for (const h of heads) tocObs.observe(h);
+}
 
 function render(id) {
   const pg = BY_ID[id] || BY_ID.intro;
@@ -2442,6 +2494,7 @@ function render(id) {
   for (const a of document.querySelectorAll(".navlink")) {
     a.setAttribute("aria-current", a.dataset.id === pg.id ? "page" : "false");
   }
+  buildToc();
   document.title = `${tr(pg.name)} · 8-BIT NES`;
   document.body.removeAttribute("data-nav-open");
   pageEl.focus({ preventScroll: true });
@@ -2479,6 +2532,11 @@ function setLang(lang) {
 
 /* --------------------------------------------------- delegated behaviour */
 document.addEventListener("click", (e) => {
+  const tl = e.target.closest(".toc-link");
+  if (tl) {
+    document.getElementById(tl.dataset.to)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
   const lb = e.target.closest("[data-lang]");
   if (lb) {
     setLang(lb.dataset.lang);
@@ -2516,6 +2574,17 @@ document.addEventListener("click", (e) => {
 });
 document.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && e.target.matches("[data-home]")) location.hash = "#/intro";
+  // ⌘K / Ctrl-K focuses search (the component-docs convention)
+  if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")) {
+    e.preventDefault();
+    document.querySelector("[data-search]")?.focus();
+  }
+  // Esc clears + leaves the search box
+  if (e.key === "Escape" && e.target.matches("[data-search]")) {
+    e.target.value = "";
+    e.target.dispatchEvent(new Event("input", { bubbles: true }));
+    e.target.blur();
+  }
 });
 
 /* -------------------------------------------------------------- search */
