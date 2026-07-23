@@ -1,0 +1,593 @@
+{
+  "name": "8bit-nes",
+  "version": "0.1.0",
+  "title": "8-BIT NES",
+  "description": "Cross-framework NES-arcade design system: CSS design tokens + class recipes + light-DOM web components. Zero build, dark-only, square 90° corners, hard shadow.",
+  "official": true,
+  "homepage": "https://tutranmvp.github.io/8bit-components",
+  "docs": "https://tutranmvp.github.io/8bit-components/docs.html",
+  "repository": "https://github.com/TuTranMVP/8bit-components",
+  "license": "MIT",
+  "install": {
+    "npm": "pnpm add 8bit-nes",
+    "github": "pnpm add github:TuTranMVP/8bit-components",
+    "import": [
+      "import \"8bit-nes/all.css\";",
+      "import \"8bit-nes\";"
+    ],
+    "cdnCss": "https://cdn.jsdelivr.net/npm/8bit-nes@0.1.0/all.min.css",
+    "cdnJs": "https://cdn.jsdelivr.net/npm/8bit-nes@0.1.0/elements.min.js"
+  },
+  "conventions": {
+    "prefix": "nes-",
+    "accentAttribute": "data-accent",
+    "accents": [
+      "blue",
+      "gold",
+      "cyan",
+      "purple",
+      "lime",
+      "teal",
+      "indigo",
+      "pink",
+      "steel",
+      "good",
+      "warn",
+      "crit"
+    ],
+    "primaryAccent": "good",
+    "events": [
+      "nes:change",
+      "nes:submit",
+      "nes:invalid",
+      "nes:complete",
+      "nes:answer",
+      "nes:xp",
+      "nes:mute"
+    ],
+    "rules": [
+      "Square 90° corners everywhere — never add border-radius or a chamfer.",
+      "Depth = hard shadow (box-shadow: Npx Npx 0), never blur.",
+      "One accent per block: set data-accent on the container; children inherit via --accent.",
+      "Dark text on bright accent fills (var(--ink-on-accent)); never light text on a solid fill.",
+      "Every value comes from a token in tokens.css — never hard-code hex/px in a component.",
+      "Prefer native elements/controls; add ARIA only to fill gaps."
+    ]
+  },
+  "concepts": [
+    {
+      "id": "intro",
+      "name": "Introduction",
+      "description": "A cross-framework component system with the feel of a 1985 arcade cabinet — square pixel boxes, hard shadows, chiptune, and XP. Modern-crisp, dark-only, zero build.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/intro"
+    },
+    {
+      "id": "install",
+      "name": "Installation",
+      "description": "Add the package, import the CSS once, register the web components. Three environments, one result.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/install"
+    },
+    {
+      "id": "theming",
+      "name": "Theming",
+      "description": "One file is the source of truth. Change the look in tokens.css — never in a component.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/theming"
+    },
+    {
+      "id": "colors",
+      "name": "Colors",
+      "description": "The full palette. Grounds, ink, and a base + deep pair for every brand and semantic accent — all tokens in tokens.css.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/colors"
+    }
+  ],
+  "components": [
+    {
+      "id": "button",
+      "name": "Button",
+      "category": "Element",
+      "selector": ".btn",
+      "kind": "class",
+      "description": "Primary action. Green (the primary accent) by default; set data-accent to recolor. Presses in on :active — the signature move.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/button"
+    },
+    {
+      "id": "badge",
+      "name": "Badge",
+      "category": "Element",
+      "selector": ".badge",
+      "kind": "class",
+      "description": "Static status marker. Not interactive — for state you can read at a glance.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/badge"
+    },
+    {
+      "id": "chip",
+      "name": "Chip",
+      "category": "Element",
+      "selector": ".chip",
+      "kind": "class",
+      "description": "Toggleable filter or tag. Interactive — presses in, fills with its accent when active.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/chip"
+    },
+    {
+      "id": "card",
+      "name": "Card",
+      "category": "Element",
+      "selector": ".card",
+      "kind": "class",
+      "description": "Surface for grouped content. A left accent bar classifies it; hard border, hard shadow, square corners.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/card"
+    },
+    {
+      "id": "avatar",
+      "name": "Avatar",
+      "category": "Element",
+      "selector": ".avatar",
+      "kind": "class",
+      "description": "User image or initials. Square by design so the hard shadow stays crisp; group them to overlap.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/avatar"
+    },
+    {
+      "id": "kbd",
+      "name": "Kbd",
+      "category": "Element",
+      "selector": ".kbd",
+      "kind": "class",
+      "description": "Keyboard key hint. Inline, mono, inset — for shortcuts in prose.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/kbd"
+    },
+    {
+      "id": "separator",
+      "name": "Separator",
+      "category": "Element",
+      "selector": ".separator",
+      "kind": "class",
+      "description": "Divider between content. Solid or dashed; horizontal or vertical.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/separator"
+    },
+    {
+      "id": "input",
+      "name": "Input",
+      "category": "Form",
+      "selector": ".input",
+      "kind": "class",
+      "description": "Single-line text field. Recessed on the screen surface; focus flips the border to gold.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/input"
+    },
+    {
+      "id": "textarea",
+      "name": "Textarea",
+      "category": "Form",
+      "selector": ".textarea",
+      "kind": "class",
+      "description": "Multi-line text. Vertically resizable, same recessed treatment as Input.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/textarea"
+    },
+    {
+      "id": "select",
+      "name": "Select",
+      "category": "Form",
+      "selector": ".select",
+      "kind": "class",
+      "description": "Native select, restyled. Keeps the OS keyboard and mobile picker behaviour; gold chevron.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/select"
+    },
+    {
+      "id": "checkbox",
+      "name": "Checkbox",
+      "category": "Form",
+      "selector": ".checkbox",
+      "kind": "class",
+      "description": "Boolean toggle in a list. Square box with a pixel check when on.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/checkbox"
+    },
+    {
+      "id": "radio",
+      "name": "Radio",
+      "category": "Form",
+      "selector": ".radio",
+      "kind": "class",
+      "description": "One-of-many choice. Same square box, filled solid when selected.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/radio"
+    },
+    {
+      "id": "switch",
+      "name": "Switch",
+      "category": "Form",
+      "selector": ".switch",
+      "kind": "class",
+      "description": "On/off setting with immediate effect. Green (good) accent by default.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/switch"
+    },
+    {
+      "id": "field",
+      "name": "Field",
+      "category": "Form",
+      "selector": ".field",
+      "kind": "class",
+      "description": "Label + control + hint/error wrapper. The .err modifier turns the whole field critical.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/field"
+    },
+    {
+      "id": "colorpicker",
+      "name": "ColorPicker",
+      "category": "Form",
+      "selector": ".swatch",
+      "kind": "class",
+      "description": "Native color input, restyled as a square chip. The OS picker stays; only the swatch is themed.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/colorpicker"
+    },
+    {
+      "id": "inputdate",
+      "name": "InputDate",
+      "category": "Form",
+      "selector": ".input[type=\"date\"]",
+      "kind": "class",
+      "description": "Native date input in the 8-bit shell. Keeps the OS calendar; the picker glyph is tinted to the primary.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/inputdate"
+    },
+    {
+      "id": "inputtime",
+      "name": "InputTime",
+      "category": "Form",
+      "selector": ".input[type=\"time\"]",
+      "kind": "class",
+      "description": "Native time input, same shell as InputDate. OS clock picker, tinted glyph.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/inputtime"
+    },
+    {
+      "id": "checkboxgroup",
+      "name": "CheckboxGroup",
+      "category": "Form",
+      "selector": ".control-group",
+      "kind": "class",
+      "description": "A <fieldset> that groups related checkboxes under one legend. Add .row to lay them out horizontally.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/checkboxgroup"
+    },
+    {
+      "id": "radiogroup",
+      "name": "RadioGroup",
+      "category": "Form",
+      "selector": ".control-group",
+      "kind": "class",
+      "description": "Same .control-group fieldset, holding radios that share a name (single choice).",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/radiogroup"
+    },
+    {
+      "id": "inputnumber",
+      "name": "InputNumber",
+      "category": "Form",
+      "selector": "<nes-number>",
+      "kind": "element",
+      "description": "A − [n] + stepper over a native number input. <nes-number> wires the buttons; value clamps to min/max/step.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/inputnumber"
+    },
+    {
+      "id": "inputrating",
+      "name": "InputRating",
+      "category": "Form",
+      "selector": "<nes-rating>",
+      "kind": "element",
+      "description": "Star picker. Click or arrow-key to set; add readonly for a display-only score. size=lg enlarges it.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/inputrating"
+    },
+    {
+      "id": "pininput",
+      "name": "PinInput",
+      "category": "Form",
+      "selector": "<nes-pin>",
+      "kind": "element",
+      "description": "One-time-code / PIN entry: N single-char cells that auto-advance, accept a full paste, and fire nes:complete.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/pininput"
+    },
+    {
+      "id": "inputtags",
+      "name": "InputTags",
+      "category": "Form",
+      "selector": "<nes-tags>",
+      "kind": "element",
+      "description": "Type + Enter (or comma) to add a chip; × or Backspace removes. Value is the ordered tag list.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/inputtags"
+    },
+    {
+      "id": "fileupload",
+      "name": "FileUpload",
+      "category": "Form",
+      "selector": "<nes-file>",
+      "kind": "element",
+      "description": "Click-or-drop zone over a native file input. Lists chosen files with a remove button; supports multiple + accept.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/fileupload"
+    },
+    {
+      "id": "listbox",
+      "name": "Listbox",
+      "category": "Form",
+      "selector": "<nes-listbox>",
+      "kind": "element",
+      "description": "An always-open selectable list with roving focus. Single by default; add multiple for many. Options via child JSON.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/listbox"
+    },
+    {
+      "id": "inputmenu",
+      "name": "InputMenu",
+      "category": "Form",
+      "selector": "<nes-input-menu>",
+      "kind": "element",
+      "description": "Free-text combobox: type to filter suggestions, or keep any typed value. Autocomplete without locking the input.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/inputmenu"
+    },
+    {
+      "id": "selectmenu",
+      "name": "SelectMenu",
+      "category": "Form",
+      "selector": "<nes-select-menu>",
+      "kind": "element",
+      "description": "Strict searchable single-select: a trigger shows the label; the popup adds a filter box; the value must be one of the options.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/selectmenu"
+    },
+    {
+      "id": "form",
+      "name": "Form",
+      "category": "Form",
+      "selector": "<nes-form>",
+      "kind": "element",
+      "description": "A thin wrapper that runs native constraint validation, renders inline errors under each .field, and emits nes:submit with the data.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/form"
+    },
+    {
+      "id": "alert",
+      "name": "Alert",
+      "category": "Feedback",
+      "selector": ".callout",
+      "kind": "class",
+      "description": "Inline message with a semantic tone. Four shades map to meaning, not decoration.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/alert"
+    },
+    {
+      "id": "progress",
+      "name": "Progress",
+      "category": "Feedback",
+      "selector": ".pbar",
+      "kind": "class",
+      "description": "Determinate bar. Fills with a smooth ease so progress glides — striped so the amount reads at a glance.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/progress"
+    },
+    {
+      "id": "skeleton",
+      "name": "Skeleton",
+      "category": "Feedback",
+      "selector": ".skeleton",
+      "kind": "class",
+      "description": "Loading placeholder. The shimmer ticks in steps rather than gliding.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/skeleton"
+    },
+    {
+      "id": "toast",
+      "name": "Toast",
+      "category": "Feedback",
+      "selector": "toast()",
+      "kind": "helper",
+      "description": "Transient confirmation. Fires from JS, auto-dismisses, and is announced politely.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/toast"
+    },
+    {
+      "id": "tabs",
+      "name": "Tabs",
+      "category": "Navigation",
+      "selector": "<nes-tabs>",
+      "kind": "element",
+      "description": "Switch between panels. Roving focus and arrow keys, built from [data-label] children.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/tabs"
+    },
+    {
+      "id": "breadcrumb",
+      "name": "Breadcrumb",
+      "category": "Navigation",
+      "selector": ".breadcrumb",
+      "kind": "class",
+      "description": "Path to the current page. Mono, chevron-separated, last item current.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/breadcrumb"
+    },
+    {
+      "id": "pagination",
+      "name": "Pagination",
+      "category": "Navigation",
+      "selector": ".pagination",
+      "kind": "class",
+      "description": "Page through a list. The current page fills with the primary accent; ends disable.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/pagination"
+    },
+    {
+      "id": "modal",
+      "name": "Modal",
+      "category": "Overlay",
+      "selector": "<dialog class=\"modal\">",
+      "kind": "element",
+      "description": "Focus-trapping dialog on the native <dialog> element. Opens with showModal().",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/modal"
+    },
+    {
+      "id": "dropdown",
+      "name": "Dropdown",
+      "category": "Overlay",
+      "selector": "<details class=\"dropdown\">",
+      "kind": "element",
+      "description": "Disclosure menu on the native <details> element. Zero JavaScript.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/dropdown"
+    },
+    {
+      "id": "tooltip",
+      "name": "Tooltip",
+      "category": "Overlay",
+      "selector": "[data-tip]",
+      "kind": "attribute",
+      "description": "Label on hover or focus. Pure CSS via a data-tip attribute — no JavaScript.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/tooltip"
+    },
+    {
+      "id": "table",
+      "name": "Table",
+      "category": "Data",
+      "selector": ".table",
+      "kind": "class",
+      "description": "Rows of data. Mono uppercase headers, hover highlight, scrolls on overflow.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/table"
+    },
+    {
+      "id": "code",
+      "name": "Code block",
+      "category": "Data",
+      "selector": "<nes-code>",
+      "kind": "element",
+      "description": "Drop code in — <nes-code> highlights it and wires the copy button. No manual markup, no dependency.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/code"
+    },
+    {
+      "id": "accordion",
+      "name": "Accordion",
+      "category": "Data",
+      "selector": "<nes-collapsible>",
+      "kind": "element",
+      "description": "Collapsible section. <nes-collapsible> — the header button toggles the body.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/accordion"
+    },
+    {
+      "id": "stat",
+      "name": "Stat",
+      "category": "Data",
+      "selector": ".stat",
+      "kind": "class",
+      "description": "A single big number with a label. Tabular figures; accent-colored.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/stat"
+    },
+    {
+      "id": "range",
+      "name": "Range",
+      "category": "Form",
+      "selector": ".range",
+      "kind": "class",
+      "description": "Slider on a native <input type=range>. Recessed track, square accent thumb. Set data-accent to recolor.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/range"
+    },
+    {
+      "id": "segment",
+      "name": "Segmented control",
+      "category": "Form",
+      "selector": ".segment",
+      "kind": "class",
+      "description": "A row of connected buttons for a single choice — the pressed one fills with the accent. Great for a difficulty or view switch.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/segment"
+    },
+    {
+      "id": "spinner",
+      "name": "Spinner",
+      "category": "Feedback",
+      "selector": ".spinner",
+      "kind": "class",
+      "description": "A square loader whose lit edges spin smoothly — a loader with no curve. Three sizes; accent-ready.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/spinner"
+    },
+    {
+      "id": "meter",
+      "name": "Meter",
+      "category": "Feedback",
+      "selector": ".meter",
+      "kind": "class",
+      "description": "A discrete segmented gauge — HP / energy in blocks. Add .on to filled cells; good/warn/crit read as health states.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/meter"
+    },
+    {
+      "id": "empty",
+      "name": "Empty state",
+      "category": "Feedback",
+      "selector": ".empty",
+      "kind": "class",
+      "description": "The \"no data\" / \"game over\" panel. Square dashed edge, centered mono copy, and always an action out.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/empty"
+    },
+    {
+      "id": "steps",
+      "name": "Steps",
+      "category": "Navigation",
+      "selector": ".steps",
+      "kind": "class",
+      "description": "Stage progression. Mark cleared stages .done and the active one aria-current — reads as NES \"STAGE 1 · 2 · 3\".",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/steps"
+    },
+    {
+      "id": "drawer",
+      "name": "Drawer",
+      "category": "Overlay",
+      "selector": "<dialog class=\"drawer\">",
+      "kind": "element",
+      "description": "A side sheet on the native <dialog>. Slides in from the edge with showModal(); add .start to come from the left.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/drawer"
+    },
+    {
+      "id": "rating",
+      "name": "Rating",
+      "category": "Data",
+      "selector": ".rating",
+      "kind": "class",
+      "description": "A read-only score as a row of stars, filled up to .on. Gold by default; recolor with data-accent.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/rating"
+    },
+    {
+      "id": "stepper",
+      "name": "Number stepper",
+      "category": "Form",
+      "selector": ".stepper",
+      "kind": "class",
+      "description": "A − [n] + control around a native number input. Wire the buttons to step the value.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/stepper"
+    },
+    {
+      "id": "banner",
+      "name": "Banner",
+      "category": "Feedback",
+      "selector": ".banner",
+      "kind": "class",
+      "description": "A full-width, page-level notice — distinct from the inline .callout box. Accent-tinted, optional dismiss.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/banner"
+    },
+    {
+      "id": "navlist",
+      "name": "Nav list",
+      "category": "Navigation",
+      "selector": ".navlist",
+      "kind": "class",
+      "description": "Vertical sidebar navigation for app shells. Mark the current item with aria-current; recolor with data-accent.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/navlist"
+    },
+    {
+      "id": "datalist",
+      "name": "Description list",
+      "category": "Data",
+      "selector": ".datalist",
+      "kind": "class",
+      "description": "Key → value rows for a detail panel or settings summary. Built on native <dl>.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/datalist"
+    },
+    {
+      "id": "timeline",
+      "name": "Timeline",
+      "category": "Data",
+      "selector": ".timeline",
+      "kind": "class",
+      "description": "Vertical events on a connector line with square markers. Great for activity feeds and changelogs.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/timeline"
+    },
+    {
+      "id": "prose",
+      "name": "Prose",
+      "category": "Data",
+      "selector": ".prose",
+      "kind": "class",
+      "description": "Drop rendered markdown / CMS HTML inside — it restores semantic rhythm, square bullets, and accent links.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/prose"
+    }
+  ],
+  "counts": {
+    "concepts": 4,
+    "components": 56
+  }
+}
