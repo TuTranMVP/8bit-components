@@ -10,6 +10,8 @@
       "!index.html",
       "!docs.js",
       "!pnpm-lock.yaml",
+      "!*.min.css",
+      "!*.min.js",
       "!.claude/**",
       "!.codex/**",
       "!.agents/**"

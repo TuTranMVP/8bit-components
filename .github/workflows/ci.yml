@@ -23,5 +23,11 @@ jobs:
       - name: Lint + syntax
         run: pnpm check
 
+      - name: Rebuild minified bundle
+        run: pnpm build
+
+      - name: Fail if committed min files are stale
+        run: git diff --exit-code -- all.min.css elements.min.js
+
       - name: Verify publish contents (dry run)
         run: npm pack --dry-run
