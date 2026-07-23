@@ -12,6 +12,7 @@
       "!pnpm-lock.yaml",
       "!*.min.css",
       "!*.min.js",
+      "!examples/**",
       "!.claude/**",
       "!.codex/**",
       "!.agents/**"
