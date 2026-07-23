@@ -75,7 +75,7 @@ in [DESIGN.md](DESIGN.md).
 ## Fonts (bundled, self-hosted)
 
 - `fonts/nes-mono-400.woff2` / `-700.woff2` — NES Mono: chrome, labels, numbers, code.
-- `fonts/space-grotesk-var.woff2` — Space Grotesk variable (wght 300–700): body, đọc tiếng Việt có dấu.
+- `fonts/nes-sans-var.woff2` — NES Sans variable (wght 300–700): body, đọc tiếng Việt có dấu.
 
 Latin + Vietnamese subset (~171KB tổng), full diacritic coverage verified. License: `fonts/LICENSE-FONTS.txt` (SIL OFL 1.1).
 Zero-FOUT: preload 2 file critical — snippet trong comment đầu `tokens.css`.

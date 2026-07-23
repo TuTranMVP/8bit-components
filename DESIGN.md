@@ -66,7 +66,7 @@ Two faces, deliberately paired. Self-hosted woff2 (Latin + Vietnamese subset, fu
 
 - **`--font-mono` — NES Mono** (hi-res mono, *not* a lo-res pixel font): all chrome —
   labels, numbers, code, nav, headings. Uppercase + `--ls-chrome` tracking for labels.
-- **`--font-body` — Space Grotesk** (variable 300–700): body copy, prose. Sentence case.
+- **`--font-body` — NES Sans** (variable 300–700): body copy, prose. Sentence case.
 
 Type scale (rem, 16px base): `--fs-label .5625` · `--fs-chip .6875` · `--fs-h3 .75` ·
 `--fs-body .84375` · `--fs-h2 1.0625` · `--fs-h1 1.625`. Only rungs that are actually used exist.
