@@ -2134,6 +2134,250 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
         ),
     },
   },
+
+  /* -------------------------------------------------------- WAVE 3 · FORM */
+  {
+    id: "stepper",
+    cat: "Form",
+    name: "Number stepper",
+    desc: {
+      en: "A − [n] + control around a native number input. Wire the buttons to step the value.",
+      vi: "Điều khiển − [n] + quanh input number gốc. Nối nút để tăng/giảm giá trị.",
+    },
+    body: {
+      en: () =>
+        stepperStage("Players") +
+        cb(
+          `<div class="stepper">
+  <button type="button" aria-label="Decrease">−</button>
+  <input type="number" value="2" min="1" max="8" aria-label="Players">
+  <button type="button" aria-label="Increase">+</button>
+</div>`,
+        ) +
+        a11y(
+          "Keep the real <code>&lt;input type=\"number\"&gt;</code> so typing and mobile keypads work; label the −/+ buttons (<code>aria-label</code>) and update the input value on click.",
+        ),
+      vi: () =>
+        stepperStage("Người chơi") +
+        cb(
+          `<div class="stepper">
+  <button type="button" aria-label="Giảm">−</button>
+  <input type="number" value="2" min="1" max="8" aria-label="Người chơi">
+  <button type="button" aria-label="Tăng">+</button>
+</div>`,
+        ) +
+        a11y(
+          "Giữ <code>&lt;input type=\"number\"&gt;</code> gốc để gõ và bàn phím số mobile hoạt động; đặt <code>aria-label</code> cho nút −/+ và cập nhật giá trị input khi click.",
+        ),
+    },
+  },
+
+  /* ---------------------------------------------------- WAVE 3 · FEEDBACK */
+  {
+    id: "banner",
+    cat: "Feedback",
+    name: "Banner",
+    desc: {
+      en: "A full-width, page-level notice — distinct from the inline .callout box. Accent-tinted, optional dismiss.",
+      vi: "Thông báo full-width cấp trang — khác hộp .callout inline. Nền pha màu nhấn, có thể đóng.",
+    },
+    body: {
+      en: () =>
+        bannerStage({ msg: "<b>New:</b> Steps, Timeline and Prose just landed.", close: "✕" }) +
+        cb(
+          `<div class="banner" data-accent="cyan" role="status">
+  <span><b>New:</b> Steps, Timeline and Prose just landed.</span>
+  <button class="close" aria-label="Dismiss">✕</button>
+</div>`,
+        ) +
+        a11y(
+          "Use <code>role=\"status\"</code> for a non-urgent notice (<code>role=\"alert\"</code> if it needs immediate attention). Give the dismiss button an <code>aria-label</code> and hide the banner on click.",
+        ),
+      vi: () =>
+        bannerStage({ msg: "<b>Mới:</b> Steps, Timeline và Prose vừa ra mắt.", close: "✕" }) +
+        cb(
+          `<div class="banner" data-accent="cyan" role="status">
+  <span><b>Mới:</b> Steps, Timeline và Prose vừa ra mắt.</span>
+  <button class="close" aria-label="Đóng">✕</button>
+</div>`,
+        ) +
+        a11y(
+          "Dùng <code>role=\"status\"</code> cho thông báo không khẩn (<code>role=\"alert\"</code> nếu cần chú ý ngay). Đặt <code>aria-label</code> cho nút đóng và ẩn banner khi click.",
+        ),
+    },
+  },
+
+  /* -------------------------------------------------- WAVE 3 · NAVIGATION */
+  {
+    id: "navlist",
+    cat: "Navigation",
+    name: "Nav list",
+    desc: {
+      en: "Vertical sidebar navigation for app shells. Mark the current item with aria-current; recolor with data-accent.",
+      vi: "Điều hướng sidebar dọc cho app shell. Đánh dấu mục hiện tại bằng aria-current; đổi màu bằng data-accent.",
+    },
+    body: {
+      en: () =>
+        navlistStage(["Overview", "Runs", "Settings"], "Runs", "Menu") +
+        cb(
+          `<nav class="navlist" aria-label="Main">
+  <span class="lab">Menu</span>
+  <a href="#">Overview</a>
+  <a href="#" aria-current="page">Runs</a>
+  <a href="#">Settings</a>
+</nav>`,
+        ) +
+        a11y(
+          "Wrap in <code>&lt;nav&gt;</code> with an <code>aria-label</code>, use real <code>&lt;a&gt;</code> for links, and mark the active one with <code>aria-current=\"page\"</code> — the colour is not read alone.",
+        ),
+      vi: () =>
+        navlistStage(["Tổng quan", "Lượt chạy", "Cài đặt"], "Lượt chạy", "Menu") +
+        cb(
+          `<nav class="navlist" aria-label="Chính">
+  <span class="lab">Menu</span>
+  <a href="#">Tổng quan</a>
+  <a href="#" aria-current="page">Lượt chạy</a>
+  <a href="#">Cài đặt</a>
+</nav>`,
+        ) +
+        a11y(
+          "Bọc trong <code>&lt;nav&gt;</code> có <code>aria-label</code>, dùng <code>&lt;a&gt;</code> thật cho link, và đánh dấu mục active bằng <code>aria-current=\"page\"</code> — màu không được screen reader đọc.",
+        ),
+    },
+  },
+
+  /* -------------------------------------------------------- WAVE 3 · DATA */
+  {
+    id: "datalist",
+    cat: "Data",
+    name: "Description list",
+    desc: {
+      en: "Key → value rows for a detail panel or settings summary. Built on native <dl>.",
+      vi: "Các hàng khoá → giá trị cho panel chi tiết hay tóm tắt cài đặt. Dựng trên <dl> gốc.",
+    },
+    body: {
+      en: () =>
+        datalistStage([
+          ["Model", "claude-haiku-4-5"],
+          ["Max tokens", "512"],
+          ["Temperature", "0"],
+          ["Status", '<span class="badge clear">READY</span>'],
+        ]) +
+        cb(
+          `<dl class="datalist">
+  <dt>Model</dt><dd>claude-haiku-4-5</dd>
+  <dt>Max tokens</dt><dd>512</dd>
+  <dt>Status</dt><dd><span class="badge clear">READY</span></dd>
+</dl>`,
+        ) +
+        a11y(
+          "Use native <code>&lt;dl&gt;</code>/<code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code> so the term–value pairing is exposed to assistive tech, not just visually aligned.",
+        ),
+      vi: () =>
+        datalistStage([
+          ["Model", "claude-haiku-4-5"],
+          ["Max tokens", "512"],
+          ["Nhiệt độ", "0"],
+          ["Trạng thái", '<span class="badge clear">SẴN SÀNG</span>'],
+        ]) +
+        cb(
+          `<dl class="datalist">
+  <dt>Model</dt><dd>claude-haiku-4-5</dd>
+  <dt>Max tokens</dt><dd>512</dd>
+  <dt>Trạng thái</dt><dd><span class="badge clear">SẴN SÀNG</span></dd>
+</dl>`,
+        ) +
+        a11y(
+          "Dùng <code>&lt;dl&gt;</code>/<code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code> gốc để cặp khoá–giá trị được công nghệ hỗ trợ hiểu, không chỉ canh hàng bằng mắt.",
+        ),
+    },
+  },
+  {
+    id: "timeline",
+    cat: "Data",
+    name: "Timeline",
+    desc: {
+      en: "Vertical events on a connector line with square markers. Great for activity feeds and changelogs.",
+      vi: "Chuỗi sự kiện dọc trên đường nối với marker vuông. Hợp cho activity feed và changelog.",
+    },
+    body: {
+      en: () =>
+        timelineStage([
+          ["09:41", "Run started", "Config loaded, connection verified."],
+          ["09:43", "Stage 1 clear", "+150 XP awarded."],
+          ["09:47", "Shipped", "Deployed to production."],
+        ]) +
+        cb(
+          `<ol class="timeline" data-accent="good">
+  <li>
+    <div class="time">09:41</div>
+    <div class="title">Run started</div>
+    <p>Config loaded, connection verified.</p>
+  </li>
+  <li>…</li>
+</ol>`,
+        ) +
+        a11y(
+          "An ordered list <code>&lt;ol&gt;</code> conveys sequence. The marker is decorative (<code>::before</code>) — the time and title carry the meaning.",
+        ),
+      vi: () =>
+        timelineStage([
+          ["09:41", "Bắt đầu chạy", "Đã nạp config, xác minh kết nối."],
+          ["09:43", "Clear màn 1", "Cộng +150 XP."],
+          ["09:47", "Đã ship", "Triển khai lên production."],
+        ]) +
+        cb(
+          `<ol class="timeline" data-accent="good">
+  <li>
+    <div class="time">09:41</div>
+    <div class="title">Bắt đầu chạy</div>
+    <p>Đã nạp config, xác minh kết nối.</p>
+  </li>
+  <li>…</li>
+</ol>`,
+        ) +
+        a11y(
+          "Danh sách có thứ tự <code>&lt;ol&gt;</code> truyền tải trình tự. Marker chỉ trang trí (<code>::before</code>) — thời gian và tiêu đề mới tải nghĩa.",
+        ),
+    },
+  },
+  {
+    id: "prose",
+    cat: "Data",
+    name: "Prose",
+    desc: {
+      en: "Drop rendered markdown / CMS HTML inside — it restores semantic rhythm, square bullets, and accent links.",
+      vi: "Bỏ HTML markdown / CMS đã render vào — tự phục hồi nhịp, bullet vuông và link màu nhấn.",
+    },
+    body: {
+      en: () =>
+        proseStage("en") +
+        cb(
+          `<article class="prose">
+  <h2>Heading</h2>
+  <p>Body copy with a <a href="#">link</a> and <code>inline code</code>.</p>
+  <ul><li>Square bullets</li><li>Restored from the reset</li></ul>
+  <blockquote>A quiet aside.</blockquote>
+</article>`,
+        ) +
+        a11y(
+          "Prose only styles what's inside it — headings, lists, and links keep their native semantics. Set <code>data-accent</code> on <code>.prose</code> to recolor links and markers.",
+        ),
+      vi: () =>
+        proseStage("vi") +
+        cb(
+          `<article class="prose">
+  <h2>Tiêu đề</h2>
+  <p>Đoạn văn có <a href="#">link</a> và <code>inline code</code>.</p>
+  <ul><li>Bullet vuông</li><li>Phục hồi từ reset</li></ul>
+  <blockquote>Một ghi chú nhỏ.</blockquote>
+</article>`,
+        ) +
+        a11y(
+          "Prose chỉ style thứ bên trong nó — heading, list, link giữ ngữ nghĩa gốc. Đặt <code>data-accent</code> trên <code>.prose</code> để đổi màu link và marker.",
+        ),
+    },
+  },
 ];
 
 /* --------------------------------------- shared, language-neutral demos */
@@ -2395,6 +2639,93 @@ function drawerStage(t) {
          <button class="btn ghost">${t.close}</button>
        </form>
      </dialog>`,
+  );
+}
+
+function stepperStage(label) {
+  return stage(
+    "STEPPER",
+    `<label class="field" style="align-items:flex-start">
+      <span class="label">${label}</span>
+      <div class="stepper">
+        <button type="button" aria-label="−">−</button>
+        <input type="number" value="2" min="1" max="8" aria-label="${label}">
+        <button type="button" aria-label="+">+</button>
+      </div>
+    </label>`,
+    "col",
+  );
+}
+function bannerStage(t) {
+  return stage(
+    "BANNER",
+    `<div class="banner" data-accent="cyan" role="status" style="inline-size:100%">
+      <span>${t.msg}</span>
+      <button class="close" aria-label="Dismiss">${t.close}</button>
+    </div>`,
+    "col",
+  );
+}
+function navlistStage(items, current, lab) {
+  const links = items
+    .map((n) => `<a href="#/navlist"${n === current ? ' aria-current="page"' : ""}>${n}</a>`)
+    .join("\n      ");
+  return stage(
+    "NAVLIST",
+    `<nav class="navlist" aria-label="Demo" style="inline-size:100%;max-inline-size:240px">
+      <span class="lab">${lab}</span>
+      ${links}
+    </nav>`,
+    "col",
+  );
+}
+function datalistStage(rows) {
+  return stage(
+    "DATALIST",
+    `<dl class="datalist" style="inline-size:100%;max-inline-size:420px">${rows
+      .map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`)
+      .join("")}</dl>`,
+    "col",
+  );
+}
+function timelineStage(items) {
+  return stage(
+    "TIMELINE",
+    `<ol class="timeline" data-accent="good" style="inline-size:100%;max-inline-size:460px">${items
+      .map(
+        ([time, title, body]) =>
+          `<li><div class="time">${time}</div><div class="title">${title}</div><p class="doc-p" style="margin:var(--sp-1) 0 0">${body}</p></li>`,
+      )
+      .join("")}</ol>`,
+    "col",
+  );
+}
+function proseStage(lang) {
+  const t =
+    lang === "vi"
+      ? {
+          h: "Tiêu đề",
+          p: 'Đoạn văn có <a href="#/prose">link</a> và <code>inline code</code>.',
+          a: "Bullet vuông",
+          b: "Phục hồi từ reset",
+          q: "Một ghi chú nhỏ.",
+        }
+      : {
+          h: "Heading",
+          p: 'Body copy with a <a href="#/prose">link</a> and <code>inline code</code>.',
+          a: "Square bullets",
+          b: "Restored from the reset",
+          q: "A quiet aside.",
+        };
+  return stage(
+    "PROSE",
+    `<article class="prose" style="inline-size:100%">
+      <h2 class="doc-h2" style="margin:0">${t.h}</h2>
+      <p>${t.p}</p>
+      <ul><li>${t.a}</li><li>${t.b}</li></ul>
+      <blockquote>${t.q}</blockquote>
+    </article>`,
+    "col",
   );
 }
 

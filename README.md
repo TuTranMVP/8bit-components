@@ -51,11 +51,11 @@ declared so bundlers keep the CSS and the custom-element registration.
 | Category   | Components                                                                     |
 |------------|--------------------------------------------------------------------------------|
 | Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator                        |
-| Form       | Input · Textarea · Select · Checkbox · Radio · Switch · Field · Range · Segmented control |
-| Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast · Spinner · Meter · Empty state |
-| Navigation | Tabs (`<nes-tabs>`) · Breadcrumb · Pagination · Steps                          |
+| Form       | Input · Textarea · Select · Checkbox · Radio · Switch · Field · Range · Segmented control · Number stepper |
+| Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast · Spinner · Meter · Empty state · Banner |
+| Navigation | Tabs (`<nes-tabs>`) · Breadcrumb · Pagination · Steps · Nav list                          |
 | Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) |
-| Data       | Table · Code block · Accordion (`<nes-collapsible>`) · Stat · Rating           |
+| Data       | Table · Code block · Accordion (`<nes-collapsible>`) · Stat · Rating · Description list · Timeline · Prose           |
 
 Run the docs site locally with `pnpm demo`, then open `/docs.html`.
 
