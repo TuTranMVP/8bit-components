@@ -74,7 +74,7 @@ in [DESIGN.md](DESIGN.md).
 
 ## Fonts (bundled, self-hosted)
 
-- `fonts/ioskeley-mono-400.woff2` / `-700.woff2` — IoskeleyMono (Iosevka build): chrome, labels, numbers, code.
+- `fonts/nes-mono-400.woff2` / `-700.woff2` — NES Mono: chrome, labels, numbers, code.
 - `fonts/space-grotesk-var.woff2` — Space Grotesk variable (wght 300–700): body, đọc tiếng Việt có dấu.
 
 Latin + Vietnamese subset (~171KB tổng), full diacritic coverage verified. License: `fonts/LICENSE-FONTS.txt` (SIL OFL 1.1).
