@@ -335,8 +335,8 @@
 
   /* custom elements are inline by default — make the block-level ones fill
      their container so long code scrolls INSIDE (no page-wide overflow). */
-  mvp-code,
-  mvp-tabs {
+  nes-code,
+  nes-tabs {
     display: block;
   }
 

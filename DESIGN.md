@@ -132,7 +132,7 @@ is `tokens, base, components, utilities` so page authors can override without `!
 - **Focus is a feature, not an outline.** `:focus-visible` flips the border to `--gold` (+ ring).
   Never `outline:none` without a visible replacement.
 - Native elements first: real `<button>`, `<dialog>`, `<details>`, `<select>`, `<input>` — free
-  keyboard + AT behaviour. Add ARIA only to fill gaps (e.g. `<mvp-tabs>` = full WAI-ARIA tabs).
+  keyboard + AT behaviour. Add ARIA only to fill gaps (e.g. `<nes-tabs>` = full WAI-ARIA tabs).
 - Color never alone: pair `crit`/`warn` states with text.
 - Respect `prefers-reduced-motion`. Ship responsive down to mobile (sidebar → drawer).
 
@@ -177,9 +177,9 @@ Words are design material — they help someone use the thing.
 | Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator                        |
 | Form       | Input · Textarea · Select · Checkbox · Radio · Switch · Field · Range · Segmented control |
 | Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast · Spinner · Meter · Empty state |
-| Navigation | Tabs (`<mvp-tabs>`) · Breadcrumb · Pagination · Steps                          |
+| Navigation | Tabs (`<nes-tabs>`) · Breadcrumb · Pagination · Steps                          |
 | Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) |
-| Data       | Table · Code block · Accordion (`<mvp-collapsible>`) · Stat · Rating           |
+| Data       | Table · Code block · Accordion (`<nes-collapsible>`) · Stat · Rating           |
 
 Live docs: `pnpm demo`, then open `/docs.html`.
 

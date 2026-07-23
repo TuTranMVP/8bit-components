@@ -1,7 +1,7 @@
 /* ==========================================================================
    8-BIT NES · elements.js  —  stateful layer
    Light-DOM Web Components: global tokens.css/components.css apply directly.
-   Cross-framework: <mvp-*> works in HTML, Vue3/Nuxt, React 19 with no wrapper.
+   Cross-framework: <nes-*> works in HTML, Vue3/Nuxt, React 19 with no wrapper.
    Import once:  <script type="module" src="./elements.js"></script>
    ========================================================================== */
 
@@ -25,7 +25,7 @@ export const store = {
 };
 
 /* ------------------------------------------------------------- chiptune SFX */
-let _mute = store.get("mvp_mute") === "1";
+let _mute = store.get("nes_mute") === "1";
 let _actx = null;
 export const SFX = {
   coin: [
@@ -70,8 +70,8 @@ export function bleep(seq) {
 }
 export function setMute(m) {
   _mute = !!m;
-  store.set("mvp_mute", _mute ? "1" : "0");
-  document.dispatchEvent(new CustomEvent("mvp:mute", { detail: { muted: _mute } }));
+  store.set("nes_mute", _mute ? "1" : "0");
+  document.dispatchEvent(new CustomEvent("nes:mute", { detail: { muted: _mute } }));
 }
 export function isMuted() {
   return _mute;
@@ -106,9 +106,9 @@ export function floatXP(el, text = "+50 XP", color = "var(--gold)") {
   ).finished.finally(() => f.remove());
 }
 
-/* fire XP into the global bus (an <mvp-hud> may be listening) */
+/* fire XP into the global bus (an <nes-hud> may be listening) */
 export function grantXP(amount, srcEl) {
-  document.dispatchEvent(new CustomEvent("mvp:xp", { detail: { amount } }));
+  document.dispatchEvent(new CustomEvent("nes:xp", { detail: { amount } }));
   if (srcEl) floatXP(srcEl, `+${amount} XP`);
 }
 
@@ -139,21 +139,21 @@ export function toast(msg, opts = {}) {
 }
 
 /* ========================================================================== */
-/*  <mvp-sound>  —  mute toggle button                                        */
-/*  <mvp-sound></mvp-sound>                                                    */
+/*  <nes-sound>  —  mute toggle button                                        */
+/*  <nes-sound></nes-sound>                                                    */
 /* ========================================================================== */
-class MvpSound extends HTMLElement {
+class NesSound extends HTMLElement {
   connectedCallback() {
     this.render();
     this._onMute = () => this.render();
-    document.addEventListener("mvp:mute", this._onMute);
+    document.addEventListener("nes:mute", this._onMute);
     this.addEventListener("click", () => {
       setMute(!isMuted());
       if (!isMuted()) bleep(SFX.coin);
     });
   }
   disconnectedCallback() {
-    document.removeEventListener("mvp:mute", this._onMute);
+    document.removeEventListener("nes:mute", this._onMute);
   }
   render() {
     const m = isMuted();
@@ -164,13 +164,13 @@ class MvpSound extends HTMLElement {
 }
 
 /* ========================================================================== */
-/*  <mvp-collapsible>  —  header toggles body                                 */
-/*  <mvp-collapsible open>                                                     */
+/*  <nes-collapsible>  —  header toggles body                                 */
+/*  <nes-collapsible open>                                                     */
 /*    <span slot="head">STAGE 1 · Config</span>                                */
 /*    ...body...                                                               */
-/*  </mvp-collapsible>                                                         */
+/*  </nes-collapsible>                                                         */
 /* ========================================================================== */
-class MvpCollapsible extends HTMLElement {
+class NesCollapsible extends HTMLElement {
   connectedCallback() {
     const open = this.hasAttribute("open");
     const head = this.querySelector('[slot="head"]');
@@ -209,12 +209,12 @@ class MvpCollapsible extends HTMLElement {
 }
 
 /* ========================================================================== */
-/*  <mvp-hud>  —  LV + XP bar, listens on the mvp:xp bus                       */
-/*  <mvp-hud ns="quest" max-xp="1600" per-level="400"></mvp-hud>               */
+/*  <nes-hud>  —  LV + XP bar, listens on the nes:xp bus                       */
+/*  <nes-hud ns="quest" max-xp="1600" per-level="400"></nes-hud>               */
 /* ========================================================================== */
-class MvpHud extends HTMLElement {
+class NesHud extends HTMLElement {
   connectedCallback() {
-    this.ns = this.getAttribute("ns") || "mvp";
+    this.ns = this.getAttribute("ns") || "nes";
     this.perLvl = +(this.getAttribute("per-level") || 400);
     this.maxXp = +(this.getAttribute("max-xp") || this.perLvl * 4);
     this.xp = +(store.get(`${this.ns}_xp`) || 0);
@@ -222,10 +222,10 @@ class MvpHud extends HTMLElement {
     this._onXP = (e) => {
       this.add(e.detail.amount);
     };
-    document.addEventListener("mvp:xp", this._onXP);
+    document.addEventListener("nes:xp", this._onXP);
   }
   disconnectedCallback() {
-    document.removeEventListener("mvp:xp", this._onXP);
+    document.removeEventListener("nes:xp", this._onXP);
   }
   add(n) {
     this.xp = Math.min(this.xp + n, this.maxXp);
@@ -249,14 +249,14 @@ class MvpHud extends HTMLElement {
 }
 
 /* ========================================================================== */
-/*  <mvp-quiz>  —  single MCQ, config via child JSON script                   */
-/*  <mvp-quiz xp="50">                                                         */
+/*  <nes-quiz>  —  single MCQ, config via child JSON script                   */
+/*  <nes-quiz xp="50">                                                         */
 /*    <script type="application/json">                                         */
 /*    { "q":"...", "options":["A","B","C"], "answer":1, "explain":"..." }       */
 /*    </script>                                                                */
-/*  </mvp-quiz>                                                                */
+/*  </nes-quiz>                                                                */
 /* ========================================================================== */
-class MvpQuiz extends HTMLElement {
+class NesQuiz extends HTMLElement {
   connectedCallback() {
     let cfg = {};
     const s = this.querySelector('script[type="application/json"]');
@@ -324,24 +324,24 @@ class MvpQuiz extends HTMLElement {
       );
     }
     this.dispatchEvent(
-      new CustomEvent("mvp:answer", { bubbles: true, detail: { correct, choice: i } }),
+      new CustomEvent("nes:answer", { bubbles: true, detail: { correct, choice: i } }),
     );
   }
 }
 
 /* ========================================================================== */
-/*  <mvp-tabs>  —  accessible tabs, built from children with [data-label]      */
-/*  <mvp-tabs>                                                                  */
+/*  <nes-tabs>  —  accessible tabs, built from children with [data-label]      */
+/*  <nes-tabs>                                                                  */
 /*    <section data-label="Install" selected>...</section>                      */
 /*    <section data-label="Usage">...</section>                                 */
-/*  </mvp-tabs>                                                                 */
+/*  </nes-tabs>                                                                 */
 /* ========================================================================== */
-class MvpTabs extends HTMLElement {
+class NesTabs extends HTMLElement {
   connectedCallback() {
     const panels = [...this.children].filter((el) => el.hasAttribute("data-label"));
     if (!panels.length) return;
-    MvpTabs._n = (MvpTabs._n || 0) + 1;
-    const uid = `tabs-${MvpTabs._n}`;
+    NesTabs._n = (NesTabs._n || 0) + 1;
+    const uid = `tabs-${NesTabs._n}`;
 
     const list = document.createElement("div");
     list.className = "tablist";
@@ -399,8 +399,8 @@ class MvpTabs extends HTMLElement {
 }
 
 /* ========================================================================== */
-/*  <mvp-code>  —  drop-in syntax highlight + copy. Hides all complexity:      */
-/*  <mvp-code>{ "model": "haiku" }</mvp-code>  → highlighted, copyable.         */
+/*  <nes-code>  —  drop-in syntax highlight + copy. Hides all complexity:      */
+/*  <nes-code>{ "model": "haiku" }</nes-code>  → highlighted, copyable.         */
 /*  One tiny universal tokenizer (comments · strings · tags · numbers · keys); */
 /*  no language attr, no dependency. Escape < in raw markup, or it's parsed.    */
 /* ========================================================================== */
@@ -423,7 +423,7 @@ export function highlightCode(code) {
   return out + _cesc(code.slice(last));
 }
 
-class MvpCode extends HTMLElement {
+class NesCode extends HTMLElement {
   connectedCallback() {
     if (this._done) return;
     this._done = true;
@@ -444,12 +444,12 @@ class MvpCode extends HTMLElement {
 
 /* ------------------------------------------------------------- self-register */
 const defs = {
-  "mvp-sound": MvpSound,
-  "mvp-collapsible": MvpCollapsible,
-  "mvp-hud": MvpHud,
-  "mvp-quiz": MvpQuiz,
-  "mvp-tabs": MvpTabs,
-  "mvp-code": MvpCode,
+  "nes-sound": NesSound,
+  "nes-collapsible": NesCollapsible,
+  "nes-hud": NesHud,
+  "nes-quiz": NesQuiz,
+  "nes-tabs": NesTabs,
+  "nes-code": NesCode,
 };
 for (const [tag, cls] of Object.entries(defs)) {
   if (!customElements.get(tag)) customElements.define(tag, cls);

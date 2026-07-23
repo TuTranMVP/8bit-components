@@ -92,7 +92,7 @@
   <header class="topbar">
     <div class="wrap">
       <span class="brand">◈ 8-BIT NES</span>
-      <mvp-hud ns="demo" per-level="150" max-xp="600" style="flex:1"></mvp-hud>
+      <nes-hud ns="demo" per-level="150" max-xp="600" style="flex:1"></nes-hud>
     </div>
   </header>
 
@@ -165,16 +165,16 @@
 
     <!-- CARDS (collapsible web component) -->
     <section>
-      <span class="lab">Card / Stage · &lt;mvp-collapsible&gt;</span>
+      <span class="lab">Card / Stage · &lt;nes-collapsible&gt;</span>
       <div style="display:flex;flex-direction:column;gap:var(--sp-4)">
-        <mvp-collapsible open accent="gold">
+        <nes-collapsible open accent="gold">
           <span slot="head">STAGE 1 · Model &amp; budget</span>
           <p>Chọn model theo tác vụ, không theo mặc định. Kẹp <code>maxTokens</code> để chặn chi phí trôi.</p>
-        </mvp-collapsible>
-        <mvp-collapsible accent="cyan">
+        </nes-collapsible>
+        <nes-collapsible accent="cyan">
           <span slot="head">STAGE 2 · Tools &amp; MCP</span>
           <p>Khai báo tool tối thiểu cần. Mỗi tool thừa = thêm token mỗi lượt gọi.</p>
-        </mvp-collapsible>
+        </nes-collapsible>
       </div>
     </section>
 
@@ -195,8 +195,8 @@
 
     <!-- QUIZ (web component) -->
     <section>
-      <span class="lab">Quiz · &lt;mvp-quiz&gt; — trả lời đúng +50 XP vào HUD</span>
-      <mvp-quiz xp="50">
+      <span class="lab">Quiz · &lt;nes-quiz&gt; — trả lời đúng +50 XP vào HUD</span>
+      <nes-quiz xp="50">
         <script type="application/json">
       {
         "q": "Tác vụ phân loại ngắn — cấu hình nào tiết kiệm token nhất?",
@@ -209,7 +209,7 @@
         "explain": "Tác vụ đơn giản không cần model lớn. Kẹp output thấp + temp 0 = rẻ, ổn định, đủ tốt."
       }
       </script>
-      </mvp-quiz>
+      </nes-quiz>
     </section>
 
     <!-- PROGRESS -->
@@ -222,7 +222,7 @@
   </main>
 
   <!-- nav pill: only chrome allowed to round -->
-  <div class="nav-pill"><mvp-sound></mvp-sound></div>
+  <div class="nav-pill"><nes-sound></nes-sound></div>
 
   <script type="module" src="./elements.js"></script>
 </body>

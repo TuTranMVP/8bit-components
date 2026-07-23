@@ -45,8 +45,8 @@ const slug = (s) =>
     .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "") || "sec";
-// abstraction: <mvp-code> highlights + wires copy itself — docs just hand it code.
-const cb = (code) => `<mvp-code>${esc(code)}</mvp-code>`;
+// abstraction: <nes-code> highlights + wires copy itself — docs just hand it code.
+const cb = (code) => `<nes-code>${esc(code)}</nes-code>`;
 const stage = (cap, html, mod = "") => `<div class="stage ${mod}" data-cap="${cap}">${html}</div>`;
 const h2 = (t) => `<h2 class="doc-h2">${t}</h2>`;
 const p = (t) => `<p class="doc-p">${t}</p>`;
@@ -149,7 +149,7 @@ const GS = [
         h2("Add the package") +
         cb("pnpm add 8bit-nes") +
         h2("Wire it up") +
-        `<mvp-tabs style="display:block">
+        `<nes-tabs style="display:block">
           <section data-label="Plain HTML" selected>${cb(
             `<link rel="stylesheet" href="tokens.css">
 <link rel="stylesheet" href="base.css">
@@ -161,17 +161,17 @@ const GS = [
 import "8bit-nes/all.css";
 import "8bit-nes";
 
-// tell the compiler mvp-* are custom elements
-compilerOptions: { isCustomElement: (t) => t.startsWith("mvp-") }`,
+// tell the compiler nes-* are custom elements
+compilerOptions: { isCustomElement: (t) => t.startsWith("nes-") }`,
           )}</section>
           <section data-label="React 19">${cb(
             `import "8bit-nes/all.css";
 import "8bit-nes";
 
 // React 19 passes props + listens to custom-element events natively
-<mvp-hud ns="quest" per-level="150" max-xp="600" />`,
+<nes-hud ns="quest" per-level="150" max-xp="600" />`,
           )}</section>
-        </mvp-tabs>` +
+        </nes-tabs>` +
         h2("Granular imports") +
         p("Prefer the pieces? Import only what you need — order matters: tokens → base → components.") +
         cb(
@@ -193,7 +193,7 @@ import "8bit-nes/components.css";`,
         h2("Cài package") +
         cb("pnpm add 8bit-nes") +
         h2("Kết nối") +
-        `<mvp-tabs style="display:block">
+        `<nes-tabs style="display:block">
           <section data-label="HTML thuần" selected>${cb(
             `<link rel="stylesheet" href="tokens.css">
 <link rel="stylesheet" href="base.css">
@@ -205,17 +205,17 @@ import "8bit-nes/components.css";`,
 import "8bit-nes/all.css";
 import "8bit-nes";
 
-// báo compiler biết mvp-* là custom element
-compilerOptions: { isCustomElement: (t) => t.startsWith("mvp-") }`,
+// báo compiler biết nes-* là custom element
+compilerOptions: { isCustomElement: (t) => t.startsWith("nes-") }`,
           )}</section>
           <section data-label="React 19">${cb(
             `import "8bit-nes/all.css";
 import "8bit-nes";
 
 // React 19 truyền prop + nghe event custom-element sẵn
-<mvp-hud ns="quest" per-level="150" max-xp="600" />`,
+<nes-hud ns="quest" per-level="150" max-xp="600" />`,
           )}</section>
-        </mvp-tabs>` +
+        </nes-tabs>` +
         h2("Import lẻ") +
         p("Chỉ cần vài phần? Import đúng thứ bạn dùng — thứ tự quan trọng: tokens → base → components.") +
         cb(
@@ -1366,19 +1366,19 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       en: () =>
         stage(
           "TABS",
-          `<mvp-tabs style="display:block;inline-size:100%">
+          `<nes-tabs style="display:block;inline-size:100%">
             <section data-label="Overview" selected>${p("Score your setup, then fix one file at a time.")}</section>
             <section data-label="Config">${p("Clamp <code>maxTokens</code>; declare only the tools you need.")}</section>
             <section data-label="Logs">${p("Every wasted tool is more tokens per call.")}</section>
-          </mvp-tabs>`,
+          </nes-tabs>`,
           "col",
         ) +
         cb(
-          `<mvp-tabs>
+          `<nes-tabs>
   <section data-label="Overview" selected>…</section>
   <section data-label="Config">…</section>
   <section data-label="Logs">…</section>
-</mvp-tabs>`,
+</nes-tabs>`,
         ) +
         a11y(
           "Implements the WAI-ARIA tabs pattern: <code>tablist</code>/<code>tab</code>/<code>tabpanel</code> roles, <code>aria-selected</code>, Left/Right arrow navigation, and roving <code>tabindex</code>.",
@@ -1386,19 +1386,19 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       vi: () =>
         stage(
           "TABS",
-          `<mvp-tabs style="display:block;inline-size:100%">
+          `<nes-tabs style="display:block;inline-size:100%">
             <section data-label="Tổng quan" selected>${p("Chấm điểm setup, rồi sửa từng file một.")}</section>
             <section data-label="Cấu hình">${p("Kẹp <code>maxTokens</code>; chỉ khai báo tool bạn cần.")}</section>
             <section data-label="Logs">${p("Mỗi tool thừa là thêm token mỗi lượt gọi.")}</section>
-          </mvp-tabs>`,
+          </nes-tabs>`,
           "col",
         ) +
         cb(
-          `<mvp-tabs>
+          `<nes-tabs>
   <section data-label="Tổng quan" selected>…</section>
   <section data-label="Cấu hình">…</section>
   <section data-label="Logs">…</section>
-</mvp-tabs>`,
+</nes-tabs>`,
         ) +
         a11y(
           "Cài theo mẫu WAI-ARIA tabs: role <code>tablist</code>/<code>tab</code>/<code>tabpanel</code>, <code>aria-selected</code>, điều hướng phím Trái/Phải, và roving <code>tabindex</code>.",
@@ -1680,51 +1680,51 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
     cat: "Data",
     name: "Code block",
     desc: {
-      en: "Drop code in — <mvp-code> highlights it and wires the copy button. No manual markup, no dependency.",
-      vi: "Bỏ code vào — <mvp-code> tự tô màu và gắn nút copy. Không markup thủ công, không phụ thuộc.",
+      en: "Drop code in — <nes-code> highlights it and wires the copy button. No manual markup, no dependency.",
+      vi: "Bỏ code vào — <nes-code> tự tô màu và gắn nút copy. Không markup thủ công, không phụ thuộc.",
     },
     body: {
       en: () =>
         stage(
-          "MVP-CODE",
-          `<mvp-code style="inline-size:100%">{
+          "NES-CODE",
+          `<nes-code style="inline-size:100%">{
   "model": "claude-haiku-4-5",
   "maxOutputTokens": 512,
   "temperature": 0
-}</mvp-code>`,
+}</nes-code>`,
           "col",
         ) +
-        cb(`<mvp-code>
+        cb(`<nes-code>
 { "model": "claude-haiku-4-5" }
-</mvp-code>`) +
+</nes-code>`) +
         h2("Manual control") +
         p(
           "Need full control? Use <code>.codeblock</code> and wrap tokens yourself: <code>.t-sel .t-key .t-str .t-num .t-com .t-at .t-fn</code>.",
         ) +
         codeStage("// clamp the token budget") +
         a11y(
-          "Both variants use a real <code>&lt;button&gt;</code> to copy. Escape <code>&lt;</code> in raw markup you pass to <code>&lt;mvp-code&gt;</code>, or the browser parses it as elements.",
+          "Both variants use a real <code>&lt;button&gt;</code> to copy. Escape <code>&lt;</code> in raw markup you pass to <code>&lt;nes-code&gt;</code>, or the browser parses it as elements.",
         ),
       vi: () =>
         stage(
-          "MVP-CODE",
-          `<mvp-code style="inline-size:100%">{
+          "NES-CODE",
+          `<nes-code style="inline-size:100%">{
   "model": "claude-haiku-4-5",
   "maxOutputTokens": 512,
   "temperature": 0
-}</mvp-code>`,
+}</nes-code>`,
           "col",
         ) +
-        cb(`<mvp-code>
+        cb(`<nes-code>
 { "model": "claude-haiku-4-5" }
-</mvp-code>`) +
+</nes-code>`) +
         h2("Tùy biến thủ công") +
         p(
           "Cần kiểm soát hoàn toàn? Dùng <code>.codeblock</code> và tự bọc token: <code>.t-sel .t-key .t-str .t-num .t-com .t-at .t-fn</code>.",
         ) +
         codeStage("// kẹp ngân sách token") +
         a11y(
-          "Cả hai cách đều dùng <code>&lt;button&gt;</code> thật để copy. Escape <code>&lt;</code> trong markup thô đưa vào <code>&lt;mvp-code&gt;</code>, nếu không trình duyệt sẽ hiểu là element.",
+          "Cả hai cách đều dùng <code>&lt;button&gt;</code> thật để copy. Escape <code>&lt;</code> trong markup thô đưa vào <code>&lt;nes-code&gt;</code>, nếu không trình duyệt sẽ hiểu là element.",
         ),
     },
   },
@@ -1733,30 +1733,30 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
     cat: "Data",
     name: "Accordion",
     desc: {
-      en: "Collapsible section. <mvp-collapsible> — the header button toggles the body.",
-      vi: "Khối gập được. <mvp-collapsible> — nút header đóng/mở phần thân.",
+      en: "Collapsible section. <nes-collapsible> — the header button toggles the body.",
+      vi: "Khối gập được. <nes-collapsible> — nút header đóng/mở phần thân.",
     },
     body: {
       en: () =>
         stage(
           "COLLAPSIBLE",
           `<div style="inline-size:100%;display:flex;flex-direction:column;gap:var(--sp-4)">
-            <mvp-collapsible open accent="gold">
+            <nes-collapsible open accent="gold">
               <span slot="head">STAGE 1 · Model &amp; budget</span>
               <p>Pick a model per task; clamp <code>maxTokens</code>.</p>
-            </mvp-collapsible>
-            <mvp-collapsible accent="cyan">
+            </nes-collapsible>
+            <nes-collapsible accent="cyan">
               <span slot="head">STAGE 2 · Tools &amp; MCP</span>
               <p>Declare the minimum tools you need.</p>
-            </mvp-collapsible>
+            </nes-collapsible>
           </div>`,
           "col",
         ) +
         cb(
-          `<mvp-collapsible open accent="gold">
+          `<nes-collapsible open accent="gold">
   <span slot="head">STAGE 1 · Model & budget</span>
   <p>Pick a model per task…</p>
-</mvp-collapsible>`,
+</nes-collapsible>`,
         ) +
         a11y(
           "The header is a <code>&lt;button aria-expanded&gt;</code>; the body uses the <code>hidden</code> attribute, so closed content leaves the tab order.",
@@ -1765,22 +1765,22 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
         stage(
           "COLLAPSIBLE",
           `<div style="inline-size:100%;display:flex;flex-direction:column;gap:var(--sp-4)">
-            <mvp-collapsible open accent="gold">
+            <nes-collapsible open accent="gold">
               <span slot="head">STAGE 1 · Model &amp; ngân sách</span>
               <p>Chọn model theo tác vụ; kẹp <code>maxTokens</code>.</p>
-            </mvp-collapsible>
-            <mvp-collapsible accent="cyan">
+            </nes-collapsible>
+            <nes-collapsible accent="cyan">
               <span slot="head">STAGE 2 · Tools &amp; MCP</span>
               <p>Chỉ khai báo tối thiểu tool cần.</p>
-            </mvp-collapsible>
+            </nes-collapsible>
           </div>`,
           "col",
         ) +
         cb(
-          `<mvp-collapsible open accent="gold">
+          `<nes-collapsible open accent="gold">
   <span slot="head">STAGE 1 · Model & ngân sách</span>
   <p>Chọn model theo tác vụ…</p>
-</mvp-collapsible>`,
+</nes-collapsible>`,
         ) +
         a11y(
           "Header là <code>&lt;button aria-expanded&gt;</code>; phần thân dùng thuộc tính <code>hidden</code>, nên nội dung đóng rời khỏi thứ tự tab.",
@@ -2545,8 +2545,8 @@ document.addEventListener("click", (e) => {
     return;
   }
   const cp = e.target.closest(".cp");
-  if (cp && !cp.closest("mvp-code")) {
-    // <mvp-code> wires its own copy; only handle manual .codeblock here.
+  if (cp && !cp.closest("nes-code")) {
+    // <nes-code> wires its own copy; only handle manual .codeblock here.
     const pre = cp.parentElement.querySelector("pre");
     navigator.clipboard?.writeText(pre.innerText);
     const was = cp.textContent;
