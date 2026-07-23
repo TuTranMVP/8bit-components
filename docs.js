@@ -18,28 +18,40 @@ const tr = (v) => (v && typeof v === "object" && !Array.isArray(v) ? v[LANG] : v
 const UI = {
   en: {
     gs: "Getting Started",
-    search: "SEARCH…",
+    search: "SEARCH…  ⌘K",
     menu: "Toggle navigation",
     filter: "Filter components",
     side: "Documentation",
+    onpage: "On this page",
   },
   vi: {
     gs: "Bắt đầu",
-    search: "TÌM…",
+    search: "TÌM…  ⌘K",
     menu: "Bật/tắt điều hướng",
     filter: "Lọc component",
     side: "Tài liệu",
+    onpage: "Trên trang này",
   },
 };
 
 /* --------------------------------------------------------------- helpers */
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-// abstraction: <mvp-code> highlights + wires copy itself — docs just hand it code.
-const cb = (code) => `<mvp-code>${esc(code)}</mvp-code>`;
+const TOP_H = 53; // keep in sync with --top-h in docs.html
+/** URL-safe id from heading text (strips diacritics so VN headings still slug). */
+const slug = (s) =>
+  s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "sec";
+// abstraction: <nes-code> highlights + wires copy itself — docs just hand it code.
+const cb = (code) => `<nes-code>${esc(code)}</nes-code>`;
 const stage = (cap, html, mod = "") => `<div class="stage ${mod}" data-cap="${cap}">${html}</div>`;
 const h2 = (t) => `<h2 class="doc-h2">${t}</h2>`;
 const p = (t) => `<p class="doc-p">${t}</p>`;
-const a11y = (t) => `<div class="callout tip"><b>A11y.</b> ${t}</div>`;
+const a11y = (t) =>
+  `${h2(LANG === "vi" ? "Tiếp cận" : "Accessibility")}<div class="callout tip">${t}</div>`;
 const api = (cols, rows) =>
   `<div class="table-wrap"><table class="table"><thead><tr>${cols
     .map((c) => `<th>${c}</th>`)
@@ -91,9 +103,9 @@ const GS = [
         catalog() +
         h2("The signature") +
         `<div class="grid-cards">
-          <div class="callout memo"><b>Bevel the button.</b> The button cuts its corners with <code>clip-path</code> — the pixel bevel is the one flourish; every other surface stays square and sharp.</div>
+          <div class="callout memo"><b>Press the button.</b> Square 90° corners like everything else — the button's flourish is the hard shadow + press-in on <code>:active</code>, never a cut or rounded corner.</div>
           <div class="callout memo"><b>Hard shadow.</b> <code>box-shadow: Npx Npx 0</code> — zero blur, pure black. Depth like a sprite.</div>
-          <div class="callout tip"><b>Steps motion.</b> <code>steps()</code> easing only. Movement ticks like a sprite sheet.</div>
+          <div class="callout tip"><b>Smooth motion.</b> One ease-out curve (<code>--ease</code>) on transform/opacity — high-FPS, no stutter.</div>
           <div class="callout quest"><b>One accent per block.</b> Set <code>data-accent</code> once; everything downstream inherits it.</div>
         </div>`,
       vi: () =>
@@ -117,9 +129,9 @@ const GS = [
         catalog() +
         h2("Chữ ký") +
         `<div class="grid-cards">
-          <div class="callout memo"><b>Nút vát góc.</b> Nút cắt góc bằng <code>clip-path</code> — vát pixel là điểm nhấn duy nhất; mọi bề mặt khác giữ góc vuông sắc.</div>
+          <div class="callout memo"><b>Nhấn lún nút.</b> Góc vuông 90° như mọi thứ khác — điểm nhấn của nút là bóng cứng + nhấn lún khi <code>:active</code>, không phải góc cắt hay bo tròn.</div>
           <div class="callout memo"><b>Bóng cứng.</b> <code>box-shadow: Npx Npx 0</code> — không blur, đen tuyền. Chiều sâu như một sprite.</div>
-          <div class="callout tip"><b>Chuyển động theo bước.</b> Chỉ dùng easing <code>steps()</code>. Chuyển động giật như sprite sheet.</div>
+          <div class="callout tip"><b>Chuyển động mượt.</b> Một đường ease-out (<code>--ease</code>) trên transform/opacity — FPS cao, không giật.</div>
           <div class="callout quest"><b>Một màu nhấn mỗi khối.</b> Đặt <code>data-accent</code> một lần; mọi thứ bên dưới kế thừa.</div>
         </div>`,
     },
@@ -135,9 +147,9 @@ const GS = [
     body: {
       en: () =>
         h2("Add the package") +
-        cb("pnpm add @yourscope/8bit-dopamine") +
+        cb("pnpm add 8bit-nes") +
         h2("Wire it up") +
-        `<mvp-tabs style="display:block">
+        `<nes-tabs style="display:block">
           <section data-label="Plain HTML" selected>${cb(
             `<link rel="stylesheet" href="tokens.css">
 <link rel="stylesheet" href="base.css">
@@ -146,42 +158,42 @@ const GS = [
           )}</section>
           <section data-label="Vue 3 · Nuxt">${cb(
             `// import once (main.ts / nuxt.config)
-import "@yourscope/8bit-dopamine/all.css";
-import "@yourscope/8bit-dopamine";
+import "8bit-nes/all.css";
+import "8bit-nes";
 
-// tell the compiler mvp-* are custom elements
-compilerOptions: { isCustomElement: (t) => t.startsWith("mvp-") }`,
+// tell the compiler nes-* are custom elements
+compilerOptions: { isCustomElement: (t) => t.startsWith("nes-") }`,
           )}</section>
           <section data-label="React 19">${cb(
-            `import "@yourscope/8bit-dopamine/all.css";
-import "@yourscope/8bit-dopamine";
+            `import "8bit-nes/all.css";
+import "8bit-nes";
 
 // React 19 passes props + listens to custom-element events natively
-<mvp-hud ns="quest" per-level="150" max-xp="600" />`,
+<nes-hud ns="quest" per-level="150" max-xp="600" />`,
           )}</section>
-        </mvp-tabs>` +
+        </nes-tabs>` +
         h2("Granular imports") +
         p("Prefer the pieces? Import only what you need — order matters: tokens → base → components.") +
         cb(
-          `import "@yourscope/8bit-dopamine/tokens.css";
-import "@yourscope/8bit-dopamine/base.css";
-import "@yourscope/8bit-dopamine/components.css";`,
+          `import "8bit-nes/tokens.css";
+import "8bit-nes/base.css";
+import "8bit-nes/components.css";`,
         ) +
         h2("Fonts") +
         p(
-          "Two fonts ship self-hosted as woff2 (Latin + Vietnamese subset): <b>IoskeleyMono</b> for chrome, labels, and code; <b>Space Grotesk</b> for body. Preload the two critical files for zero-FOUT.",
+          "Two fonts ship self-hosted as woff2 (Latin + Vietnamese subset): <b>NES Mono</b> for chrome, labels, and code; <b>NES Sans</b> for body. Preload the two critical files for zero-FOUT.",
         ) +
         cb(
           `<link rel="preload" as="font" type="font/woff2"
-      href="fonts/ioskeley-mono-400.woff2" crossorigin>
+      href="fonts/nes-mono-400.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2"
-      href="fonts/space-grotesk-var.woff2" crossorigin>`,
+      href="fonts/nes-sans-var.woff2" crossorigin>`,
         ),
       vi: () =>
         h2("Cài package") +
-        cb("pnpm add @yourscope/8bit-dopamine") +
+        cb("pnpm add 8bit-nes") +
         h2("Kết nối") +
-        `<mvp-tabs style="display:block">
+        `<nes-tabs style="display:block">
           <section data-label="HTML thuần" selected>${cb(
             `<link rel="stylesheet" href="tokens.css">
 <link rel="stylesheet" href="base.css">
@@ -190,36 +202,36 @@ import "@yourscope/8bit-dopamine/components.css";`,
           )}</section>
           <section data-label="Vue 3 · Nuxt">${cb(
             `// import một lần (main.ts / nuxt.config)
-import "@yourscope/8bit-dopamine/all.css";
-import "@yourscope/8bit-dopamine";
+import "8bit-nes/all.css";
+import "8bit-nes";
 
-// báo compiler biết mvp-* là custom element
-compilerOptions: { isCustomElement: (t) => t.startsWith("mvp-") }`,
+// báo compiler biết nes-* là custom element
+compilerOptions: { isCustomElement: (t) => t.startsWith("nes-") }`,
           )}</section>
           <section data-label="React 19">${cb(
-            `import "@yourscope/8bit-dopamine/all.css";
-import "@yourscope/8bit-dopamine";
+            `import "8bit-nes/all.css";
+import "8bit-nes";
 
 // React 19 truyền prop + nghe event custom-element sẵn
-<mvp-hud ns="quest" per-level="150" max-xp="600" />`,
+<nes-hud ns="quest" per-level="150" max-xp="600" />`,
           )}</section>
-        </mvp-tabs>` +
+        </nes-tabs>` +
         h2("Import lẻ") +
         p("Chỉ cần vài phần? Import đúng thứ bạn dùng — thứ tự quan trọng: tokens → base → components.") +
         cb(
-          `import "@yourscope/8bit-dopamine/tokens.css";
-import "@yourscope/8bit-dopamine/base.css";
-import "@yourscope/8bit-dopamine/components.css";`,
+          `import "8bit-nes/tokens.css";
+import "8bit-nes/base.css";
+import "8bit-nes/components.css";`,
         ) +
         h2("Font") +
         p(
-          "Hai font tự host dạng woff2 (subset Latin + tiếng Việt): <b>IoskeleyMono</b> cho chrome, nhãn và code; <b>Space Grotesk</b> cho phần thân. Preload hai file quan trọng để zero-FOUT.",
+          "Hai font tự host dạng woff2 (subset Latin + tiếng Việt): <b>NES Mono</b> cho chrome, nhãn và code; <b>NES Sans</b> cho phần thân. Preload hai file quan trọng để zero-FOUT.",
         ) +
         cb(
           `<link rel="preload" as="font" type="font/woff2"
-      href="fonts/ioskeley-mono-400.woff2" crossorigin>
+      href="fonts/nes-mono-400.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2"
-      href="fonts/space-grotesk-var.woff2" crossorigin>`,
+      href="fonts/nes-sans-var.woff2" crossorigin>`,
         ),
     },
   },
@@ -253,18 +265,20 @@ import "@yourscope/8bit-dopamine/components.css";`,
             ["<code>--ink</code>", "#f8f9ff", "titles, numbers"],
             ["<code>--bw</code>", "3px", "hard border"],
             ["<code>--sh-4</code>", "4px 4px 0", "standard card shadow"],
-            ["<code>--ease-step</code>", "steps(3)", "chrome motion"],
+            ["<code>--ease</code>", "cubic-bezier(.22,1,.36,1)", "smooth ease-out"],
           ],
         ) +
         h2("Accents") +
         api(
           ["Accent", "Use"],
           [
-            ["<code>blue</code>", "primary action"],
-            ["<code>gold</code>", "XP · highlight · default CTA"],
+            ["<code>good</code> <b>= primary</b>", "primary / positive — the default accent"],
+            ["<code>blue</code>", "secondary action · links"],
+            ["<code>gold</code>", "XP · highlight · attention"],
             ["<code>cyan</code>", "code · info"],
             ["<code>purple</code>", "special · magic"],
-            ["<code>good / warn / crit</code>", "success · caution · error"],
+            ["<code>lime / teal / indigo / pink / steel</code>", "extended wheel — extra categories, tags, charts"],
+            ["<code>warn / crit</code>", "caution · error"],
           ],
         ) +
         h2("Do / don't") +
@@ -293,18 +307,20 @@ import "@yourscope/8bit-dopamine/components.css";`,
             ["<code>--ink</code>", "#f8f9ff", "tiêu đề, số"],
             ["<code>--bw</code>", "3px", "viền cứng"],
             ["<code>--sh-4</code>", "4px 4px 0", "bóng card chuẩn"],
-            ["<code>--ease-step</code>", "steps(3)", "chuyển động chrome"],
+            ["<code>--ease</code>", "cubic-bezier(.22,1,.36,1)", "ease-out mượt"],
           ],
         ) +
         h2("Màu nhấn") +
         api(
           ["Màu nhấn", "Dùng cho"],
           [
-            ["<code>blue</code>", "hành động chính"],
-            ["<code>gold</code>", "XP · nổi bật · CTA mặc định"],
+            ["<code>good</code> <b>= primary</b>", "primary / tích cực — màu accent mặc định"],
+            ["<code>blue</code>", "hành động phụ · link"],
+            ["<code>gold</code>", "XP · nổi bật · chú ý"],
             ["<code>cyan</code>", "code · thông tin"],
             ["<code>purple</code>", "đặc biệt · phép thuật"],
-            ["<code>good / warn / crit</code>", "thành công · cảnh báo · lỗi"],
+            ["<code>lime / teal / indigo / pink / steel</code>", "vòng màu mở rộng — thêm nhóm, tag, biểu đồ"],
+            ["<code>warn / crit</code>", "cảnh báo · lỗi"],
           ],
         ) +
         h2("Nên / Không") +
@@ -346,12 +362,25 @@ import "@yourscope/8bit-dopamine/components.css";`,
         swatches([
           ["--blue", "#5c94fc", "primary"],
           ["--blue-d", "#2f4fb0", "hover / border"],
-          ["--gold", "#fbd000", "CTA · XP"],
+          ["--gold", "#fbd000", "XP · highlight"],
           ["--gold-d", "#c99700", "hover / border"],
           ["--cyan", "#33e0e0", "info · code"],
           ["--cyan-d", "#1f9e9e", "hover / border"],
           ["--purple", "#b357e0", "special"],
           ["--purple-d", "#7d33a8", "hover / border"],
+        ]) +
+        h2("Extended wheel") +
+        swatches([
+          ["--lime", "#b8e62e", "fresh · level-up"],
+          ["--lime-d", "#75980f", "hover / border"],
+          ["--teal", "#2ad8b8", "calm info"],
+          ["--teal-d", "#158f78", "hover / border"],
+          ["--indigo", "#7c7cff", "deep primary · link"],
+          ["--indigo-d", "#4a45c8", "hover / border"],
+          ["--pink", "#ff6ec7", "playful · like"],
+          ["--pink-d", "#c23d90", "hover / border"],
+          ["--steel", "#9aa2d8", "neutral tag"],
+          ["--steel-d", "#565d95", "hover / border"],
         ]) +
         h2("Semantic") +
         swatches([
@@ -388,12 +417,25 @@ import "@yourscope/8bit-dopamine/components.css";`,
         swatches([
           ["--blue", "#5c94fc", "chính"],
           ["--blue-d", "#2f4fb0", "hover / viền"],
-          ["--gold", "#fbd000", "CTA · XP"],
+          ["--gold", "#fbd000", "XP · highlight"],
           ["--gold-d", "#c99700", "hover / viền"],
           ["--cyan", "#33e0e0", "info · code"],
           ["--cyan-d", "#1f9e9e", "hover / viền"],
           ["--purple", "#b357e0", "đặc biệt"],
           ["--purple-d", "#7d33a8", "hover / viền"],
+        ]) +
+        h2("Vòng màu mở rộng") +
+        swatches([
+          ["--lime", "#b8e62e", "tươi · lên cấp"],
+          ["--lime-d", "#75980f", "hover / viền"],
+          ["--teal", "#2ad8b8", "info dịu"],
+          ["--teal-d", "#158f78", "hover / viền"],
+          ["--indigo", "#7c7cff", "primary sâu · link"],
+          ["--indigo-d", "#4a45c8", "hover / viền"],
+          ["--pink", "#ff6ec7", "vui · thích"],
+          ["--pink-d", "#c23d90", "hover / viền"],
+          ["--steel", "#9aa2d8", "tag trung tính"],
+          ["--steel-d", "#565d95", "hover / viền"],
         ]) +
         h2("Ngữ nghĩa") +
         swatches([
@@ -421,65 +463,103 @@ const COMPONENTS = [
     cat: "Element",
     name: "Button",
     desc: {
-      en: "Primary action. Gold by default; set data-accent to recolor. Presses in on :active — the signature move.",
-      vi: "Hành động chính. Mặc định màu gold; đặt data-accent để đổi màu. Nhấn lún khi :active — chính là chữ ký.",
+      en: "Primary action. Green (the primary accent) by default; set data-accent to recolor. Presses in on :active — the signature move.",
+      vi: "Hành động chính. Mặc định màu green (màu primary); đặt data-accent để đổi màu. Nhấn lún khi :active — chính là chữ ký.",
     },
     body: {
       en: () =>
         stage(
           "BUTTON",
-          `<button class="btn">Copy settings</button>
-           <button class="btn ghost">Reset</button>
-           <button class="btn" data-accent="cyan">Free play</button>
+          `<button class="btn">Solid</button>
+           <button class="btn outline">Outline</button>
+           <button class="btn soft">Soft</button>
+           <button class="btn ghost">Ghost</button>
+           <button class="btn link">Link</button>
+           <button class="btn" data-accent="cyan">Cyan</button>
+           <button class="btn sm">SM</button>
+           <button class="btn lg">LG</button>
+           <button class="btn icon" aria-label="Play">▶</button>
+           <button class="btn" aria-busy="true">Saving</button>
            <button class="btn" disabled>Locked</button>`,
         ) +
         cb(
-          `<button class="btn">Copy settings</button>
-<button class="btn ghost">Reset</button>
-<button class="btn" data-accent="cyan">Free play</button>
-<button class="btn" disabled>Locked</button>`,
+          `<button class="btn">Solid</button>
+<button class="btn outline">Outline</button>
+<button class="btn soft">Soft</button>
+<button class="btn ghost">Ghost</button>
+<button class="btn link">Link</button>
+
+<button class="btn lg" data-accent="cyan">Large</button>
+<button class="btn icon" aria-label="Play">▶</button>
+<button class="btn" aria-busy="true">Saving…</button>`,
         ) +
         h2("API") +
         api(
           ["Class / attr", "Effect"],
           [
-            ["<code>.btn</code>", "solid accent button"],
+            ["<code>.btn</code>", "solid accent fill (default)"],
+            ["<code>.btn.outline</code>", "transparent, accent edge + text"],
+            ["<code>.btn.soft</code>", "low-tint accent fill"],
             ["<code>.btn.ghost</code>", "quiet outline on dark"],
+            ["<code>.btn.link</code>", "text-only — no bevel or shadow"],
+            ["<code>.sm</code> / <code>.lg</code>", "smaller / larger size"],
+            ["<code>.block</code>", "full-width"],
+            ["<code>.icon</code>", "square icon-only (add aria-label)"],
+            ["<code>[aria-busy=true]</code>", "loading spinner, clicks blocked"],
             ["<code>[aria-pressed=true]</code>", "toggle-on fills with accent"],
             ["<code>[disabled]</code>", "muted, no shadow"],
             ["<code>data-accent</code>", "recolor (blue/gold/cyan/…)"],
           ],
         ) +
         a11y(
-          "Renders a native <code>&lt;button&gt;</code>, so keyboard and screen-reader behaviour come free. Use <code>aria-pressed</code> for toggles and give icon-only buttons an <code>aria-label</code>.",
+          "Renders a native <code>&lt;button&gt;</code>, so keyboard and screen-reader behaviour come free. Use <code>aria-pressed</code> for toggles, <code>aria-busy</code> for loading, and give icon-only buttons an <code>aria-label</code>.",
         ),
       vi: () =>
         stage(
           "BUTTON",
-          `<button class="btn">Copy settings</button>
-           <button class="btn ghost">Reset</button>
-           <button class="btn" data-accent="cyan">Free play</button>
-           <button class="btn" disabled>Locked</button>`,
+          `<button class="btn">Solid</button>
+           <button class="btn outline">Outline</button>
+           <button class="btn soft">Soft</button>
+           <button class="btn ghost">Ghost</button>
+           <button class="btn link">Link</button>
+           <button class="btn" data-accent="cyan">Cyan</button>
+           <button class="btn sm">SM</button>
+           <button class="btn lg">LG</button>
+           <button class="btn icon" aria-label="Chơi">▶</button>
+           <button class="btn" aria-busy="true">Đang lưu</button>
+           <button class="btn" disabled>Khoá</button>`,
         ) +
         cb(
-          `<button class="btn">Copy settings</button>
-<button class="btn ghost">Reset</button>
-<button class="btn" data-accent="cyan">Free play</button>
-<button class="btn" disabled>Locked</button>`,
+          `<button class="btn">Solid</button>
+<button class="btn outline">Outline</button>
+<button class="btn soft">Soft</button>
+<button class="btn ghost">Ghost</button>
+<button class="btn link">Link</button>
+
+<button class="btn lg" data-accent="cyan">Large</button>
+<button class="btn icon" aria-label="Chơi">▶</button>
+<button class="btn" aria-busy="true">Đang lưu…</button>`,
         ) +
         h2("API") +
         api(
           ["Class / thuộc tính", "Tác dụng"],
           [
-            ["<code>.btn</code>", "nút tô đầy màu nhấn"],
+            ["<code>.btn</code>", "tô đầy màu nhấn (mặc định)"],
+            ["<code>.btn.outline</code>", "trong suốt, viền + chữ theo màu nhấn"],
+            ["<code>.btn.soft</code>", "nền màu nhấn nhạt"],
             ["<code>.btn.ghost</code>", "viền mờ trên nền tối"],
+            ["<code>.btn.link</code>", "chỉ chữ — bỏ vát góc & bóng"],
+            ["<code>.sm</code> / <code>.lg</code>", "cỡ nhỏ / lớn"],
+            ["<code>.block</code>", "rộng hết dòng"],
+            ["<code>.icon</code>", "vuông chỉ-icon (thêm aria-label)"],
+            ["<code>[aria-busy=true]</code>", "spinner loading, chặn click"],
             ["<code>[aria-pressed=true]</code>", "toggle bật, tô đầy màu nhấn"],
             ["<code>[disabled]</code>", "mờ đi, bỏ bóng"],
             ["<code>data-accent</code>", "đổi màu (blue/gold/cyan/…)"],
           ],
         ) +
         a11y(
-          "Render ra <code>&lt;button&gt;</code> gốc nên bàn phím và screen reader hoạt động sẵn. Dùng <code>aria-pressed</code> cho nút toggle và đặt <code>aria-label</code> cho nút chỉ có icon.",
+          "Render ra <code>&lt;button&gt;</code> gốc nên bàn phím và screen reader hoạt động sẵn. Dùng <code>aria-pressed</code> cho toggle, <code>aria-busy</code> cho loading, và đặt <code>aria-label</code> cho nút chỉ có icon.",
         ),
     },
   },
@@ -1158,8 +1238,8 @@ const COMPONENTS = [
     cat: "Feedback",
     name: "Progress",
     desc: {
-      en: "Determinate bar. Fills in eight discrete blocks — steps(), not a smooth sweep.",
-      vi: "Thanh xác định. Tô đầy theo tám khối rời — steps(), không lướt mượt.",
+      en: "Determinate bar. Fills with a smooth ease so progress glides — striped so the amount reads at a glance.",
+      vi: "Thanh xác định. Tô đầy mượt theo ease để tiến trình lướt êm — có sọc để đọc mức nhanh.",
     },
     body: {
       en: () =>
@@ -1231,7 +1311,7 @@ const COMPONENTS = [
            <button class="btn ghost" data-toast="Nothing to undo." data-toast-accent="warn">Try warn</button>`,
         ) +
         cb(
-          `import { toast } from "@yourscope/8bit-dopamine";
+          `import { toast } from "8bit-nes";
 
 toast("Settings saved.", { accent: "good" });`,
         ) +
@@ -1240,7 +1320,7 @@ toast("Settings saved.", { accent: "good" });`,
           ["Argument", "Meaning"],
           [
             ["<code>msg</code>", "HTML string shown in the toast"],
-            ["<code>opts.accent</code>", "gold (default) · good · warn · crit · …"],
+            ["<code>opts.accent</code>", "good (default) · warn · crit · gold · …"],
             ["<code>opts.timeout</code>", "auto-dismiss ms (0 = keep)"],
           ],
         ) +
@@ -1254,7 +1334,7 @@ toast("Settings saved.", { accent: "good" });`,
            <button class="btn ghost" data-toast="Không có gì để hoàn tác." data-toast-accent="warn">Thử warn</button>`,
         ) +
         cb(
-          `import { toast } from "@yourscope/8bit-dopamine";
+          `import { toast } from "8bit-nes";
 
 toast("Đã lưu cấu hình.", { accent: "good" });`,
         ) +
@@ -1286,19 +1366,19 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       en: () =>
         stage(
           "TABS",
-          `<mvp-tabs style="display:block;inline-size:100%">
+          `<nes-tabs style="display:block;inline-size:100%">
             <section data-label="Overview" selected>${p("Score your setup, then fix one file at a time.")}</section>
             <section data-label="Config">${p("Clamp <code>maxTokens</code>; declare only the tools you need.")}</section>
             <section data-label="Logs">${p("Every wasted tool is more tokens per call.")}</section>
-          </mvp-tabs>`,
+          </nes-tabs>`,
           "col",
         ) +
         cb(
-          `<mvp-tabs>
+          `<nes-tabs>
   <section data-label="Overview" selected>…</section>
   <section data-label="Config">…</section>
   <section data-label="Logs">…</section>
-</mvp-tabs>`,
+</nes-tabs>`,
         ) +
         a11y(
           "Implements the WAI-ARIA tabs pattern: <code>tablist</code>/<code>tab</code>/<code>tabpanel</code> roles, <code>aria-selected</code>, Left/Right arrow navigation, and roving <code>tabindex</code>.",
@@ -1306,19 +1386,19 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       vi: () =>
         stage(
           "TABS",
-          `<mvp-tabs style="display:block;inline-size:100%">
+          `<nes-tabs style="display:block;inline-size:100%">
             <section data-label="Tổng quan" selected>${p("Chấm điểm setup, rồi sửa từng file một.")}</section>
             <section data-label="Cấu hình">${p("Kẹp <code>maxTokens</code>; chỉ khai báo tool bạn cần.")}</section>
             <section data-label="Logs">${p("Mỗi tool thừa là thêm token mỗi lượt gọi.")}</section>
-          </mvp-tabs>`,
+          </nes-tabs>`,
           "col",
         ) +
         cb(
-          `<mvp-tabs>
+          `<nes-tabs>
   <section data-label="Tổng quan" selected>…</section>
   <section data-label="Cấu hình">…</section>
   <section data-label="Logs">…</section>
-</mvp-tabs>`,
+</nes-tabs>`,
         ) +
         a11y(
           "Cài theo mẫu WAI-ARIA tabs: role <code>tablist</code>/<code>tab</code>/<code>tabpanel</code>, <code>aria-selected</code>, điều hướng phím Trái/Phải, và roving <code>tabindex</code>.",
@@ -1367,8 +1447,8 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
     cat: "Navigation",
     name: "Pagination",
     desc: {
-      en: "Page through a list. The current page fills gold; ends disable.",
-      vi: "Lật qua danh sách. Trang hiện tại tô đầy gold; hai đầu bị vô hiệu.",
+      en: "Page through a list. The current page fills with the primary accent; ends disable.",
+      vi: "Lật qua danh sách. Trang hiện tại tô đầy màu primary; hai đầu bị vô hiệu.",
     },
     body: {
       en: () =>
@@ -1600,51 +1680,51 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
     cat: "Data",
     name: "Code block",
     desc: {
-      en: "Drop code in — <mvp-code> highlights it and wires the copy button. No manual markup, no dependency.",
-      vi: "Bỏ code vào — <mvp-code> tự tô màu và gắn nút copy. Không markup thủ công, không phụ thuộc.",
+      en: "Drop code in — <nes-code> highlights it and wires the copy button. No manual markup, no dependency.",
+      vi: "Bỏ code vào — <nes-code> tự tô màu và gắn nút copy. Không markup thủ công, không phụ thuộc.",
     },
     body: {
       en: () =>
         stage(
-          "MVP-CODE",
-          `<mvp-code style="inline-size:100%">{
+          "NES-CODE",
+          `<nes-code style="inline-size:100%">{
   "model": "claude-haiku-4-5",
   "maxOutputTokens": 512,
   "temperature": 0
-}</mvp-code>`,
+}</nes-code>`,
           "col",
         ) +
-        cb(`<mvp-code>
+        cb(`<nes-code>
 { "model": "claude-haiku-4-5" }
-</mvp-code>`) +
+</nes-code>`) +
         h2("Manual control") +
         p(
           "Need full control? Use <code>.codeblock</code> and wrap tokens yourself: <code>.t-sel .t-key .t-str .t-num .t-com .t-at .t-fn</code>.",
         ) +
         codeStage("// clamp the token budget") +
         a11y(
-          "Both variants use a real <code>&lt;button&gt;</code> to copy. Escape <code>&lt;</code> in raw markup you pass to <code>&lt;mvp-code&gt;</code>, or the browser parses it as elements.",
+          "Both variants use a real <code>&lt;button&gt;</code> to copy. Escape <code>&lt;</code> in raw markup you pass to <code>&lt;nes-code&gt;</code>, or the browser parses it as elements.",
         ),
       vi: () =>
         stage(
-          "MVP-CODE",
-          `<mvp-code style="inline-size:100%">{
+          "NES-CODE",
+          `<nes-code style="inline-size:100%">{
   "model": "claude-haiku-4-5",
   "maxOutputTokens": 512,
   "temperature": 0
-}</mvp-code>`,
+}</nes-code>`,
           "col",
         ) +
-        cb(`<mvp-code>
+        cb(`<nes-code>
 { "model": "claude-haiku-4-5" }
-</mvp-code>`) +
+</nes-code>`) +
         h2("Tùy biến thủ công") +
         p(
           "Cần kiểm soát hoàn toàn? Dùng <code>.codeblock</code> và tự bọc token: <code>.t-sel .t-key .t-str .t-num .t-com .t-at .t-fn</code>.",
         ) +
         codeStage("// kẹp ngân sách token") +
         a11y(
-          "Cả hai cách đều dùng <code>&lt;button&gt;</code> thật để copy. Escape <code>&lt;</code> trong markup thô đưa vào <code>&lt;mvp-code&gt;</code>, nếu không trình duyệt sẽ hiểu là element.",
+          "Cả hai cách đều dùng <code>&lt;button&gt;</code> thật để copy. Escape <code>&lt;</code> trong markup thô đưa vào <code>&lt;nes-code&gt;</code>, nếu không trình duyệt sẽ hiểu là element.",
         ),
     },
   },
@@ -1653,30 +1733,30 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
     cat: "Data",
     name: "Accordion",
     desc: {
-      en: "Collapsible section. <mvp-collapsible> — the header button toggles the body.",
-      vi: "Khối gập được. <mvp-collapsible> — nút header đóng/mở phần thân.",
+      en: "Collapsible section. <nes-collapsible> — the header button toggles the body.",
+      vi: "Khối gập được. <nes-collapsible> — nút header đóng/mở phần thân.",
     },
     body: {
       en: () =>
         stage(
           "COLLAPSIBLE",
           `<div style="inline-size:100%;display:flex;flex-direction:column;gap:var(--sp-4)">
-            <mvp-collapsible open accent="gold">
+            <nes-collapsible open accent="gold">
               <span slot="head">STAGE 1 · Model &amp; budget</span>
               <p>Pick a model per task; clamp <code>maxTokens</code>.</p>
-            </mvp-collapsible>
-            <mvp-collapsible accent="cyan">
+            </nes-collapsible>
+            <nes-collapsible accent="cyan">
               <span slot="head">STAGE 2 · Tools &amp; MCP</span>
               <p>Declare the minimum tools you need.</p>
-            </mvp-collapsible>
+            </nes-collapsible>
           </div>`,
           "col",
         ) +
         cb(
-          `<mvp-collapsible open accent="gold">
+          `<nes-collapsible open accent="gold">
   <span slot="head">STAGE 1 · Model & budget</span>
   <p>Pick a model per task…</p>
-</mvp-collapsible>`,
+</nes-collapsible>`,
         ) +
         a11y(
           "The header is a <code>&lt;button aria-expanded&gt;</code>; the body uses the <code>hidden</code> attribute, so closed content leaves the tab order.",
@@ -1685,22 +1765,22 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
         stage(
           "COLLAPSIBLE",
           `<div style="inline-size:100%;display:flex;flex-direction:column;gap:var(--sp-4)">
-            <mvp-collapsible open accent="gold">
+            <nes-collapsible open accent="gold">
               <span slot="head">STAGE 1 · Model &amp; ngân sách</span>
               <p>Chọn model theo tác vụ; kẹp <code>maxTokens</code>.</p>
-            </mvp-collapsible>
-            <mvp-collapsible accent="cyan">
+            </nes-collapsible>
+            <nes-collapsible accent="cyan">
               <span slot="head">STAGE 2 · Tools &amp; MCP</span>
               <p>Chỉ khai báo tối thiểu tool cần.</p>
-            </mvp-collapsible>
+            </nes-collapsible>
           </div>`,
           "col",
         ) +
         cb(
-          `<mvp-collapsible open accent="gold">
+          `<nes-collapsible open accent="gold">
   <span slot="head">STAGE 1 · Model & ngân sách</span>
   <p>Chọn model theo tác vụ…</p>
-</mvp-collapsible>`,
+</nes-collapsible>`,
         ) +
         a11y(
           "Header là <code>&lt;button aria-expanded&gt;</code>; phần thân dùng thuộc tính <code>hidden</code>, nên nội dung đóng rời khỏi thứ tự tab.",
@@ -1740,6 +1820,320 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
         ),
     },
   },
+
+  /* -------------------------------------------------------- WAVE 2 · FORM */
+  {
+    id: "range",
+    cat: "Form",
+    name: "Range",
+    desc: {
+      en: "Slider on a native <input type=range>. Recessed track, square accent thumb. Set data-accent to recolor.",
+      vi: "Thanh trượt trên <input type=range> gốc. Rãnh chìm, núm vuông màu nhấn. Đặt data-accent để đổi màu.",
+    },
+    body: {
+      en: () =>
+        rangeStage("Volume") +
+        cb(
+          `<label class="field">
+  <span class="label">Volume</span>
+  <input class="range" type="range" min="0" max="100" value="70">
+</label>
+<input class="range" type="range" value="40" data-accent="cyan">`,
+        ) +
+        a11y(
+          "It's a native <code>&lt;input type=\"range\"&gt;</code>: arrow keys, Home/End, and screen-reader value come free. Add an <code>aria-label</code> (or a <code>.field</code> label) when there's no visible one.",
+        ),
+      vi: () =>
+        rangeStage("Âm lượng") +
+        cb(
+          `<label class="field">
+  <span class="label">Âm lượng</span>
+  <input class="range" type="range" min="0" max="100" value="70">
+</label>
+<input class="range" type="range" value="40" data-accent="cyan">`,
+        ) +
+        a11y(
+          "Là <code>&lt;input type=\"range\"&gt;</code> gốc: phím mũi tên, Home/End và giá trị đọc màn hình có sẵn. Thêm <code>aria-label</code> (hoặc nhãn <code>.field</code>) khi không có nhãn hiển thị.",
+        ),
+    },
+  },
+  {
+    id: "segment",
+    cat: "Form",
+    name: "Segmented control",
+    desc: {
+      en: "A row of connected buttons for a single choice — the pressed one fills with the accent. Great for a difficulty or view switch.",
+      vi: "Một hàng nút liền nhau cho một lựa chọn — nút đang chọn tô đầy màu nhấn. Hợp cho chọn độ khó hay đổi chế độ xem.",
+    },
+    body: {
+      en: () =>
+        segmentStage(["Easy", "Normal", "Hard"]) +
+        cb(
+          `<div class="segment" role="group" aria-label="Difficulty">
+  <button type="button">Easy</button>
+  <button type="button" aria-pressed="true">Normal</button>
+  <button type="button">Hard</button>
+</div>`,
+        ) +
+        a11y(
+          "Wrap in <code>role=\"group\"</code> with an <code>aria-label</code>, and reflect the active button with <code>aria-pressed=\"true\"</code> — the fill is not read by itself. Toggle <code>aria-pressed</code> in your click handler.",
+        ),
+      vi: () =>
+        segmentStage(["Dễ", "Thường", "Khó"]) +
+        cb(
+          `<div class="segment" role="group" aria-label="Độ khó">
+  <button type="button">Dễ</button>
+  <button type="button" aria-pressed="true">Thường</button>
+  <button type="button">Khó</button>
+</div>`,
+        ) +
+        a11y(
+          "Bọc trong <code>role=\"group\"</code> có <code>aria-label</code>, và phản ánh nút đang chọn bằng <code>aria-pressed=\"true\"</code> — chỉ màu tô thì screen reader không đọc. Đổi <code>aria-pressed</code> trong handler click.",
+        ),
+    },
+  },
+
+  /* ---------------------------------------------------- WAVE 2 · FEEDBACK */
+  {
+    id: "spinner",
+    cat: "Feedback",
+    name: "Spinner",
+    desc: {
+      en: "A square loader whose lit edges spin smoothly — a loader with no curve. Three sizes; accent-ready.",
+      vi: "Bộ loader vuông với các cạnh sáng quay mượt — loader không có đường cong. Ba cỡ; đổi được màu nhấn.",
+    },
+    body: {
+      en: () =>
+        spinnerStage() +
+        cb(
+          `<span class="spinner sm"></span>
+<span class="spinner"></span>
+<span class="spinner lg" data-accent="cyan"></span>`,
+        ) +
+        a11y(
+          "A spinner is decorative on its own. Put the live status in text near it (e.g. <code>&lt;span role=\"status\"&gt;Loading…&lt;/span&gt;</code>) and give the spinner <code>aria-hidden=\"true\"</code>.",
+        ),
+      vi: () =>
+        spinnerStage() +
+        cb(
+          `<span class="spinner sm"></span>
+<span class="spinner"></span>
+<span class="spinner lg" data-accent="cyan"></span>`,
+        ) +
+        a11y(
+          "Spinner tự thân chỉ để trang trí. Đặt trạng thái động vào chữ bên cạnh (vd. <code>&lt;span role=\"status\"&gt;Đang tải…&lt;/span&gt;</code>) và cho spinner <code>aria-hidden=\"true\"</code>.",
+        ),
+    },
+  },
+  {
+    id: "meter",
+    cat: "Feedback",
+    name: "Meter",
+    desc: {
+      en: "A discrete segmented gauge — HP / energy in blocks. Add .on to filled cells; good/warn/crit read as health states.",
+      vi: "Đồng hồ dạng ô rời — HP / năng lượng theo khối. Thêm .on cho ô đã đầy; good/warn/crit đọc như trạng thái máu.",
+    },
+    body: {
+      en: () =>
+        meterStage() +
+        cb(
+          `<div class="meter" data-accent="good" role="meter"
+     aria-valuenow="7" aria-valuemin="0" aria-valuemax="10" aria-label="Health">
+  <span class="cell on"></span><span class="cell on"></span>
+  <span class="cell on"></span><span class="cell"></span>
+</div>`,
+        ) +
+        a11y(
+          "Unlike a continuous bar, cells are countable at a glance. Expose the value with <code>role=\"meter\"</code> + <code>aria-valuenow/min/max</code> so it isn't shape-only.",
+        ),
+      vi: () =>
+        meterStage() +
+        cb(
+          `<div class="meter" data-accent="good" role="meter"
+     aria-valuenow="7" aria-valuemin="0" aria-valuemax="10" aria-label="Máu">
+  <span class="cell on"></span><span class="cell on"></span>
+  <span class="cell on"></span><span class="cell"></span>
+</div>`,
+        ) +
+        a11y(
+          "Khác thanh liền, các ô đếm được trong một cái liếc. Bộc lộ giá trị bằng <code>role=\"meter\"</code> + <code>aria-valuenow/min/max</code> để không chỉ dựa vào hình.",
+        ),
+    },
+  },
+  {
+    id: "empty",
+    cat: "Feedback",
+    name: "Empty state",
+    desc: {
+      en: "The \"no data\" / \"game over\" panel. Square dashed edge, centered mono copy, and always an action out.",
+      vi: "Bảng \"chưa có dữ liệu\" / \"game over\". Viền đứt nét vuông, chữ mono canh giữa, và luôn có một hành động thoát ra.",
+    },
+    body: {
+      en: () =>
+        emptyStage({
+          icon: "🕹️",
+          title: "No runs yet",
+          body: "Your cleared stages will show up here. Start one to put a number on the board.",
+          action: "New run",
+        }) +
+        cb(
+          `<div class="empty">
+  <div class="icon">🕹️</div>
+  <div class="title">No runs yet</div>
+  <p>Your cleared stages show up here. Start one to put a number on the board.</p>
+  <button class="btn">New run</button>
+</div>`,
+        ) +
+        a11y(
+          "An empty state is not an error — it invites the next action. Lead with what to do; keep the emoji <code>aria-hidden</code> and let the title carry the meaning.",
+        ),
+      vi: () =>
+        emptyStage({
+          icon: "🕹️",
+          title: "Chưa có lượt nào",
+          body: "Các stage đã clear sẽ hiện ở đây. Bắt đầu một lượt để ghi tên lên bảng.",
+          action: "Lượt mới",
+        }) +
+        cb(
+          `<div class="empty">
+  <div class="icon">🕹️</div>
+  <div class="title">Chưa có lượt nào</div>
+  <p>Các stage đã clear sẽ hiện ở đây. Bắt đầu một lượt để ghi tên lên bảng.</p>
+  <button class="btn">Lượt mới</button>
+</div>`,
+        ) +
+        a11y(
+          "Empty state không phải lỗi — nó mời hành động kế tiếp. Dẫn bằng việc cần làm; để emoji <code>aria-hidden</code> và cho tiêu đề tải nghĩa.",
+        ),
+    },
+  },
+
+  /* -------------------------------------------------- WAVE 2 · NAVIGATION */
+  {
+    id: "steps",
+    cat: "Navigation",
+    name: "Steps",
+    desc: {
+      en: "Stage progression. Mark cleared stages .done and the active one aria-current — reads as NES \"STAGE 1 · 2 · 3\".",
+      vi: "Tiến trình theo chặng. Đánh dấu chặng đã xong bằng .done và chặng hiện tại bằng aria-current — đọc như \"STAGE 1 · 2 · 3\" kiểu NES.",
+    },
+    body: {
+      en: () =>
+        stepsStage(["Config", "Connect", "Test", "Ship"]) +
+        cb(
+          `<ol class="steps">
+  <li class="done">Config</li>
+  <li class="done">Connect</li>
+  <li aria-current="step">Test</li>
+  <li>Ship</li>
+</ol>`,
+        ) +
+        a11y(
+          "Use an ordered list <code>&lt;ol&gt;</code> for real sequence semantics and mark the active stage with <code>aria-current=\"step\"</code>. The check on a done stage is decorative — the <code>.done</code> label carries it.",
+        ),
+      vi: () =>
+        stepsStage(["Cấu hình", "Kết nối", "Kiểm thử", "Xuất bản"]) +
+        cb(
+          `<ol class="steps">
+  <li class="done">Cấu hình</li>
+  <li class="done">Kết nối</li>
+  <li aria-current="step">Kiểm thử</li>
+  <li>Xuất bản</li>
+</ol>`,
+        ) +
+        a11y(
+          "Dùng danh sách có thứ tự <code>&lt;ol&gt;</code> cho đúng ngữ nghĩa trình tự và đánh dấu chặng hiện tại bằng <code>aria-current=\"step\"</code>. Dấu tick ở chặng xong chỉ để trang trí — nhãn <code>.done</code> mới tải nghĩa.",
+        ),
+    },
+  },
+
+  /* ----------------------------------------------------- WAVE 2 · OVERLAY */
+  {
+    id: "drawer",
+    cat: "Overlay",
+    name: "Drawer",
+    desc: {
+      en: "A side sheet on the native <dialog>. Slides in from the edge with showModal(); add .start to come from the left.",
+      vi: "Tấm trượt bên, dựng trên <dialog> gốc. Trượt vào từ mép bằng showModal(); thêm .start để vào từ bên trái.",
+    },
+    body: {
+      en: () =>
+        drawerStage({
+          open: "Open drawer",
+          title: "Filters",
+          body: "Any content fits — fields, a menu, a form. Esc closes it and focus is trapped inside.",
+          close: "Done",
+        }) +
+        cb(
+          `<button onclick="document.getElementById('d').showModal()">Open</button>
+
+<dialog class="drawer" id="d">
+  <div class="head"><span class="title">Filters</span></div>
+  <!-- fields / menu / form -->
+  <form method="dialog"><button class="btn ghost">Done</button></form>
+</dialog>`,
+        ) +
+        a11y(
+          "Same native <code>&lt;dialog&gt;</code> as the modal: focus is trapped, <kbd class=\"kbd\">Esc</kbd> closes, and focus returns to the opener. Slide-in is skipped under reduced-motion.",
+        ),
+      vi: () =>
+        drawerStage({
+          open: "Mở drawer",
+          title: "Bộ lọc",
+          body: "Nội dung gì cũng vừa — field, menu, form. Esc để đóng và focus bị giữ bên trong.",
+          close: "Xong",
+        }) +
+        cb(
+          `<button onclick="document.getElementById('d').showModal()">Mở</button>
+
+<dialog class="drawer" id="d">
+  <div class="head"><span class="title">Bộ lọc</span></div>
+  <!-- field / menu / form -->
+  <form method="dialog"><button class="btn ghost">Xong</button></form>
+</dialog>`,
+        ) +
+        a11y(
+          "Cùng <code>&lt;dialog&gt;</code> gốc như modal: giữ focus, <kbd class=\"kbd\">Esc</kbd> đóng, và focus trả về nút mở. Hiệu ứng trượt bị bỏ khi reduced-motion.",
+        ),
+    },
+  },
+
+  /* -------------------------------------------------------- WAVE 2 · DATA */
+  {
+    id: "rating",
+    cat: "Data",
+    name: "Rating",
+    desc: {
+      en: "A read-only score as a row of stars, filled up to .on. Gold by default; recolor with data-accent.",
+      vi: "Điểm số chỉ đọc dạng hàng sao, tô đến .on. Mặc định gold; đổi màu bằng data-accent.",
+    },
+    body: {
+      en: () =>
+        ratingStage() +
+        cb(
+          `<span class="rating" role="img" aria-label="4 out of 5">
+  <span class="s on">★</span><span class="s on">★</span>
+  <span class="s on">★</span><span class="s on">★</span>
+  <span class="s">★</span>
+</span>`,
+        ) +
+        a11y(
+          "Colour alone doesn't say the score, so give the wrapper <code>role=\"img\"</code> + an <code>aria-label</code> like <code>\"4 out of 5\"</code>. For an editable rating, use radio inputs instead.",
+        ),
+      vi: () =>
+        ratingStage() +
+        cb(
+          `<span class="rating" role="img" aria-label="4 trên 5">
+  <span class="s on">★</span><span class="s on">★</span>
+  <span class="s on">★</span><span class="s on">★</span>
+  <span class="s">★</span>
+</span>`,
+        ) +
+        a11y(
+          "Chỉ màu thì không nói ra điểm, nên cho wrapper <code>role=\"img\"</code> + <code>aria-label</code> kiểu <code>\"4 trên 5\"</code>. Nếu cho chấm điểm được, hãy dùng radio thay thế.",
+        ),
+    },
+  },
 ];
 
 /* --------------------------------------- shared, language-neutral demos */
@@ -1757,13 +2151,25 @@ function swatches(items) {
 }
 
 function accentStage() {
+  const names = [
+    "blue",
+    "gold",
+    "cyan",
+    "purple",
+    "lime",
+    "teal",
+    "indigo",
+    "pink",
+    "steel",
+    "good",
+    "warn",
+    "crit",
+  ];
   return stage(
     "data-accent",
-    `<button class="btn" data-accent="blue">BLUE</button>
-     <button class="btn" data-accent="gold">GOLD</button>
-     <button class="btn" data-accent="cyan">CYAN</button>
-     <button class="btn" data-accent="good">GOOD</button>
-     <button class="btn" data-accent="crit">CRIT</button>`,
+    names
+      .map((a) => `<button class="btn" data-accent="${a}">${a.toUpperCase()}</button>`)
+      .join("\n     "),
   );
 }
 function badgeStage() {
@@ -1894,6 +2300,104 @@ function statStage(labels) {
   );
 }
 
+function spinnerStage() {
+  return stage(
+    "SPINNER",
+    `<span class="spinner sm" aria-hidden="true"></span>
+     <span class="spinner" aria-hidden="true"></span>
+     <span class="spinner lg" data-accent="cyan" aria-hidden="true"></span>
+     <span class="spinner lg" data-accent="pink" aria-hidden="true"></span>`,
+  );
+}
+function rangeStage(label) {
+  return stage(
+    "RANGE",
+    `<div style="inline-size:100%;max-inline-size:420px;display:flex;flex-direction:column;gap:var(--sp-4)">
+      <label class="field">
+        <span class="label">${label}</span>
+        <input class="range" type="range" min="0" max="100" value="70" aria-label="${label}">
+      </label>
+      <input class="range" type="range" value="40" data-accent="cyan" aria-label="${label} 2">
+    </div>`,
+    "col",
+  );
+}
+function segmentStage(labels) {
+  return stage(
+    "SEGMENT",
+    `<div class="segment" role="group" aria-label="Difficulty">
+      <button type="button">${labels[0]}</button>
+      <button type="button" aria-pressed="true">${labels[1]}</button>
+      <button type="button">${labels[2]}</button>
+    </div>`,
+  );
+}
+function stepsStage(labels) {
+  return stage(
+    "STEPS",
+    `<ol class="steps">
+      <li class="done">${labels[0]}</li>
+      <li class="done">${labels[1]}</li>
+      <li aria-current="step">${labels[2]}</li>
+      <li>${labels[3]}</li>
+    </ol>`,
+    "col",
+  );
+}
+function meterStage() {
+  const bar = (n, on, accent) =>
+    `<div class="meter" data-accent="${accent}" role="meter" aria-valuenow="${on}" aria-valuemin="0" aria-valuemax="${n}" aria-label="${on}/${n}">` +
+    Array.from({ length: n }, (_, i) => `<span class="cell${i < on ? " on" : ""}"></span>`).join("") +
+    "</div>";
+  return stage(
+    "METER",
+    `<div style="display:flex;flex-direction:column;gap:var(--sp-3)">
+      ${bar(10, 8, "good")}
+      ${bar(10, 4, "warn")}
+      ${bar(10, 2, "crit")}
+    </div>`,
+    "col",
+  );
+}
+function emptyStage(t) {
+  return stage(
+    "EMPTY",
+    `<div class="empty" style="inline-size:100%;max-inline-size:440px">
+      <div class="icon" aria-hidden="true">${t.icon}</div>
+      <div class="title">${t.title}</div>
+      <p>${t.body}</p>
+      <button class="btn">${t.action}</button>
+    </div>`,
+    "col",
+  );
+}
+function ratingStage() {
+  const stars = (on) =>
+    Array.from({ length: 5 }, (_, i) => `<span class="s${i < on ? " on" : ""}">★</span>`).join("");
+  return stage(
+    "RATING",
+    `<div style="display:flex;flex-direction:column;gap:var(--sp-2)">
+      <span class="rating" role="img" aria-label="4 of 5">${stars(4)}</span>
+      <span class="rating" data-accent="cyan" role="img" aria-label="3 of 5">${stars(3)}</span>
+      <span class="rating" data-accent="crit" role="img" aria-label="5 of 5">${stars(5)}</span>
+    </div>`,
+    "col",
+  );
+}
+function drawerStage(t) {
+  return stage(
+    "DRAWER",
+    `<button class="btn" data-open="demo-drawer">${t.open}</button>
+     <dialog class="drawer" id="demo-drawer" data-accent="cyan">
+       <div class="head"><span class="title">${t.title}</span></div>
+       <p class="doc-p" style="margin:0">${t.body}</p>
+       <form method="dialog" style="margin-block-start:var(--sp-5)">
+         <button class="btn ghost">${t.close}</button>
+       </form>
+     </dialog>`,
+  );
+}
+
 /* --------------------------------------------------------- derived data */
 const ALL = [...GS, ...COMPONENTS];
 const BY_ID = Object.fromEntries(ALL.map((pg) => [pg.id, pg]));
@@ -1915,7 +2419,9 @@ function catalog() {
 function renderSidebar() {
   const link = (pg) => {
     const name = tr(pg.name);
-    return `<a class="navlink" href="#/${pg.id}" data-id="${pg.id}" data-name="${name.toLowerCase()}">${name}</a>`;
+    // search haystack = name + description (quotes stripped so it's attr-safe)
+    const hay = `${name} ${tr(pg.desc) || ""}`.toLowerCase().replace(/["<>]/g, " ");
+    return `<a class="navlink" href="#/${pg.id}" data-id="${pg.id}" data-name="${hay}">${name}</a>`;
   };
   const group = (label, items) =>
     `<div class="side-grp" data-grp><span class="side-lab">${label}</span>${items.map(link).join("")}</div>`;
@@ -1929,6 +2435,44 @@ function renderSidebar() {
 
 /* ------------------------------------------------------------- router */
 const pageEl = document.getElementById("page");
+
+/* --------------------- "On this page" TOC + scroll-spy --------------------- */
+let tocObs = null;
+function buildToc() {
+  const toc = document.getElementById("toc");
+  if (!toc) return;
+  tocObs?.disconnect();
+  const heads = [...pageEl.querySelectorAll(".doc-h2")];
+  if (heads.length < 2) {
+    toc.hidden = true;
+    toc.innerHTML = "";
+    return;
+  }
+  const used = {};
+  const links = heads.map((h) => {
+    let id = slug(h.textContent);
+    if (used[id]) id += `-${used[id]++}`;
+    else used[id] = 1;
+    h.id = id;
+    return `<button class="toc-link" type="button" data-to="${id}">${esc(h.textContent)}</button>`;
+  });
+  toc.hidden = false;
+  toc.innerHTML = `<span class="toc-lab">${UI[LANG].onpage}</span>${links.join("")}`;
+
+  const map = new Map([...toc.querySelectorAll(".toc-link")].map((a) => [a.dataset.to, a]));
+  map.get(heads[0].id)?.setAttribute("aria-current", "true"); // sensible default
+  tocObs = new IntersectionObserver(
+    (entries) => {
+      for (const en of entries) {
+        if (!en.isIntersecting) continue;
+        for (const a of map.values()) a.removeAttribute("aria-current");
+        map.get(en.target.id)?.setAttribute("aria-current", "true");
+      }
+    },
+    { rootMargin: `-${TOP_H + 8}px 0px -68% 0px`, threshold: 0 },
+  );
+  for (const h of heads) tocObs.observe(h);
+}
 
 function render(id) {
   const pg = BY_ID[id] || BY_ID.intro;
@@ -1952,6 +2496,7 @@ function render(id) {
   for (const a of document.querySelectorAll(".navlink")) {
     a.setAttribute("aria-current", a.dataset.id === pg.id ? "page" : "false");
   }
+  buildToc();
   document.title = `${tr(pg.name)} · 8-BIT NES`;
   document.body.removeAttribute("data-nav-open");
   pageEl.focus({ preventScroll: true });
@@ -1989,14 +2534,19 @@ function setLang(lang) {
 
 /* --------------------------------------------------- delegated behaviour */
 document.addEventListener("click", (e) => {
+  const tl = e.target.closest(".toc-link");
+  if (tl) {
+    document.getElementById(tl.dataset.to)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
   const lb = e.target.closest("[data-lang]");
   if (lb) {
     setLang(lb.dataset.lang);
     return;
   }
   const cp = e.target.closest(".cp");
-  if (cp && !cp.closest("mvp-code")) {
-    // <mvp-code> wires its own copy; only handle manual .codeblock here.
+  if (cp && !cp.closest("nes-code")) {
+    // <nes-code> wires its own copy; only handle manual .codeblock here.
     const pre = cp.parentElement.querySelector("pre");
     navigator.clipboard?.writeText(pre.innerText);
     const was = cp.textContent;
@@ -2026,6 +2576,17 @@ document.addEventListener("click", (e) => {
 });
 document.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && e.target.matches("[data-home]")) location.hash = "#/intro";
+  // ⌘K / Ctrl-K focuses search (the component-docs convention)
+  if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")) {
+    e.preventDefault();
+    document.querySelector("[data-search]")?.focus();
+  }
+  // Esc clears + leaves the search box
+  if (e.key === "Escape" && e.target.matches("[data-search]")) {
+    e.target.value = "";
+    e.target.dispatchEvent(new Event("input", { bubbles: true }));
+    e.target.blur();
+  }
 });
 
 /* -------------------------------------------------------------- search */

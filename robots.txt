@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://tutranmvp.github.io/8bit-components/sitemap.xml

@@ -7,9 +7,29 @@
   <title>8-BIT NES · tài liệu</title>
   <meta name="description"
     content="Bộ component NES-arcade cross-framework. Design tokens + CSS class + light-DOM web components.">
+  <meta name="theme-color" content="#0a0a24">
+  <link rel="canonical" href="https://tutranmvp.github.io/8bit-components/">
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20fill='%230a0a24'/%3E%3Cpath%20d='M16%204L28%2016L16%2028L4%2016Z'%20fill='none'%20stroke='%23fbd000'%20stroke-width='3'/%3E%3Crect%20x='11.5'%20y='11.5'%20width='9'%20height='9'%20fill='%23fbd000'/%3E%3C/svg%3E">
 
-  <link rel="preload" as="font" type="font/woff2" href="./fonts/ioskeley-mono-400.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="./fonts/space-grotesk-var.woff2" crossorigin>
+  <!-- social link-preview card -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="8-BIT NES">
+  <meta property="og:title" content="8-BIT NES — component system">
+  <meta property="og:description"
+    content="NES-arcade design system: tokens, class-based CSS, and light-DOM web components. Cross-framework, zero build.">
+  <meta property="og:url" content="https://tutranmvp.github.io/8bit-components/">
+  <meta property="og:image" content="https://tutranmvp.github.io/8bit-components/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="8-BIT NES — component system">
+  <meta name="twitter:description"
+    content="NES-arcade design system: tokens, CSS, and web components. Cross-framework, zero build.">
+  <meta name="twitter:image" content="https://tutranmvp.github.io/8bit-components/og.png">
+
+  <link rel="preload" as="font" type="font/woff2" href="./fonts/nes-mono-400.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="./fonts/nes-sans-var.woff2" crossorigin>
 
   <link rel="stylesheet" href="./tokens.css">
   <link rel="stylesheet" href="./base.css">
@@ -23,6 +43,7 @@
     :root {
       --top-h: 53px;
       --side-w: 244px;
+      --toc-w: 216px;
       --doc-maxw: 820px;
     }
 
@@ -36,8 +57,8 @@
       gap: var(--sp-4);
       block-size: var(--top-h);
       padding-inline: var(--sp-4);
-      background: color-mix(in srgb, var(--screen) 94%, transparent);
-      backdrop-filter: blur(6px);
+      background: var(--screen);
+      /* opaque (no backdrop-filter) → the sticky bar never repaints on scroll */
       border-block-end: var(--bw) solid var(--line-hi);
     }
 
@@ -82,7 +103,7 @@
     }
 
     .top-link:hover {
-      color: var(--gold);
+      color: var(--primary);
     }
 
     .menu-btn {
@@ -115,14 +136,14 @@
     }
 
     .langbtn[aria-pressed="true"] {
-      background: var(--gold);
+      background: var(--primary);
       color: var(--ink-on-accent);
     }
 
     /* ---- app grid: sidebar + content ---- */
     .app {
       display: grid;
-      grid-template-columns: var(--side-w) 1fr;
+      grid-template-columns: var(--side-w) minmax(0, 1fr) var(--toc-w);
       align-items: start;
     }
 
@@ -147,7 +168,7 @@
       font-size: var(--fs-label);
       text-transform: uppercase;
       letter-spacing: var(--ls-chrome);
-      color: var(--gold);
+      color: var(--primary);
     }
 
     .navlink {
@@ -170,9 +191,9 @@
     }
 
     .navlink[aria-current="page"] {
-      color: var(--gold);
-      border-inline-start-color: var(--gold);
-      background: color-mix(in srgb, var(--gold) 10%, transparent);
+      color: var(--primary);
+      border-inline-start-color: var(--primary);
+      background: color-mix(in srgb, var(--primary) 10%, transparent);
     }
 
     .navlink .tag {
@@ -196,20 +217,19 @@
     }
 
     .doc-page {
-      animation: power-on .2s steps(3);
+      animation: power-on .24s var(--ease);
     }
 
+    /* smooth fade + slight rise (transform/opacity only → composited, 60fps+) */
     @keyframes power-on {
-      0% {
-        opacity: .2
+      from {
+        opacity: 0;
+        transform: translateY(6px);
       }
 
-      55% {
-        opacity: .65
-      }
-
-      100% {
-        opacity: 1
+      to {
+        opacity: 1;
+        transform: none;
       }
     }
 
@@ -223,7 +243,7 @@
     }
 
     .doc-cat {
-      color: var(--gold);
+      color: var(--primary);
     }
 
     .doc-lead {
@@ -237,6 +257,7 @@
 
     .doc-h2 {
       margin-block: var(--sp-6) var(--sp-3);
+      scroll-margin-top: calc(var(--top-h) + var(--sp-4));
       font-family: var(--font-mono);
       font-size: var(--fs-h3);
       font-weight: 700;
@@ -333,6 +354,65 @@
       display: none;
     }
 
+    /* ---- "On this page" table of contents (right rail) ---- */
+    .toc {
+      position: sticky;
+      inset-block-start: var(--top-h);
+      align-self: start;
+      block-size: calc(100dvh - var(--top-h));
+      overflow-y: auto;
+      padding: var(--sp-6) var(--sp-4) var(--sp-7) 0;
+    }
+
+    .toc[hidden] {
+      display: none;
+    }
+
+    .toc-lab {
+      display: block;
+      margin-block-end: var(--sp-3);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--primary);
+    }
+
+    .toc-link {
+      display: block;
+      inline-size: 100%;
+      text-align: start;
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      color: var(--dim);
+      background: none;
+      border: 0;
+      border-inline-start: var(--bw-2) solid var(--line-hi);
+      padding: var(--sp-1) 0 var(--sp-1) var(--sp-3);
+      cursor: pointer;
+      transition: color var(--dur-fast);
+    }
+
+    .toc-link:hover {
+      color: var(--ink);
+    }
+
+    .toc-link[aria-current="true"] {
+      color: var(--primary);
+      border-inline-start-color: var(--primary);
+    }
+
+    /* ---- drop the TOC rail before it crowds the content ---- */
+    @media (max-width:1180px) {
+      .app {
+        grid-template-columns: var(--side-w) minmax(0, 1fr);
+      }
+
+      .toc {
+        display: none;
+      }
+    }
+
     /* ---- responsive: sidebar becomes a drawer ---- */
     @media (max-width:860px) {
       .app {
@@ -347,7 +427,7 @@
         inline-size: min(82vw, 300px);
         background: var(--screen);
         transform: translateX(-100%);
-        transition: transform var(--dur-mid) var(--ease-step);
+        transition: transform var(--dur-mid) var(--ease);
       }
 
       body[data-nav-open] .side {
@@ -380,7 +460,7 @@
 
       /* the sound toggle is decorative chrome — drop it on phones so
          brand · language switch always fit cleanly */
-      .topbar mvp-sound {
+      .topbar nes-sound {
         display: none;
       }
 
@@ -405,17 +485,17 @@
   <header class="topbar">
     <button class="menu-btn btn ghost" aria-label="Bật/tắt điều hướng" data-menu>☰</button>
     <span class="brand" data-home tabindex="0" role="link"><span class="sq">◈</span> 8-BIT NES</span>
-    <span class="badge" style="--accent:var(--panel-2)">v0.1</span>
+    <span class="badge">v0.1</span>
     <input class="input search" type="search" placeholder="TÌM…" aria-label="Lọc component" data-search>
     <span class="spacer"></span>
     <nav class="top-links">
-      <a class="top-link" href="https://github.com/YOURUSER/8bit-dopamine" target="_blank" rel="noopener">GitHub ↗</a>
+      <a class="top-link" href="https://github.com/TuTranMVP/8bit-components" target="_blank" rel="noopener">GitHub ↗</a>
     </nav>
     <div class="langsw" role="group" aria-label="Language / Ngôn ngữ">
       <button class="langbtn" type="button" data-lang="en">EN</button>
       <button class="langbtn" type="button" data-lang="vi">VI</button>
     </div>
-    <mvp-sound></mvp-sound>
+    <nes-sound></nes-sound>
   </header>
 
   <div class="app">
@@ -426,6 +506,7 @@
         <article id="page" tabindex="-1"></article>
       </div>
     </main>
+    <aside class="toc" id="toc" aria-label="On this page" hidden></aside>
   </div>
 
   <script type="module" src="./docs.js"></script>

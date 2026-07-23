@@ -9,11 +9,11 @@
 /* ---- fonts: self-host woff2 subset (Latin + Vietnamese). Drop files in ./fonts ---- */
 /* ---- fonts: self-hosted woff2, Latin + Vietnamese subset (verified full VN coverage).
    Crisp-render note: preload the two critical files in <head> for zero-FOUT:
-   <link rel="preload" as="font" type="font/woff2" href="./fonts/ioskeley-mono-400.woff2" crossorigin>
-   <link rel="preload" as="font" type="font/woff2" href="./fonts/space-grotesk-var.woff2" crossorigin> ---- */
+   <link rel="preload" as="font" type="font/woff2" href="./fonts/nes-mono-400.woff2" crossorigin>
+   <link rel="preload" as="font" type="font/woff2" href="./fonts/nes-sans-var.woff2" crossorigin> ---- */
 @font-face {
-  font-family: "IoskeleyMono";
-  src: url("./fonts/ioskeley-mono-400.woff2") format("woff2");
+  font-family: "NES Mono";
+  src: url("./fonts/nes-mono-400.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -21,8 +21,8 @@
 }
 
 @font-face {
-  font-family: "IoskeleyMono";
-  src: url("./fonts/ioskeley-mono-700.woff2") format("woff2");
+  font-family: "NES Mono";
+  src: url("./fonts/nes-mono-700.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -30,8 +30,8 @@
 }
 
 @font-face {
-  font-family: "Space Grotesk";
-  src: url("./fonts/space-grotesk-var.woff2") format("woff2");
+  font-family: "NES Sans";
+  src: url("./fonts/nes-sans-var.woff2") format("woff2");
   font-weight: 300 700;
   font-style: normal;
   font-display: swap;
@@ -78,6 +78,19 @@
     --purple: #b357e0;
     --purple-d: #7d33a8;  /* special / magic */
 
+    /* ---- extended wheel: fills the hue gaps so `data-accent` spans the circle.
+       Same base + -d contract; each vivid enough for --ink-on-accent on the fill. */
+    --lime: #b8e62e;
+    --lime-d: #75980f;    /* fresh / eco / level-up */
+    --teal: #2ad8b8;
+    --teal-d: #158f78;    /* calm info / secondary */
+    --indigo: #7c7cff;
+    --indigo-d: #4a45c8;  /* deep primary / link */
+    --pink: #ff6ec7;
+    --pink-d: #c23d90;    /* playful / accent-2 / like */
+    --steel: #9aa2d8;
+    --steel-d: #565d95;   /* neutral chip / muted tag */
+
     /* ---- semantic palette: same base + deep contract, kept apart from brand ---- */
     --good: #56d364;
     --good-d: #2f9e3f;    /* active / success / stage clear */
@@ -89,9 +102,16 @@
     /* ink drawn ON TOP of a solid accent (never white on gold/green/cyan) */
     --ink-on-accent: #0a0a1a;
 
+    /* ---- primary = the go / active color. Green (success) by design so the
+       palette maps to intuition: green = primary/positive, gold = warn/reward,
+       red = error. Every component's default --accent points here — retheme in
+       one line. ---- */
+    --primary: var(--good);
+    --primary-d: var(--good-d);
+
     /* ---- typography roles: 2 faces, deliberate pairing ---- */
-    --font-mono: "IoskeleyMono", ui-monospace, "Cascadia Code", Menlo, monospace;
-    --font-body: "Space Grotesk", system-ui, -apple-system, sans-serif;
+    --font-mono: "NES Mono", ui-monospace, "Cascadia Code", Menlo, monospace;
+    --font-body: "NES Sans", system-ui, -apple-system, sans-serif;
 
     /* type scale (rem, 16px base). Only the rungs actually used. */
     --fs-label: .5625rem;
@@ -121,17 +141,17 @@
     --sp-6: 2rem;
     --sp-7: 3rem;
 
-    /* ---- shape: SIGNATURE = notched pixel bevel. Never a radius. ---- */
+    /* ---- shape: system is square (90° corners), never a radius.
+       --notch only drives the optional .pixel-box helper — not buttons. ---- */
     --notch: 6px;
-    /* corner cut size */
+    /* corner cut size for the .pixel-box utility */
     --bw: 3px;
     /* standard "pixel box" border */
     --bw-2: 2px;
     /* small elements */
     --accent-bar: 6px;
     /* left classifier bar */
-    --nav-radius: 999px;
-    /* ONLY chrome (nav pill) may round */
+    /* No radius token by design — the whole system is square, no exceptions. */
 
     /* ---- SIGNATURE elevation: hard shadow, zero blur, pure black ---- */
     --sh-1: 1px 1px 0 var(--line);
@@ -145,14 +165,18 @@
     --sh-5: 6px 6px 0 var(--line);
     /* hero / big card */
 
-    /* ---- motion: pixel-stepped, not smooth ---- */
-    --dur-fast: .1s;
+    /* ---- motion: smooth & high-FPS. Short durations + a single ease-out curve.
+       Prefer animating transform/opacity (compositor-only) for 60fps+ feel. ---- */
+    --dur-fast: .12s;
+    /* hover / press micro-motion */
     --dur-mid: .2s;
-    --dur-slow: .4s;
-    --ease-step: steps(3);
-    /* chrome moves in ticks */
-    --ease-fill: steps(8);
-    /* XP bar fills in blocks */
+    /* enters / toasts */
+    --dur-slow: .34s;
+    /* progress fills */
+    --ease: cubic-bezier(.22, 1, .36, 1);
+    /* ease-out (quint) — snappy start, soft landing */
+    --ease-fill: cubic-bezier(.22, 1, .36, 1);
+    /* progress glides, no stutter */
 
     /* ---- form controls: one height, everything aligns to it ---- */
     --ctrl-h: 2.25rem;

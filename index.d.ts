@@ -23,16 +23,31 @@ export declare function bleep(seq: SfxSeq): void;
 export declare function setMute(muted: boolean): void;
 export declare function isMuted(): boolean;
 
-/** Float a "+N XP" label upward from an element (steps(6) motion). */
+/** Float a "+N XP" label upward from an element (smooth ease-out motion). */
 export declare function floatXP(el: HTMLElement, text?: string, color?: string): void;
 
-/** Dispatch XP on the `mvp:xp` document bus (an <mvp-hud> listens) + optional floater. */
+/** Dispatch XP on the `nes:xp` document bus (an <nes-hud> listens) + optional floater. */
 export declare function grantXP(amount: number, srcEl?: HTMLElement): void;
+
+/** Accent names mapped in base.css (`--accent` + `--accent-d`). `good` (green) is the primary/default. */
+export type Accent =
+  | "blue"
+  | "gold"
+  | "cyan"
+  | "purple"
+  | "lime"
+  | "teal"
+  | "indigo"
+  | "pink"
+  | "steel"
+  | "good"
+  | "warn"
+  | "crit";
 
 /** Options for {@link toast}. */
 export interface ToastOptions {
-  /** Accent name mapped in base.css (`gold` default). */
-  accent?: "blue" | "gold" | "cyan" | "purple" | "good" | "warn" | "crit";
+  /** Accent name mapped in base.css (`good`/green default — the primary accent). */
+  accent?: Accent;
   /** Auto-dismiss delay in ms; `0` keeps it until removed. Default 3200. */
   timeout?: number;
 }
@@ -40,41 +55,41 @@ export interface ToastOptions {
 /** Show a transient toast (auto-creates a live-region host on first call). */
 export declare function toast(msg: string, opts?: ToastOptions): HTMLElement;
 
-/** Highlight code to HTML with `.t-*` token spans (used by <mvp-code>). */
+/** Highlight code to HTML with `.t-*` token spans (used by <nes-code>). */
 export declare function highlightCode(code: string): string;
 
 /* ---- custom elements ---- */
 
-export declare class MvpSoundElement extends HTMLElement {}
-export declare class MvpCollapsibleElement extends HTMLElement {}
-export declare class MvpHudElement extends HTMLElement {
+export declare class NesSoundElement extends HTMLElement {}
+export declare class NesCollapsibleElement extends HTMLElement {}
+export declare class NesHudElement extends HTMLElement {
   /** Add XP directly (also persisted under `${ns}_xp`). */
   add(amount: number): void;
 }
-export declare class MvpQuizElement extends HTMLElement {}
-export declare class MvpTabsElement extends HTMLElement {}
-export declare class MvpCodeElement extends HTMLElement {}
+export declare class NesQuizElement extends HTMLElement {}
+export declare class NesTabsElement extends HTMLElement {}
+export declare class NesCodeElement extends HTMLElement {}
 
-/** Detail of the `mvp:answer` event bubbled by <mvp-quiz>. */
-export interface MvpAnswerDetail {
+/** Detail of the `nes:answer` event bubbled by <nes-quiz>. */
+export interface NesAnswerDetail {
   correct: boolean;
   choice: number;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "mvp-sound": MvpSoundElement;
-    "mvp-collapsible": MvpCollapsibleElement;
-    "mvp-hud": MvpHudElement;
-    "mvp-quiz": MvpQuizElement;
-    "mvp-tabs": MvpTabsElement;
-    "mvp-code": MvpCodeElement;
+    "nes-sound": NesSoundElement;
+    "nes-collapsible": NesCollapsibleElement;
+    "nes-hud": NesHudElement;
+    "nes-quiz": NesQuizElement;
+    "nes-tabs": NesTabsElement;
+    "nes-code": NesCodeElement;
   }
   interface DocumentEventMap {
-    "mvp:xp": CustomEvent<{ amount: number }>;
-    "mvp:mute": CustomEvent<{ muted: boolean }>;
+    "nes:xp": CustomEvent<{ amount: number }>;
+    "nes:mute": CustomEvent<{ muted: boolean }>;
   }
   interface HTMLElementEventMap {
-    "mvp:answer": CustomEvent<MvpAnswerDetail>;
+    "nes:answer": CustomEvent<NesAnswerDetail>;
   }
 }

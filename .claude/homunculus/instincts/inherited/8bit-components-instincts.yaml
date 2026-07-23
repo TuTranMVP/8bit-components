@@ -1,0 +1,419 @@
+# Instincts generated from https://github.com/TuTranMVP/8bit-components
+# Generated: 2026-07-22T16:41:18.137Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: 8bit-components-commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/TuTranMVP/8bit-components
+---
+
+# 8bit Components Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: feat, refactor
+
+## Evidence
+
+- 3 commits analyzed
+- Detected conventional commit pattern
+- Examples: feat: extend palette to a full accent wheel + add 8 components; DX cleanups, refactor(button): square 90° corners — drop the notched clip-path bevel
+
+---
+id: 8bit-components-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/TuTranMVP/8bit-components
+---
+
+# 8bit Components Commit Length
+
+## Action
+
+Write moderate-length commit messages (~78 characters)
+
+## Evidence
+
+- Average commit message length: 78 chars
+- Based on 3 commits
+
+---
+id: 8bit-components-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/TuTranMVP/8bit-components
+---
+
+# 8bit Components Naming Files
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: camelCase
+
+---
+id: 8bit-components-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/TuTranMVP/8bit-components
+---
+
+# 8bit Components Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: 8bit-components-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/TuTranMVP/8bit-components
+---
+
+# 8bit Components Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: 8bit-components-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/TuTranMVP/8bit-components
+---
+
+# 8bit Components Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: 8bit-components-workflow-add-or-update-component
+trigger: "when doing add or update component"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/TuTranMVP/8bit-components
+---
+
+# 8bit Components Workflow Add Or Update Component
+
+## Action
+
+Follow the add-or-update-component workflow:
+1. Implement or update component styles and logic in components.css (and sometimes base.css or tokens.css).
+2. Update or create documentation for the component in docs.js and relevant docs pages.
+3. Sync design guidelines and component details in DESIGN.md and README.md.
+4. Update or extend type definitions in index.d.ts if needed.
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: components.css, base.css, tokens.css
+
+---
+id: 8bit-components-workflow-design-guideline-sync
+trigger: "when doing design guideline sync"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/TuTranMVP/8bit-components
+---
+
+# 8bit Components Workflow Design Guideline Sync
+
+## Action
+
+Follow the design-guideline-sync workflow:
+1. Update the relevant CSS files (components.css, tokens.css, base.css) to implement the change.
+2. Update prose and guidelines in DESIGN.md and README.md to reflect the new behavior or design.
+3. Update docs.js and relevant docs pages to match the new design or behavior.
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: components.css, tokens.css, base.css
+
+---
+id: 8bit-components-workflow-package-and-deploy-setup
+trigger: "when doing package and deploy setup"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/TuTranMVP/8bit-components
+---
+
+# 8bit Components Workflow Package And Deploy Setup
+
+## Action
+
+Follow the package-and-deploy-setup workflow:
+1. Update package.json with new metadata, exports, or distribution rules.
+2. Add or modify GitHub Actions workflows (e.g., ci.yml, pages.yml) for CI/CD and deployment.
+3. Update .gitignore and other root-level config files as needed.
+4. Ensure documentation and demo files (README.md, demo.html, docs.html, index.html) are up to date.
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: package.json, .github/workflows/ci.yml, .github/workflows/pages.yml
+
+---
+id: 8bit-components-instinct-file-naming
+trigger: "When creating or renaming a file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: TuTranMVP/8bit-components
+---
+
+# 8bit Components Instinct File Naming
+
+## Action
+
+Use camelCase for file names
+
+## Evidence
+
+- Pattern in namingConventions.files
+- Observed in repo file structure
+
+---
+id: 8bit-components-instinct-function-naming
+trigger: "When defining a function"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: TuTranMVP/8bit-components
+---
+
+# 8bit Components Instinct Function Naming
+
+## Action
+
+Use camelCase for function names
+
+## Evidence
+
+- Pattern in namingConventions.functions
+- JavaScript code samples
+
+---
+id: 8bit-components-instinct-class-naming
+trigger: "When defining a class"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: TuTranMVP/8bit-components
+---
+
+# 8bit Components Instinct Class Naming
+
+## Action
+
+Use PascalCase for class names
+
+## Evidence
+
+- Pattern in namingConventions.classes
+
+---
+id: 8bit-components-instinct-constant-naming
+trigger: "When defining a constant"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: TuTranMVP/8bit-components
+---
+
+# 8bit Components Instinct Constant Naming
+
+## Action
+
+Use SCREAMING_SNAKE_CASE for constant names
+
+## Evidence
+
+- Pattern in namingConventions.constants
+
+---
+id: 8bit-components-instinct-import-style
+trigger: "When importing modules"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: TuTranMVP/8bit-components
+---
+
+# 8bit Components Instinct Import Style
+
+## Action
+
+Use relative import paths
+
+## Evidence
+
+- Pattern in importStyle
+- JavaScript code samples
+
+---
+id: 8bit-components-instinct-export-style
+trigger: "When exporting modules or functions"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: TuTranMVP/8bit-components
+---
+
+# 8bit Components Instinct Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in exportStyle
+- JavaScript code samples
+
+---
+id: 8bit-components-instinct-test-location
+trigger: "When adding or updating tests"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: TuTranMVP/8bit-components
+---
+
+# 8bit Components Instinct Test Location
+
+## Action
+
+Place test files in a separate folder from src
+
+## Evidence
+
+- Pattern in architecture.folderStructure.testLocation
+
+---
+id: 8bit-components-instinct-git-commit-format
+trigger: "When writing a commit message"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: TuTranMVP/8bit-components
+---
+
+# 8bit Components Instinct Git Commit Format
+
+## Action
+
+Use Conventional Commits format with prefixes like 'feat' or 'refactor', and a descriptive message (~78 chars)
+
+## Evidence
+
+- Pattern in commits.type: conventional
+- Prefixes: feat, refactor
+- Examples: 'feat: extend palette...', 'refactor(button): square 90° corners...'
+
+---
+id: 8bit-components-instinct-add-or-update-component
+trigger: "When introducing a new component or making significant changes to an existing one"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: TuTranMVP/8bit-components
+---
+
+# 8bit Components Instinct Add Or Update Component
+
+## Action
+
+Update components.css (and possibly base.css/tokens.css), docs.js, DESIGN.md, README.md, and index.d.ts as needed
+
+## Evidence
+
+- Workflow: add-or-update-component
+- Commit sequences and files involved in workflow definition
+
+---
+id: 8bit-components-instinct-design-guideline-sync
+trigger: "When a visual or behavioral change is made to a component or design token"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: TuTranMVP/8bit-components
+---
+
+# 8bit Components Instinct Design Guideline Sync
+
+## Action
+
+Update CSS files, DESIGN.md, README.md, and docs.js to keep all design documentation and code in sync
+
+## Evidence
+
+- Workflow: design-guideline-sync
+- Commit sequences and files involved in workflow definition
+
+---
+id: 8bit-components-instinct-package-and-deploy-setup
+trigger: "When updating distribution settings, deployment workflows, or package metadata"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: TuTranMVP/8bit-components
+---
+
+# 8bit Components Instinct Package And Deploy Setup
+
+## Action
+
+Update package.json, GitHub Actions workflows, .gitignore, and ensure documentation/demo files are current
+
+## Evidence
+
+- Workflow: package-and-deploy-setup
+- Commit sequences and files involved in workflow definition
+

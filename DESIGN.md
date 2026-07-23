@@ -14,10 +14,11 @@ by design (plain CSS + light-DOM web components; no build step).
 
 1. **One source of truth.** Every color, size, shadow, and motion value lives in `tokens.css`.
    Change the look there — never hard-code a value inside a component.
-2. **One accent per block.** Set `data-accent="blue|gold|cyan|purple|good|warn|crit"` on a
-   container; the button, card, chip, and badge inside inherit `--accent`. Color carries meaning.
-3. **Spend boldness in one place.** The **button** is the signature (bevel + press). Everything
-   else stays quiet so the page reads, not shouts.
+2. **One accent per block.** Set `data-accent` (brand `blue|gold|cyan|purple|lime|teal|indigo|pink|steel`
+   or semantic `good|warn|crit`) on a container; the button, card, chip, and badge inside inherit
+   `--accent`. Color carries meaning.
+3. **Spend boldness in one place.** The **button** is the signature (hard shadow + press-in on
+   square corners). Everything else stays quiet so the page reads, not shouts.
 4. **Crisp over cute.** If an effect softens text or an edge, it loses. Sharpness wins.
 5. **Quality floor, always.** Keyboard-navigable, visible focus, ARIA wired, reduced-motion
    respected, responsive to mobile.
@@ -42,11 +43,18 @@ high-contrast — well above WCAG AA on `--panel`.
 | `--ink` / `--text`                    | `#f8f9ff` / `#e8eaff`                   | titles·numbers / body                    |
 | `--muted` / `--dim`                   | `#c2c6f3` / `#a7ace1`                   | labels·meta / hints·captions             |
 | `--blue` `--gold` `--cyan` `--purple` | `#5c94fc` `#fbd000` `#33e0e0` `#b357e0` | brand accents                            |
+| `--lime` `--teal` `--indigo` `--pink` `--steel` | `#b8e62e` `#2ad8b8` `#7c7cff` `#ff6ec7` `#9aa2d8` | extended-wheel accents (fill the hue gaps) |
 | `--good` `--warn` `--crit`            | `#56d364` `#ff9e2c` `#e6394a`           | success / caution / error                |
-| `--ink-on-accent`                     | `#0a0a1a`                               | dark ink drawn **on** a solid accent     |
+| `--primary` `--primary-d`             | → `--good` `--good-d`                   | the go/active color (green)              |
+| `--ink-on-accent`                     | `#0a0a1a`                               | dark ink — **only on a BRIGHT accent fill** |
 
-**Rules.** Never white text on gold/green/cyan — use `--ink-on-accent`. Accents are for meaning,
-never decoration. Semantic (`good/warn/crit`) stays separate from brand.
+**Rules.** Never white text on gold/green/cyan — use `--ink-on-accent`. But `--ink-on-accent` is
+for **bright** fills only: on a neutral/dark surface (`--panel`, `--panel-2`, `--slot`) it sinks
+into the same-hue ground — use `--muted`/`--ink` there instead (e.g. a plain `.badge`). Accents are
+for meaning,
+never decoration. **`--primary` is green (`--good`)** so the palette maps to intuition —
+green = primary/positive, gold = warn/highlight, red = error; every component's default `--accent`
+points at `--primary`, so retheme in one line. Semantic (`good/warn/crit`) stays separate from brand.
 
 **Borders vs shadows (important).** `--line` (`#000`) is for **offset shadows only** — it's
 invisible as a border on the dark ground. The border **on a filled/selected element** must be the
@@ -59,9 +67,9 @@ and the item never reads smaller than an outlined sibling. Borders on recessed/n
 
 Two faces, deliberately paired. Self-hosted woff2 (Latin + Vietnamese subset, full diacritics).
 
-- **`--font-mono` — IoskeleyMono** (hi-res mono, *not* a lo-res pixel font): all chrome —
+- **`--font-mono` — NES Mono** (hi-res mono, *not* a lo-res pixel font): all chrome —
   labels, numbers, code, nav, headings. Uppercase + `--ls-chrome` tracking for labels.
-- **`--font-body` — Space Grotesk** (variable 300–700): body copy, prose. Sentence case.
+- **`--font-body` — NES Sans** (variable 300–700): body copy, prose. Sentence case.
 
 Type scale (rem, 16px base): `--fs-label .5625` · `--fs-chip .6875` · `--fs-h3 .75` ·
 `--fs-body .84375` · `--fs-h2 1.0625` · `--fs-h1 1.625`. Only rungs that are actually used exist.
@@ -72,18 +80,20 @@ Chrome is mono-uppercase; body is sans sentence-case. Don't mix the roles.
 
 ### Shape & corners  ← *the decision*
 
-The bevel is a **spotlight, not a texture**:
+**Everything is a clean 90° square** — buttons included. No corner is ever cut or rounded:
 
-- **Buttons** get the notched pixel bevel (`clip-path` cutting all four corners) + press-in. This
-  is the one memorable move.
+- **Buttons** are square like every other surface. What makes them the signature is the
+  **hard shadow + press-in** on `:active` (translate + shadow drop), not a beveled corner.
 - **Every other surface** — card, callout, code block, input, select, table, modal, the docs demo
-  stage — is a **clean 90° square**. Hard border + hard shadow do the work.
-- **Never a `border-radius`.** The only rounded thing allowed is a nav pill (`--nav-radius`),
-  chrome only.
+  stage — is the same **clean 90° square**. Hard border + hard shadow do the work.
+- **Never a `border-radius`.** No exceptions — the base reset even zeroes UA rounding on
+  `button/input/select/textarea` so the system stays square everywhere.
+- The `--notch` bevel survives only as an **opt-in `.pixel-box` helper** for authors who want a
+  chamfered panel; no default component uses it.
 
-*Why:* an asymmetric notch on large surfaces reads as a rendering glitch and its diagonals
-anti-alias (soft edges). Square surfaces are sharper, uniform, and unmistakably NES (think NES
-dialog boxes). Concentrating the bevel on the button makes it the signature instead of noise.
+*Why:* right-angle corners are the sharpest, most uniform read and unmistakably NES (think NES
+dialog boxes). A chamfer or radius on a control softens its diagonals (anti-aliasing) and breaks
+the grid; keeping the whole system square makes the press-in — not a corner trick — the signature.
 
 ### Elevation — hard shadow
 
@@ -93,8 +103,10 @@ interactive elements drop to `--sh-1` and `translate(2px,2px)` — the press.
 
 ### Motion
 
-`steps()` only — movement ticks like a sprite sheet; smooth easing is banned (`--ease-step`,
-`--ease-fill`). Durations `--dur-fast/-mid/-slow`. Every animation must no-op under
+**Smooth & high-FPS.** One ease-out curve — `--ease` (`cubic-bezier(.22,1,.36,1)`) and `--ease-fill`.
+Animate `transform`/`opacity` where possible (compositor-only → 60fps+); avoid transitioning
+layout/paint props on scroll (the docs topbar is opaque, no `backdrop-filter`). Loaders spin
+`linear`. Durations `--dur-fast/-mid/-slow`. Every animation must no-op under
 `prefers-reduced-motion: reduce` (handled globally in `base.css`).
 
 ### Spacing
@@ -123,7 +135,7 @@ is `tokens, base, components, utilities` so page authors can override without `!
 - **Focus is a feature, not an outline.** `:focus-visible` flips the border to `--gold` (+ ring).
   Never `outline:none` without a visible replacement.
 - Native elements first: real `<button>`, `<dialog>`, `<details>`, `<select>`, `<input>` — free
-  keyboard + AT behaviour. Add ARIA only to fill gaps (e.g. `<mvp-tabs>` = full WAI-ARIA tabs).
+  keyboard + AT behaviour. Add ARIA only to fill gaps (e.g. `<nes-tabs>` = full WAI-ARIA tabs).
 - Color never alone: pair `crit`/`warn` states with text.
 - Respect `prefers-reduced-motion`. Ship responsive down to mobile (sidebar → drawer).
 
@@ -151,9 +163,9 @@ Words are design material — they help someone use the thing.
 
 | Do                                     | Don't                                           |
 |----------------------------------------|-------------------------------------------------|
-| Square surfaces; bevel the button only | Add `border-radius`, or notch large surfaces    |
+| Square surfaces everywhere, buttons too | Add `border-radius`, or chamfer a control      |
 | Hard shadow (`Npx Npx 0`, black)       | Soft/blurred shadows or glows                   |
-| `steps()` motion; honor reduced-motion | Smooth easing; motion over text                 |
+| Smooth `--ease` on transform/opacity   | Janky `steps()` easing; animating layout/paint  |
 | Bright text on a solid ground          | Text over a scanline/striped layer              |
 | One `data-accent` per block            | Multiple competing accents; color as decoration |
 | `--ink-on-accent` on solid accents     | White text on gold/green/cyan                   |
@@ -163,14 +175,14 @@ Words are design material — they help someone use the thing.
 
 ## 7 · Component catalog
 
-| Category   | Components                                                           |
-|------------|----------------------------------------------------------------------|
-| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator              |
-| Form       | Input · Textarea · Select · Checkbox · Radio · Switch · Field        |
-| Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast           |
-| Navigation | Tabs (`<mvp-tabs>`) · Breadcrumb · Pagination                        |
-| Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) |
-| Data       | Table · Code block · Accordion (`<mvp-collapsible>`) · Stat          |
+| Category   | Components                                                                     |
+|------------|--------------------------------------------------------------------------------|
+| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator                        |
+| Form       | Input · Textarea · Select · Checkbox · Radio · Switch · Field · Range · Segmented control |
+| Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast · Spinner · Meter · Empty state |
+| Navigation | Tabs (`<nes-tabs>`) · Breadcrumb · Pagination · Steps                          |
+| Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) |
+| Data       | Table · Code block · Accordion (`<nes-collapsible>`) · Stat · Rating           |
 
 Live docs: `pnpm demo`, then open `/docs.html`.
 
@@ -198,8 +210,8 @@ formats/lints JS (`elements.js`); CSS + `demo.html`/`docs.*` are ignored (see `b
 2. **Watch specificity.** Prefer one class per component. Avoid a type-based selector and a
    class-based selector fighting over the same property (a classic source of padding/margin
    cancellation). Scope internals under the parent (`.card .title`, not a bare `.title`).
-3. **Signature check.** Square surface + hard black border + hard shadow; bevel only if it's a
-   button-like control. No radius. Motion in `steps()`.
+3. **Signature check.** Square surface + hard black border + hard shadow; press-in on interactive
+   controls. No radius, no chamfer. Motion smooth (`--ease`, transform/opacity).
 4. **Accent-ready.** Default `--accent` locally; let `data-accent` override.
 5. **A11y.** Native element if one exists; visible focus; ARIA to fill gaps; reduced-motion safe.
 6. **Document it** as a page in `docs.js` (desc · live preview · usage · API table · a11y note).
