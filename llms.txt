@@ -1,0 +1,86 @@
+# 8-BIT NES
+
+> Cross-framework NES-arcade design system — CSS design tokens + class recipes + light-DOM web components (`<nes-*>`). Zero build step, dark-only, square 90° corners, hard shadow. Official source of truth for the `8bit-nes` package (v0.1.0).
+
+Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";`. Or CDN: `https://cdn.jsdelivr.net/npm/8bit-nes@0.1.0/all.min.css`. The look is themed entirely from `tokens.css`; recolor any block with `data-accent="blue|gold|cyan|purple|good|warn|crit|…"` (default accent `good` = green). Full machine-readable reference: [llms-full.txt](https://tutranmvp.github.io/8bit-components/llms-full.txt) · [components.json](https://tutranmvp.github.io/8bit-components/components.json).
+
+## Getting started
+- [Introduction](https://tutranmvp.github.io/8bit-components/docs.html#/intro): A cross-framework component system with the feel of a 1985 arcade cabinet — square pixel boxes, hard shadows, chiptune, and XP. Modern-crisp, dark-only, zero build.
+- [Installation](https://tutranmvp.github.io/8bit-components/docs.html#/install): Add the package, import the CSS once, register the web components. Three environments, one result.
+- [Theming](https://tutranmvp.github.io/8bit-components/docs.html#/theming): One file is the source of truth. Change the look in tokens.css — never in a component.
+- [Colors](https://tutranmvp.github.io/8bit-components/docs.html#/colors): The full palette. Grounds, ink, and a base + deep pair for every brand and semantic accent — all tokens in tokens.css.
+
+## Element
+- [Button](https://tutranmvp.github.io/8bit-components/docs.html#/button) — `.btn`: Primary action. Green (the primary accent) by default; set data-accent to recolor. Presses in on :active — the signature move.
+- [Badge](https://tutranmvp.github.io/8bit-components/docs.html#/badge) — `.badge`: Static status marker. Not interactive — for state you can read at a glance.
+- [Chip](https://tutranmvp.github.io/8bit-components/docs.html#/chip) — `.chip`: Toggleable filter or tag. Interactive — presses in, fills with its accent when active.
+- [Card](https://tutranmvp.github.io/8bit-components/docs.html#/card) — `.card`: Surface for grouped content. A left accent bar classifies it; hard border, hard shadow, square corners.
+- [Avatar](https://tutranmvp.github.io/8bit-components/docs.html#/avatar) — `.avatar`: User image or initials. Square by design so the hard shadow stays crisp; group them to overlap.
+- [Kbd](https://tutranmvp.github.io/8bit-components/docs.html#/kbd) — `.kbd`: Keyboard key hint. Inline, mono, inset — for shortcuts in prose.
+- [Separator](https://tutranmvp.github.io/8bit-components/docs.html#/separator) — `.separator`: Divider between content. Solid or dashed; horizontal or vertical.
+
+## Form
+- [Input](https://tutranmvp.github.io/8bit-components/docs.html#/input) — `.input`: Single-line text field. Recessed on the screen surface; focus flips the border to gold.
+- [Textarea](https://tutranmvp.github.io/8bit-components/docs.html#/textarea) — `.textarea`: Multi-line text. Vertically resizable, same recessed treatment as Input.
+- [Select](https://tutranmvp.github.io/8bit-components/docs.html#/select) — `.select`: Native select, restyled. Keeps the OS keyboard and mobile picker behaviour; gold chevron.
+- [Checkbox](https://tutranmvp.github.io/8bit-components/docs.html#/checkbox) — `.checkbox`: Boolean toggle in a list. Square box with a pixel check when on.
+- [Radio](https://tutranmvp.github.io/8bit-components/docs.html#/radio) — `.radio`: One-of-many choice. Same square box, filled solid when selected.
+- [Switch](https://tutranmvp.github.io/8bit-components/docs.html#/switch) — `.switch`: On/off setting with immediate effect. Green (good) accent by default.
+- [Field](https://tutranmvp.github.io/8bit-components/docs.html#/field) — `.field`: Label + control + hint/error wrapper. The .err modifier turns the whole field critical.
+- [ColorPicker](https://tutranmvp.github.io/8bit-components/docs.html#/colorpicker) — `.swatch`: Native color input, restyled as a square chip. The OS picker stays; only the swatch is themed.
+- [InputDate](https://tutranmvp.github.io/8bit-components/docs.html#/inputdate) — `.input[type="date"]`: Native date input in the 8-bit shell. Keeps the OS calendar; the picker glyph is tinted to the primary.
+- [InputTime](https://tutranmvp.github.io/8bit-components/docs.html#/inputtime) — `.input[type="time"]`: Native time input, same shell as InputDate. OS clock picker, tinted glyph.
+- [CheckboxGroup](https://tutranmvp.github.io/8bit-components/docs.html#/checkboxgroup) — `.control-group`: A <fieldset> that groups related checkboxes under one legend. Add .row to lay them out horizontally.
+- [RadioGroup](https://tutranmvp.github.io/8bit-components/docs.html#/radiogroup) — `.control-group`: Same .control-group fieldset, holding radios that share a name (single choice).
+- [InputNumber](https://tutranmvp.github.io/8bit-components/docs.html#/inputnumber) — `<nes-number>`: A − [n] + stepper over a native number input. <nes-number> wires the buttons; value clamps to min/max/step.
+- [InputRating](https://tutranmvp.github.io/8bit-components/docs.html#/inputrating) — `<nes-rating>`: Star picker. Click or arrow-key to set; add readonly for a display-only score. size=lg enlarges it.
+- [PinInput](https://tutranmvp.github.io/8bit-components/docs.html#/pininput) — `<nes-pin>`: One-time-code / PIN entry: N single-char cells that auto-advance, accept a full paste, and fire nes:complete.
+- [InputTags](https://tutranmvp.github.io/8bit-components/docs.html#/inputtags) — `<nes-tags>`: Type + Enter (or comma) to add a chip; × or Backspace removes. Value is the ordered tag list.
+- [FileUpload](https://tutranmvp.github.io/8bit-components/docs.html#/fileupload) — `<nes-file>`: Click-or-drop zone over a native file input. Lists chosen files with a remove button; supports multiple + accept.
+- [Listbox](https://tutranmvp.github.io/8bit-components/docs.html#/listbox) — `<nes-listbox>`: An always-open selectable list with roving focus. Single by default; add multiple for many. Options via child JSON.
+- [InputMenu](https://tutranmvp.github.io/8bit-components/docs.html#/inputmenu) — `<nes-input-menu>`: Free-text combobox: type to filter suggestions, or keep any typed value. Autocomplete without locking the input.
+- [SelectMenu](https://tutranmvp.github.io/8bit-components/docs.html#/selectmenu) — `<nes-select-menu>`: Strict searchable single-select: a trigger shows the label; the popup adds a filter box; the value must be one of the options.
+- [Form](https://tutranmvp.github.io/8bit-components/docs.html#/form) — `<nes-form>`: A thin wrapper that runs native constraint validation, renders inline errors under each .field, and emits nes:submit with the data.
+- [Range](https://tutranmvp.github.io/8bit-components/docs.html#/range) — `.range`: Slider on a native <input type=range>. Recessed track, square accent thumb. Set data-accent to recolor.
+- [Segmented control](https://tutranmvp.github.io/8bit-components/docs.html#/segment) — `.segment`: A row of connected buttons for a single choice — the pressed one fills with the accent. Great for a difficulty or view switch.
+- [Number stepper](https://tutranmvp.github.io/8bit-components/docs.html#/stepper) — `.stepper`: A − [n] + control around a native number input. Wire the buttons to step the value.
+
+## Feedback
+- [Alert](https://tutranmvp.github.io/8bit-components/docs.html#/alert) — `.callout`: Inline message with a semantic tone. Four shades map to meaning, not decoration.
+- [Progress](https://tutranmvp.github.io/8bit-components/docs.html#/progress) — `.pbar`: Determinate bar. Fills with a smooth ease so progress glides — striped so the amount reads at a glance.
+- [Skeleton](https://tutranmvp.github.io/8bit-components/docs.html#/skeleton) — `.skeleton`: Loading placeholder. The shimmer ticks in steps rather than gliding.
+- [Toast](https://tutranmvp.github.io/8bit-components/docs.html#/toast) — `toast()`: Transient confirmation. Fires from JS, auto-dismisses, and is announced politely.
+- [Spinner](https://tutranmvp.github.io/8bit-components/docs.html#/spinner) — `.spinner`: A square loader whose lit edges spin smoothly — a loader with no curve. Three sizes; accent-ready.
+- [Meter](https://tutranmvp.github.io/8bit-components/docs.html#/meter) — `.meter`: A discrete segmented gauge — HP / energy in blocks. Add .on to filled cells; good/warn/crit read as health states.
+- [Empty state](https://tutranmvp.github.io/8bit-components/docs.html#/empty) — `.empty`: The "no data" / "game over" panel. Square dashed edge, centered mono copy, and always an action out.
+- [Banner](https://tutranmvp.github.io/8bit-components/docs.html#/banner) — `.banner`: A full-width, page-level notice — distinct from the inline .callout box. Accent-tinted, optional dismiss.
+
+## Navigation
+- [Tabs](https://tutranmvp.github.io/8bit-components/docs.html#/tabs) — `<nes-tabs>`: Switch between panels. Roving focus and arrow keys, built from [data-label] children.
+- [Breadcrumb](https://tutranmvp.github.io/8bit-components/docs.html#/breadcrumb) — `.breadcrumb`: Path to the current page. Mono, chevron-separated, last item current.
+- [Pagination](https://tutranmvp.github.io/8bit-components/docs.html#/pagination) — `.pagination`: Page through a list. The current page fills with the primary accent; ends disable.
+- [Steps](https://tutranmvp.github.io/8bit-components/docs.html#/steps) — `.steps`: Stage progression. Mark cleared stages .done and the active one aria-current — reads as NES "STAGE 1 · 2 · 3".
+- [Nav list](https://tutranmvp.github.io/8bit-components/docs.html#/navlist) — `.navlist`: Vertical sidebar navigation for app shells. Mark the current item with aria-current; recolor with data-accent.
+
+## Overlay
+- [Modal](https://tutranmvp.github.io/8bit-components/docs.html#/modal) — `<dialog class="modal">`: Focus-trapping dialog on the native <dialog> element. Opens with showModal().
+- [Dropdown](https://tutranmvp.github.io/8bit-components/docs.html#/dropdown) — `<details class="dropdown">`: Disclosure menu on the native <details> element. Zero JavaScript.
+- [Tooltip](https://tutranmvp.github.io/8bit-components/docs.html#/tooltip) — `[data-tip]`: Label on hover or focus. Pure CSS via a data-tip attribute — no JavaScript.
+- [Drawer](https://tutranmvp.github.io/8bit-components/docs.html#/drawer) — `<dialog class="drawer">`: A side sheet on the native <dialog>. Slides in from the edge with showModal(); add .start to come from the left.
+
+## Data
+- [Table](https://tutranmvp.github.io/8bit-components/docs.html#/table) — `.table`: Rows of data. Mono uppercase headers, hover highlight, scrolls on overflow.
+- [Code block](https://tutranmvp.github.io/8bit-components/docs.html#/code) — `<nes-code>`: Drop code in — <nes-code> highlights it and wires the copy button. No manual markup, no dependency.
+- [Accordion](https://tutranmvp.github.io/8bit-components/docs.html#/accordion) — `<nes-collapsible>`: Collapsible section. <nes-collapsible> — the header button toggles the body.
+- [Stat](https://tutranmvp.github.io/8bit-components/docs.html#/stat) — `.stat`: A single big number with a label. Tabular figures; accent-colored.
+- [Rating](https://tutranmvp.github.io/8bit-components/docs.html#/rating) — `.rating`: A read-only score as a row of stars, filled up to .on. Gold by default; recolor with data-accent.
+- [Description list](https://tutranmvp.github.io/8bit-components/docs.html#/datalist) — `.datalist`: Key → value rows for a detail panel or settings summary. Built on native <dl>.
+- [Timeline](https://tutranmvp.github.io/8bit-components/docs.html#/timeline) — `.timeline`: Vertical events on a connector line with square markers. Great for activity feeds and changelogs.
+- [Prose](https://tutranmvp.github.io/8bit-components/docs.html#/prose) — `.prose`: Drop rendered markdown / CMS HTML inside — it restores semantic rhythm, square bullets, and accent links.
+
+## Optional
+- [Full flat-text reference for RAG](https://tutranmvp.github.io/8bit-components/llms-full.txt)
+- [Structured JSON manifest](https://tutranmvp.github.io/8bit-components/components.json)
+- [README](https://github.com/TuTranMVP/8bit-components/blob/main/README.md)
+- [Design rationale](https://github.com/TuTranMVP/8bit-components/blob/main/DESIGN.md)
+- [TypeScript types](https://github.com/TuTranMVP/8bit-components/blob/main/index.d.ts)

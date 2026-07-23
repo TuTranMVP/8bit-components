@@ -1,0 +1,427 @@
+# 8-BIT NES — full reference (8bit-nes v0.1.0)
+
+> This is the OFFICIAL, canonical reference for the `8bit-nes` design system, generated
+> from its documentation source. Safe to ingest wholesale or chunk for RAG. When an AI agent
+> writes UI code that consumes this library, follow the rules below exactly.
+
+- Homepage / docs: https://tutranmvp.github.io/8bit-components/docs.html
+- Repository: https://github.com/TuTranMVP/8bit-components
+- Package: `8bit-nes` (npm) · license MIT
+- Structured manifest (exact fields): https://tutranmvp.github.io/8bit-components/components.json
+
+## What it is
+A cross-framework design system with three layers, no build step required:
+1. `tokens.css` — `:root` CSS custom properties (colors, spacing, type, shadows, motion) + 3 `@font-face`. The single source of truth for the look.
+2. `components.css` — stateless class recipes (`.btn`, `.card`, `.input`, …) in `@layer components`.
+3. `elements.js` — light-DOM Web Components (`<nes-*>`) for the few things that hold state, plus helpers (`toast`, `grantXP`, `bleep`, `store`).
+
+It is dark-only, uses square 90° corners everywhere, and expresses depth with a hard offset shadow (never blur).
+
+## Install
+```bash
+pnpm add 8bit-nes
+# or straight from GitHub, no publish needed:
+pnpm add github:TuTranMVP/8bit-components
+```
+```js
+// once, at app entry:
+import "8bit-nes/all.css";   // tokens + base + components
+import "8bit-nes";           // registers all <nes-*> web components
+```
+No bundler? Link the minified single-file build from a CDN:
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.1.0/all.min.css">
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.1.0/elements.min.js"></script>
+```
+Framework notes: React 19 uses `<nes-*>` natively. Vue/Nuxt need `compilerOptions.isCustomElement = (t) => t.startsWith("nes-")`.
+
+## Theming & the accent system
+Change the look ONLY in `tokens.css`, never inside a component. Recolor a block by setting `data-accent` on its container; descendants pick it up via `--accent`:
+```html
+<div class="card" data-accent="cyan">…</div>
+<button class="btn" data-accent="crit">Delete</button>
+```
+Accents (semantic): `good` = green = success/primary (the DEFAULT), `warn` = gold/yellow, `crit` = red = error; plus hues `blue gold cyan purple lime teal indigo pink steel`.
+
+## Rules for AI agents generating UI with this library
+1. Square 90° corners everywhere — never add border-radius or a chamfer.
+2. Depth = hard shadow (box-shadow: Npx Npx 0), never blur.
+3. One accent per block: set data-accent on the container; children inherit via --accent.
+4. Dark text on bright accent fills (var(--ink-on-accent)); never light text on a solid fill.
+5. Every value comes from a token in tokens.css — never hard-code hex/px in a component.
+6. Prefer native elements/controls; add ARIA only to fill gaps.
+- Use one `import "8bit-nes/all.css"` + one `import "8bit-nes"` at app entry; do not import per-component.
+- Compose with the class recipes first; reach for a `<nes-*>` element only for the stateful ones listed below.
+- Custom elements self-register on import — just write the tag, no manual `customElements.define`.
+
+## Verified examples
+Buttons (solid is default; opt into variants):
+```html
+<button class="btn">Primary</button>
+<button class="btn outline" data-accent="cyan">Outline</button>
+<button class="btn soft">Soft</button>
+<button class="btn ghost">Ghost</button>
+<button class="btn link">Link</button>
+<button class="btn sm">Small</button>  <button class="btn lg">Large</button>
+<button class="btn icon" aria-label="Settings">⚙</button>
+<button class="btn block">Full width</button>
+<button class="btn" aria-busy="true">Loading…</button>
+```
+Field + input (with label, hint, and error state):
+```html
+<label class="field">
+  <span class="label">Project name</span>
+  <input class="input" placeholder="my-agent">
+  <span class="hint">Lowercase, no spaces.</span>
+</label>
+<label class="field err">
+  <span class="label">API key <span class="req">*</span></span>
+  <input class="input" aria-invalid="true">
+  <span class="hint">A key is required.</span>
+</label>
+```
+Card:
+```html
+<div class="card" data-accent="blue">
+  <div class="head"><span class="title">Settings</span></div>
+  <p>Body text.</p>
+</div>
+```
+Form with native validation (fires `nes:submit` with the data only when valid):
+```html
+<nes-form>
+  <label class="field"><span class="label">Email <span class="req">*</span></span>
+    <input class="input" type="email" name="email" required></label>
+  <nes-tags name="labels" value="agent,retro"></nes-tags>
+  <nes-select-menu name="model" placeholder="Choose model…">
+    <script type="application/json">[{"value":"opus","label":"Opus 4.8"}]</script>
+  </nes-select-menu>
+  <button class="btn" type="submit">CREATE</button>
+</nes-form>
+<script type="module">
+  document.querySelector("nes-form")
+    .addEventListener("nes:submit", (e) => console.log(e.detail.data));
+</script>
+```
+Tabs, and a toast:
+```html
+<nes-tabs>
+  <section data-label="Install" selected>…</section>
+  <section data-label="Usage">…</section>
+</nes-tabs>
+```
+```js
+import { toast } from "8bit-nes";
+toast("<b>Saved.</b>", { accent: "good" });
+```
+
+## Custom-element events (all bubble)
+- `nes:change` — value changed on `<nes-number|rating|tags|pin|file|listbox|input-menu|select-menu>`; detail `{ value }` or `{ files }`.
+- `nes:submit` — `<nes-form>` passed validation; detail `{ data, form }`.
+- `nes:invalid` — `<nes-form>` submit was blocked.
+- `nes:complete` — `<nes-pin>` fully filled; detail `{ value }`.
+- `nes:answer` — `<nes-quiz>` answered; detail `{ correct, choice }`.
+- `nes:xp` / `nes:mute` — document-level buses for `<nes-hud>` / `<nes-sound>`.
+
+## Concepts
+- Introduction: https://tutranmvp.github.io/8bit-components/docs.html#/intro
+- Installation: https://tutranmvp.github.io/8bit-components/docs.html#/install
+- Theming: https://tutranmvp.github.io/8bit-components/docs.html#/theming
+- Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
+
+## Component reference (56 components)
+
+## Element
+
+### Button
+- selector: `.btn` (class) · category: Element
+- Primary action. Green (the primary accent) by default; set data-accent to recolor. Presses in on :active — the signature move.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/button
+
+### Badge
+- selector: `.badge` (class) · category: Element
+- Static status marker. Not interactive — for state you can read at a glance.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/badge
+
+### Chip
+- selector: `.chip` (class) · category: Element
+- Toggleable filter or tag. Interactive — presses in, fills with its accent when active.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/chip
+
+### Card
+- selector: `.card` (class) · category: Element
+- Surface for grouped content. A left accent bar classifies it; hard border, hard shadow, square corners.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/card
+
+### Avatar
+- selector: `.avatar` (class) · category: Element
+- User image or initials. Square by design so the hard shadow stays crisp; group them to overlap.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/avatar
+
+### Kbd
+- selector: `.kbd` (class) · category: Element
+- Keyboard key hint. Inline, mono, inset — for shortcuts in prose.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/kbd
+
+### Separator
+- selector: `.separator` (class) · category: Element
+- Divider between content. Solid or dashed; horizontal or vertical.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/separator
+
+## Form
+
+### Input
+- selector: `.input` (class) · category: Form
+- Single-line text field. Recessed on the screen surface; focus flips the border to gold.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/input
+
+### Textarea
+- selector: `.textarea` (class) · category: Form
+- Multi-line text. Vertically resizable, same recessed treatment as Input.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/textarea
+
+### Select
+- selector: `.select` (class) · category: Form
+- Native select, restyled. Keeps the OS keyboard and mobile picker behaviour; gold chevron.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/select
+
+### Checkbox
+- selector: `.checkbox` (class) · category: Form
+- Boolean toggle in a list. Square box with a pixel check when on.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/checkbox
+
+### Radio
+- selector: `.radio` (class) · category: Form
+- One-of-many choice. Same square box, filled solid when selected.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/radio
+
+### Switch
+- selector: `.switch` (class) · category: Form
+- On/off setting with immediate effect. Green (good) accent by default.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/switch
+
+### Field
+- selector: `.field` (class) · category: Form
+- Label + control + hint/error wrapper. The .err modifier turns the whole field critical.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/field
+
+### ColorPicker
+- selector: `.swatch` (class) · category: Form
+- Native color input, restyled as a square chip. The OS picker stays; only the swatch is themed.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/colorpicker
+
+### InputDate
+- selector: `.input[type="date"]` (class) · category: Form
+- Native date input in the 8-bit shell. Keeps the OS calendar; the picker glyph is tinted to the primary.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/inputdate
+
+### InputTime
+- selector: `.input[type="time"]` (class) · category: Form
+- Native time input, same shell as InputDate. OS clock picker, tinted glyph.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/inputtime
+
+### CheckboxGroup
+- selector: `.control-group` (class) · category: Form
+- A <fieldset> that groups related checkboxes under one legend. Add .row to lay them out horizontally.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/checkboxgroup
+
+### RadioGroup
+- selector: `.control-group` (class) · category: Form
+- Same .control-group fieldset, holding radios that share a name (single choice).
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/radiogroup
+
+### InputNumber
+- selector: `<nes-number>` (element) · category: Form
+- A − [n] + stepper over a native number input. <nes-number> wires the buttons; value clamps to min/max/step.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/inputnumber
+
+### InputRating
+- selector: `<nes-rating>` (element) · category: Form
+- Star picker. Click or arrow-key to set; add readonly for a display-only score. size=lg enlarges it.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/inputrating
+
+### PinInput
+- selector: `<nes-pin>` (element) · category: Form
+- One-time-code / PIN entry: N single-char cells that auto-advance, accept a full paste, and fire nes:complete.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/pininput
+
+### InputTags
+- selector: `<nes-tags>` (element) · category: Form
+- Type + Enter (or comma) to add a chip; × or Backspace removes. Value is the ordered tag list.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/inputtags
+
+### FileUpload
+- selector: `<nes-file>` (element) · category: Form
+- Click-or-drop zone over a native file input. Lists chosen files with a remove button; supports multiple + accept.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/fileupload
+
+### Listbox
+- selector: `<nes-listbox>` (element) · category: Form
+- An always-open selectable list with roving focus. Single by default; add multiple for many. Options via child JSON.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/listbox
+
+### InputMenu
+- selector: `<nes-input-menu>` (element) · category: Form
+- Free-text combobox: type to filter suggestions, or keep any typed value. Autocomplete without locking the input.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/inputmenu
+
+### SelectMenu
+- selector: `<nes-select-menu>` (element) · category: Form
+- Strict searchable single-select: a trigger shows the label; the popup adds a filter box; the value must be one of the options.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/selectmenu
+
+### Form
+- selector: `<nes-form>` (element) · category: Form
+- A thin wrapper that runs native constraint validation, renders inline errors under each .field, and emits nes:submit with the data.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/form
+
+### Range
+- selector: `.range` (class) · category: Form
+- Slider on a native <input type=range>. Recessed track, square accent thumb. Set data-accent to recolor.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/range
+
+### Segmented control
+- selector: `.segment` (class) · category: Form
+- A row of connected buttons for a single choice — the pressed one fills with the accent. Great for a difficulty or view switch.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/segment
+
+### Number stepper
+- selector: `.stepper` (class) · category: Form
+- A − [n] + control around a native number input. Wire the buttons to step the value.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/stepper
+
+## Feedback
+
+### Alert
+- selector: `.callout` (class) · category: Feedback
+- Inline message with a semantic tone. Four shades map to meaning, not decoration.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/alert
+
+### Progress
+- selector: `.pbar` (class) · category: Feedback
+- Determinate bar. Fills with a smooth ease so progress glides — striped so the amount reads at a glance.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/progress
+
+### Skeleton
+- selector: `.skeleton` (class) · category: Feedback
+- Loading placeholder. The shimmer ticks in steps rather than gliding.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/skeleton
+
+### Toast
+- selector: `toast()` (helper) · category: Feedback
+- Transient confirmation. Fires from JS, auto-dismisses, and is announced politely.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/toast
+
+### Spinner
+- selector: `.spinner` (class) · category: Feedback
+- A square loader whose lit edges spin smoothly — a loader with no curve. Three sizes; accent-ready.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/spinner
+
+### Meter
+- selector: `.meter` (class) · category: Feedback
+- A discrete segmented gauge — HP / energy in blocks. Add .on to filled cells; good/warn/crit read as health states.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/meter
+
+### Empty state
+- selector: `.empty` (class) · category: Feedback
+- The "no data" / "game over" panel. Square dashed edge, centered mono copy, and always an action out.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/empty
+
+### Banner
+- selector: `.banner` (class) · category: Feedback
+- A full-width, page-level notice — distinct from the inline .callout box. Accent-tinted, optional dismiss.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/banner
+
+## Navigation
+
+### Tabs
+- selector: `<nes-tabs>` (element) · category: Navigation
+- Switch between panels. Roving focus and arrow keys, built from [data-label] children.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/tabs
+
+### Breadcrumb
+- selector: `.breadcrumb` (class) · category: Navigation
+- Path to the current page. Mono, chevron-separated, last item current.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/breadcrumb
+
+### Pagination
+- selector: `.pagination` (class) · category: Navigation
+- Page through a list. The current page fills with the primary accent; ends disable.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/pagination
+
+### Steps
+- selector: `.steps` (class) · category: Navigation
+- Stage progression. Mark cleared stages .done and the active one aria-current — reads as NES "STAGE 1 · 2 · 3".
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/steps
+
+### Nav list
+- selector: `.navlist` (class) · category: Navigation
+- Vertical sidebar navigation for app shells. Mark the current item with aria-current; recolor with data-accent.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/navlist
+
+## Overlay
+
+### Modal
+- selector: `<dialog class="modal">` (element) · category: Overlay
+- Focus-trapping dialog on the native <dialog> element. Opens with showModal().
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/modal
+
+### Dropdown
+- selector: `<details class="dropdown">` (element) · category: Overlay
+- Disclosure menu on the native <details> element. Zero JavaScript.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/dropdown
+
+### Tooltip
+- selector: `[data-tip]` (attribute) · category: Overlay
+- Label on hover or focus. Pure CSS via a data-tip attribute — no JavaScript.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/tooltip
+
+### Drawer
+- selector: `<dialog class="drawer">` (element) · category: Overlay
+- A side sheet on the native <dialog>. Slides in from the edge with showModal(); add .start to come from the left.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/drawer
+
+## Data
+
+### Table
+- selector: `.table` (class) · category: Data
+- Rows of data. Mono uppercase headers, hover highlight, scrolls on overflow.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/table
+
+### Code block
+- selector: `<nes-code>` (element) · category: Data
+- Drop code in — <nes-code> highlights it and wires the copy button. No manual markup, no dependency.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/code
+
+### Accordion
+- selector: `<nes-collapsible>` (element) · category: Data
+- Collapsible section. <nes-collapsible> — the header button toggles the body.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/accordion
+
+### Stat
+- selector: `.stat` (class) · category: Data
+- A single big number with a label. Tabular figures; accent-colored.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/stat
+
+### Rating
+- selector: `.rating` (class) · category: Data
+- A read-only score as a row of stars, filled up to .on. Gold by default; recolor with data-accent.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/rating
+
+### Description list
+- selector: `.datalist` (class) · category: Data
+- Key → value rows for a detail panel or settings summary. Built on native <dl>.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/datalist
+
+### Timeline
+- selector: `.timeline` (class) · category: Data
+- Vertical events on a connector line with square markers. Great for activity feeds and changelogs.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/timeline
+
+### Prose
+- selector: `.prose` (class) · category: Data
+- Drop rendered markdown / CMS HTML inside — it restores semantic rhythm, square bullets, and accent links.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/prose
+
+---
+Generated from docs.js by scripts/gen-llms.mjs. Do not edit by hand — run `pnpm gen:llms`.

@@ -20,6 +20,9 @@
     "./tokens.css": "./tokens.css",
     "./base.css": "./base.css",
     "./components.css": "./components.css",
+    "./components.json": "./components.json",
+    "./llms.txt": "./llms.txt",
+    "./llms-full.txt": "./llms-full.txt",
     "./fonts/*": "./fonts/*",
     "./package.json": "./package.json"
   },
@@ -33,10 +36,14 @@
     "elements.js",
     "elements.min.js",
     "index.d.ts",
+    "components.json",
+    "llms.txt",
+    "llms-full.txt",
     "fonts/"
   ],
   "scripts": {
-    "build": "esbuild all.css --bundle --minify --external:'*.woff2' --outfile=all.min.css && esbuild elements.js --minify --format=esm --outfile=elements.min.js",
+    "gen:llms": "node scripts/gen-llms.mjs",
+    "build": "node scripts/gen-llms.mjs && esbuild all.css --bundle --minify --external:'*.woff2' --outfile=all.min.css && esbuild elements.js --minify --format=esm --outfile=elements.min.js",
     "check": "biome ci . && node --check elements.js",
     "format": "biome check --write .",
     "demo": "pnpm dlx serve .",

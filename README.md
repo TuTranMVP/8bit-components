@@ -40,6 +40,28 @@ it's one request instead of four:
 Copy-paste starter (pinned, works before npm publish): [`examples/cdn-starter.html`](examples/cdn-starter.html)
 — also live on the docs site at `/examples/cdn-starter.html`.
 
+## For AI agents (RAG-ready)
+
+This library is built to be consumed by AI coding agents in **other** repos — so they can retrieve
+the *official* API and generate correct 8-BIT NES markup. Canonical, machine-readable docs follow the
+[llms.txt](https://llmstxt.org) convention and are generated from the docs source (never drift):
+
+| Artifact | URL | Use |
+|----------|-----|-----|
+| `llms.txt` | `https://tutranmvp.github.io/8bit-components/llms.txt` | discovery index (title, install, every component + deep link) |
+| `llms-full.txt` | `.../llms-full.txt` | complete flat-text reference to ingest/chunk for RAG (contract, rules, verified examples, all components) |
+| `components.json` | `.../components.json` | structured manifest — exact `{ id, name, category, selector, kind, description, docs }` per component |
+
+They're also shipped **inside the npm package**, so an agent working in a consuming repo can read them
+straight from `node_modules`:
+
+```js
+import manifest from "8bit-nes/components.json" with { type: "json" };
+// or read node_modules/8bit-nes/llms-full.txt
+```
+
+`pnpm gen:llms` regenerates all three from `docs.js`; CI fails if the committed copies are stale.
+
 ## Size & performance
 
 | File            | raw    | gzip   | notes                                             |
