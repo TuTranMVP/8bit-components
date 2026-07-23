@@ -77,6 +77,7 @@ Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";
 - [Description list](https://tutranmvp.github.io/8bit-components/docs.html#/datalist) — `.datalist`: Key → value rows for a detail panel or settings summary. Built on native <dl>.
 - [Timeline](https://tutranmvp.github.io/8bit-components/docs.html#/timeline) — `.timeline`: Vertical events on a connector line with square markers. Great for activity feeds and changelogs.
 - [Prose](https://tutranmvp.github.io/8bit-components/docs.html#/prose) — `.prose`: Drop rendered markdown / CMS HTML inside — it restores semantic rhythm, square bullets, and accent links.
+- [Tree](https://tutranmvp.github.io/8bit-components/docs.html#/tree) — `<nes-tree>`: Hierarchical folder/file list. Expand/collapse, single or multiple selection, full keyboard nav. Data via child JSON.
 
 ## Optional
 - [Full flat-text reference for RAG](https://tutranmvp.github.io/8bit-components/llms-full.txt)

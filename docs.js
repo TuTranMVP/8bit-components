@@ -3088,6 +3088,97 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
         ),
     },
   },
+  {
+    id: "tree",
+    cat: "Data",
+    name: "Tree",
+    desc: {
+      en: "Hierarchical folder/file list. Expand/collapse, single or multiple selection, full keyboard nav. Data via child JSON.",
+      vi: "Danh sách phân cấp folder/file. Mở/gập, chọn một hoặc nhiều, điều hướng bàn phím đầy đủ. Dữ liệu qua JSON con.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "TREE",
+          `<nes-tree name="path" aria-label="Project files" style="inline-size:100%;max-inline-size:340px">
+            <script type="application/json">[
+              {"label":"src","expanded":true,"children":[
+                {"label":"index.ts"},
+                {"label":"api","children":[{"label":"client.ts"},{"label":"types.ts"}]},
+                {"label":"components","children":[{"label":"button.ts"}]}
+              ]},
+              {"label":"package.json","icon":"⚙"},
+              {"label":"README.md"}
+            ]</script>
+          </nes-tree>`,
+          "col",
+        ) +
+        cb(`<nes-tree name="path" aria-label="Project files">
+  <script type="application/json">
+    [{ "label": "src", "expanded": true, "children": [
+        { "label": "index.ts" },
+        { "label": "api", "children": [{ "label": "client.ts" }] }
+    ]}]
+  </script>
+</nes-tree>`) +
+        h2("API") +
+        api(
+          ["Attr / prop / event", "Meaning"],
+          [
+            ["JSON child", "nodes: <code>{ label, value?, icon?, disabled?, expanded?, children? }</code>"],
+            ["<code>multiple</code>", "select many (default single)"],
+            ["<code>name</code>", "hidden input with comma-joined value(s)"],
+            ["<code>value</code>", "initial selection(s), comma-separated"],
+            ["<code>.value</code> (prop)", "<code>string</code> or <code>string[]</code>"],
+            ["<code>nes:change</code>", "selection changed → <code>{ value }</code>"],
+            ["<code>nes:toggle</code>", "expand/collapse → <code>{ value, expanded }</code>"],
+          ],
+        ) +
+        a11y(
+          "Implements the ARIA <code>tree</code> pattern: <code>role=tree/treeitem/group</code>, <code>aria-expanded</code>, <code>aria-selected</code>, <code>aria-level</code>, roving <code>aria-activedescendant</code>. Keys: ↑/↓ move, → expand/enter, ← collapse/parent, Home/End, Enter/Space select.",
+        ),
+      vi: () =>
+        stage(
+          "TREE",
+          `<nes-tree name="path" aria-label="File dự án" style="inline-size:100%;max-inline-size:340px">
+            <script type="application/json">[
+              {"label":"src","expanded":true,"children":[
+                {"label":"index.ts"},
+                {"label":"api","children":[{"label":"client.ts"},{"label":"types.ts"}]},
+                {"label":"components","children":[{"label":"button.ts"}]}
+              ]},
+              {"label":"package.json","icon":"⚙"},
+              {"label":"README.md"}
+            ]</script>
+          </nes-tree>`,
+          "col",
+        ) +
+        cb(`<nes-tree name="path" aria-label="File dự án">
+  <script type="application/json">
+    [{ "label": "src", "expanded": true, "children": [
+        { "label": "index.ts" },
+        { "label": "api", "children": [{ "label": "client.ts" }] }
+    ]}]
+  </script>
+</nes-tree>`) +
+        h2("API") +
+        api(
+          ["Attr / prop / event", "Ý nghĩa"],
+          [
+            ["JSON con", "node: <code>{ label, value?, icon?, disabled?, expanded?, children? }</code>"],
+            ["<code>multiple</code>", "chọn nhiều (mặc định một)"],
+            ["<code>name</code>", "input ẩn chứa value nối bằng dấu phẩy"],
+            ["<code>value</code>", "lựa chọn ban đầu, ngăn dấu phẩy"],
+            ["<code>.value</code> (prop)", "<code>string</code> hoặc <code>string[]</code>"],
+            ["<code>nes:change</code>", "đổi lựa chọn → <code>{ value }</code>"],
+            ["<code>nes:toggle</code>", "mở/gập → <code>{ value, expanded }</code>"],
+          ],
+        ) +
+        a11y(
+          "Theo pattern ARIA <code>tree</code>: <code>role=tree/treeitem/group</code>, <code>aria-expanded</code>, <code>aria-selected</code>, <code>aria-level</code>, roving <code>aria-activedescendant</code>. Phím: ↑/↓ di chuyển, → mở/vào trong, ← gập/lên cha, Home/End, Enter/Space chọn.",
+        ),
+    },
+  },
 ];
 
 /* --------------------------------------- shared, language-neutral demos */

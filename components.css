@@ -2231,6 +2231,80 @@
     }
   }
 
+  /* ------------------------------------------------------------------- TREE */
+  /* <nes-tree>: hierarchical folder/file list. role=tree with nested role=group;
+     indentation via --lvl per row. Same contract: square, tokens, one accent.    */
+  .tree {
+    --accent: var(--primary);
+    display: block;
+    inline-size: 100%;
+    max-block-size: 24rem;
+    overflow: auto;
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    color: var(--text);
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    padding: var(--sp-2);
+
+    & [role="group"][hidden] {
+      display: none;
+    }
+
+    & .row {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding-block: var(--sp-1);
+      padding-inline: var(--sp-2);
+      padding-inline-start: calc(var(--sp-2) + var(--lvl, 0) * var(--sp-4));
+      cursor: pointer;
+      border: var(--bw) solid transparent;
+      transition: background var(--dur-fast), color var(--dur-fast);
+    }
+
+    & .row:hover {
+      background: var(--panel-2);
+      color: var(--ink);
+    }
+
+    & .chev {
+      flex: none;
+      inline-size: 1em;
+      text-align: center;
+      color: var(--muted);
+      font-family: var(--font-mono);
+    }
+
+    & .ic {
+      flex: none;
+    }
+
+    & .lab {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    & [role="treeitem"].active>.row {
+      border-color: var(--line-hi);
+    }
+
+    & [role="treeitem"][aria-selected="true"]>.row {
+      background: var(--accent);
+      color: var(--ink-on-accent);
+
+      & .chev {
+        color: var(--ink-on-accent);
+      }
+    }
+
+    & [role="treeitem"][aria-disabled="true"]>.row {
+      color: var(--dim);
+      cursor: not-allowed;
+    }
+  }
+
   /* ---- touch targets: on coarse pointers, controls grow to a ~44px tap zone
      (WCAG 2.5.8). Sizes only bump up, so nothing shifts on desktop. ---- */
   @media (pointer: coarse) {
@@ -2264,6 +2338,10 @@
 
     .menuitem {
       padding-block: var(--sp-3);
+    }
+
+    .tree .row {
+      padding-block: var(--sp-2);
     }
 
     /* iOS auto-zooms when a focused field's font is < 16px. Floor the text-entry

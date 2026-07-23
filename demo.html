@@ -287,6 +287,21 @@
           <span class="label">FileUpload</span>
           <nes-file name="asset" accept="image/*" multiple label="Drop art or click"></nes-file>
         </div>
+
+        <div class="field">
+          <span class="label">Tree · &lt;nes-tree&gt;</span>
+          <nes-tree name="path" aria-label="Project files">
+            <script type="application/json">[
+              {"label":"src","expanded":true,"children":[
+                {"label":"index.ts"},
+                {"label":"api","children":[{"label":"client.ts"},{"label":"types.ts"}]},
+                {"label":"components","children":[{"label":"button.ts"}]}
+              ]},
+              {"label":"package.json","icon":"⚙"},
+              {"label":"README.md"}
+            ]</script>
+          </nes-tree>
+        </div>
       </div>
 
       <div style="margin-block-start:var(--sp-5)">

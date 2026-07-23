@@ -90,7 +90,7 @@ import manifest from "8bit-nes/components.json" with { type: "json" };
 | `tokens.css`            | source of truth    | `:root` vars, 3 `@font-face`, `@layer` order                                                  | —                  |
 | `base.css`              | reset + primitives | reset, focus→gold, reduced-motion, `.pixel-box` (notch), elevation, accent mapper, motion     | tokens             |
 | `components.css`        | stateless recipes  | Element/Form/Feedback/Nav/Overlay/Data recipes (see catalog below)                            | tokens, base       |
-| `elements.js`           | stateful           | app: `<nes-quiz> <nes-hud> <nes-collapsible> <nes-sound> <nes-tabs> <nes-code>`; form: `<nes-form> <nes-number> <nes-rating> <nes-tags> <nes-pin> <nes-file> <nes-listbox> <nes-input-menu> <nes-select-menu>` + `store/bleep/grantXP/toast` | tokens, components |
+| `elements.js`           | stateful           | app: `<nes-quiz> <nes-hud> <nes-collapsible> <nes-sound> <nes-tabs> <nes-code>`; form: `<nes-form> <nes-number> <nes-rating> <nes-tags> <nes-pin> <nes-file> <nes-listbox> <nes-input-menu> <nes-select-menu>`; data: `<nes-tree>` + `store/bleep/grantXP/toast` | tokens, components |
 | `demo.html`             | gallery + test     | every component wired together                                                                | all                |
 | `docs.html` + `docs.js` | documentation site | Nuxt-UI-style sidebar + per-component pages (Usage / preview / API / a11y)                    | all                |
 
@@ -105,7 +105,7 @@ import manifest from "8bit-nes/components.json" with { type: "json" };
 | Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast · Spinner · Meter · Empty state · Banner |
 | Navigation | Tabs (`<nes-tabs>`) · Breadcrumb · Pagination · Steps · Nav list                          |
 | Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) |
-| Data       | Table · Code block · Accordion (`<nes-collapsible>`) · Stat · Rating · Description list · Timeline · Prose           |
+| Data       | Table · Code block · Accordion (`<nes-collapsible>`) · Stat · Rating · Description list · Timeline · Prose · Tree (`<nes-tree>`)           |
 
 Run the docs site locally with `pnpm demo`, then open `/docs.html`.
 

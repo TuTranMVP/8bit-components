@@ -129,7 +129,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Theming: https://tutranmvp.github.io/8bit-components/docs.html#/theming
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
-## Component reference (56 components)
+## Component reference (57 components)
 
 ## Element
 
@@ -422,6 +422,11 @@ toast("<b>Saved.</b>", { accent: "good" });
 - selector: `.prose` (class) · category: Data
 - Drop rendered markdown / CMS HTML inside — it restores semantic rhythm, square bullets, and accent links.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/prose
+
+### Tree
+- selector: `<nes-tree>` (element) · category: Data
+- Hierarchical folder/file list. Expand/collapse, single or multiple selection, full keyboard nav. Data via child JSON.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/tree
 
 ---
 Generated from docs.js by scripts/gen-llms.mjs. Do not edit by hand — run `pnpm gen:llms`.

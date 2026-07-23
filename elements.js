@@ -1273,6 +1273,252 @@ class NesSelectMenu extends NesCombo {
   }
 }
 
+/* ========================================================================== */
+/*  <nes-tree>  —  hierarchical folder/file tree (ARIA tree pattern)           */
+/*  <nes-tree name="path" aria-label="Files"><script type="application/json">   */
+/*    [{ "label":"src", "expanded":true, "children":[                           */
+/*      { "label":"index.ts" }, { "label":"api", "children":[…] } ]}]           */
+/*  </script></nes-tree>                                                        */
+/* ========================================================================== */
+class NesTree extends HTMLElement {
+  connectedCallback() {
+    if (this._done) return;
+    this._done = true;
+    NesTree._n = (NesTree._n || 0) + 1;
+    this._id = `tree-${NesTree._n}`;
+    this._idc = 0;
+    this.multiple = this.hasAttribute("multiple");
+    this.name = this.getAttribute("name");
+    this.selected = new Set(
+      (this.getAttribute("value") || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+    );
+    const s = this.querySelector('script[type="application/json"]');
+    let raw = [];
+    try {
+      raw = JSON.parse(s?.textContent || "[]");
+    } catch {
+      raw = [];
+    }
+    this.nodes = this.parseNodes(Array.isArray(raw) ? raw : [], 1, null);
+    this.innerHTML = "";
+    this.treeEl = el("div", {
+      class: "tree",
+      role: "tree",
+      tabindex: "0",
+      "aria-label": this.getAttribute("aria-label") || "Tree",
+    });
+    if (this.multiple) this.treeEl.setAttribute("aria-multiselectable", "true");
+    this.nodes.forEach((n, i) => this.renderNode(n, this.treeEl, i + 1, this.nodes.length));
+    this.treeEl.addEventListener("keydown", (e) => this.onKey(e));
+    this.appendChild(this.treeEl);
+    if (this.name) {
+      this.hidden_ = el("input", { type: "hidden", name: this.name });
+      this.appendChild(this.hidden_);
+    }
+    this.active = this.nodes[0] || null;
+    this.refreshActive();
+    this.sync(true);
+  }
+  parseNodes(raw, level, parent) {
+    return raw.map((o) => {
+      const src = o && typeof o === "object" ? o : { label: String(o) };
+      const node = {
+        label: String(src.label ?? src.value ?? ""),
+        value: String(src.value ?? src.label ?? ""),
+        icon: src.icon != null ? String(src.icon) : null,
+        disabled: !!src.disabled,
+        expanded: !!src.expanded,
+        level,
+        parent,
+        children: null,
+      };
+      node.children =
+        Array.isArray(src.children) && src.children.length
+          ? this.parseNodes(src.children, level + 1, node)
+          : null;
+      return node;
+    });
+  }
+  renderNode(node, parentEl, pos, size) {
+    const item = el("div", {
+      role: "treeitem",
+      id: `${this._id}-i${++this._idc}`,
+      "aria-level": String(node.level),
+      "aria-setsize": String(size),
+      "aria-posinset": String(pos),
+      "aria-selected": String(this.selected.has(node.value)),
+    });
+    if (node.disabled) item.setAttribute("aria-disabled", "true");
+    const hasKids = !!(node.children && node.children.length);
+    if (hasKids) item.setAttribute("aria-expanded", String(node.expanded));
+    const row = el("div", { class: "row" });
+    row.style.setProperty("--lvl", String(node.level - 1));
+    if (hasKids) {
+      const chev = el("span", { class: "chev", "aria-hidden": "true" });
+      chev.textContent = node.expanded ? "▾" : "▸";
+      chev.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.toggle(node);
+      });
+      row.appendChild(chev);
+      node._chev = chev;
+    } else {
+      row.appendChild(el("span", { class: "chev", "aria-hidden": "true" }));
+    }
+    if (node.icon) {
+      const ic = el("span", { class: "ic", "aria-hidden": "true" });
+      ic.textContent = node.icon;
+      row.appendChild(ic);
+    }
+    const lab = el("span", { class: "lab" });
+    lab.textContent = node.label;
+    row.appendChild(lab);
+    row.addEventListener("click", () => {
+      if (!node.disabled) this.activate(node);
+    });
+    item.appendChild(row);
+    node._item = item;
+    node._row = row;
+    parentEl.appendChild(item);
+    if (hasKids) {
+      const group = el("div", { role: "group" });
+      group.hidden = !node.expanded;
+      node.children.forEach((c, i) => this.renderNode(c, group, i + 1, node.children.length));
+      item.appendChild(group);
+      node._group = group;
+    }
+  }
+  walk(fn, list = this.nodes) {
+    for (const n of list) {
+      fn(n);
+      if (n.children) this.walk(fn, n.children);
+    }
+  }
+  visible() {
+    const out = [];
+    const rec = (list) => {
+      for (const n of list) {
+        out.push(n);
+        if (n.children && n.children.length && n.expanded) rec(n.children);
+      }
+    };
+    rec(this.nodes);
+    return out;
+  }
+  toggle(node) {
+    if (!node.children || !node.children.length) return;
+    node.expanded = !node.expanded;
+    node._item.setAttribute("aria-expanded", String(node.expanded));
+    node._group.hidden = !node.expanded;
+    node._chev.textContent = node.expanded ? "▾" : "▸";
+    bleep(SFX.unlock);
+    this.dispatchEvent(
+      new CustomEvent("nes:toggle", {
+        bubbles: true,
+        detail: { value: node.value, expanded: node.expanded },
+      }),
+    );
+  }
+  activate(node) {
+    this.active = node;
+    this.refreshActive();
+    if (node.children && node.children.length) this.toggle(node);
+    this.select(node);
+  }
+  select(node) {
+    if (node.disabled) return;
+    if (this.multiple)
+      this.selected.has(node.value)
+        ? this.selected.delete(node.value)
+        : this.selected.add(node.value);
+    else {
+      this.selected.clear();
+      this.selected.add(node.value);
+    }
+    this.walk((n) => n._item.setAttribute("aria-selected", String(this.selected.has(n.value))));
+    this.sync(false);
+  }
+  refreshActive() {
+    this.walk((n) => n._item.classList.remove("active"));
+    if (!this.active) return;
+    this.active._item.classList.add("active");
+    this.treeEl.setAttribute("aria-activedescendant", this.active._item.id);
+    this.active._row.scrollIntoView({ block: "nearest" });
+  }
+  onKey(e) {
+    const vis = this.visible();
+    if (!vis.length) return;
+    let i = vis.indexOf(this.active);
+    if (i < 0) i = 0;
+    const n = this.active;
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        this.active = vis[Math.min(i + 1, vis.length - 1)];
+        this.refreshActive();
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        this.active = vis[Math.max(i - 1, 0)];
+        this.refreshActive();
+        break;
+      case "Home":
+        e.preventDefault();
+        this.active = vis[0];
+        this.refreshActive();
+        break;
+      case "End":
+        e.preventDefault();
+        this.active = vis[vis.length - 1];
+        this.refreshActive();
+        break;
+      case "ArrowRight":
+        e.preventDefault();
+        if (n?.children?.length) {
+          if (!n.expanded) this.toggle(n);
+          else {
+            this.active = n.children[0];
+            this.refreshActive();
+          }
+        }
+        break;
+      case "ArrowLeft":
+        e.preventDefault();
+        if (n?.children?.length && n.expanded) this.toggle(n);
+        else if (n?.parent) {
+          this.active = n.parent;
+          this.refreshActive();
+        }
+        break;
+      case "Enter":
+      case " ":
+        e.preventDefault();
+        if (n && !n.disabled) {
+          if (n.children?.length) this.toggle(n);
+          this.select(n);
+        }
+        break;
+    }
+  }
+  sync(silent) {
+    const vals = [...this.selected];
+    if (this.hidden_) this.hidden_.value = vals.join(",");
+    if (!silent)
+      this.dispatchEvent(
+        new CustomEvent("nes:change", {
+          bubbles: true,
+          detail: { value: this.multiple ? vals : (vals[0] ?? null) },
+        }),
+      );
+  }
+  get value() {
+    return this.multiple ? [...this.selected] : ([...this.selected][0] ?? null);
+  }
+}
+
 /* ------------------------------------------------------------- self-register */
 const defs = {
   "nes-sound": NesSound,
@@ -1290,6 +1536,7 @@ const defs = {
   "nes-listbox": NesListbox,
   "nes-input-menu": NesInputMenu,
   "nes-select-menu": NesSelectMenu,
+  "nes-tree": NesTree,
 };
 for (const [tag, cls] of Object.entries(defs)) {
   if (!customElements.get(tag)) customElements.define(tag, cls);

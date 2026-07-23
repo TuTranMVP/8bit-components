@@ -111,6 +111,10 @@ export declare class NesInputMenuElement extends HTMLElement {
 export declare class NesSelectMenuElement extends HTMLElement {
   value: string;
 }
+/** <nes-tree>: hierarchical folder/file tree; `value` is a string (or string[] when `multiple`). */
+export declare class NesTreeElement extends HTMLElement {
+  readonly value: string | string[] | null;
+}
 
 /** Detail of the `nes:answer` event bubbled by <nes-quiz>. */
 export interface NesAnswerDetail {
@@ -142,6 +146,7 @@ declare global {
     "nes-listbox": NesListboxElement;
     "nes-input-menu": NesInputMenuElement;
     "nes-select-menu": NesSelectMenuElement;
+    "nes-tree": NesTreeElement;
   }
   interface DocumentEventMap {
     "nes:xp": CustomEvent<{ amount: number }>;
@@ -153,5 +158,6 @@ declare global {
     "nes:invalid": CustomEvent<Record<string, never>>;
     "nes:complete": CustomEvent<{ value: string }>;
     "nes:change": CustomEvent<{ value?: unknown; files?: File[] }>;
+    "nes:toggle": CustomEvent<{ value: string; expanded: boolean }>;
   }
 }
