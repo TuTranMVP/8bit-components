@@ -30,7 +30,8 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html docs.html demo.html docs.js \
-             all.css tokens.css base.css components.css elements.js \
+             all.css all.min.css tokens.css base.css components.css \
+             elements.js elements.min.js \
              og.png robots.txt sitemap.xml _site/
           cp -r fonts _site/fonts
 

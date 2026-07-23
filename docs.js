@@ -179,6 +179,14 @@ import "8bit-nes";
 import "8bit-nes/base.css";
 import "8bit-nes/components.css";`,
         ) +
+        h2("CDN / no build") +
+        p(
+          "No bundler? Link the minified single-file build — <code>@import</code>s inlined, one request each (~7&nbsp;kB + ~4&nbsp;kB gzip).",
+        ) +
+        cb(
+          `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes/all.min.css">
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes/elements.min.js"></script>`,
+        ) +
         h2("Fonts") +
         p(
           "Two fonts ship self-hosted as woff2 (Latin + Vietnamese subset): <b>NES Mono</b> for chrome, labels, and code; <b>NES Sans</b> for body. Preload the two critical files for zero-FOUT.",
@@ -222,6 +230,14 @@ import "8bit-nes";
           `import "8bit-nes/tokens.css";
 import "8bit-nes/base.css";
 import "8bit-nes/components.css";`,
+        ) +
+        h2("CDN / không build") +
+        p(
+          "Không dùng bundler? Link bản minify một-file — đã gộp <code>@import</code>, mỗi thứ một request (~7&nbsp;kB + ~4&nbsp;kB gzip).",
+        ) +
+        cb(
+          `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes/all.min.css">
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes/elements.min.js"></script>`,
         ) +
         h2("Font") +
         p(

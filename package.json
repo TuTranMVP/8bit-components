@@ -14,7 +14,9 @@
       "default": "./elements.js"
     },
     "./elements.js": "./elements.js",
+    "./elements.min.js": "./elements.min.js",
     "./all.css": "./all.css",
+    "./all.min.css": "./all.min.css",
     "./tokens.css": "./tokens.css",
     "./base.css": "./base.css",
     "./components.css": "./components.css",
@@ -24,18 +26,21 @@
   "types": "./index.d.ts",
   "files": [
     "all.css",
+    "all.min.css",
     "tokens.css",
     "base.css",
     "components.css",
     "elements.js",
+    "elements.min.js",
     "index.d.ts",
     "fonts/"
   ],
   "scripts": {
+    "build": "esbuild all.css --bundle --minify --external:'*.woff2' --outfile=all.min.css && esbuild elements.js --minify --format=esm --outfile=elements.min.js",
     "check": "biome ci . && node --check elements.js",
     "format": "biome check --write .",
     "demo": "pnpm dlx serve .",
-    "prepublishOnly": "pnpm check"
+    "prepublishOnly": "pnpm build && pnpm check"
   },
   "repository": {
     "type": "git",
@@ -64,7 +69,13 @@
   "engines": {
     "node": ">=20"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
   "devDependencies": {
-    "@biomejs/biome": "^2.0.0"
+    "@biomejs/biome": "^2.0.0",
+    "esbuild": "0.28.1"
   }
 }

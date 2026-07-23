@@ -27,6 +27,31 @@ declared so bundlers keep the CSS and the custom-element registration.
 > **Zero build, zero runtime deps.** It ships plain CSS + one ES module, so it drops into a
 > Vite/Nuxt/Next app, a plain HTML page, or another design-system package all the same.
 
+## CDN / no build
+
+No bundler? Link the **minified, single-file** build — the three `@import`s are inlined, so
+it's one request instead of four:
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes/all.min.css">
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes/elements.min.js"></script>
+```
+
+## Size & performance
+
+| File            | raw    | gzip   | notes                                             |
+|-----------------|--------|--------|---------------------------------------------------|
+| `all.min.css`   | ~33 kB | ~7 kB  | tokens + base + components, bundled & minified    |
+| `elements.min.js` | ~9 kB | ~4 kB | all six `<nes-*>` + helpers, minified ESM         |
+
+- **No-build / CDN** → the `.min` files above (fewest bytes, one request each).
+- **Bundler (Vite/Nuxt/Next)** → import the **sources** (`8bit-nes`, `8bit-nes/all.css`); your
+  pipeline minifies, and JS **tree-shakes** the named helpers you don't use (`toast`, `grantXP`,
+  `highlightCode`, …). The `<nes-*>` registration is a deliberate side effect (`sideEffects` set),
+  so importing the module always wires the components.
+- **CSS** is one layer set; drop what you don't need at the file level via the granular imports.
+- `pnpm build` (esbuild) regenerates the `.min` files; CI fails if the committed ones are stale.
+
 ## Release flow (maintainer)
 
 1. Bump `version` in `package.json` → commit.
