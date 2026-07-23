@@ -38,6 +38,17 @@
     /* NES: square everything — kill UA rounding so the system stays consistent */
   }
 
+  /* ---- touch behaviour (mobile UX): `manipulation` removes the ~300ms double-tap
+     delay AND the double-tap-to-zoom gesture on controls, so a quick double-tap
+     fires two clicks instead of zooming the page. Pinch-zoom is untouched, so the
+     WCAG zoom affordance stays. Also drop the grey tap-flash — the system has its
+     own :active press. Low specificity (:where) so consumers can override. ---- */
+  :where(a, button, summary, label, select, input, textarea,
+    [role="button"], [role="tab"], [role="option"], [tabindex]) {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   :where(img, svg, canvas) {
     display: block;
     max-width: 100%;

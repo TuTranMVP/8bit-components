@@ -2265,5 +2265,15 @@
     .menuitem {
       padding-block: var(--sp-3);
     }
+
+    /* iOS auto-zooms when a focused field's font is < 16px. Floor the text-entry
+       controls at 16px on touch devices so focusing an input never zooms the page
+       (max() keeps the larger value where a control is already bigger). */
+    .input,
+    .textarea,
+    .select,
+    .tags>input {
+      font-size: max(16px, var(--fs-body));
+    }
   }
 }
