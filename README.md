@@ -17,7 +17,7 @@ pnpm add github:TuTranMVP/8bit-components
 ```js
 // once, at app entry:
 import "8bit-nes/all.css";   // tokens + base + components
-import "8bit-nes";           // registers <mvp-*> web components
+import "8bit-nes";           // registers <nes-*> web components
 ```
 
 Or granular: `8bit-nes/tokens.css`, `8bit-nes/base.css`, `8bit-nes/components.css`,
@@ -40,7 +40,7 @@ declared so bundlers keep the CSS and the custom-element registration.
 | `tokens.css`            | source of truth    | `:root` vars, 3 `@font-face`, `@layer` order                                                  | —                  |
 | `base.css`              | reset + primitives | reset, focus→gold, reduced-motion, `.pixel-box` (notch), elevation, accent mapper, motion     | tokens             |
 | `components.css`        | stateless recipes  | Element/Form/Feedback/Nav/Overlay/Data recipes (see catalog below)                            | tokens, base       |
-| `elements.js`           | stateful           | `<mvp-quiz> <mvp-hud> <mvp-collapsible> <mvp-sound> <mvp-tabs>` + `store/bleep/grantXP/toast` | tokens, components |
+| `elements.js`           | stateful           | `<nes-quiz> <nes-hud> <nes-collapsible> <nes-sound> <nes-tabs>` + `store/bleep/grantXP/toast` | tokens, components |
 | `demo.html`             | gallery + test     | every component wired together                                                                | all                |
 | `docs.html` + `docs.js` | documentation site | Nuxt-UI-style sidebar + per-component pages (Usage / preview / API / a11y)                    | all                |
 
@@ -53,9 +53,9 @@ declared so bundlers keep the CSS and the custom-element registration.
 | Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator                        |
 | Form       | Input · Textarea · Select · Checkbox · Radio · Switch · Field · Range · Segmented control |
 | Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast · Spinner · Meter · Empty state |
-| Navigation | Tabs (`<mvp-tabs>`) · Breadcrumb · Pagination · Steps                          |
+| Navigation | Tabs (`<nes-tabs>`) · Breadcrumb · Pagination · Steps                          |
 | Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) |
-| Data       | Table · Code block · Accordion (`<mvp-collapsible>`) · Stat · Rating           |
+| Data       | Table · Code block · Accordion (`<nes-collapsible>`) · Stat · Rating           |
 
 Run the docs site locally with `pnpm demo`, then open `/docs.html`.
 
@@ -91,48 +91,48 @@ Zero-FOUT: preload 2 file critical — snippet trong comment đầu `tokens.css`
 
 ### Vue 3 / Nuxt
 Import the CSS once (e.g. in `main.ts` / `nuxt.config`), import `elements.js` once, then tell the
-compiler `mvp-*` are custom elements:
+compiler `nes-*` are custom elements:
 ```ts
 // vite / vue
-compilerOptions: { isCustomElement: (t) => t.startsWith('mvp-') }
+compilerOptions: { isCustomElement: (t) => t.startsWith('nes-') }
 // nuxt.config
-vue: { compilerOptions: { isCustomElement: (t) => t.startsWith('mvp-') } }
+vue: { compilerOptions: { isCustomElement: (t) => t.startsWith('nes-') } }
 ```
-Then use `<mvp-quiz>`, `<button class="btn">`, etc. directly in `.vue` files.
+Then use `<nes-quiz>`, `<button class="btn">`, etc. directly in `.vue` files.
 
 ### React 19
 No wrapper needed — React 19 passes props and listens to custom-element events natively.
 ```jsx
 import './tokens.css'; import './base.css'; import './components.css'; import './elements.js';
-<mvp-hud ns="quest" per-level="150" max-xp="600" />
-<mvp-quiz xp={50} onmvp:answer={e => console.log(e.detail.correct)} />
+<nes-hud ns="quest" per-level="150" max-xp="600" />
+<nes-quiz xp={50} onnes:answer={e => console.log(e.detail.correct)} />
 ```
-(React < 19: use a small `ref` wrapper for the `mvp:answer` event.)
+(React < 19: use a small `ref` wrapper for the `nes:answer` event.)
 
 ## Web components API
 
 ```html
-<mvp-sound></mvp-sound>                     <!-- mute toggle, persists to localStorage -->
+<nes-sound></nes-sound>                     <!-- mute toggle, persists to localStorage -->
 
-<mvp-collapsible open accent="gold">
+<nes-collapsible open accent="gold">
   <span slot="head">STAGE 1 · title</span>
   ...body...
-</mvp-collapsible>
+</nes-collapsible>
 
-<mvp-hud ns="quest" per-level="400" max-xp="1600"></mvp-hud>  <!-- listens on mvp:xp bus -->
+<nes-hud ns="quest" per-level="400" max-xp="1600"></nes-hud>  <!-- listens on nes:xp bus -->
 
-<mvp-quiz xp="50">
+<nes-quiz xp="50">
   <script type="application/json">
   { "q":"...", "options":["A","B"], "answer":1, "explain":"..." }
   </script>
-</mvp-quiz>                                  <!-- correct → +XP flies into the HUD -->
+</nes-quiz>                                  <!-- correct → +XP flies into the HUD -->
 ```
 
 ```html
-<mvp-tabs>                                  <!-- roving-focus tabs, arrow keys -->
+<nes-tabs>                                  <!-- roving-focus tabs, arrow keys -->
   <section data-label="Install" selected>…</section>
   <section data-label="Usage">…</section>
-</mvp-tabs>
+</nes-tabs>
 ```
 
 JS helpers (named exports): `store`, `bleep(seq)`, `SFX`, `setMute/isMuted`, `grantXP(n, el)`,
@@ -142,5 +142,5 @@ JS helpers (named exports): `store`, `bleep(seq)`, `SFX`, `setMute/isMuted`, `gr
 
 New component → add a recipe in `components.css`, add a token in `tokens.css` if needed.
 Keep the Do/Don't: square 90° surfaces everywhere, buttons included (never a radius or chamfer),
-hard shadow not blur, `steps()` not smooth easing, one accent per block, dark text on solid
-accents, everything via token. Full guidance in [DESIGN.md](DESIGN.md).
+hard shadow not blur, smooth `--ease` easing (transform/opacity), one accent per block, dark text
+on solid accents, everything via token. Full guidance in [DESIGN.md](DESIGN.md).
