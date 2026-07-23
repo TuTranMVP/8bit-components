@@ -181,11 +181,11 @@ import "8bit-nes/components.css";`,
         ) +
         h2("Fonts") +
         p(
-          "Two fonts ship self-hosted as woff2 (Latin + Vietnamese subset): <b>IoskeleyMono</b> for chrome, labels, and code; <b>Space Grotesk</b> for body. Preload the two critical files for zero-FOUT.",
+          "Two fonts ship self-hosted as woff2 (Latin + Vietnamese subset): <b>NES Mono</b> for chrome, labels, and code; <b>Space Grotesk</b> for body. Preload the two critical files for zero-FOUT.",
         ) +
         cb(
           `<link rel="preload" as="font" type="font/woff2"
-      href="fonts/ioskeley-mono-400.woff2" crossorigin>
+      href="fonts/nes-mono-400.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2"
       href="fonts/space-grotesk-var.woff2" crossorigin>`,
         ),
@@ -225,11 +225,11 @@ import "8bit-nes/components.css";`,
         ) +
         h2("Font") +
         p(
-          "Hai font tự host dạng woff2 (subset Latin + tiếng Việt): <b>IoskeleyMono</b> cho chrome, nhãn và code; <b>Space Grotesk</b> cho phần thân. Preload hai file quan trọng để zero-FOUT.",
+          "Hai font tự host dạng woff2 (subset Latin + tiếng Việt): <b>NES Mono</b> cho chrome, nhãn và code; <b>Space Grotesk</b> cho phần thân. Preload hai file quan trọng để zero-FOUT.",
         ) +
         cb(
           `<link rel="preload" as="font" type="font/woff2"
-      href="fonts/ioskeley-mono-400.woff2" crossorigin>
+      href="fonts/nes-mono-400.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2"
       href="fonts/space-grotesk-var.woff2" crossorigin>`,
         ),

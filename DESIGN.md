@@ -64,7 +64,7 @@ and the item never reads smaller than an outlined sibling. Borders on recessed/n
 
 Two faces, deliberately paired. Self-hosted woff2 (Latin + Vietnamese subset, full diacritics).
 
-- **`--font-mono` — IoskeleyMono** (hi-res mono, *not* a lo-res pixel font): all chrome —
+- **`--font-mono` — NES Mono** (hi-res mono, *not* a lo-res pixel font): all chrome —
   labels, numbers, code, nav, headings. Uppercase + `--ls-chrome` tracking for labels.
 - **`--font-body` — Space Grotesk** (variable 300–700): body copy, prose. Sentence case.
 
