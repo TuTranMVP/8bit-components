@@ -1442,6 +1442,27 @@
     &>.s.on {
       color: var(--accent);
     }
+
+    /* interactive picker (<nes-rating>): stars become bare buttons */
+    &>button.s {
+      padding: 0;
+      background: none;
+      border: 0;
+      color: inherit;
+      font: inherit;
+      line-height: 1;
+      cursor: pointer;
+      transition: color var(--dur-fast), transform var(--dur-fast) var(--ease);
+    }
+
+    &>button.s:hover {
+      transform: translateY(-1px);
+    }
+  }
+
+  /* larger star row for prominent inputs: <nes-rating size="lg"> or .rating.lg */
+  .rating.lg {
+    font-size: var(--fs-h1);
   }
 
   /* ------------------------------------------------------------------ DRAWER */
@@ -1804,13 +1825,422 @@
     }
   }
 
+  /* ===================================================================== */
+  /*  WAVE 4 — FORM MODULE. Full control set (Nuxt-UI parity). Native where  */
+  /*  possible; <nes-*> only where state lives. Same contract: tokens only,  */
+  /*  square, hard shadow, smooth --ease, one accent per block.              */
+  /* ===================================================================== */
+
+  /* ------------------------------------------------ CONTROL GROUP (fieldset) */
+  /* CheckboxGroup / RadioGroup: <fieldset class="control-group"> + <legend>.    */
+  .control-group {
+    --accent: var(--primary);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-inline-size: 0;
+
+    &>legend {
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--muted);
+      padding: 0;
+      margin-block-end: var(--sp-1);
+    }
+
+    &.row {
+      flex-flow: row wrap;
+      column-gap: var(--sp-4);
+    }
+
+    &.err>legend {
+      color: var(--crit);
+    }
+  }
+
+  /* ---------------------------------------------------------------- SWATCH */
+  /* ColorPicker: native <input type="color" class="swatch">. Square chip.       */
+  .swatch {
+    --accent: var(--primary);
+    appearance: none;
+    -webkit-appearance: none;
+    inline-size: var(--ctrl-h);
+    block-size: var(--ctrl-h);
+    flex: none;
+    padding: 3px;
+    cursor: pointer;
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    box-shadow: var(--sh-1);
+    transition: border-color var(--dur-fast);
+
+    &:hover {
+      border-color: var(--dim);
+    }
+
+    &:focus-visible {
+      border-color: var(--accent);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: .6;
+    }
+
+    &::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    &::-webkit-color-swatch {
+      border: 0;
+    }
+
+    &::-moz-color-swatch {
+      border: 0;
+    }
+  }
+
+  /* --------------------------------------------------- DATE / TIME PICKERS */
+  /* Native <input type="date|time" class="input">. Tint the OS picker glyph
+     from black toward the green primary so it reads on the dark surface.       */
+  .input[type="date"],
+  .input[type="time"],
+  .input[type="datetime-local"],
+  .input[type="month"],
+  .input[type="week"] {
+    cursor: pointer;
+
+    &::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      opacity: .8;
+      filter: invert(64%) sepia(58%) saturate(560%) hue-rotate(74deg) brightness(96%);
+      transition: opacity var(--dur-fast);
+    }
+
+    &::-webkit-calendar-picker-indicator:hover {
+      opacity: 1;
+    }
+  }
+
+  /* ------------------------------------------------------------- PIN INPUT */
+  /* PinInput: <nes-pin> renders a .pin row of single-char cells. Focus→gold.    */
+  .pin {
+    display: inline-flex;
+    gap: var(--sp-2);
+
+    & input {
+      inline-size: var(--ctrl-h);
+      block-size: var(--ctrl-h);
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: var(--fs-h2);
+      color: var(--ink);
+      background: var(--slot);
+      border: var(--bw-2) solid var(--line-hi);
+      transition: border-color var(--dur-fast);
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+
+    & input::-webkit-outer-spin-button,
+    & input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    & input:focus-visible {
+      border-color: var(--gold);
+    }
+
+    & input:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+  }
+
+  /* -------------------------------------------------------------- DROPZONE */
+  /* FileUpload: <nes-file> renders a .dropzone; gets .over while dragging.       */
+  .dropzone {
+    --accent: var(--primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    text-align: center;
+    padding: var(--sp-5) var(--sp-4);
+    color: var(--muted);
+    background: var(--slot);
+    border: var(--bw-2) dashed var(--line-hi);
+    cursor: pointer;
+    transition: border-color var(--dur-fast), background var(--dur-fast),
+      color var(--dur-fast);
+
+    & .big {
+      font-family: var(--font-mono);
+      font-size: var(--fs-chip);
+      color: var(--ink);
+    }
+
+    & .sub {
+      font-size: var(--fs-chip);
+      color: var(--dim);
+    }
+
+    &:hover,
+    &:focus-within {
+      border-color: var(--dim);
+      color: var(--ink);
+    }
+
+    &.over {
+      border-color: var(--accent);
+      border-style: solid;
+      background: color-mix(in srgb, var(--accent) 10%, var(--slot));
+      color: var(--ink);
+    }
+  }
+
+  .filelist {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    margin-block-start: var(--sp-3);
+    padding: 0;
+    list-style: none;
+
+    & li {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-family: var(--font-mono);
+      font-size: var(--fs-chip);
+      color: var(--muted);
+      background: var(--panel-2);
+      border: var(--bw) solid var(--line);
+      padding: var(--sp-2) var(--sp-3);
+    }
+
+    & .name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    & .size {
+      color: var(--dim);
+    }
+
+    & .x {
+      background: none;
+      border: 0;
+      cursor: pointer;
+      color: var(--dim);
+      font-family: var(--font-mono);
+      line-height: 1;
+
+      &:hover {
+        color: var(--crit);
+      }
+    }
+  }
+
+  /* ------------------------------------------------------------------ TAGS */
+  /* InputTags: <nes-tags> renders a .tags box of .tag chips + an inline input.  */
+  .tags {
+    --accent: var(--primary);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2);
+    inline-size: 100%;
+    min-block-size: var(--ctrl-h);
+    padding: var(--sp-2);
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    cursor: text;
+    transition: border-color var(--dur-fast);
+
+    &:focus-within {
+      border-color: var(--gold);
+    }
+
+    &>input {
+      flex: 1;
+      min-inline-size: 6ch;
+      border: 0;
+      outline: none;
+      background: none;
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: var(--fs-body);
+
+      &::placeholder {
+        color: var(--dim);
+      }
+    }
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    font-family: var(--font-mono);
+    font-size: var(--fs-chip);
+    color: var(--ink-on-accent);
+    background: var(--accent);
+    padding: 2px var(--sp-2);
+    line-height: 1.4;
+
+    & .x {
+      background: none;
+      border: 0;
+      cursor: pointer;
+      color: inherit;
+      font-family: var(--font-mono);
+      line-height: 1;
+      opacity: .8;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  /* --------------------------------------------------------------- LISTBOX */
+  /* Listbox: <nes-listbox> renders [role=listbox] of [role=option] rows.        */
+  .listbox {
+    --accent: var(--primary);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    inline-size: 100%;
+    max-block-size: 16rem;
+    overflow-y: auto;
+    padding: var(--sp-2);
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+
+    & [role="option"] {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-family: var(--font-body);
+      font-size: var(--fs-body);
+      color: var(--text);
+      padding: var(--sp-2) var(--sp-3);
+      cursor: pointer;
+      border: var(--bw) solid transparent;
+      transition: background var(--dur-fast), color var(--dur-fast);
+
+      &:hover {
+        background: var(--panel-2);
+        color: var(--ink);
+      }
+    }
+
+    & [role="option"].active {
+      border-color: var(--line-hi);
+    }
+
+    & [role="option"][aria-selected="true"] {
+      background: var(--accent);
+      color: var(--ink-on-accent);
+
+      &::after {
+        content: "✓";
+        margin-inline-start: auto;
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------- COMBOBOX */
+  /* InputMenu / SelectMenu: <nes-input-menu> / <nes-select-menu>. A field or    */
+  /* trigger + a filtered .menu popup (reuses .menu / .menuitem from Dropdown).  */
+  .combo {
+    --accent: var(--primary);
+    position: relative;
+    display: block;
+    inline-size: 100%;
+
+    &>.menu {
+      inline-size: 100%;
+      min-inline-size: 0;
+      max-block-size: 15rem;
+      overflow-y: auto;
+    }
+
+    /* .menu is display:flex, which would beat the [hidden] default — restore it */
+    &>.menu[hidden] {
+      display: none;
+    }
+
+    & .menuitem.active {
+      background: var(--panel-2);
+      color: var(--ink);
+    }
+
+    & .menuitem[aria-selected="true"] {
+      color: var(--accent);
+    }
+
+    & .menu-empty {
+      padding: var(--sp-2) var(--sp-3);
+      font-size: var(--fs-chip);
+      color: var(--dim);
+    }
+
+    &>.trigger {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      inline-size: 100%;
+      text-align: start;
+      font-family: var(--font-body);
+      font-size: var(--fs-body);
+      color: var(--ink);
+      background: var(--slot);
+      border: var(--bw-2) solid var(--line-hi);
+      block-size: var(--ctrl-h);
+      padding-inline: var(--ctrl-pad);
+      cursor: pointer;
+      transition: border-color var(--dur-fast);
+
+      &:hover {
+        border-color: var(--dim);
+      }
+
+      &[aria-expanded="true"] {
+        border-color: var(--gold);
+      }
+
+      & .ph {
+        color: var(--dim);
+      }
+
+      & .caret {
+        margin-inline-start: auto;
+        color: var(--accent);
+      }
+    }
+  }
+
   /* ---- touch targets: on coarse pointers, controls grow to a ~44px tap zone
      (WCAG 2.5.8). Sizes only bump up, so nothing shifts on desktop. ---- */
   @media (pointer: coarse) {
 
     .btn,
     .select,
-    .input {
+    .input,
+    .swatch,
+    .tags,
+    .combo>.trigger {
       min-block-size: 2.75rem;
     }
 
@@ -1819,6 +2249,11 @@
     .segment>button,
     .stepper>button {
       min-block-size: 2.5rem;
+    }
+
+    .pin input {
+      inline-size: 2.75rem;
+      block-size: 2.75rem;
     }
 
     .checkbox,

@@ -70,10 +70,59 @@ export declare class NesQuizElement extends HTMLElement {}
 export declare class NesTabsElement extends HTMLElement {}
 export declare class NesCodeElement extends HTMLElement {}
 
+/* ---- Form module ---- */
+
+/** <nes-form>: native constraint validation → inline errors → `nes:submit`. */
+export declare class NesFormElement extends HTMLElement {
+  /** The wrapping <form> (created on connect). */
+  form: HTMLFormElement;
+  /** Validate every control; on success dispatch `nes:submit`, else focus the first bad field. */
+  submit(): void;
+}
+/** <nes-number>: auto-wired − [n] + stepper over a native number input. */
+export declare class NesNumberElement extends HTMLElement {
+  value: string;
+}
+/** <nes-rating>: click / arrow-key star picker (add `readonly` for display only). */
+export declare class NesRatingElement extends HTMLElement {
+  value: number;
+}
+/** <nes-tags>: chip input; value is the ordered tag list. */
+export declare class NesTagsElement extends HTMLElement {
+  readonly value: string[];
+}
+/** <nes-pin>: N single-char cells; fires `nes:complete` when full. */
+export declare class NesPinElement extends HTMLElement {
+  readonly value: string;
+}
+/** <nes-file>: click-or-drop upload zone with a removable file list. */
+export declare class NesFileElement extends HTMLElement {
+  readonly files: File[];
+}
+/** <nes-listbox>: roving-focus option list; `value` is a string (or string[] when `multiple`). */
+export declare class NesListboxElement extends HTMLElement {
+  readonly value: string | string[] | null;
+}
+/** <nes-input-menu>: free-text combobox (autocomplete; value = typed text). */
+export declare class NesInputMenuElement extends HTMLElement {
+  value: string;
+}
+/** <nes-select-menu>: strict searchable single-select (value ∈ options). */
+export declare class NesSelectMenuElement extends HTMLElement {
+  value: string;
+}
+
 /** Detail of the `nes:answer` event bubbled by <nes-quiz>. */
 export interface NesAnswerDetail {
   correct: boolean;
   choice: number;
+}
+
+/** Detail of the `nes:submit` event bubbled by <nes-form>. */
+export interface NesSubmitDetail {
+  /** Flat form values (from `FormData`). */
+  data: Record<string, string>;
+  form: HTMLFormElement;
 }
 
 declare global {
@@ -84,6 +133,15 @@ declare global {
     "nes-quiz": NesQuizElement;
     "nes-tabs": NesTabsElement;
     "nes-code": NesCodeElement;
+    "nes-form": NesFormElement;
+    "nes-number": NesNumberElement;
+    "nes-rating": NesRatingElement;
+    "nes-tags": NesTagsElement;
+    "nes-pin": NesPinElement;
+    "nes-file": NesFileElement;
+    "nes-listbox": NesListboxElement;
+    "nes-input-menu": NesInputMenuElement;
+    "nes-select-menu": NesSelectMenuElement;
   }
   interface DocumentEventMap {
     "nes:xp": CustomEvent<{ amount: number }>;
@@ -91,5 +149,9 @@ declare global {
   }
   interface HTMLElementEventMap {
     "nes:answer": CustomEvent<NesAnswerDetail>;
+    "nes:submit": CustomEvent<NesSubmitDetail>;
+    "nes:invalid": CustomEvent<Record<string, never>>;
+    "nes:complete": CustomEvent<{ value: string }>;
+    "nes:change": CustomEvent<{ value?: unknown; files?: File[] }>;
   }
 }

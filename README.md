@@ -68,7 +68,7 @@ Copy-paste starter (pinned, works before npm publish): [`examples/cdn-starter.ht
 | `tokens.css`            | source of truth    | `:root` vars, 3 `@font-face`, `@layer` order                                                  | —                  |
 | `base.css`              | reset + primitives | reset, focus→gold, reduced-motion, `.pixel-box` (notch), elevation, accent mapper, motion     | tokens             |
 | `components.css`        | stateless recipes  | Element/Form/Feedback/Nav/Overlay/Data recipes (see catalog below)                            | tokens, base       |
-| `elements.js`           | stateful           | `<nes-quiz> <nes-hud> <nes-collapsible> <nes-sound> <nes-tabs>` + `store/bleep/grantXP/toast` | tokens, components |
+| `elements.js`           | stateful           | app: `<nes-quiz> <nes-hud> <nes-collapsible> <nes-sound> <nes-tabs> <nes-code>`; form: `<nes-form> <nes-number> <nes-rating> <nes-tags> <nes-pin> <nes-file> <nes-listbox> <nes-input-menu> <nes-select-menu>` + `store/bleep/grantXP/toast` | tokens, components |
 | `demo.html`             | gallery + test     | every component wired together                                                                | all                |
 | `docs.html` + `docs.js` | documentation site | Nuxt-UI-style sidebar + per-component pages (Usage / preview / API / a11y)                    | all                |
 
@@ -79,7 +79,7 @@ Copy-paste starter (pinned, works before npm publish): [`examples/cdn-starter.ht
 | Category   | Components                                                                     |
 |------------|--------------------------------------------------------------------------------|
 | Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator                        |
-| Form       | Input · Textarea · Select · Checkbox · Radio · Switch · Field · Range · Segmented control · Number stepper |
+| Form       | Input · Textarea · Select · Checkbox · CheckboxGroup · Radio · RadioGroup · Switch · Field · **Form** (`<nes-form>`) · Slider (`.range`) · Segmented control · InputNumber (`<nes-number>`) · InputRating (`<nes-rating>`) · InputTags (`<nes-tags>`) · PinInput (`<nes-pin>`) · ColorPicker · InputDate · InputTime · FileUpload (`<nes-file>`) · Listbox (`<nes-listbox>`) · InputMenu (`<nes-input-menu>`) · SelectMenu (`<nes-select-menu>`) |
 | Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast · Spinner · Meter · Empty state · Banner |
 | Navigation | Tabs (`<nes-tabs>`) · Breadcrumb · Pagination · Steps · Nav list                          |
 | Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) |
@@ -162,6 +162,33 @@ import './tokens.css'; import './base.css'; import './components.css'; import '.
   <section data-label="Usage">…</section>
 </nes-tabs>
 ```
+
+### Form module
+
+Native where it can be (Checkbox/Radio groups are a `.control-group` fieldset; ColorPicker is
+`<input type="color" class="swatch">`; Date/Time are themed native inputs). Stateful controls are
+`<nes-*>` that each keep a hidden `<input name>`, so they **submit inside any form with zero wiring**:
+
+```html
+<nes-form>                                  <!-- native validation → inline errors → nes:submit -->
+  <label class="field"><span class="label">Email <span class="req">*</span></span>
+    <input class="input" type="email" name="email" required></label>
+  <nes-tags name="labels" value="agent,retro"></nes-tags>       <!-- chip input -->
+  <nes-pin length="6" name="otp" numeric></nes-pin>             <!-- OTP → nes:complete -->
+  <nes-select-menu name="model" placeholder="Choose model…">    <!-- searchable single-select -->
+    <script type="application/json">[{"value":"opus","label":"Opus 4.8"}]</script>
+  </nes-select-menu>
+  <button class="btn" type="submit">CREATE</button>
+</nes-form>
+<script type="module">
+  document.querySelector("nes-form")
+    .addEventListener("nes:submit", (e) => console.log(e.detail.data));  // {email, labels, otp, model}
+</script>
+```
+
+Also: `<nes-number>` (stepper), `<nes-rating>` (star input), `<nes-file>` (drop zone),
+`<nes-listbox>`, `<nes-input-menu>` (free-text combobox). Custom events bubble: `nes:change`,
+`nes:submit`, `nes:invalid`, `nes:complete`.
 
 JS helpers (named exports): `store`, `bleep(seq)`, `SFX`, `setMute/isMuted`, `grantXP(n, el)`,
 `floatXP(el, text)`, `toast(msg, { accent, timeout })`.

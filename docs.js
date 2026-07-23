@@ -1196,6 +1196,700 @@ const COMPONENTS = [
         ),
     },
   },
+  {
+    id: "colorpicker",
+    cat: "Form",
+    name: "ColorPicker",
+    desc: {
+      en: "Native color input, restyled as a square chip. The OS picker stays; only the swatch is themed.",
+      vi: "Input màu gốc, style lại thành ô vuông. Bộ chọn của hệ điều hành giữ nguyên; chỉ ô màu được theme.",
+    },
+    body: {
+      en: () =>
+        stage("COLORPICKER", `<input type="color" class="swatch" value="#56d364" aria-label="Accent colour">`) +
+        cb(`<input type="color" class="swatch" value="#56d364" aria-label="Accent colour">`) +
+        api(
+          ["Class / attr", "Effect"],
+          [
+            ["<code>.swatch</code>", "square color chip (native picker)"],
+            ["<code>[value]</code>", "initial hex"],
+            ["<code>[disabled]</code>", "dimmed, not editable"],
+          ],
+        ) +
+        a11y("Give it an <code>aria-label</code> — the swatch shows the colour but not its name."),
+      vi: () =>
+        stage("COLORPICKER", `<input type="color" class="swatch" value="#56d364" aria-label="Màu nhấn">`) +
+        cb(`<input type="color" class="swatch" value="#56d364" aria-label="Màu nhấn">`) +
+        api(
+          ["Class / thuộc tính", "Tác dụng"],
+          [
+            ["<code>.swatch</code>", "ô màu vuông (picker gốc)"],
+            ["<code>[value]</code>", "màu hex ban đầu"],
+            ["<code>[disabled]</code>", "mờ, không sửa"],
+          ],
+        ) +
+        a11y("Cho nó một <code>aria-label</code> — ô màu hiện màu nhưng không hiện tên."),
+    },
+  },
+  {
+    id: "inputdate",
+    cat: "Form",
+    name: "InputDate",
+    desc: {
+      en: "Native date input in the 8-bit shell. Keeps the OS calendar; the picker glyph is tinted to the primary.",
+      vi: "Input ngày gốc trong vỏ 8-bit. Giữ lịch của hệ điều hành; icon picker được nhuộm màu primary.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "INPUTDATE",
+          `<input type="date" class="input" value="2026-07-23" style="max-inline-size:200px" aria-label="Release date">`,
+        ) +
+        cb(`<input type="date" class="input" value="2026-07-23" aria-label="Release date">`) +
+        api(
+          ["Attr", "Effect"],
+          [
+            ["<code>type=\"date\"</code>","themed calendar field"],
+            ["<code>[min]</code> / <code>[max]</code>", "clamp the range"],
+            ["<code>[required]</code>", "validated by &lt;nes-form&gt;"],
+          ],
+        ) +
+        a11y("Native = free keyboard entry, locale formatting, and mobile date wheels. Also works for <code>datetime-local</code>, <code>month</code>, <code>week</code>."),
+      vi: () =>
+        stage(
+          "INPUTDATE",
+          `<input type="date" class="input" value="2026-07-23" style="max-inline-size:200px" aria-label="Ngày phát hành">`,
+        ) +
+        cb(`<input type="date" class="input" value="2026-07-23" aria-label="Ngày phát hành">`) +
+        api(
+          ["Thuộc tính", "Tác dụng"],
+          [
+            ["<code>type=\"date\"</code>","ô lịch đã theme"],
+            ["<code>[min]</code> / <code>[max]</code>", "giới hạn khoảng"],
+            ["<code>[required]</code>", "được &lt;nes-form&gt; kiểm tra"],
+          ],
+        ) +
+        a11y("Gốc = gõ phím tự do, format theo locale, và bánh xe ngày trên mobile. Cũng dùng cho <code>datetime-local</code>, <code>month</code>, <code>week</code>."),
+    },
+  },
+  {
+    id: "inputtime",
+    cat: "Form",
+    name: "InputTime",
+    desc: {
+      en: "Native time input, same shell as InputDate. OS clock picker, tinted glyph.",
+      vi: "Input giờ gốc, cùng vỏ với InputDate. Bộ chọn giờ của hệ điều hành, icon nhuộm màu.",
+    },
+    body: {
+      en: () =>
+        stage("INPUTTIME", `<input type="time" class="input" value="13:37" style="max-inline-size:160px" aria-label="Start time">`) +
+        cb(`<input type="time" class="input" value="13:37" aria-label="Start time">`) +
+        api(
+          ["Attr", "Effect"],
+          [
+            ["<code>type=\"time\"</code>","themed time field"],
+            ["<code>[step]</code>", "seconds granularity (e.g. 1)"],
+          ],
+        ) +
+        a11y("Pair with a label; the field announces hours/minutes as separate spin segments."),
+      vi: () =>
+        stage("INPUTTIME", `<input type="time" class="input" value="13:37" style="max-inline-size:160px" aria-label="Giờ bắt đầu">`) +
+        cb(`<input type="time" class="input" value="13:37" aria-label="Giờ bắt đầu">`) +
+        api(
+          ["Thuộc tính", "Tác dụng"],
+          [
+            ["<code>type=\"time\"</code>","ô giờ đã theme"],
+            ["<code>[step]</code>", "bước theo giây (vd 1)"],
+          ],
+        ) +
+        a11y("Đi kèm label; ô đọc giờ/phút thành các đoạn spin riêng."),
+    },
+  },
+  {
+    id: "checkboxgroup",
+    cat: "Form",
+    name: "CheckboxGroup",
+    desc: {
+      en: "A <fieldset> that groups related checkboxes under one legend. Add .row to lay them out horizontally.",
+      vi: "Một <fieldset> gom các checkbox liên quan dưới một legend. Thêm .row để xếp ngang.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CHECKBOXGROUP",
+          `<fieldset class="control-group" style="max-inline-size:320px">
+            <legend>Frameworks</legend>
+            <label class="check"><input type="checkbox" class="checkbox" checked> Vue</label>
+            <label class="check"><input type="checkbox" class="checkbox"> React</label>
+            <label class="check"><input type="checkbox" class="checkbox"> Svelte</label>
+          </fieldset>`,
+          "col",
+        ) +
+        cb(
+          `<fieldset class="control-group">
+  <legend>Frameworks</legend>
+  <label class="check"><input type="checkbox" class="checkbox" checked> Vue</label>
+  <label class="check"><input type="checkbox" class="checkbox"> React</label>
+</fieldset>`,
+        ) +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.control-group</code>", "&lt;fieldset&gt; stack + legend"],
+            ["<code>.control-group.row</code>", "lay options horizontally"],
+            ["<code>.check</code>", "label ↔ control pairing"],
+          ],
+        ) +
+        a11y("<code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code> is the semantic group — screen readers announce the legend for every option."),
+      vi: () =>
+        stage(
+          "CHECKBOXGROUP",
+          `<fieldset class="control-group" style="max-inline-size:320px">
+            <legend>Framework</legend>
+            <label class="check"><input type="checkbox" class="checkbox" checked> Vue</label>
+            <label class="check"><input type="checkbox" class="checkbox"> React</label>
+            <label class="check"><input type="checkbox" class="checkbox"> Svelte</label>
+          </fieldset>`,
+          "col",
+        ) +
+        cb(
+          `<fieldset class="control-group">
+  <legend>Framework</legend>
+  <label class="check"><input type="checkbox" class="checkbox" checked> Vue</label>
+  <label class="check"><input type="checkbox" class="checkbox"> React</label>
+</fieldset>`,
+        ) +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.control-group</code>", "xếp &lt;fieldset&gt; + legend"],
+            ["<code>.control-group.row</code>", "xếp ngang các lựa chọn"],
+            ["<code>.check</code>", "ghép label ↔ control"],
+          ],
+        ) +
+        a11y("<code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code> là nhóm ngữ nghĩa — screen reader đọc legend cho mọi lựa chọn."),
+    },
+  },
+  {
+    id: "radiogroup",
+    cat: "Form",
+    name: "RadioGroup",
+    desc: {
+      en: "Same .control-group fieldset, holding radios that share a name (single choice).",
+      vi: "Cùng fieldset .control-group, chứa radio dùng chung name (chọn một).",
+    },
+    body: {
+      en: () =>
+        stage(
+          "RADIOGROUP",
+          `<fieldset class="control-group row" style="max-inline-size:340px">
+            <legend>Size</legend>
+            <label class="check"><input type="radio" name="sz" class="radio" checked> Small</label>
+            <label class="check"><input type="radio" name="sz" class="radio"> Medium</label>
+            <label class="check"><input type="radio" name="sz" class="radio"> Large</label>
+          </fieldset>`,
+          "col",
+        ) +
+        cb(
+          `<fieldset class="control-group row">
+  <legend>Size</legend>
+  <label class="check"><input type="radio" name="sz" class="radio" checked> Small</label>
+  <label class="check"><input type="radio" name="sz" class="radio"> Medium</label>
+</fieldset>`,
+        ) +
+        api(
+          ["Attr", "Role"],
+          [
+            ["<code>name</code> (shared)", "makes the radios mutually exclusive"],
+            ["<code>.control-group.row</code>", "horizontal layout"],
+            ["<code>[checked]</code>", "the default choice"],
+          ],
+        ) +
+        a11y("Give one radio a sensible default. Arrow keys move within a same-name group for free."),
+      vi: () =>
+        stage(
+          "RADIOGROUP",
+          `<fieldset class="control-group row" style="max-inline-size:340px">
+            <legend>Cỡ</legend>
+            <label class="check"><input type="radio" name="sz" class="radio" checked> Nhỏ</label>
+            <label class="check"><input type="radio" name="sz" class="radio"> Vừa</label>
+            <label class="check"><input type="radio" name="sz" class="radio"> Lớn</label>
+          </fieldset>`,
+          "col",
+        ) +
+        cb(
+          `<fieldset class="control-group row">
+  <legend>Cỡ</legend>
+  <label class="check"><input type="radio" name="sz" class="radio" checked> Nhỏ</label>
+  <label class="check"><input type="radio" name="sz" class="radio"> Vừa</label>
+</fieldset>`,
+        ) +
+        api(
+          ["Thuộc tính", "Vai trò"],
+          [
+            ["<code>name</code> (chung)", "khiến radio loại trừ lẫn nhau"],
+            ["<code>.control-group.row</code>", "xếp ngang"],
+            ["<code>[checked]</code>", "lựa chọn mặc định"],
+          ],
+        ) +
+        a11y("Chọn sẵn một radio hợp lý. Phím mũi tên di chuyển trong nhóm cùng name miễn phí."),
+    },
+  },
+  {
+    id: "inputnumber",
+    cat: "Form",
+    name: "InputNumber",
+    desc: {
+      en: "A − [n] + stepper over a native number input. <nes-number> wires the buttons; value clamps to min/max/step.",
+      vi: "Stepper − [n] + trên input number gốc. <nes-number> tự nối nút; value kẹp theo min/max/step.",
+    },
+    body: {
+      en: () =>
+        stage("INPUTNUMBER", `<nes-number name="qty" min="1" max="8" value="2" aria-label="Players"></nes-number>`) +
+        cb(`<nes-number name="qty" min="1" max="8" value="2" aria-label="Players"></nes-number>`) +
+        api(
+          ["Attr / prop", "Meaning"],
+          [
+            ["<code>name</code>", "submitted form key"],
+            ["<code>min</code> / <code>max</code> / <code>step</code>", "clamp + increment"],
+            ["<code>value</code>", "initial number"],
+            ["<code>.value</code> (prop)", "read the current value"],
+            ["<code>nes:change</code>", "fires with <code>{ value }</code>"],
+          ],
+        ) +
+        a11y("Buttons are real <code>&lt;button&gt;</code>s; the field is a real number input, so keyboard ↑/↓ and typing both work."),
+      vi: () =>
+        stage("INPUTNUMBER", `<nes-number name="qty" min="1" max="8" value="2" aria-label="Người chơi"></nes-number>`) +
+        cb(`<nes-number name="qty" min="1" max="8" value="2" aria-label="Người chơi"></nes-number>`) +
+        api(
+          ["Attr / prop", "Ý nghĩa"],
+          [
+            ["<code>name</code>", "khóa form khi submit"],
+            ["<code>min</code> / <code>max</code> / <code>step</code>", "kẹp + bước tăng"],
+            ["<code>value</code>", "số ban đầu"],
+            ["<code>.value</code> (prop)", "đọc giá trị hiện tại"],
+            ["<code>nes:change</code>", "bắn kèm <code>{ value }</code>"],
+          ],
+        ) +
+        a11y("Nút là <code>&lt;button&gt;</code> thật; ô là number input thật, nên ↑/↓ bàn phím và gõ tay đều chạy."),
+    },
+  },
+  {
+    id: "inputrating",
+    cat: "Form",
+    name: "InputRating",
+    desc: {
+      en: "Star picker. Click or arrow-key to set; add readonly for a display-only score. size=lg enlarges it.",
+      vi: "Chọn sao. Click hoặc phím mũi tên để đặt; thêm readonly để chỉ hiển thị. size=lg để to hơn.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "INPUTRATING",
+          `<nes-rating name="score" max="5" value="3" size="lg" aria-label="Rating"></nes-rating>
+           <nes-rating max="5" value="4" readonly aria-label="4 of 5"></nes-rating>`,
+          "col",
+        ) +
+        cb(`<nes-rating name="score" max="5" value="3"></nes-rating>
+<nes-rating max="5" value="4" readonly></nes-rating>`) +
+        api(
+          ["Attr / prop", "Meaning"],
+          [
+            ["<code>max</code>", "star count (default 5)"],
+            ["<code>value</code>", "initial score"],
+            ["<code>readonly</code>", "display only (role=img)"],
+            ["<code>size=\"lg\"</code>","larger stars"],
+            ["<code>nes:change</code>", "fires with <code>{ value }</code>"],
+          ],
+        ) +
+        a11y("Interactive mode is a <code>radiogroup</code> with roving focus and ←/→ keys; read-only mode is an <code>img</code> with an <code>aria-label</code> like “4 of 5”."),
+      vi: () =>
+        stage(
+          "INPUTRATING",
+          `<nes-rating name="score" max="5" value="3" size="lg" aria-label="Đánh giá"></nes-rating>
+           <nes-rating max="5" value="4" readonly aria-label="4 trên 5"></nes-rating>`,
+          "col",
+        ) +
+        cb(`<nes-rating name="score" max="5" value="3"></nes-rating>
+<nes-rating max="5" value="4" readonly></nes-rating>`) +
+        api(
+          ["Attr / prop", "Ý nghĩa"],
+          [
+            ["<code>max</code>", "số sao (mặc định 5)"],
+            ["<code>value</code>", "điểm ban đầu"],
+            ["<code>readonly</code>", "chỉ hiển thị (role=img)"],
+            ["<code>size=\"lg\"</code>","sao to hơn"],
+            ["<code>nes:change</code>", "bắn kèm <code>{ value }</code>"],
+          ],
+        ) +
+        a11y("Chế độ tương tác là <code>radiogroup</code> với roving focus và phím ←/→; chế độ readonly là <code>img</code> với <code>aria-label</code> như “4 trên 5”."),
+    },
+  },
+  {
+    id: "pininput",
+    cat: "Form",
+    name: "PinInput",
+    desc: {
+      en: "One-time-code / PIN entry: N single-char cells that auto-advance, accept a full paste, and fire nes:complete.",
+      vi: "Nhập mã OTP / PIN: N ô một ký tự tự nhảy, nhận dán nguyên chuỗi, và bắn nes:complete.",
+    },
+    body: {
+      en: () =>
+        stage("PININPUT", `<nes-pin length="4" name="otp" numeric aria-label="One-time code"></nes-pin>`) +
+        cb(`<nes-pin length="6" name="otp" numeric></nes-pin>`) +
+        api(
+          ["Attr / event", "Meaning"],
+          [
+            ["<code>length</code>", "number of cells (default 4)"],
+            ["<code>numeric</code>", "digits only + numeric keypad"],
+            ["<code>mask</code>", "obscure like a password"],
+            ["<code>nes:change</code>", "fires each edit"],
+            ["<code>nes:complete</code>", "fires with <code>{ value }</code> when full"],
+          ],
+        ) +
+        a11y("Each cell is a labelled input; Backspace steps back, ←/→ move, and a paste fills across the cells."),
+      vi: () =>
+        stage("PININPUT", `<nes-pin length="4" name="otp" numeric aria-label="Mã OTP"></nes-pin>`) +
+        cb(`<nes-pin length="6" name="otp" numeric></nes-pin>`) +
+        api(
+          ["Attr / event", "Ý nghĩa"],
+          [
+            ["<code>length</code>", "số ô (mặc định 4)"],
+            ["<code>numeric</code>", "chỉ số + bàn phím số"],
+            ["<code>mask</code>", "che như mật khẩu"],
+            ["<code>nes:change</code>", "bắn mỗi lần sửa"],
+            ["<code>nes:complete</code>", "bắn kèm <code>{ value }</code> khi đầy"],
+          ],
+        ) +
+        a11y("Mỗi ô là input có nhãn; Backspace lùi, ←/→ di chuyển, và dán sẽ điền tràn qua các ô."),
+    },
+  },
+  {
+    id: "inputtags",
+    cat: "Form",
+    name: "InputTags",
+    desc: {
+      en: "Type + Enter (or comma) to add a chip; × or Backspace removes. Value is the ordered tag list.",
+      vi: "Gõ + Enter (hoặc dấu phẩy) để thêm chip; × hoặc Backspace để xóa. Value là danh sách tag theo thứ tự.",
+    },
+    body: {
+      en: () =>
+        stage("INPUTTAGS", `<nes-tags name="labels" value="agent,retro" placeholder="add tag…" aria-label="Labels"></nes-tags>`, "col") +
+        cb(`<nes-tags name="labels" value="agent,retro" placeholder="add tag…"></nes-tags>`) +
+        api(
+          ["Attr / prop", "Meaning"],
+          [
+            ["<code>value</code>", "comma-separated initial tags"],
+            ["<code>max</code>", "cap the number of tags"],
+            ["<code>.value</code> (prop)", "current tags as <code>string[]</code>"],
+            ["<code>nes:change</code>", "fires with <code>{ value: string[] }</code>"],
+          ],
+        ) +
+        a11y("A hidden <code>&lt;input name&gt;</code> carries the comma-joined value, so it submits inside any form with zero wiring."),
+      vi: () =>
+        stage("INPUTTAGS", `<nes-tags name="labels" value="agent,retro" placeholder="thêm tag…" aria-label="Nhãn"></nes-tags>`, "col") +
+        cb(`<nes-tags name="labels" value="agent,retro" placeholder="thêm tag…"></nes-tags>`) +
+        api(
+          ["Attr / prop", "Ý nghĩa"],
+          [
+            ["<code>value</code>", "tag ban đầu, ngăn bởi dấu phẩy"],
+            ["<code>max</code>", "giới hạn số tag"],
+            ["<code>.value</code> (prop)", "tag hiện tại dạng <code>string[]</code>"],
+            ["<code>nes:change</code>", "bắn kèm <code>{ value: string[] }</code>"],
+          ],
+        ) +
+        a11y("Một <code>&lt;input name&gt;</code> ẩn giữ value nối bằng dấu phẩy, nên nó submit trong mọi form mà không cần nối tay."),
+    },
+  },
+  {
+    id: "fileupload",
+    cat: "Form",
+    name: "FileUpload",
+    desc: {
+      en: "Click-or-drop zone over a native file input. Lists chosen files with a remove button; supports multiple + accept.",
+      vi: "Vùng click-hoặc-thả trên file input gốc. Liệt kê file đã chọn kèm nút xóa; hỗ trợ multiple + accept.",
+    },
+    body: {
+      en: () =>
+        stage("FILEUPLOAD", `<nes-file name="asset" accept="image/*" multiple label="Drop art or click"></nes-file>`, "col") +
+        cb(`<nes-file name="asset" accept="image/*" multiple label="Drop art or click"></nes-file>`) +
+        api(
+          ["Attr / prop", "Meaning"],
+          [
+            ["<code>name</code>", "form field name"],
+            ["<code>accept</code>", "MIME / extension filter"],
+            ["<code>multiple</code>", "allow more than one file"],
+            ["<code>.files</code> (prop)", "chosen files as <code>File[]</code>"],
+            ["<code>nes:change</code>", "fires with <code>{ files }</code>"],
+          ],
+        ) +
+        a11y("The drop target is a real <code>&lt;button&gt;</code> that opens the native picker — fully keyboard-operable, drag is an enhancement."),
+      vi: () =>
+        stage("FILEUPLOAD", `<nes-file name="asset" accept="image/*" multiple label="Thả ảnh hoặc click"></nes-file>`, "col") +
+        cb(`<nes-file name="asset" accept="image/*" multiple label="Thả ảnh hoặc click"></nes-file>`) +
+        api(
+          ["Attr / prop", "Ý nghĩa"],
+          [
+            ["<code>name</code>", "tên field trong form"],
+            ["<code>accept</code>", "lọc MIME / đuôi file"],
+            ["<code>multiple</code>", "cho phép nhiều file"],
+            ["<code>.files</code> (prop)", "file đã chọn dạng <code>File[]</code>"],
+            ["<code>nes:change</code>", "bắn kèm <code>{ files }</code>"],
+          ],
+        ) +
+        a11y("Vùng thả là <code>&lt;button&gt;</code> thật mở picker gốc — thao tác bàn phím đầy đủ, kéo-thả chỉ là bổ sung."),
+    },
+  },
+  {
+    id: "listbox",
+    cat: "Form",
+    name: "Listbox",
+    desc: {
+      en: "An always-open selectable list with roving focus. Single by default; add multiple for many. Options via child JSON.",
+      vi: "Danh sách chọn luôn mở với roving focus. Mặc định chọn một; thêm multiple để chọn nhiều. Options qua JSON con.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "LISTBOX",
+          `<nes-listbox name="stack" multiple value="vue" aria-label="Stack" style="max-inline-size:300px">
+            <script type="application/json">[{"value":"vue","label":"Vue"},{"value":"react","label":"React"},{"value":"svelte","label":"Svelte"}]</script>
+          </nes-listbox>`,
+          "col",
+        ) +
+        cb(`<nes-listbox name="stack" multiple value="vue">
+  <script type="application/json">
+    [{ "value": "vue", "label": "Vue" }, { "value": "react", "label": "React" }]
+  </script>
+</nes-listbox>`) +
+        api(
+          ["Attr / prop", "Meaning"],
+          [
+            ["JSON child", "options: strings or <code>{value,label,disabled}</code>"],
+            ["<code>multiple</code>", "select many (space toggles)"],
+            ["<code>value</code>", "initial selection(s), comma-separated"],
+            ["<code>.value</code> (prop)", "<code>string</code> or <code>string[]</code>"],
+            ["<code>nes:change</code>", "fires on every change"],
+          ],
+        ) +
+        a11y("Implements the ARIA <code>listbox</code> pattern: roving <code>aria-activedescendant</code>, ↑/↓/Home/End, Space/Enter to select."),
+      vi: () =>
+        stage(
+          "LISTBOX",
+          `<nes-listbox name="stack" multiple value="vue" aria-label="Stack" style="max-inline-size:300px">
+            <script type="application/json">[{"value":"vue","label":"Vue"},{"value":"react","label":"React"},{"value":"svelte","label":"Svelte"}]</script>
+          </nes-listbox>`,
+          "col",
+        ) +
+        cb(`<nes-listbox name="stack" multiple value="vue">
+  <script type="application/json">
+    [{ "value": "vue", "label": "Vue" }, { "value": "react", "label": "React" }]
+  </script>
+</nes-listbox>`) +
+        api(
+          ["Attr / prop", "Ý nghĩa"],
+          [
+            ["JSON con", "options: chuỗi hoặc <code>{value,label,disabled}</code>"],
+            ["<code>multiple</code>", "chọn nhiều (Space bật/tắt)"],
+            ["<code>value</code>", "lựa chọn ban đầu, ngăn dấu phẩy"],
+            ["<code>.value</code> (prop)", "<code>string</code> hoặc <code>string[]</code>"],
+            ["<code>nes:change</code>", "bắn mỗi lần đổi"],
+          ],
+        ) +
+        a11y("Theo pattern ARIA <code>listbox</code>: roving <code>aria-activedescendant</code>, ↑/↓/Home/End, Space/Enter để chọn."),
+    },
+  },
+  {
+    id: "inputmenu",
+    cat: "Form",
+    name: "InputMenu",
+    desc: {
+      en: "Free-text combobox: type to filter suggestions, or keep any typed value. Autocomplete without locking the input.",
+      vi: "Combobox tự do: gõ để lọc gợi ý, hoặc giữ nguyên chữ đã gõ. Gợi ý mà không khóa ô nhập.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "INPUTMENU",
+          `<nes-input-menu name="lang" placeholder="Type or pick…" value="Vue" aria-label="Language" style="max-inline-size:320px">
+            <script type="application/json">["Vue","React","Svelte","Solid","Angular","Qwik"]</script>
+          </nes-input-menu>`,
+          "col",
+        ) +
+        cb(`<nes-input-menu name="lang" placeholder="Type or pick…">
+  <script type="application/json">["Vue", "React", "Svelte", "Solid"]</script>
+</nes-input-menu>`) +
+        api(
+          ["Attr / prop", "Meaning"],
+          [
+            ["JSON child", "suggestion options"],
+            ["<code>value</code>", "initial text"],
+            ["<code>.value</code> (prop)", "current text (free-form)"],
+            ["<code>nes:change</code>", "fires with <code>{ value }</code>"],
+          ],
+        ) +
+        a11y("An ARIA <code>combobox</code>: <code>aria-expanded</code>, <code>aria-activedescendant</code>, ↑/↓ to move, Enter to pick, Esc to close."),
+      vi: () =>
+        stage(
+          "INPUTMENU",
+          `<nes-input-menu name="lang" placeholder="Gõ hoặc chọn…" value="Vue" aria-label="Ngôn ngữ" style="max-inline-size:320px">
+            <script type="application/json">["Vue","React","Svelte","Solid","Angular","Qwik"]</script>
+          </nes-input-menu>`,
+          "col",
+        ) +
+        cb(`<nes-input-menu name="lang" placeholder="Gõ hoặc chọn…">
+  <script type="application/json">["Vue", "React", "Svelte", "Solid"]</script>
+</nes-input-menu>`) +
+        api(
+          ["Attr / prop", "Ý nghĩa"],
+          [
+            ["JSON con", "các gợi ý"],
+            ["<code>value</code>", "chữ ban đầu"],
+            ["<code>.value</code> (prop)", "chữ hiện tại (tự do)"],
+            ["<code>nes:change</code>", "bắn kèm <code>{ value }</code>"],
+          ],
+        ) +
+        a11y("Là ARIA <code>combobox</code>: <code>aria-expanded</code>, <code>aria-activedescendant</code>, ↑/↓ để di chuyển, Enter để chọn, Esc để đóng."),
+    },
+  },
+  {
+    id: "selectmenu",
+    cat: "Form",
+    name: "SelectMenu",
+    desc: {
+      en: "Strict searchable single-select: a trigger shows the label; the popup adds a filter box; the value must be one of the options.",
+      vi: "Single-select có tìm kiếm, chặt chẽ: nút hiện label; popup có ô lọc; value bắt buộc thuộc danh sách options.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "SELECTMENU",
+          `<nes-select-menu name="model" placeholder="Choose model…" value="opus" aria-label="Model" style="max-inline-size:320px">
+            <script type="application/json">[{"value":"opus","label":"Opus 4.8"},{"value":"sonnet","label":"Sonnet 5"},{"value":"haiku","label":"Haiku 4.5"}]</script>
+          </nes-select-menu>`,
+          "col",
+        ) +
+        cb(`<nes-select-menu name="model" placeholder="Choose model…">
+  <script type="application/json">
+    [{ "value": "opus", "label": "Opus 4.8" }, { "value": "sonnet", "label": "Sonnet 5" }]
+  </script>
+</nes-select-menu>`) +
+        api(
+          ["Attr / prop", "Meaning"],
+          [
+            ["JSON child", "options (value must exist here)"],
+            ["<code>value</code>", "initial selected value"],
+            ["<code>.value</code> (prop)", "current value"],
+            ["<code>nes:change</code>", "fires with <code>{ value }</code>"],
+          ],
+        ) +
+        a11y("Use over native <code>&lt;select&gt;</code> only when you need search/filter — the native one is lighter and pickier-friendly on mobile."),
+      vi: () =>
+        stage(
+          "SELECTMENU",
+          `<nes-select-menu name="model" placeholder="Chọn model…" value="opus" aria-label="Model" style="max-inline-size:320px">
+            <script type="application/json">[{"value":"opus","label":"Opus 4.8"},{"value":"sonnet","label":"Sonnet 5"},{"value":"haiku","label":"Haiku 4.5"}]</script>
+          </nes-select-menu>`,
+          "col",
+        ) +
+        cb(`<nes-select-menu name="model" placeholder="Chọn model…">
+  <script type="application/json">
+    [{ "value": "opus", "label": "Opus 4.8" }, { "value": "sonnet", "label": "Sonnet 5" }]
+  </script>
+</nes-select-menu>`) +
+        api(
+          ["Attr / prop", "Ý nghĩa"],
+          [
+            ["JSON con", "options (value phải nằm ở đây)"],
+            ["<code>value</code>", "value chọn ban đầu"],
+            ["<code>.value</code> (prop)", "value hiện tại"],
+            ["<code>nes:change</code>", "bắn kèm <code>{ value }</code>"],
+          ],
+        ) +
+        a11y("Chỉ dùng thay <code>&lt;select&gt;</code> gốc khi cần tìm kiếm/lọc — bản gốc nhẹ hơn và thân thiện hơn trên mobile."),
+    },
+  },
+  {
+    id: "form",
+    cat: "Form",
+    name: "Form",
+    desc: {
+      en: "A thin wrapper that runs native constraint validation, renders inline errors under each .field, and emits nes:submit with the data.",
+      vi: "Lớp bọc mỏng chạy kiểm tra ràng buộc gốc, hiện lỗi ngay dưới mỗi .field, và bắn nes:submit kèm dữ liệu.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "FORM",
+          `<nes-form aria-label="Signup demo" style="inline-size:100%;max-inline-size:380px">
+            <label class="field"><span class="label">Email <span class="req">*</span></span>
+              <input class="input" type="email" name="email" required placeholder="you@studio.dev"></label>
+            <label class="field" style="margin-block-start:var(--sp-3)"><span class="label">Handle <span class="req">*</span></span>
+              <input class="input" name="handle" required minlength="3" data-error="Min 3 characters."></label>
+            <button class="btn" type="submit" style="margin-block-start:var(--sp-3)">CREATE</button>
+          </nes-form>`,
+          "col",
+        ) +
+        cb(`<nes-form>
+  <label class="field">
+    <span class="label">Email <span class="req">*</span></span>
+    <input class="input" type="email" name="email" required>
+  </label>
+  <button class="btn" type="submit">CREATE</button>
+</nes-form>
+
+<script type="module">
+  document.querySelector("nes-form")
+    .addEventListener("nes:submit", (e) => console.log(e.detail.data));
+</script>`) +
+        api(
+          ["Feature", "Behaviour"],
+          [
+            ["Native validation", "uses <code>required</code>, <code>type</code>, <code>minlength</code>, <code>pattern</code>, …"],
+            ["<code>data-error</code>", "override the message for a control"],
+            ["Inline errors", "invalid controls get <code>aria-invalid</code> + a <code>.field.err</code> message"],
+            ["<code>nes:submit</code>", "fires only when valid, with <code>{ data, form }</code>"],
+            ["<code>nes:invalid</code>", "fires when a submit is blocked"],
+          ],
+        ) +
+        a11y("Validation is the platform’s own, so messages are localized and the first invalid control is focused. Custom <code>&lt;nes-*&gt;</code> controls submit via their hidden inputs."),
+      vi: () =>
+        stage(
+          "FORM",
+          `<nes-form aria-label="Demo đăng ký" style="inline-size:100%;max-inline-size:380px">
+            <label class="field"><span class="label">Email <span class="req">*</span></span>
+              <input class="input" type="email" name="email" required placeholder="you@studio.dev"></label>
+            <label class="field" style="margin-block-start:var(--sp-3)"><span class="label">Handle <span class="req">*</span></span>
+              <input class="input" name="handle" required minlength="3" data-error="Tối thiểu 3 ký tự."></label>
+            <button class="btn" type="submit" style="margin-block-start:var(--sp-3)">TẠO</button>
+          </nes-form>`,
+          "col",
+        ) +
+        cb(`<nes-form>
+  <label class="field">
+    <span class="label">Email <span class="req">*</span></span>
+    <input class="input" type="email" name="email" required>
+  </label>
+  <button class="btn" type="submit">TẠO</button>
+</nes-form>
+
+<script type="module">
+  document.querySelector("nes-form")
+    .addEventListener("nes:submit", (e) => console.log(e.detail.data));
+</script>`) +
+        api(
+          ["Tính năng", "Hành vi"],
+          [
+            ["Validation gốc", "dùng <code>required</code>, <code>type</code>, <code>minlength</code>, <code>pattern</code>, …"],
+            ["<code>data-error</code>", "ghi đè thông báo cho một control"],
+            ["Lỗi inline", "control lỗi được <code>aria-invalid</code> + thông báo <code>.field.err</code>"],
+            ["<code>nes:submit</code>", "chỉ bắn khi hợp lệ, kèm <code>{ data, form }</code>"],
+            ["<code>nes:invalid</code>", "bắn khi submit bị chặn"],
+          ],
+        ) +
+        a11y("Validation là của nền tảng nên thông báo được bản địa hóa và control lỗi đầu tiên được focus. Các control <code>&lt;nes-*&gt;</code> submit qua input ẩn của chúng."),
+    },
+  },
 
   /* -------------------------------------------------------- FEEDBACK */
   {

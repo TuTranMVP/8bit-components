@@ -218,6 +218,93 @@
       <span class="pbar" style="max-width:320px"><i style="--fill:64%"></i></span>
     </section>
 
+    <!-- FORM MODULE -->
+    <section>
+      <span class="lab">Form module — full set</span>
+      <div class="grid">
+        <div class="field">
+          <span class="label">Color / Date / Time</span>
+          <div class="row" style="align-items:center">
+            <input type="color" class="swatch" value="#56d364" aria-label="Accent colour">
+            <input type="date" class="input" value="2026-07-23" style="max-inline-size:180px" aria-label="Date">
+            <input type="time" class="input" value="13:37" style="max-inline-size:140px" aria-label="Time">
+          </div>
+        </div>
+
+        <fieldset class="control-group">
+          <legend>CheckboxGroup</legend>
+          <label class="check"><input type="checkbox" class="checkbox" checked> Vue</label>
+          <label class="check"><input type="checkbox" class="checkbox"> React</label>
+        </fieldset>
+
+        <fieldset class="control-group row">
+          <legend>RadioGroup</legend>
+          <label class="check"><input type="radio" name="demo-sz" class="radio" checked> S</label>
+          <label class="check"><input type="radio" name="demo-sz" class="radio"> M</label>
+          <label class="check"><input type="radio" name="demo-sz" class="radio"> L</label>
+        </fieldset>
+
+        <div class="field">
+          <span class="label">InputNumber · InputRating</span>
+          <div class="row" style="align-items:center">
+            <nes-number name="qty" min="1" max="8" value="2" aria-label="Players"></nes-number>
+            <nes-rating name="score" max="5" value="3" size="lg"></nes-rating>
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="label">PinInput (OTP)</span>
+          <nes-pin length="4" name="otp" numeric aria-label="One-time code"></nes-pin>
+        </div>
+
+        <div class="field">
+          <span class="label">InputTags</span>
+          <nes-tags name="labels" value="agent,retro" placeholder="add tag…" aria-label="Labels"></nes-tags>
+        </div>
+
+        <div class="field">
+          <span class="label">InputMenu (free)</span>
+          <nes-input-menu name="lang" placeholder="Type or pick…" value="Vue" aria-label="Language">
+            <script type="application/json">["Vue","React","Svelte","Solid","Angular","Qwik"]</script>
+          </nes-input-menu>
+        </div>
+
+        <div class="field">
+          <span class="label">SelectMenu (strict)</span>
+          <nes-select-menu name="model" placeholder="Choose model…" value="opus" aria-label="Model">
+            <script type="application/json">[{"value":"opus","label":"Opus 4.8"},{"value":"sonnet","label":"Sonnet 5"},{"value":"haiku","label":"Haiku 4.5"}]</script>
+          </nes-select-menu>
+        </div>
+
+        <div class="field">
+          <span class="label">Listbox (multi)</span>
+          <nes-listbox name="stack" multiple value="vue" aria-label="Stack">
+            <script type="application/json">[{"value":"vue","label":"Vue"},{"value":"react","label":"React"},{"value":"svelte","label":"Svelte"}]</script>
+          </nes-listbox>
+        </div>
+
+        <div class="field">
+          <span class="label">FileUpload</span>
+          <nes-file name="asset" accept="image/*" multiple label="Drop art or click"></nes-file>
+        </div>
+      </div>
+
+      <div style="margin-block-start:var(--sp-5)">
+        <span class="lab">Form · &lt;nes-form&gt; — native validation → nes:submit</span>
+        <nes-form aria-label="Signup demo" style="max-inline-size:380px">
+          <label class="field">
+            <span class="label">Email <span class="req">*</span></span>
+            <input class="input" type="email" name="email" required placeholder="you@studio.dev">
+          </label>
+          <label class="field" style="margin-block-start:var(--sp-3)">
+            <span class="label">Handle <span class="req">*</span></span>
+            <input class="input" name="handle" required minlength="3" data-error="Tối thiểu 3 ký tự.">
+          </label>
+          <button class="btn" type="submit" style="margin-block-start:var(--sp-3)">CREATE</button>
+        </nes-form>
+      </div>
+    </section>
+
     <div style="height:var(--sp-7)"></div>
   </main>
 
@@ -225,6 +312,12 @@
   <div class="nav-pill"><nes-sound></nes-sound></div>
 
   <script type="module" src="./elements.js"></script>
+  <script type="module">
+    import { toast } from "./elements.js";
+    document.addEventListener("nes:submit", (e) =>
+      toast(`<b>Submitted.</b> ${Object.keys(e.detail.data).length} fields.`, { accent: "good" }),
+    );
+  </script>
 </body>
 
 </html>
