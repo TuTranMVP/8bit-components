@@ -584,10 +584,19 @@
       "kind": "class",
       "description": "Drop rendered markdown / CMS HTML inside — it restores semantic rhythm, square bullets, and accent links.",
       "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/prose"
+    },
+    {
+      "id": "tree",
+      "name": "Tree",
+      "category": "Data",
+      "selector": "<nes-tree>",
+      "kind": "element",
+      "description": "Hierarchical folder/file list. Expand/collapse, single or multiple selection, full keyboard nav. Data via child JSON.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/tree"
     }
   ],
   "counts": {
     "concepts": 4,
-    "components": 56
+    "components": 57
   }
 }

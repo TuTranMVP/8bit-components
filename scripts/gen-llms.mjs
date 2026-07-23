@@ -80,6 +80,7 @@ const SELECTOR = {
   datalist: ".datalist",
   timeline: ".timeline",
   prose: ".prose",
+  tree: "<nes-tree>",
 };
 const kindOf = (sel) =>
   !sel
