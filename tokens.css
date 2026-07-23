@@ -10,7 +10,7 @@
 /* ---- fonts: self-hosted woff2, Latin + Vietnamese subset (verified full VN coverage).
    Crisp-render note: preload the two critical files in <head> for zero-FOUT:
    <link rel="preload" as="font" type="font/woff2" href="./fonts/nes-mono-400.woff2" crossorigin>
-   <link rel="preload" as="font" type="font/woff2" href="./fonts/space-grotesk-var.woff2" crossorigin> ---- */
+   <link rel="preload" as="font" type="font/woff2" href="./fonts/nes-sans-var.woff2" crossorigin> ---- */
 @font-face {
   font-family: "NES Mono";
   src: url("./fonts/nes-mono-400.woff2") format("woff2");
@@ -30,8 +30,8 @@
 }
 
 @font-face {
-  font-family: "Space Grotesk";
-  src: url("./fonts/space-grotesk-var.woff2") format("woff2");
+  font-family: "NES Sans";
+  src: url("./fonts/nes-sans-var.woff2") format("woff2");
   font-weight: 300 700;
   font-style: normal;
   font-display: swap;
@@ -111,7 +111,7 @@
 
     /* ---- typography roles: 2 faces, deliberate pairing ---- */
     --font-mono: "NES Mono", ui-monospace, "Cascadia Code", Menlo, monospace;
-    --font-body: "Space Grotesk", system-ui, -apple-system, sans-serif;
+    --font-body: "NES Sans", system-ui, -apple-system, sans-serif;
 
     /* type scale (rem, 16px base). Only the rungs actually used. */
     --fs-label: .5625rem;
