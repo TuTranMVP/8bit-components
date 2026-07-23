@@ -1510,6 +1510,300 @@
     }
   }
 
+  /* ===================================================================== */
+  /*  WAVE 3 — content & app-shell set. Same contract: tokens, square, hard  */
+  /*  shadow, smooth motion, accent-ready.                                   */
+  /* ===================================================================== */
+
+  /* ------------------------------------------------------------------- PROSE */
+  /* drop rendered markdown/CMS HTML in — restores semantic rhythm + list marks
+     (base.css strips them) with brand styling. Square bullets, accent links.  */
+  .prose {
+    --accent: var(--primary);
+    color: var(--text);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    max-inline-size: 72ch;
+
+    &>* {
+      margin-block: 0;
+    }
+
+    &>*+* {
+      margin-block-start: var(--sp-4);
+    }
+
+    &>:is(h2, h3) {
+      margin-block-start: var(--sp-6);
+    }
+
+    & a {
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: var(--bw-2);
+    }
+
+    & a:hover {
+      color: var(--ink);
+    }
+
+    & ul,
+    & ol {
+      padding-inline-start: var(--sp-5);
+    }
+
+    & ul {
+      list-style: square;
+    }
+
+    & ol {
+      list-style: decimal;
+    }
+
+    & li {
+      margin-block-start: var(--sp-2);
+    }
+
+    & li::marker {
+      color: var(--accent);
+    }
+
+    & blockquote {
+      border-inline-start: var(--accent-bar) solid var(--accent);
+      padding-inline-start: var(--sp-4);
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    & hr {
+      border: 0;
+      block-size: var(--bw-2);
+      background: var(--line-hi);
+      margin-block: var(--sp-5);
+    }
+
+    & img {
+      border: var(--bw-2) solid var(--line-hi);
+      box-shadow: var(--sh-3);
+    }
+  }
+
+  /* -------------------------------------------------------- DESCRIPTION LIST */
+  /* key → value rows for detail panels / settings summaries. <dl>/<dt>/<dd>.   */
+  .datalist {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--sp-2) var(--sp-4);
+    font-size: var(--fs-body);
+
+    &>dt {
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--muted);
+      align-self: baseline;
+    }
+
+    &>dd {
+      margin: 0;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  @container (max-width:320px) {
+    .datalist {
+      grid-template-columns: 1fr;
+      gap: var(--sp-1) 0;
+    }
+  }
+
+  /* ---------------------------------------------------------------- TIMELINE */
+  /* vertical events on a connector line with square markers. <ol>/<li>.        */
+  .timeline {
+    --accent: var(--primary);
+    --accent-d: var(--primary-d);
+    display: flex;
+    flex-direction: column;
+
+    &>li {
+      position: relative;
+      margin-inline-start: .3rem;
+      padding-inline-start: var(--sp-5);
+      padding-block-end: var(--sp-5);
+      border-inline-start: var(--bw-2) solid var(--line-hi);
+    }
+
+    &>li:last-child {
+      border-inline-start-color: transparent;
+      padding-block-end: 0;
+    }
+
+    &>li::before {
+      content: "";
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: calc(-.3rem - var(--bw-2));
+      inline-size: .65rem;
+      block-size: .65rem;
+      background: var(--accent);
+      border: var(--bw-2) solid var(--accent-d);
+      box-shadow: var(--sh-1);
+    }
+
+    & .time {
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--muted);
+    }
+
+    & .title {
+      color: var(--ink);
+      font-weight: 700;
+    }
+  }
+
+  /* ----------------------------------------------------------- NUMBER STEPPER */
+  /* − [n] + numeric control. Native <input type=number>; wire the buttons in JS. */
+  .stepper {
+    display: inline-flex;
+    align-items: stretch;
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    box-shadow: var(--sh-2);
+
+    &>button {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: var(--fs-body);
+      color: var(--muted);
+      background: var(--panel-2);
+      border: 0;
+      inline-size: 2.25rem;
+      cursor: pointer;
+      transition: color var(--dur-fast), background var(--dur-fast);
+    }
+
+    &>button:hover {
+      color: var(--ink);
+    }
+
+    &>button:first-child {
+      border-inline-end: var(--bw-2) solid var(--line-hi);
+    }
+
+    &>button:last-child {
+      border-inline-start: var(--bw-2) solid var(--line-hi);
+    }
+
+    &>button:disabled {
+      color: var(--dim);
+      cursor: not-allowed;
+    }
+
+    &>input {
+      inline-size: 3.5rem;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--ink);
+      background: none;
+      border: 0;
+      padding-block: var(--sp-2);
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+
+    &>input::-webkit-outer-spin-button,
+    &>input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+
+  /* ------------------------------------------------------------------ BANNER */
+  /* full-width page-level notice (distinct from the inline .callout box).       */
+  .banner {
+    --accent: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    inline-size: 100%;
+    font-size: var(--fs-body);
+    color: var(--ink);
+    background: color-mix(in srgb, var(--accent) 16%, var(--panel));
+    border-block-end: var(--bw-2) solid var(--accent);
+    padding: var(--sp-3) var(--sp-4);
+
+    & b {
+      color: var(--accent);
+    }
+
+    & .close {
+      margin-inline-start: auto;
+      flex: none;
+      font-family: var(--font-mono);
+      color: var(--muted);
+      background: none;
+      border: 0;
+      cursor: pointer;
+    }
+
+    & .close:hover {
+      color: var(--ink);
+    }
+  }
+
+  /* ---------------------------------------------------------------- NAV LIST */
+  /* vertical sidebar nav for app shells. Mark the current item [aria-current].  */
+  .navlist {
+    --accent: var(--primary);
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-mono);
+    font-size: var(--fs-chip);
+
+    & .lab {
+      padding: var(--sp-2) var(--sp-3);
+      margin-block-start: var(--sp-3);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--accent);
+    }
+
+    & a,
+    & button {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      text-align: start;
+      color: var(--muted);
+      background: none;
+      border: 0;
+      border-inline-start: var(--accent-bar) solid transparent;
+      padding: var(--sp-2) var(--sp-3);
+      cursor: pointer;
+      transition: color var(--dur-fast), background var(--dur-fast);
+    }
+
+    & a:hover,
+    & button:hover {
+      color: var(--ink);
+      background: color-mix(in srgb, var(--line-hi) 14%, transparent);
+    }
+
+    & [aria-current] {
+      color: var(--accent);
+      border-inline-start-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+  }
+
   /* ---- touch targets: on coarse pointers, controls grow to a ~44px tap zone
      (WCAG 2.5.8). Sizes only bump up, so nothing shifts on desktop. ---- */
   @media (pointer: coarse) {
@@ -1522,7 +1816,8 @@
 
     .chip,
     .pg,
-    .segment>button {
+    .segment>button,
+    .stepper>button {
       min-block-size: 2.5rem;
     }
 
