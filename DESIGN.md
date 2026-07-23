@@ -46,9 +46,12 @@ high-contrast — well above WCAG AA on `--panel`.
 | `--lime` `--teal` `--indigo` `--pink` `--steel` | `#b8e62e` `#2ad8b8` `#7c7cff` `#ff6ec7` `#9aa2d8` | extended-wheel accents (fill the hue gaps) |
 | `--good` `--warn` `--crit`            | `#56d364` `#ff9e2c` `#e6394a`           | success / caution / error                |
 | `--primary` `--primary-d`             | → `--good` `--good-d`                   | the go/active color (green)              |
-| `--ink-on-accent`                     | `#0a0a1a`                               | dark ink drawn **on** a solid accent     |
+| `--ink-on-accent`                     | `#0a0a1a`                               | dark ink — **only on a BRIGHT accent fill** |
 
-**Rules.** Never white text on gold/green/cyan — use `--ink-on-accent`. Accents are for meaning,
+**Rules.** Never white text on gold/green/cyan — use `--ink-on-accent`. But `--ink-on-accent` is
+for **bright** fills only: on a neutral/dark surface (`--panel`, `--panel-2`, `--slot`) it sinks
+into the same-hue ground — use `--muted`/`--ink` there instead (e.g. a plain `.badge`). Accents are
+for meaning,
 never decoration. **`--primary` is green (`--good`)** so the palette maps to intuition —
 green = primary/positive, gold = warn/highlight, red = error; every component's default `--accent`
 points at `--primary`, so retheme in one line. Semantic (`good/warn/crit`) stays separate from brand.
