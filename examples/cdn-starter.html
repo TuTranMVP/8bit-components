@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>8-BIT NES · CDN starter</title>
+
+  <!-- ═══ 8-BIT NES via jsDelivr CDN ═══════════════════════════════════════
+       Pinned to a commit → immutable + cached forever. Bump the pin to upgrade.
+       After the package is published to npm, prefer the versioned form:
+         https://cdn.jsdelivr.net/npm/8bit-nes@0.1.0/all.min.css
+         https://cdn.jsdelivr.net/npm/8bit-nes@0.1.0/elements.min.js
+       ════════════════════════════════════════════════════════════════════ -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="https://cdn.jsdelivr.net/gh/TuTranMVP/8bit-components@a1614cb/fonts/nes-mono-400.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="https://cdn.jsdelivr.net/gh/TuTranMVP/8bit-components@a1614cb/fonts/nes-sans-var.woff2">
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/TuTranMVP/8bit-components@a1614cb/all.min.css">
+  <script type="module"
+    src="https://cdn.jsdelivr.net/gh/TuTranMVP/8bit-components@a1614cb/elements.min.js"></script>
+</head>
+
+<body
+  style="max-inline-size:640px;margin-inline:auto;padding:var(--sp-6) var(--sp-4);display:flex;flex-direction:column;gap:var(--sp-5)">
+
+  <header style="display:flex;align-items:center;gap:var(--sp-3)">
+    <span class="eyebrow">CDN starter</span>
+    <span class="badge clear">LIVE</span>
+  </header>
+
+  <div>
+    <h1>◈ Build with 8-BIT NES</h1>
+    <p style="color:var(--muted)">Zero build — this page loads the whole system from a CDN. Copy it into any repo.</p>
+  </div>
+
+  <!-- buttons (class-only, no JS) -->
+  <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap">
+    <button class="btn">Primary</button>
+    <button class="btn outline" data-accent="cyan">Outline</button>
+    <button class="btn ghost">Ghost</button>
+    <button class="btn" data-accent="purple" id="toast-btn">Toast me</button>
+  </div>
+
+  <!-- a card with a small form -->
+  <div class="card" data-accent="blue">
+    <div class="head"><span class="title">Settings</span></div>
+    <label class="field">
+      <span class="label">Name</span>
+      <input class="input" placeholder="player one">
+    </label>
+    <label class="field" style="margin-block-start:var(--sp-3)">
+      <span class="label">Volume</span>
+      <input class="range" type="range" value="70" aria-label="Volume">
+    </label>
+    <div class="stepper" style="margin-block-start:var(--sp-3)">
+      <button type="button" aria-label="Decrease">−</button>
+      <input type="number" value="2" min="1" max="8" aria-label="Players">
+      <button type="button" aria-label="Increase">+</button>
+    </div>
+  </div>
+
+  <!-- a stateful web component — it registers itself on import, no wrapper -->
+  <nes-tabs>
+    <section data-label="One" selected>
+      <p>Custom elements self-register. Recolor any block with <code>data-accent</code>.</p>
+    </section>
+    <section data-label="Two">
+      <p>React 19 uses these natively; Vue needs <code>isCustomElement</code>.</p>
+    </section>
+  </nes-tabs>
+
+  <!-- import a JS helper straight from the CDN module -->
+  <script type="module">
+    import { toast } from "https://cdn.jsdelivr.net/gh/TuTranMVP/8bit-components@a1614cb/elements.min.js";
+
+    // toast helper
+    document.getElementById("toast-btn")
+      .addEventListener("click", () => toast("<b>Nice.</b> It works.", { accent: "good" }));
+
+    // wire the number stepper's −/+ buttons
+    for (const s of document.querySelectorAll(".stepper")) {
+      const input = s.querySelector("input");
+      const [dec, inc] = s.querySelectorAll("button");
+      dec.addEventListener("click", () => { input.stepDown(); });
+      inc.addEventListener("click", () => { input.stepUp(); });
+    }
+  </script>
+</body>
+
+</html>

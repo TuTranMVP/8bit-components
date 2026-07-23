@@ -37,6 +37,9 @@ it's one request instead of four:
 <script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes/elements.min.js"></script>
 ```
 
+Copy-paste starter (pinned, works before npm publish): [`examples/cdn-starter.html`](examples/cdn-starter.html)
+— also live on the docs site at `/examples/cdn-starter.html`.
+
 ## Size & performance
 
 | File            | raw    | gzip   | notes                                             |
