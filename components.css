@@ -350,6 +350,17 @@
     display: block;
   }
 
+  /* icon element: inline, inherits color, sized by font-size (the svg is 1em) */
+  nes-icon {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: -0.125em;
+  }
+
+  nes-icon>svg {
+    display: block;
+  }
+
   /* --------------------------------------------------------------- CODE BLOCK */
   .codeblock {
     max-inline-size: 100%;

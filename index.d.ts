@@ -129,6 +129,8 @@ export declare class NesChatPromptElement extends HTMLElement {
 export declare class NesChatMessagesElement extends HTMLElement {
   scrollToBottom(): void;
 }
+/** <nes-icon name="…">: renders a pixel icon by name (see `8bit-nes/icons`). */
+export declare class NesIconElement extends HTMLElement {}
 
 /** Detail of the `nes:answer` event bubbled by <nes-quiz>. */
 export interface NesAnswerDetail {
@@ -163,6 +165,7 @@ declare global {
     "nes-tree": NesTreeElement;
     "nes-chat-prompt": NesChatPromptElement;
     "nes-chat-messages": NesChatMessagesElement;
+    "nes-icon": NesIconElement;
   }
   interface DocumentEventMap {
     "nes:xp": CustomEvent<{ amount: number }>;

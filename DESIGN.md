@@ -177,7 +177,7 @@ Words are design material — they help someone use the thing.
 
 | Category   | Components                                                                     |
 |------------|--------------------------------------------------------------------------------|
-| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator                        |
+| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator · Icon (`<nes-icon>` / `8bit-nes/icons`) |
 | Form       | Input · Textarea · Select · Checkbox · CheckboxGroup · Radio · RadioGroup · Switch · Field · Form (`<nes-form>`) · Slider (`.range`) · Segmented control · InputNumber · InputRating · InputTags · PinInput · ColorPicker · InputDate · InputTime · FileUpload · Listbox · InputMenu · SelectMenu |
 | Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast · Spinner · Meter · Empty state · Banner |
 | Navigation | Tabs (`<nes-tabs>`) · Breadcrumb · Pagination · Steps · Nav list                          |

@@ -145,6 +145,15 @@
       "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/separator"
     },
     {
+      "id": "icon",
+      "name": "Icon",
+      "category": "Element",
+      "selector": "<nes-icon>",
+      "kind": "element",
+      "description": "Pixel icon set on a 16×16 grid. currentColor + 1em, so icons inherit text color/accent and scale with font-size. Tree-shakeable named exports.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/icon"
+    },
+    {
       "id": "input",
       "name": "Input",
       "category": "Form",
@@ -678,6 +687,6 @@
   ],
   "counts": {
     "concepts": 4,
-    "components": 66
+    "components": 67
   }
 }
