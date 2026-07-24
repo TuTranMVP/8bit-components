@@ -343,6 +343,39 @@
       color: var(--accent, var(--good));
     }
 
+    /* ---- API / doc tables: mobile-first. Keep columns readable and let the
+         wrapper scroll sideways (touch) instead of squishing every cell into a
+         stack of one-word lines. The Meaning column gets the width + a smaller
+         font so it reads in ~3–4 lines, clean, no noise. ---- */
+    .doc-page .table-wrap {
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+    }
+
+    .doc-page .table {
+      min-inline-size: 40rem;
+    }
+
+    .doc-page .table td,
+    .doc-page .table th {
+      font-size: var(--fs-label);
+      line-height: var(--lh-body);
+      vertical-align: top;
+    }
+
+    /* first column (name/selector) never wraps mid-token */
+    .doc-page .table td:first-child {
+      white-space: nowrap;
+    }
+
+    /* the last column (Meaning) is the flexible one — give it room */
+    .doc-page .table td:last-child,
+    .doc-page .table th:last-child {
+      inline-size: 55%;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
     .grid-cards {
       display: grid;
       gap: var(--sp-5);
