@@ -384,6 +384,37 @@
       </nes-editor>
     </section>
 
+    <!-- TYPOGRAPHY / MDC MODULE -->
+    <section>
+      <span class="lab">Typography / MDC — render AI stream output: ::code-preview · ::code-group · ::code-tree · ::card-group · ::field-group · ::prompt</span>
+      <div class="code-preview" style="max-inline-size:min(560px,100%)">
+        <div class="preview">
+          <button class="btn">Deploy</button>
+          <button class="btn outline" data-accent="cyan">Preview</button>
+        </div>
+        <nes-code>&lt;button class="btn"&gt;Deploy&lt;/button&gt;</nes-code>
+      </div>
+      <nes-tabs class="code-group" style="max-inline-size:min(560px,100%)">
+        <section data-label="pnpm" selected><nes-code>pnpm add 8bit-nes</nes-code></section>
+        <section data-label="npm"><nes-code>npm i 8bit-nes</nes-code></section>
+        <section data-label="yarn"><nes-code>yarn add 8bit-nes</nes-code></section>
+      </nes-tabs>
+      <nes-code-tree aria-label="Project" style="max-inline-size:min(560px,100%)">
+        <script type="application/json">[
+          {"label":"src","icon":"📁","expanded":true,"children":[
+            {"label":"index.ts","icon":"📄","code":"import { mount } from './app'\n\nmount(document.body)"},
+            {"label":"app.ts","icon":"📄","code":"export function mount(root) {\n  root.innerHTML = '<h1>Hi</h1>'\n}"}
+          ]},
+          {"label":"README.md","icon":"📄","code":"# my-agent\n\nBuilt with 8bit-nes."}
+        ]</script>
+      </nes-code-tree>
+      <div class="card-group" style="max-inline-size:min(560px,100%)">
+        <a class="card" data-accent="blue"><div class="head"><span class="title">Guides</span></div><p>Step-by-step.</p></a>
+        <a class="card" data-accent="teal"><div class="head"><span class="title">API</span></div><p>Full reference.</p></a>
+      </div>
+      <div class="prompt" data-accent="teal" style="max-inline-size:min(560px,100%)">deploy my agent to production</div>
+    </section>
+
     <div style="height:var(--sp-7)"></div>
   </main>
 

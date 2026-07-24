@@ -347,7 +347,8 @@
   nes-tree,
   nes-chat-prompt,
   nes-chat-messages,
-  nes-editor {
+  nes-editor,
+  nes-code-tree {
     display: block;
   }
 
@@ -2922,6 +2923,206 @@
 
   .editor-content .drop-after {
     box-shadow: 0 2px 0 var(--accent);
+  }
+
+  /* ===================================================================== */
+  /*  TYPOGRAPHY / MDC MODULE. Render AI/markdown output as rich components   */
+  /*  (drop-in prose embeds). Reuses .codeblock / .tablist / .tree; adds the  */
+  /*  code-preview, code-group, code-collapse, card-group, field-group,       */
+  /*  prompt recipes + <nes-code-tree>. Same contract.                        */
+  /* ===================================================================== */
+
+  /* CardGroup — responsive grid of cards */
+  .card-group {
+    display: grid;
+    gap: var(--sp-4);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  }
+
+  /* CodePreview — rendered result on top, source below (::code-preview) */
+  .code-preview {
+    --accent: var(--primary);
+    inline-size: 100%;
+    background: var(--panel);
+    border: var(--bw-2) solid var(--line-hi);
+
+    &>.preview {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--sp-3);
+      padding: var(--sp-5) var(--sp-4);
+    }
+
+    &>nes-code,
+    &>.codeblock {
+      display: block;
+      border-block-start: var(--bw-2) solid var(--line-hi);
+    }
+
+    /* the embedded code sheds its own frame — the wrapper is the frame */
+    &>nes-code .codeblock,
+    &>.codeblock {
+      border: 0;
+      box-shadow: none;
+    }
+  }
+
+  /* CodeGroup — tabs over multiple code blocks: <nes-tabs class="code-group"> */
+  .code-group {
+    border: var(--bw-2) solid var(--line-hi);
+    background: var(--slot);
+
+    &>.tablist {
+      background: var(--panel-2);
+      border-block-end: var(--bw-2) solid var(--line-hi);
+      padding-inline: var(--sp-2);
+    }
+
+    & nes-code .codeblock,
+    & .codeblock {
+      border: 0;
+      box-shadow: none;
+    }
+  }
+
+  /* CodeCollapse — <details class="code-collapse"> around a code block */
+  .code-collapse {
+    border: var(--bw-2) solid var(--line-hi);
+    background: var(--slot);
+
+    &>summary {
+      list-style: none;
+      cursor: pointer;
+      padding: var(--sp-2) var(--sp-3);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--muted);
+      border-block-end: var(--bw-2) solid transparent;
+    }
+
+    &>summary::-webkit-details-marker {
+      display: none;
+    }
+
+    &[open]>summary {
+      color: var(--accent);
+      border-block-end-color: var(--line-hi);
+    }
+
+    & .codeblock {
+      border: 0;
+      box-shadow: none;
+    }
+  }
+
+  /* FieldGroup — a bordered list of prop/param rows (API docs, MDC ::field) */
+  .field-group {
+    --accent: var(--primary);
+    inline-size: 100%;
+    border: var(--bw-2) solid var(--line-hi);
+    background: var(--slot);
+
+    &>.field-row {
+      padding: var(--sp-3) var(--sp-4);
+    }
+
+    &>.field-row+.field-row {
+      border-block-start: var(--bw) solid var(--line);
+    }
+  }
+
+  .field-row {
+    & .name {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    & .type {
+      font-family: var(--font-mono);
+      font-size: var(--fs-chip);
+      color: var(--cyan);
+      margin-inline-start: var(--sp-2);
+    }
+
+    & .req {
+      color: var(--crit);
+      margin-inline-start: var(--sp-1);
+    }
+
+    & p {
+      margin: var(--sp-1) 0 0;
+      color: var(--muted);
+      font-size: var(--fs-body);
+    }
+  }
+
+  /* Prompt — a terminal / AI command line (accent caret + mono text) */
+  .prompt {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    inline-size: 100%;
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    font-family: var(--font-mono);
+    font-size: var(--fs-body);
+    color: var(--ink);
+
+    &::before {
+      content: "❯";
+      color: var(--accent);
+      font-weight: 700;
+    }
+  }
+
+  /* CodeTree — <nes-code-tree>: file tree (left) + code viewer (right) */
+  .code-tree {
+    display: grid;
+    grid-template-columns: minmax(9rem, 15rem) minmax(0, 1fr);
+    inline-size: 100%;
+    max-block-size: 26rem;
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+  }
+
+  .code-tree>.tree {
+    border: 0;
+    border-inline-end: var(--bw-2) solid var(--line-hi);
+    overflow: auto;
+  }
+
+  .code-tree>.ct-view {
+    overflow: auto;
+    min-inline-size: 0;
+
+    & .codeblock {
+      border: 0;
+      box-shadow: none;
+    }
+
+    & .ct-empty {
+      padding: var(--sp-4);
+      color: var(--dim);
+      font-family: var(--font-mono);
+      font-size: var(--fs-chip);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .code-tree {
+      grid-template-columns: 1fr;
+    }
+
+    .code-tree>.tree {
+      border-inline-end: 0;
+      border-block-end: var(--bw-2) solid var(--line-hi);
+      max-block-size: 10rem;
+    }
   }
 
   /* ---- touch targets: on coarse pointers, controls grow to a ~44px tap zone

@@ -97,6 +97,14 @@ const SELECTOR = {
   editormentionmenu: "<nes-editor> @",
   editoremojimenu: "<nes-editor> :",
   editordraghandle: ".editor-drag",
+  typography: ".prose",
+  codepreview: ".code-preview",
+  codegroup: '<nes-tabs class="code-group">',
+  codecollapse: '<details class="code-collapse">',
+  codetree: "<nes-code-tree>",
+  cardgroup: ".card-group",
+  fieldgroup: ".field-group",
+  prompt: ".prompt",
 };
 const kindOf = (sel) =>
   !sel
@@ -151,6 +159,7 @@ const CAT_ORDER = [
   "Data",
   "Chat",
   "Editor",
+  "Typography",
 ];
 const byCat = (cat) => components.filter((c) => c.category === cat);
 const missing = components.filter((c) => !c.selector).map((c) => c.id);

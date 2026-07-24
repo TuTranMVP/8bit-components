@@ -2170,6 +2170,134 @@ class NesEditor extends HTMLElement {
   }
 }
 
+/* ========================================================================== */
+/*  <nes-code-tree>  —  file tree (left) + code viewer (right). Typography/MDC. */
+/*  <nes-code-tree><script type="application/json">                             */
+/*    [{ "label":"src", "expanded":true, "children":[                          */
+/*      { "label":"index.ts", "code":"export const x = 1" } ]}]                 */
+/*  </script></nes-code-tree>                                                   */
+/* ========================================================================== */
+class NesCodeTree extends HTMLElement {
+  connectedCallback() {
+    if (this._done) return;
+    this._done = true;
+    NesCodeTree._n = (NesCodeTree._n || 0) + 1;
+    this._id = `ct-${NesCodeTree._n}`;
+    this._idc = 0;
+    const scr = this.querySelector('script[type="application/json"]');
+    let raw = [];
+    try {
+      raw = JSON.parse(scr?.textContent || "[]");
+    } catch {
+      raw = [];
+    }
+    this.nodes = this.parse(Array.isArray(raw) ? raw : [], 1);
+    this.innerHTML = "";
+    this.wrap = el("div", { class: "code-tree" });
+    this.treeEl = el("div", {
+      class: "tree",
+      role: "tree",
+      tabindex: "0",
+      "aria-label": this.getAttribute("aria-label") || "Files",
+    });
+    this.view = el("div", { class: "ct-view" });
+    this.wrap.append(this.treeEl, this.view);
+    this.appendChild(this.wrap);
+    this.nodes.forEach((n, i) => this.renderNode(n, this.treeEl, i + 1));
+    const first = this.firstFile(this.nodes);
+    if (first) this.select(first);
+    else this.view.innerHTML = '<div class="ct-empty">No file</div>';
+  }
+  parse(raw, level) {
+    return raw.map((o) => {
+      const s = o && typeof o === "object" ? o : { label: String(o) };
+      const node = {
+        label: String(s.label ?? ""),
+        code: s.code != null ? String(s.code) : null,
+        icon: s.icon != null ? String(s.icon) : null,
+        expanded: !!s.expanded,
+        level,
+        children: null,
+      };
+      node.children =
+        Array.isArray(s.children) && s.children.length ? this.parse(s.children, level + 1) : null;
+      return node;
+    });
+  }
+  firstFile(list) {
+    for (const n of list) {
+      if (n.code != null) return n;
+      if (n.children) {
+        const f = this.firstFile(n.children);
+        if (f) return f;
+      }
+    }
+    return null;
+  }
+  renderNode(node, parentEl) {
+    const hasKids = !!(node.children && node.children.length);
+    const item = el("div", {
+      role: "treeitem",
+      id: `${this._id}-i${++this._idc}`,
+      "aria-level": String(node.level),
+    });
+    if (hasKids) item.setAttribute("aria-expanded", String(node.expanded));
+    else if (node.code != null) item.setAttribute("aria-selected", "false");
+    const row = el("div", { class: "row" });
+    row.style.setProperty("--lvl", String(node.level - 1));
+    const chev = el("span", { class: "chev", "aria-hidden": "true" });
+    chev.textContent = hasKids ? (node.expanded ? "▾" : "▸") : "";
+    row.appendChild(chev);
+    if (node.icon) {
+      const ic = el("span", { class: "ic", "aria-hidden": "true" });
+      ic.textContent = node.icon;
+      row.appendChild(ic);
+    }
+    const lab = el("span", { class: "lab" });
+    lab.textContent = node.label;
+    row.appendChild(lab);
+    row.addEventListener("click", () => {
+      if (hasKids) {
+        node.expanded = !node.expanded;
+        item.setAttribute("aria-expanded", String(node.expanded));
+        chev.textContent = node.expanded ? "▾" : "▸";
+        node._group.hidden = !node.expanded;
+      }
+      if (node.code != null) this.select(node);
+    });
+    item.appendChild(row);
+    node._item = item;
+    parentEl.appendChild(item);
+    if (hasKids) {
+      const g = el("div", { role: "group" });
+      g.hidden = !node.expanded;
+      node.children.forEach((c, i) => this.renderNode(c, g, i + 1));
+      item.appendChild(g);
+      node._group = g;
+    }
+  }
+  select(node) {
+    for (const s of this.treeEl.querySelectorAll('[aria-selected="true"]'))
+      s.setAttribute("aria-selected", "false");
+    node._item.setAttribute("aria-selected", "true");
+    const cb = el("div", { class: "codeblock" });
+    const btn = el("button", { class: "cp", type: "button", "aria-label": "Copy code" });
+    btn.textContent = "COPY";
+    btn.addEventListener("click", () => {
+      navigator.clipboard?.writeText(node.code);
+      btn.textContent = "COPIED!";
+      setTimeout(() => {
+        btn.textContent = "COPY";
+      }, 900);
+    });
+    const pre = document.createElement("pre");
+    pre.innerHTML = highlightCode(node.code);
+    cb.append(btn, pre);
+    this.view.innerHTML = "";
+    this.view.appendChild(cb);
+  }
+}
+
 /* ------------------------------------------------------------- self-register */
 const defs = {
   "nes-sound": NesSound,
@@ -2192,6 +2320,7 @@ const defs = {
   "nes-chat-messages": NesChatMessages,
   "nes-icon": NesIcon,
   "nes-editor": NesEditor,
+  "nes-code-tree": NesCodeTree,
 };
 for (const [tag, cls] of Object.entries(defs)) {
   if (!customElements.get(tag)) customElements.define(tag, cls);

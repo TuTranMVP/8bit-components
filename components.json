@@ -737,10 +737,82 @@
       "kind": "class",
       "description": "A grip (⠿) that appears at the start of the hovered block; drag it to reorder blocks. Pure HTML5 drag — no library.",
       "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/editordraghandle"
+    },
+    {
+      "id": "typography",
+      "name": "Typography",
+      "category": "Typography",
+      "selector": ".prose",
+      "kind": "class",
+      "description": "Render an AI agent's streamed Markdown / MDC output as beautiful, on-brand HTML — prose embeds (::code-preview, ::code-group, ::field-group…) that map onto real components.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/typography"
+    },
+    {
+      "id": "codepreview",
+      "name": "CodePreview",
+      "category": "Typography",
+      "selector": ".code-preview",
+      "kind": "class",
+      "description": "Live rendered result on top, its source below — the ::code-preview embed. The “here's the component, here's the code” block.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/codepreview"
+    },
+    {
+      "id": "codegroup",
+      "name": "CodeGroup",
+      "category": "Typography",
+      "selector": "<nes-tabs class=\"code-group\">",
+      "kind": "element",
+      "description": "Tab between several code blocks in one frame — the ::code-group embed. Perfect for pnpm/npm/yarn or multi-language snippets.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/codegroup"
+    },
+    {
+      "id": "codecollapse",
+      "name": "CodeCollapse",
+      "category": "Typography",
+      "selector": "<details class=\"code-collapse\">",
+      "kind": "element",
+      "description": "Hide a long code block behind a toggle — the ::code-collapse embed. Native <details>, zero JS.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/codecollapse"
+    },
+    {
+      "id": "codetree",
+      "name": "CodeTree",
+      "category": "Typography",
+      "selector": "<nes-code-tree>",
+      "kind": "element",
+      "description": "File tree on the left, syntax-highlighted viewer on the right — the ::code-tree embed. Ideal for rendering a repo or multi-file snippet an agent generated.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/codetree"
+    },
+    {
+      "id": "cardgroup",
+      "name": "CardGroup",
+      "category": "Typography",
+      "selector": ".card-group",
+      "kind": "class",
+      "description": "A responsive grid of cards that reflows by itself — the ::card-group embed. Drop any number of .card children in.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/cardgroup"
+    },
+    {
+      "id": "fieldgroup",
+      "name": "FieldGroup",
+      "category": "Typography",
+      "selector": ".field-group",
+      "kind": "class",
+      "description": "A bordered list of prop / parameter rows — the ::field-group embed. The clean way to render an API or config reference.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/fieldgroup"
+    },
+    {
+      "id": "prompt",
+      "name": "Prompt",
+      "category": "Typography",
+      "selector": ".prompt",
+      "kind": "class",
+      "description": "A single terminal / AI command line with an accent caret (❯) — the ::prompt embed. For showing commands or an agent's input.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/prompt"
     }
   ],
   "counts": {
     "concepts": 4,
-    "components": 73
+    "components": 81
   }
 }

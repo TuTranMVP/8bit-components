@@ -132,6 +132,26 @@ export declare class NesChatMessagesElement extends HTMLElement {
 /** <nes-icon name="…">: renders a pixel icon by name (see `8bit-nes/icons`). */
 export declare class NesIconElement extends HTMLElement {}
 
+/* ---- Typography / MDC module ---- */
+
+/** A single node in an <nes-code-tree> (folders nest via `children`, files carry `code`). */
+export interface CodeTreeNode {
+  label: string;
+  /** File source; presence marks this node as a selectable file (folders omit it). */
+  code?: string;
+  /** Optional leading glyph (emoji/char) shown before the label. */
+  icon?: string;
+  /** Start a folder expanded. */
+  expanded?: boolean;
+  children?: CodeTreeNode[];
+}
+/**
+ * <nes-code-tree>: file tree (left) + syntax-highlighted code viewer (right).
+ * Reads a `<script type="application/json">` child of {@link CodeTreeNode}[].
+ * Ideal for rendering repo/snippet layouts from AI-generated MDC output.
+ */
+export declare class NesCodeTreeElement extends HTMLElement {}
+
 /** Context passed to an editor's `suggest` provider (ghost autocomplete). */
 export interface EditorSuggestContext {
   text: string;
@@ -191,6 +211,7 @@ declare global {
     "nes-chat-messages": NesChatMessagesElement;
     "nes-icon": NesIconElement;
     "nes-editor": NesEditorElement;
+    "nes-code-tree": NesCodeTreeElement;
   }
   interface DocumentEventMap {
     "nes:xp": CustomEvent<{ amount: number }>;

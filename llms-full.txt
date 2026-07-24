@@ -129,7 +129,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Theming: https://tutranmvp.github.io/8bit-components/docs.html#/theming
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
-## Component reference (73 components)
+## Component reference (81 components)
 
 ## Element
 
@@ -511,6 +511,48 @@ toast("<b>Saved.</b>", { accent: "good" });
 - selector: `.editor-drag` (class) · category: Editor
 - A grip (⠿) that appears at the start of the hovered block; drag it to reorder blocks. Pure HTML5 drag — no library.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/editordraghandle
+
+## Typography
+
+### Typography
+- selector: `.prose` (class) · category: Typography
+- Render an AI agent's streamed Markdown / MDC output as beautiful, on-brand HTML — prose embeds (::code-preview, ::code-group, ::field-group…) that map onto real components.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/typography
+
+### CodePreview
+- selector: `.code-preview` (class) · category: Typography
+- Live rendered result on top, its source below — the ::code-preview embed. The “here's the component, here's the code” block.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/codepreview
+
+### CodeGroup
+- selector: `<nes-tabs class="code-group">` (element) · category: Typography
+- Tab between several code blocks in one frame — the ::code-group embed. Perfect for pnpm/npm/yarn or multi-language snippets.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/codegroup
+
+### CodeCollapse
+- selector: `<details class="code-collapse">` (element) · category: Typography
+- Hide a long code block behind a toggle — the ::code-collapse embed. Native <details>, zero JS.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/codecollapse
+
+### CodeTree
+- selector: `<nes-code-tree>` (element) · category: Typography
+- File tree on the left, syntax-highlighted viewer on the right — the ::code-tree embed. Ideal for rendering a repo or multi-file snippet an agent generated.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/codetree
+
+### CardGroup
+- selector: `.card-group` (class) · category: Typography
+- A responsive grid of cards that reflows by itself — the ::card-group embed. Drop any number of .card children in.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/cardgroup
+
+### FieldGroup
+- selector: `.field-group` (class) · category: Typography
+- A bordered list of prop / parameter rows — the ::field-group embed. The clean way to render an API or config reference.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/fieldgroup
+
+### Prompt
+- selector: `.prompt` (class) · category: Typography
+- A single terminal / AI command line with an accent caret (❯) — the ::prompt embed. For showing commands or an agent's input.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/prompt
 
 ---
 Generated from docs.js by scripts/gen-llms.mjs. Do not edit by hand — run `pnpm gen:llms`.
