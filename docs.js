@@ -568,12 +568,7 @@ const COMPONENTS = [
            <button class="btn soft">Soft</button>
            <button class="btn ghost">Ghost</button>
            <button class="btn link">Link</button>
-           <button class="btn" data-accent="cyan">Cyan</button>
-           <button class="btn sm">SM</button>
-           <button class="btn lg">LG</button>
-           <button class="btn icon" aria-label="Play">▶</button>
-           <button class="btn" aria-busy="true">Saving</button>
-           <button class="btn" disabled>Locked</button>`,
+           <button class="btn" data-accent="cyan">Cyan</button>`,
         ) +
         cb(
           `<button class="btn">Solid</button>
@@ -581,10 +576,73 @@ const COMPONENTS = [
 <button class="btn soft">Soft</button>
 <button class="btn ghost">Ghost</button>
 <button class="btn link">Link</button>
+<button class="btn" data-accent="cyan">Cyan</button>`,
+        ) +
+        h2("Sizes") +
+        stage(
+          "SIZE",
+          `<button class="btn xs">XS</button>
+           <button class="btn sm">SM</button>
+           <button class="btn">Default</button>
+           <button class="btn lg">LG</button>`,
+        ) +
+        h2("Icon · toggle · loading") +
+        stage(
+          "STATE",
+          `<button class="btn"><span aria-hidden="true">↻</span> Regenerate</button>
+           <button class="btn soft">Export <span aria-hidden="true">▾</span></button>
+           <button class="btn icon" aria-label="Play">▶</button>
+           <button class="btn ghost" aria-pressed="true"><span aria-hidden="true">★</span> Starred</button>
+           <button class="btn" aria-busy="true">Saving</button>
+           <button class="btn" disabled>Locked</button>`,
+        ) +
+        cb(
+          `<!-- leading / trailing icon: place a glyph beside the label -->
+<button class="btn"><span aria-hidden="true">↻</span> Regenerate</button>
+<button class="btn soft">Export <span aria-hidden="true">▾</span></button>
 
-<button class="btn lg" data-accent="cyan">Large</button>
+<!-- icon-only needs an aria-label -->
 <button class="btn icon" aria-label="Play">▶</button>
+
+<!-- toggle: flip aria-pressed -->
+<button class="btn ghost" aria-pressed="true">★ Starred</button>
+
+<!-- loading: set aria-busy, clicks are blocked -->
 <button class="btn" aria-busy="true">Saving…</button>`,
+        ) +
+        h2("Button group") +
+        p(
+          "Fuse independent actions into one seamless bar with <code>.btn-group</code> — an AI action toolbar, a split button, or a full-width stack. Each child keeps its own variant, accent and size.",
+        ) +
+        stage(
+          "GROUP",
+          `<div class="btn-group">
+             <button class="btn ghost xs"><span aria-hidden="true">↻</span> Regenerate</button>
+             <button class="btn ghost xs"><span aria-hidden="true">⧉</span> Copy</button>
+             <button class="btn ghost xs"><span aria-hidden="true">↗</span> Share</button>
+           </div>
+           <div class="btn-group">
+             <button class="btn">Publish</button>
+             <button class="btn icon" aria-label="More options">▾</button>
+           </div>`,
+        ) +
+        cb(
+          `<!-- action toolbar (dense, xs) -->
+<div class="btn-group">
+  <button class="btn ghost xs">↻ Regenerate</button>
+  <button class="btn ghost xs">⧉ Copy</button>
+  <button class="btn ghost xs">↗ Share</button>
+</div>
+
+<!-- split button = main action + caret -->
+<div class="btn-group">
+  <button class="btn">Publish</button>
+  <button class="btn icon" aria-label="More options">▾</button>
+</div>
+
+<!-- full-width bar / vertical stack -->
+<div class="btn-group block">…</div>
+<div class="btn-group stack">…</div>`,
         ) +
         h2("API") +
         api(
@@ -595,17 +653,26 @@ const COMPONENTS = [
             ["<code>.btn.soft</code>", "low-tint accent fill"],
             ["<code>.btn.ghost</code>", "quiet outline on dark"],
             ["<code>.btn.link</code>", "text-only — no bevel or shadow"],
-            ["<code>.sm</code> / <code>.lg</code>", "smaller / larger size"],
+            ["<code>.xs</code> / <code>.sm</code> / <code>.lg</code>", "extra-small / small / large"],
             ["<code>.block</code>", "full-width"],
             ["<code>.icon</code>", "square icon-only (add aria-label)"],
             ["<code>[aria-busy=true]</code>", "loading spinner, clicks blocked"],
             ["<code>[aria-pressed=true]</code>", "toggle-on fills with accent"],
             ["<code>[disabled]</code>", "muted, no shadow"],
             ["<code>data-accent</code>", "recolor (blue/gold/cyan/…)"],
+            ["<code>.btn-group</code>", "fuse buttons into one bar"],
+            ["<code>.btn-group.block</code>", "bar fills width, equal children"],
+            ["<code>.btn-group.stack</code>", "vertical bar (mobile menus)"],
           ],
         ) +
+        note(
+          `<code>.btn-group</code> joins <b>independent actions</b> (each does its own thing). For a single-select where one option stays lit, reach for <code>.segment</code> instead.`,
+        ) +
+        warn(
+          `Inside a <code>&lt;form&gt;</code> a bare <code>&lt;button&gt;</code> defaults to <code>type="submit"</code>. Add <code>type="button"</code> to any button that must not submit.`,
+        ) +
         a11y(
-          "Renders a native <code>&lt;button&gt;</code>, so keyboard and screen-reader behaviour come free. Use <code>aria-pressed</code> for toggles, <code>aria-busy</code> for loading, and give icon-only buttons an <code>aria-label</code>.",
+          `Renders a native <code>&lt;button&gt;</code>, so keyboard and screen-reader behaviour come free. Use <code>aria-pressed</code> for toggles, <code>aria-busy</code> for loading, mark decorative glyphs <code>aria-hidden="true"</code>, and give icon-only buttons an <code>aria-label</code>.`,
         ),
       vi: () =>
         stage(
@@ -615,12 +682,7 @@ const COMPONENTS = [
            <button class="btn soft">Soft</button>
            <button class="btn ghost">Ghost</button>
            <button class="btn link">Link</button>
-           <button class="btn" data-accent="cyan">Cyan</button>
-           <button class="btn sm">SM</button>
-           <button class="btn lg">LG</button>
-           <button class="btn icon" aria-label="Chơi">▶</button>
-           <button class="btn" aria-busy="true">Đang lưu</button>
-           <button class="btn" disabled>Khoá</button>`,
+           <button class="btn" data-accent="cyan">Cyan</button>`,
         ) +
         cb(
           `<button class="btn">Solid</button>
@@ -628,10 +690,73 @@ const COMPONENTS = [
 <button class="btn soft">Soft</button>
 <button class="btn ghost">Ghost</button>
 <button class="btn link">Link</button>
+<button class="btn" data-accent="cyan">Cyan</button>`,
+        ) +
+        h2("Kích cỡ") +
+        stage(
+          "SIZE",
+          `<button class="btn xs">XS</button>
+           <button class="btn sm">SM</button>
+           <button class="btn">Mặc định</button>
+           <button class="btn lg">LG</button>`,
+        ) +
+        h2("Icon · toggle · loading") +
+        stage(
+          "STATE",
+          `<button class="btn"><span aria-hidden="true">↻</span> Tạo lại</button>
+           <button class="btn soft">Xuất <span aria-hidden="true">▾</span></button>
+           <button class="btn icon" aria-label="Chơi">▶</button>
+           <button class="btn ghost" aria-pressed="true"><span aria-hidden="true">★</span> Đã lưu</button>
+           <button class="btn" aria-busy="true">Đang lưu</button>
+           <button class="btn" disabled>Khoá</button>`,
+        ) +
+        cb(
+          `<!-- icon trước / sau: đặt glyph cạnh chữ -->
+<button class="btn"><span aria-hidden="true">↻</span> Tạo lại</button>
+<button class="btn soft">Xuất <span aria-hidden="true">▾</span></button>
 
-<button class="btn lg" data-accent="cyan">Large</button>
+<!-- chỉ-icon thì cần aria-label -->
 <button class="btn icon" aria-label="Chơi">▶</button>
+
+<!-- toggle: lật aria-pressed -->
+<button class="btn ghost" aria-pressed="true">★ Đã lưu</button>
+
+<!-- loading: đặt aria-busy, click bị chặn -->
 <button class="btn" aria-busy="true">Đang lưu…</button>`,
+        ) +
+        h2("Nhóm nút") +
+        p(
+          "Gộp các hành động độc lập thành một thanh liền mạch bằng <code>.btn-group</code> — thanh action cho AI, nút split, hay stack rộng hết dòng. Mỗi nút con vẫn giữ variant, màu nhấn và cỡ riêng.",
+        ) +
+        stage(
+          "GROUP",
+          `<div class="btn-group">
+             <button class="btn ghost xs"><span aria-hidden="true">↻</span> Tạo lại</button>
+             <button class="btn ghost xs"><span aria-hidden="true">⧉</span> Chép</button>
+             <button class="btn ghost xs"><span aria-hidden="true">↗</span> Chia sẻ</button>
+           </div>
+           <div class="btn-group">
+             <button class="btn">Đăng</button>
+             <button class="btn icon" aria-label="Thêm tuỳ chọn">▾</button>
+           </div>`,
+        ) +
+        cb(
+          `<!-- thanh action (gọn, xs) -->
+<div class="btn-group">
+  <button class="btn ghost xs">↻ Tạo lại</button>
+  <button class="btn ghost xs">⧉ Chép</button>
+  <button class="btn ghost xs">↗ Chia sẻ</button>
+</div>
+
+<!-- nút split = hành động chính + caret -->
+<div class="btn-group">
+  <button class="btn">Đăng</button>
+  <button class="btn icon" aria-label="Thêm tuỳ chọn">▾</button>
+</div>
+
+<!-- rộng hết dòng / xếp dọc -->
+<div class="btn-group block">…</div>
+<div class="btn-group stack">…</div>`,
         ) +
         h2("API") +
         api(
@@ -642,17 +767,26 @@ const COMPONENTS = [
             ["<code>.btn.soft</code>", "nền màu nhấn nhạt"],
             ["<code>.btn.ghost</code>", "viền mờ trên nền tối"],
             ["<code>.btn.link</code>", "chỉ chữ — bỏ vát góc & bóng"],
-            ["<code>.sm</code> / <code>.lg</code>", "cỡ nhỏ / lớn"],
+            ["<code>.xs</code> / <code>.sm</code> / <code>.lg</code>", "cực nhỏ / nhỏ / lớn"],
             ["<code>.block</code>", "rộng hết dòng"],
             ["<code>.icon</code>", "vuông chỉ-icon (thêm aria-label)"],
             ["<code>[aria-busy=true]</code>", "spinner loading, chặn click"],
             ["<code>[aria-pressed=true]</code>", "toggle bật, tô đầy màu nhấn"],
             ["<code>[disabled]</code>", "mờ đi, bỏ bóng"],
             ["<code>data-accent</code>", "đổi màu (blue/gold/cyan/…)"],
+            ["<code>.btn-group</code>", "gộp nút thành một thanh"],
+            ["<code>.btn-group.block</code>", "thanh rộng hết dòng, nút đều nhau"],
+            ["<code>.btn-group.stack</code>", "thanh dọc (menu mobile)"],
           ],
         ) +
+        note(
+          `<code>.btn-group</code> gộp các <b>hành động độc lập</b> (mỗi nút làm việc riêng). Nếu cần chọn-một với một lựa chọn luôn sáng, hãy dùng <code>.segment</code>.`,
+        ) +
+        warn(
+          `Trong <code>&lt;form&gt;</code>, <code>&lt;button&gt;</code> trơn mặc định là <code>type="submit"</code>. Thêm <code>type="button"</code> cho nút không được submit.`,
+        ) +
         a11y(
-          "Render ra <code>&lt;button&gt;</code> gốc nên bàn phím và screen reader hoạt động sẵn. Dùng <code>aria-pressed</code> cho toggle, <code>aria-busy</code> cho loading, và đặt <code>aria-label</code> cho nút chỉ có icon.",
+          `Render ra <code>&lt;button&gt;</code> gốc nên bàn phím và screen reader hoạt động sẵn. Dùng <code>aria-pressed</code> cho toggle, <code>aria-busy</code> cho loading, gắn <code>aria-hidden="true"</code> cho glyph trang trí, và đặt <code>aria-label</code> cho nút chỉ có icon.`,
         ),
     },
   },

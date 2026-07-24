@@ -124,6 +124,14 @@
     }
 
     /* ---- sizes (default height sits in a --ctrl-h row) ---- */
+    /* xs: dense toolbar button — smallest legible rung, tightest padding.
+       Built for AI action bars (Regenerate · Copy · Retry) where space is scarce. */
+    &.xs {
+      font-size: var(--fs-label);
+      padding: var(--sp-1) var(--sp-2);
+      gap: var(--sp-1);
+    }
+
     &.sm {
       font-size: var(--fs-label);
       padding: var(--sp-2) var(--sp-3);
@@ -163,6 +171,65 @@
         border-inline-end-color: transparent;
         border-block-end-color: transparent;
         animation: spinner .7s linear infinite;
+      }
+    }
+  }
+
+  /* ------------------------------------------------------------- BUTTON GROUP
+     Joins independent .btn actions into one seamless bar — an action toolbar,
+     NOT a single-select (that's .segment). Each child keeps its own variant,
+     accent, size and state; the group just fuses their edges + shadow.
+     Split button = a .btn-group of [main .btn] + [caret .btn.icon].
+     Wrap children in exactly one .btn-group; mix any variants freely. */
+  .btn-group {
+    display: inline-flex;
+    box-shadow: var(--sh-3);
+
+    /* children shed their own elevation — the bar carries one shared shadow */
+    &>.btn {
+      position: relative;
+      box-shadow: none;
+
+      /* the touched button floats up so its full border reads over the seam */
+      &:hover,
+      &:focus-visible {
+        z-index: 1;
+      }
+
+      /* press in place: translating would tear the seam, so darken instead */
+      &:active {
+        transform: none;
+        box-shadow: none;
+        filter: brightness(.9);
+      }
+    }
+
+    /* collapse the double edge between neighbours into a single seam line */
+    &>.btn+.btn {
+      margin-inline-start: calc(-1 * var(--bw));
+    }
+
+    /* full-width bar: children share the row equally */
+    &.block {
+      display: flex;
+
+      &>.btn {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+
+    /* stacked bar: same fuse, vertical — good for mobile action menus */
+    &.stack {
+      flex-direction: column;
+
+      &>.btn {
+        justify-content: center;
+      }
+
+      &>.btn+.btn {
+        margin-inline-start: 0;
+        margin-block-start: calc(-1 * var(--bw));
       }
     }
   }
