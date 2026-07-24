@@ -394,7 +394,16 @@
     .doc-page .table th:last-child,
     .doc-page .table td:last-child {
       min-inline-size: 14rem;
-      overflow-wrap: anywhere;
+    }
+
+    /* inline code in a cell stays whole: it wraps only at its OWN spaces (a
+       segment after a space drops to the next line), never mid-token — so no
+       noisy breaks like data-‸accent on a narrow phone. `overflow-wrap` is
+       inherited, so this also stops the cell's prose wrapping from splitting
+       a code token. */
+    .doc-page .table code {
+      overflow-wrap: normal;
+      word-break: keep-all;
     }
 
     .grid-cards {
