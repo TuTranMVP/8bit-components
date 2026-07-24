@@ -375,12 +375,12 @@
 
     <!-- EDITOR MODULE -->
     <section>
-      <span class="lab">Editor · &lt;nes-editor&gt; — / commands · @ mention · : emoji · ✦ AI · Tab autocomplete</span>
-      <nes-editor autocomplete name="doc" aria-label="Doc" style="max-inline-size:min(640px,100%)">
+      <span class="lab">Editor · &lt;nes-editor&gt; — AI-first · bilingual ghost (VI→EN) · / AI commands · @ mention · stats</span>
+      <nes-editor autocomplete name="doc" lang="vi" target-lang="en" suggest-mode="translate" stats aria-label="Doc" style="max-inline-size:min(640px,100%)">
         <script type="application/json">{"mentions":[{"value":"n1","label":"Second Brain"},{"value":"n2","label":"Knowledge Engine"},{"value":"n3","label":"Spaced Repetition"}]}</script>
         <h2>How it works</h2>
-        <p>Editor nhẹ cho app AI second-brain. Gõ <b>/</b> chèn khối, <b>@</b> nhắc note, <b>:</b> emoji. ⌘↵ gửi cho agent.</p>
-        <ul><li>Zero dependency — contenteditable native</li><li>Tab autocomplete kiểu VSCode</li></ul>
+        <p>Viết tiếng Việt rồi nhấn <b>Tab</b> để ra bản tiếng Anh — vừa viết blog vừa luyện ngoại ngữ. Gõ <b>/</b> ra lệnh AI, <b>@</b> nhắc note, <b>:</b> emoji.</p>
+        <ul><li>Zero dependency — contenteditable native</li><li>Ghost song ngữ + đếm từ + AI commands</li></ul>
       </nes-editor>
     </section>
 
@@ -459,11 +459,20 @@
     import { enableMermaid, toast } from "./elements.js";
     // opt into lazy-loading mermaid (the exact one-liner the docs document)
     enableMermaid("https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs");
-    // editor: fake VSCode-style autocomplete + AI generate (demo only)
+    // editor: fake bilingual ghost + AI commands (demo only — bring your own model)
     const ed = document.querySelector("nes-editor");
     if (ed) {
-      ed.suggest = ({ text }) => (text.trimEnd().endsWith("because") ? " it keeps the bundle tiny and dependency-free." : "");
-      ed.addEventListener("nes:ai", (e) => e.detail.insert("<p><b>AI ✦</b> — draft: 8-BIT NES is a zero-build design system…</p>"));
+      const VIEN = { "xin chào thế giới": "Hello world", "tôi đang học tiếng anh": "I am learning English", "hôm nay trời đẹp": "The weather is nice today" };
+      ed.suggest = ({ block, mode }) => {
+        const key = (block || "").trim().toLowerCase();
+        if (mode === "translate" && VIEN[key]) return " → " + VIEN[key];
+        if (mode === "continue" && key.endsWith("because")) return " it keeps the bundle tiny and dependency-free.";
+        return "";
+      };
+      ed.addEventListener("nes:ai", (e) => {
+        const txt = e.detail.selection || e.detail.text;
+        e.detail.replace(`<p><b>AI ✦ ${e.detail.command}</b> — ${txt.slice(0, 40)}…</p>`);
+      });
     }
     document.addEventListener("nes:submit", (e) => {
       // <nes-form> submit → detail.data; <nes-chat-prompt> submit → detail.value

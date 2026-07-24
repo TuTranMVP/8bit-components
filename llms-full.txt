@@ -484,7 +484,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 
 ### Editor
 - selector: `<nes-editor>` (element) · category: Editor
-- Lightweight rich-text editor on native contenteditable (zero deps). Toolbar, slash/@/: menus, block drag, VSCode-style Tab autocomplete, and an AI hook — for second-brain / knowledge / blog apps.
+- Lightweight, AI-first rich-text editor on native contenteditable (zero deps). Toolbar, slash/@/: menus, block drag, VSCode-style Tab ghost, AI commands, word-count, and a bilingual mode — write in one language, Tab out the other. For blog / knowledge / language-learning apps.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/editor
 
 ### EditorToolbar

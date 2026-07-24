@@ -249,15 +249,58 @@ export declare class NesCompareElement extends HTMLElement {
   set(pos: number): void;
 }
 
-/** Context passed to an editor's `suggest` provider (ghost autocomplete). */
+/** How a ghost suggestion should be produced. */
+export type EditorSuggestMode =
+  /** continue the text in the same language */
+  | "continue"
+  /** ghost the target-language rendering of the current text (bilingual) */
+  | "translate"
+  /** ghost a grammar/spelling correction (language practice) */
+  | "correct";
+
+/** Rich context passed to an editor's `suggest` provider (and the `nes:suggest`
+ *  event). Enough for source→target inference: translate or continue the draft. */
 export interface EditorSuggestContext {
+  /** full plain text of the document (ghost excluded). */
   text: string;
+  /** text from the document start up to the caret. */
+  textBefore: string;
+  /** text from the caret to the document end. */
+  textAfter: string;
+  /** plain text of the block the caret is in. */
+  block: string;
+  /** source language (the `lang` attribute), e.g. "vi". */
+  lang: string;
+  /** target language (the `target-lang` attribute), e.g. "en". */
+  targetLang: string;
+  /** current ghost mode (toggled by the toolbar language chip). */
+  mode: EditorSuggestMode;
 }
+
+/** Detail of the `nes:ai` event — an AI action was invoked from the editor. */
+export interface EditorAIDetail {
+  /** which action: "ask" | "translate" | "improve" | "continue" | "fix" | "summarize". */
+  command: string;
+  /** full plain text of the document. */
+  text: string;
+  /** the currently selected text (empty if none). */
+  selection: string;
+  lang: string;
+  targetLang: string;
+  /** insert HTML at the caret. */
+  insert: (html: string) => void;
+  /** replace the current selection with HTML (or insert at caret if none). */
+  replace: (html: string) => void;
+}
+
 /**
- * <nes-editor>: lightweight contenteditable rich-text editor — toolbar,
- * slash (/) / mention (@) / emoji (:) menus, block drag handle, VSCode-style
- * Tab autocomplete, and an AI hook. Emits `nes:input`/`nes:submit`/`nes:mention`/
- * `nes:ai`/`nes:suggest`.
+ * <nes-editor>: lightweight, AI-first contenteditable rich-text editor —
+ * toolbar, slash (/) / mention (@) / emoji (:) menus, block drag handle,
+ * VSCode-style Tab ghost autocomplete, and a bring-your-own-model AI hook.
+ * Bilingual: set `lang` + `target-lang` (+ `suggest-mode`) so a `suggest`
+ * provider can ghost the target-language rendering for Tab — write in one
+ * language, Tab out the other (blog + language practice). Emits
+ * `nes:input`/`nes:submit`/`nes:mention`/`nes:ai`/`nes:suggest`.
  */
 export declare class NesEditorElement extends HTMLElement {
   /** current HTML content (ghost suggestion excluded). */
@@ -266,8 +309,12 @@ export declare class NesEditorElement extends HTMLElement {
   readonly text: () => string;
   /** insert HTML at the caret (e.g. AI-generated content). */
   insert(html: string): void;
+  /** replace the current selection with HTML (or insert at caret if none). */
+  replaceSelection(html: string): void;
   /** show a dim inline ghost suggestion the user accepts with Tab. */
   showGhost(text: string): void;
+  /** trigger an AI action programmatically (fires `nes:ai`). */
+  triggerAI(command?: string): void;
   focus(): void;
   /** optional async provider for Tab autocomplete; return "" for no suggestion. */
   suggest?: (ctx: EditorSuggestContext) => string | Promise<string>;
@@ -329,8 +376,8 @@ declare global {
     "nes:stop": CustomEvent<Record<string, never>>;
     "nes:input": CustomEvent<{ html: string; text: string }>;
     "nes:mention": CustomEvent<{ value: string; label: string }>;
-    "nes:ai": CustomEvent<{ text: string; insert: (html: string) => void }>;
-    "nes:suggest": CustomEvent<{ text: string; accept: (suggestion: string) => void }>;
+    "nes:ai": CustomEvent<EditorAIDetail>;
+    "nes:suggest": CustomEvent<EditorSuggestContext & { accept: (suggestion: string) => void }>;
     "nes:render": CustomEvent<{ ok: boolean }>;
     "nes:node": CustomEvent<{ label: string; id: string }>;
     "nes:step": CustomEvent<{ index: number; step: WalkthroughStep }>;

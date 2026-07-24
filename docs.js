@@ -3951,8 +3951,8 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
     cat: "Editor",
     name: "Editor",
     desc: {
-      en: "Lightweight rich-text editor on native contenteditable (zero deps). Toolbar, slash/@/: menus, block drag, VSCode-style Tab autocomplete, and an AI hook — for second-brain / knowledge / blog apps.",
-      vi: "Editor rich-text nhẹ trên contenteditable gốc (zero deps). Toolbar, menu slash/@/:, kéo khối, Tab autocomplete kiểu VSCode, và hook AI — cho app second-brain / knowledge / blog.",
+      en: "Lightweight, AI-first rich-text editor on native contenteditable (zero deps). Toolbar, slash/@/: menus, block drag, VSCode-style Tab ghost, AI commands, word-count, and a bilingual mode — write in one language, Tab out the other. For blog / knowledge / language-learning apps.",
+      vi: "Editor rich-text nhẹ, AI-first trên contenteditable gốc (zero deps). Toolbar, menu slash/@/:, kéo khối, ghost Tab kiểu VSCode, lệnh AI, đếm từ, và chế độ song ngữ — viết một thứ tiếng, Tab ra tiếng kia. Cho app blog / knowledge / luyện ngoại ngữ.",
     },
     body: {
       en: () =>
@@ -3991,23 +3991,45 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
             ["<code>name</code>", "string", "—", "hidden input carrying the HTML value (form submit)"],
             ["<code>placeholder</code>", "string", "—", "empty-state text"],
             ["<code>autocomplete</code>", "boolean", "<code>false</code>", "enable ghost Tab suggestions"],
+            ["<code>lang</code> / <code>target-lang</code>", "string", "—", "source / target language for the bilingual ghost (e.g. <code>vi</code> → <code>en</code>) — shows the language chip"],
+            ["<code>suggest-mode</code>", '<code>"continue" | "translate" | "correct"</code>', '<code>"continue"</code>', "how the ghost is produced (chip cycles it)"],
+            ["<code>stats</code>", "boolean", "<code>false</code>", "show a word / char / reading-time footer"],
           ],
           prop: [
             ["<code>.value</code>", "string", '<code>""</code>', "get / set HTML content"],
-            ["<code>.suggest</code>", "<code>(ctx) → string | Promise&lt;string&gt;</code>", "—", "your Tab-autocomplete provider (BYO model)"],
+            ["<code>.suggest</code>", "<code>(ctx) → string | Promise&lt;string&gt;</code>", "—", "your ghost provider — <code>ctx</code> = <code>{ text, textBefore, textAfter, block, lang, targetLang, mode }</code>"],
           ],
           method: [
             ["<code>.insert(html)</code>", "<code>(string) → void</code>", "—", "insert at the caret (AI output)"],
+            ["<code>.replaceSelection(html)</code>", "<code>(string) → void</code>", "—", "replace the selection (or insert if none)"],
+            ["<code>.triggerAI(cmd?)</code>", "<code>(string) → void</code>", "—", "fire an AI command programmatically"],
             ["<code>.showGhost(text)</code>", "<code>(string) → void</code>", "—", "show a dim inline suggestion (Tab accepts)"],
           ],
           event: [
             ["<code>nes:input</code>", "<code>{ html, text }</code>", "—", "content changed"],
-            ["<code>nes:submit</code>", "<code>{ html }</code>", "—", "⌘/Ctrl+Enter → send to agent"],
-            ["<code>nes:ai</code>", "<code>{ text, insert() }</code>", "—", "AI action invoked (✦ / /ai)"],
+            ["<code>nes:submit</code>", "<code>{ html, text }</code>", "—", "⌘/Ctrl+Enter → send to agent"],
+            ["<code>nes:ai</code>", "<code>{ command, text, selection, lang, targetLang, insert(), replace() }</code>", "—", "an AI command was invoked (toolbar ✦ or <code>/</code> menu: translate / improve / continue / fix / summarize)"],
+            ["<code>nes:suggest</code>", "<code>{ …ctx, accept() }</code>", "—", "no <code>.suggest</code> set — provide a ghost via <code>accept()</code>"],
             ["<code>nes:mention</code>", "<code>{ value, label }</code>", "—", "an @-mention was picked"],
           ],
         }) +
         crit("Autocomplete and AI are <strong>bring-your-own-model</strong> — set <code>.suggest</code> and listen for <code>nes:ai</code>. The editor ships no model and makes no network calls.") +
+        h2("Bilingual ghost (blog + language practice)") +
+        p("Set <code>lang</code> + <code>target-lang</code> and return the target-language rendering from <code>suggest</code>. Write in your language, press <strong>Tab</strong> to accept the translation — you draft and practice at once. The chip in the toolbar cycles <code>continue → translate → correct</code>.") +
+        cb(`<nes-editor autocomplete lang="vi" target-lang="en" suggest-mode="translate" stats></nes-editor>
+<script type="module">
+  const ed = document.querySelector("nes-editor");
+  ed.suggest = async ({ block, mode, lang, targetLang }) => {
+    if (mode === "translate") return " → " + await myModel.translate(block, lang, targetLang);
+    if (mode === "correct")   return await myModel.grammarFix(block);
+    return await myModel.complete(block);           // continue
+  };
+  // AI slash / toolbar commands act on the selection when there is one
+  ed.addEventListener("nes:ai", async (e) => {
+    const src = e.detail.selection || e.detail.text;
+    e.detail.replace(await myModel.run(e.detail.command, src, e.detail.targetLang));
+  });
+</script>`) +
         note("A lightweight contenteditable editor (zero-dep) — not a ProseMirror clone. Chosen for zero-build bundle size.") +
         a11y(
           "The surface is a labelled <code>role=\"textbox\"</code>; the toolbar is a <code>role=\"toolbar\"</code>; menus are keyboard-driven (↑/↓/Enter/Esc).",
@@ -4048,23 +4070,44 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
             ["<code>name</code>", "string", "—", "input ẩn chứa HTML (submit form)"],
             ["<code>placeholder</code>", "string", "—", "chữ khi trống"],
             ["<code>autocomplete</code>", "boolean", "<code>false</code>", "bật gợi ý ghost bằng Tab"],
+            ["<code>lang</code> / <code>target-lang</code>", "string", "—", "ngôn ngữ nguồn / đích cho ghost song ngữ (vd <code>vi</code> → <code>en</code>) — hiện chip ngôn ngữ"],
+            ["<code>suggest-mode</code>", '<code>"continue" | "translate" | "correct"</code>', '<code>"continue"</code>', "cách tạo ghost (chip xoay vòng)"],
+            ["<code>stats</code>", "boolean", "<code>false</code>", "hiện footer đếm từ / ký tự / thời gian đọc"],
           ],
           prop: [
             ["<code>.value</code>", "string", '<code>""</code>', "đọc / gán HTML"],
-            ["<code>.suggest</code>", "<code>(ctx) → string | Promise&lt;string&gt;</code>", "—", "provider Tab-autocomplete của bạn (BYO model)"],
+            ["<code>.suggest</code>", "<code>(ctx) → string | Promise&lt;string&gt;</code>", "—", "provider ghost — <code>ctx</code> = <code>{ text, textBefore, textAfter, block, lang, targetLang, mode }</code>"],
           ],
           method: [
             ["<code>.insert(html)</code>", "<code>(string) → void</code>", "—", "chèn tại caret (output AI)"],
+            ["<code>.replaceSelection(html)</code>", "<code>(string) → void</code>", "—", "thay vùng chọn (hoặc chèn nếu không có)"],
+            ["<code>.triggerAI(cmd?)</code>", "<code>(string) → void</code>", "—", "gọi lệnh AI bằng code"],
             ["<code>.showGhost(text)</code>", "<code>(string) → void</code>", "—", "hiện gợi ý ghost mờ (Tab để nhận)"],
           ],
           event: [
             ["<code>nes:input</code>", "<code>{ html, text }</code>", "—", "nội dung thay đổi"],
-            ["<code>nes:submit</code>", "<code>{ html }</code>", "—", "⌘/Ctrl+Enter → gửi agent"],
-            ["<code>nes:ai</code>", "<code>{ text, insert() }</code>", "—", "hành động AI (✦ / /ai)"],
+            ["<code>nes:submit</code>", "<code>{ html, text }</code>", "—", "⌘/Ctrl+Enter → gửi agent"],
+            ["<code>nes:ai</code>", "<code>{ command, text, selection, lang, targetLang, insert(), replace() }</code>", "—", "một lệnh AI được gọi (toolbar ✦ hoặc menu <code>/</code>: translate / improve / continue / fix / summarize)"],
+            ["<code>nes:suggest</code>", "<code>{ …ctx, accept() }</code>", "—", "chưa gán <code>.suggest</code> — cấp ghost qua <code>accept()</code>"],
             ["<code>nes:mention</code>", "<code>{ value, label }</code>", "—", "chọn một @-mention"],
           ],
         }) +
         crit("Autocomplete và AI là <strong>bring-your-own-model</strong> — gán <code>.suggest</code> và nghe <code>nes:ai</code>. Editor không ship model, không gọi mạng.") +
+        h2("Ghost song ngữ (blog + luyện ngoại ngữ)") +
+        p("Đặt <code>lang</code> + <code>target-lang</code> và trả về bản dịch ngôn ngữ đích từ <code>suggest</code>. Viết bằng tiếng của bạn, nhấn <strong>Tab</strong> để nhận bản dịch — vừa soạn vừa luyện. Chip trên toolbar xoay vòng <code>continue → translate → correct</code>.") +
+        cb(`<nes-editor autocomplete lang="vi" target-lang="en" suggest-mode="translate" stats></nes-editor>
+<script type="module">
+  const ed = document.querySelector("nes-editor");
+  ed.suggest = async ({ block, mode, lang, targetLang }) => {
+    if (mode === "translate") return " → " + await myModel.translate(block, lang, targetLang);
+    if (mode === "correct")   return await myModel.grammarFix(block);
+    return await myModel.complete(block);           // continue
+  };
+  ed.addEventListener("nes:ai", async (e) => {
+    const src = e.detail.selection || e.detail.text;
+    e.detail.replace(await myModel.run(e.detail.command, src, e.detail.targetLang));
+  });
+</script>`) +
         note("Editor contenteditable nhẹ (zero-dep) — không phải ProseMirror clone. Chọn để bundle zero-build.") +
         a11y(
           "Vùng soạn là <code>role=\"textbox\"</code> có nhãn; toolbar là <code>role=\"toolbar\"</code>; menu điều khiển bằng phím (↑/↓/Enter/Esc).",
