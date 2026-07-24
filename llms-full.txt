@@ -129,7 +129,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Theming: https://tutranmvp.github.io/8bit-components/docs.html#/theming
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
-## Component reference (67 components)
+## Component reference (73 components)
 
 ## Element
 
@@ -479,6 +479,38 @@ toast("<b>Saved.</b>", { accent: "good" });
 - selector: `.chat-palette` (class) · category: Chat
 - A framed chat panel for a modal or side-panel assistant: bordered surface with the messages area above and the prompt flush on the bottom edge.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/chatpalette
+
+## Editor
+
+### Editor
+- selector: `<nes-editor>` (element) · category: Editor
+- Lightweight rich-text editor on native contenteditable (zero deps). Toolbar, slash/@/: menus, block drag, VSCode-style Tab autocomplete, and an AI hook — for second-brain / knowledge / blog apps.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/editor
+
+### EditorToolbar
+- selector: `.editor-toolbar` (class) · category: Editor
+- The format bar built into <nes-editor>: bold/italic/underline/strike, H1/H2, lists, quote, inline code, link, and an AI (✦) button. Scrolls horizontally on mobile.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/editortoolbar
+
+### EditorSuggestionMenu
+- selector: `<nes-editor> /` (element) · category: Editor
+- The slash (/) command menu — the Notion-style way to insert blocks. Type / to open, keep typing to filter, ↑/↓ + Enter to pick.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/editorsuggestionmenu
+
+### EditorMentionMenu
+- selector: `<nes-editor> @` (element) · category: Editor
+- The @-mention menu for referencing notes / people / entities — the backbone of a second-brain link graph. Options come from the editor's JSON config.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/editormentionmenu
+
+### EditorEmojiMenu
+- selector: `<nes-editor> :` (element) · category: Editor
+- The colon (:) emoji picker — type :name to filter a built-in set and insert the emoji. No dependency, no image sprite.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/editoremojimenu
+
+### EditorDragHandle
+- selector: `.editor-drag` (class) · category: Editor
+- A grip (⠿) that appears at the start of the hovered block; drag it to reorder blocks. Pure HTML5 drag — no library.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/editordraghandle
 
 ---
 Generated from docs.js by scripts/gen-llms.mjs. Do not edit by hand — run `pnpm gen:llms`.

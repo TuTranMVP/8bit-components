@@ -132,6 +132,30 @@ export declare class NesChatMessagesElement extends HTMLElement {
 /** <nes-icon name="…">: renders a pixel icon by name (see `8bit-nes/icons`). */
 export declare class NesIconElement extends HTMLElement {}
 
+/** Context passed to an editor's `suggest` provider (ghost autocomplete). */
+export interface EditorSuggestContext {
+  text: string;
+}
+/**
+ * <nes-editor>: lightweight contenteditable rich-text editor — toolbar,
+ * slash (/) / mention (@) / emoji (:) menus, block drag handle, VSCode-style
+ * Tab autocomplete, and an AI hook. Emits `nes:input`/`nes:submit`/`nes:mention`/
+ * `nes:ai`/`nes:suggest`.
+ */
+export declare class NesEditorElement extends HTMLElement {
+  /** current HTML content (ghost suggestion excluded). */
+  value: string;
+  /** current plain text. */
+  readonly text: () => string;
+  /** insert HTML at the caret (e.g. AI-generated content). */
+  insert(html: string): void;
+  /** show a dim inline ghost suggestion the user accepts with Tab. */
+  showGhost(text: string): void;
+  focus(): void;
+  /** optional async provider for Tab autocomplete; return "" for no suggestion. */
+  suggest?: (ctx: EditorSuggestContext) => string | Promise<string>;
+}
+
 /** Detail of the `nes:answer` event bubbled by <nes-quiz>. */
 export interface NesAnswerDetail {
   correct: boolean;
@@ -166,6 +190,7 @@ declare global {
     "nes-chat-prompt": NesChatPromptElement;
     "nes-chat-messages": NesChatMessagesElement;
     "nes-icon": NesIconElement;
+    "nes-editor": NesEditorElement;
   }
   interface DocumentEventMap {
     "nes:xp": CustomEvent<{ amount: number }>;
@@ -179,5 +204,9 @@ declare global {
     "nes:change": CustomEvent<{ value?: unknown; files?: File[] }>;
     "nes:toggle": CustomEvent<{ value: string; expanded: boolean }>;
     "nes:stop": CustomEvent<Record<string, never>>;
+    "nes:input": CustomEvent<{ html: string; text: string }>;
+    "nes:mention": CustomEvent<{ value: string; label: string }>;
+    "nes:ai": CustomEvent<{ text: string; insert: (html: string) => void }>;
+    "nes:suggest": CustomEvent<{ text: string; accept: (suggestion: string) => void }>;
   }
 }

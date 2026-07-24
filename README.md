@@ -90,7 +90,7 @@ import manifest from "8bit-nes/components.json" with { type: "json" };
 | `tokens.css`            | source of truth    | `:root` vars, 3 `@font-face`, `@layer` order                                                  | —                  |
 | `base.css`              | reset + primitives | reset, focus→gold, reduced-motion, `.pixel-box` (notch), elevation, accent mapper, motion     | tokens             |
 | `components.css`        | stateless recipes  | Element/Form/Feedback/Nav/Overlay/Data recipes (see catalog below)                            | tokens, base       |
-| `elements.js`           | stateful           | app: `<nes-quiz> <nes-hud> <nes-collapsible> <nes-sound> <nes-tabs> <nes-code>`; form: `<nes-form> <nes-number> <nes-rating> <nes-tags> <nes-pin> <nes-file> <nes-listbox> <nes-input-menu> <nes-select-menu>`; data: `<nes-tree>`; chat: `<nes-chat-prompt> <nes-chat-messages>` + `store/bleep/grantXP/toast` | tokens, components |
+| `elements.js`           | stateful           | app: `<nes-quiz> <nes-hud> <nes-collapsible> <nes-sound> <nes-tabs> <nes-code>`; form: `<nes-form> <nes-number> <nes-rating> <nes-tags> <nes-pin> <nes-file> <nes-listbox> <nes-input-menu> <nes-select-menu>`; data: `<nes-tree>`; chat: `<nes-chat-prompt> <nes-chat-messages>`; editor: `<nes-editor>` + `store/bleep/grantXP/toast` | tokens, components |
 | `icons.js`              | pixel icons        | tree-shakeable `<svg>`-string exports + `icon()` helper; `<nes-icon>` renders by name         | —                  |
 | `demo.html`             | gallery + test     | every component wired together                                                                | all                |
 | `docs.html` + `docs.js` | documentation site | Nuxt-UI-style sidebar + per-component pages (Usage / preview / API / a11y)                    | all                |
@@ -108,6 +108,7 @@ import manifest from "8bit-nes/components.json" with { type: "json" };
 | Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) |
 | Data       | Table · Code block · Accordion (`<nes-collapsible>`) · Stat · Rating · Description list · Timeline · Prose · Tree (`<nes-tree>`)           |
 | Chat (AI)  | Chat (`.chat`) · ChatMessages (`<nes-chat-messages>`) · ChatMessage (`.msg`) · ChatPrompt (`<nes-chat-prompt>`) · ChatPromptSubmit (`.chat-submit`) · ChatReasoning · ChatTool · ChatShimmer · ChatPalette |
+| Editor (AI) | Editor (`<nes-editor>`) · EditorToolbar · EditorSuggestionMenu (`/`) · EditorMentionMenu (`@`) · EditorEmojiMenu (`:`) · EditorDragHandle — VSCode-style Tab autocomplete + AI hook, contenteditable, zero-dep |
 
 Run the docs site locally with `pnpm demo`, then open `/docs.html`.
 

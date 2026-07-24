@@ -68,8 +68,9 @@ const CAT_ACCENT = {
   Overlay: "purple",
   Data: "warn",
   Chat: "teal",
+  Editor: "indigo",
 };
-const CAT_ORDER = ["Element", "Form", "Feedback", "Navigation", "Overlay", "Data", "Chat"];
+const CAT_ORDER = ["Element", "Form", "Feedback", "Navigation", "Overlay", "Data", "Chat", "Editor"];
 
 /* ===================================================================== */
 /*  GETTING STARTED                                                       */
@@ -3803,6 +3804,242 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
           ],
         ) +
         a11y("Đặt trong <code>&lt;dialog class=\"modal\"&gt;</code> để làm assistant kiểu command-palette; dialog lo focus trap + Esc."),
+    },
+  },
+
+  /* -------------------------------------------------------- EDITOR */
+  {
+    id: "editor",
+    cat: "Editor",
+    name: "Editor",
+    desc: {
+      en: "Lightweight rich-text editor on native contenteditable (zero deps). Toolbar, slash/@/: menus, block drag, VSCode-style Tab autocomplete, and an AI hook — for second-brain / knowledge / blog apps.",
+      vi: "Editor rich-text nhẹ trên contenteditable gốc (zero deps). Toolbar, menu slash/@/:, kéo khối, Tab autocomplete kiểu VSCode, và hook AI — cho app second-brain / knowledge / blog.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "EDITOR",
+          `<nes-editor autocomplete aria-label="Doc" style="max-inline-size:560px">
+            <script type="application/json">{"mentions":[{"value":"n1","label":"Second Brain"},{"value":"n2","label":"Knowledge Engine"}]}</script>
+            <h2>How it works</h2>
+            <p>Type <b>/</b> for blocks, <b>@</b> to mention a note, <b>:</b> for emoji. Select text to format.</p>
+            <ul><li>Zero dependencies — just contenteditable</li><li>⌘↵ to submit to your agent</li></ul>
+          </nes-editor>`,
+          "col",
+        ) +
+        cb(
+          `<nes-editor autocomplete name="doc" placeholder="Write, or / for commands…">
+  <script type="application/json">{ "mentions": [{ "value": "n1", "label": "Second Brain" }] }</script>
+</nes-editor>
+
+<script type="module">
+  const ed = document.querySelector("nes-editor");
+  // VSCode-style Tab autocomplete — return the completion (or "")
+  ed.suggest = async ({ text }) => (await myModel.complete(text)) ?? "";
+  // AI generate / auto-write (blog, how-it-works…) — insert into the doc
+  ed.addEventListener("nes:ai", async (e) => e.detail.insert(await myModel.write(e.detail.text)));
+  ed.addEventListener("nes:submit", (e) => send(e.detail.html));   // ⌘/Ctrl + Enter
+  ed.addEventListener("nes:mention", (e) => link(e.detail.value));
+</script>`,
+        ) +
+        h2("API") +
+        api(
+          ["Attr / prop / method / event", "Meaning"],
+          [
+            ["<code>name</code>", "hidden input with the HTML value (form submit)"],
+            ["<code>placeholder</code>", "empty-state text"],
+            ["<code>autocomplete</code>", "enable ghost Tab suggestions"],
+            ["JSON <code>{ mentions }</code>", "@-mention options"],
+            ["<code>.value</code>", "get / set HTML content"],
+            ["<code>.suggest(ctx)</code>", "async provider for Tab autocomplete"],
+            ["<code>.insert(html)</code>", "insert at caret (AI output)"],
+            ["<code>nes:input</code>", "content changed → <code>{ html, text }</code>"],
+            ["<code>nes:submit</code>", "⌘/Ctrl+Enter → send to agent"],
+            ["<code>nes:ai</code>", "AI action → <code>{ text, insert() }</code>"],
+            ["<code>nes:mention</code> / <code>nes:suggest</code>", "mention picked / request a completion"],
+          ],
+        ) +
+        a11y(
+          "The surface is a labelled <code>role=\"textbox\"</code>; toolbar is a <code>role=\"toolbar\"</code>; menus are keyboard-driven (↑/↓/Enter/Esc). It's a lightweight contenteditable editor — not a ProseMirror clone — chosen for zero-build, zero-dep bundle size. Bring your own model for suggest/AI.",
+        ),
+      vi: () =>
+        stage(
+          "EDITOR",
+          `<nes-editor autocomplete aria-label="Doc" style="max-inline-size:560px">
+            <script type="application/json">{"mentions":[{"value":"n1","label":"Second Brain"},{"value":"n2","label":"Knowledge Engine"}]}</script>
+            <h2>How it works</h2>
+            <p>Gõ <b>/</b> để chèn khối, <b>@</b> để nhắc note, <b>:</b> cho emoji. Bôi đen chữ để format.</p>
+            <ul><li>Zero dependency — chỉ contenteditable</li><li>⌘↵ để gửi cho agent</li></ul>
+          </nes-editor>`,
+          "col",
+        ) +
+        cb(
+          `<nes-editor autocomplete name="doc" placeholder="Viết, hoặc / để ra lệnh…">
+  <script type="application/json">{ "mentions": [{ "value": "n1", "label": "Second Brain" }] }</script>
+</nes-editor>
+
+<script type="module">
+  const ed = document.querySelector("nes-editor");
+  // Tab autocomplete kiểu VSCode — trả về phần gợi ý (hoặc "")
+  ed.suggest = async ({ text }) => (await myModel.complete(text)) ?? "";
+  // AI generate / auto-write (blog, how-it-works…) — chèn vào doc
+  ed.addEventListener("nes:ai", async (e) => e.detail.insert(await myModel.write(e.detail.text)));
+  ed.addEventListener("nes:submit", (e) => send(e.detail.html));   // ⌘/Ctrl + Enter
+  ed.addEventListener("nes:mention", (e) => link(e.detail.value));
+</script>`,
+        ) +
+        h2("API") +
+        api(
+          ["Attr / prop / method / event", "Ý nghĩa"],
+          [
+            ["<code>name</code>", "input ẩn chứa HTML (submit form)"],
+            ["<code>placeholder</code>", "chữ khi trống"],
+            ["<code>autocomplete</code>", "bật gợi ý ghost bằng Tab"],
+            ["JSON <code>{ mentions }</code>", "danh sách @-mention"],
+            ["<code>.value</code>", "đọc / gán HTML"],
+            ["<code>.suggest(ctx)</code>", "provider async cho Tab autocomplete"],
+            ["<code>.insert(html)</code>", "chèn tại caret (output AI)"],
+            ["<code>nes:input</code>", "nội dung đổi → <code>{ html, text }</code>"],
+            ["<code>nes:submit</code>", "⌘/Ctrl+Enter → gửi agent"],
+            ["<code>nes:ai</code>", "hành động AI → <code>{ text, insert() }</code>"],
+            ["<code>nes:mention</code> / <code>nes:suggest</code>", "chọn mention / xin gợi ý"],
+          ],
+        ) +
+        a11y(
+          "Vùng soạn là <code>role=\"textbox\"</code> có nhãn; toolbar là <code>role=\"toolbar\"</code>; menu điều khiển bằng phím (↑/↓/Enter/Esc). Đây là editor contenteditable nhẹ — không phải ProseMirror clone — chọn để zero-build, zero-dep. Model do bạn cắm vào cho suggest/AI.",
+        ),
+    },
+  },
+  {
+    id: "editortoolbar",
+    cat: "Editor",
+    name: "EditorToolbar",
+    desc: {
+      en: "The format bar built into <nes-editor>: bold/italic/underline/strike, H1/H2, lists, quote, inline code, link, and an AI (✦) button. Scrolls horizontally on mobile.",
+      vi: "Thanh format trong <nes-editor>: bold/italic/underline/strike, H1/H2, list, quote, code inline, link, và nút AI (✦). Cuộn ngang trên mobile.",
+    },
+    body: {
+      en: () =>
+        p("Rendered automatically inside <code>&lt;nes-editor&gt;</code>. Buttons run native formatting commands and sync their <code>.on</code> active state with the selection; the toolbar is a horizontally-scrollable <code>role=\"toolbar\"</code> so it never overflows on a phone.") +
+        cb(`<!-- part of <nes-editor>; style hook: -->
+.editor-toolbar { … }
+.editor-toolbar button.on { /* active format */ }`) +
+        api(
+          ["Group", "Buttons"],
+          [
+            ["Inline", "B · I · U · S"],
+            ["Block", "H1 · H2 · quote"],
+            ["List", "• bullet · 1. numbered"],
+            ["Insert", "‹› code · 🔗 link · ✦ Ask AI"],
+          ],
+        ),
+      vi: () =>
+        p("Tự render bên trong <code>&lt;nes-editor&gt;</code>. Nút chạy lệnh format gốc và đồng bộ trạng thái <code>.on</code> theo vùng chọn; toolbar là <code>role=\"toolbar\"</code> cuộn ngang nên không tràn trên điện thoại.") +
+        cb(`<!-- thuộc <nes-editor>; hook style: -->
+.editor-toolbar { … }
+.editor-toolbar button.on { /* format đang bật */ }`) +
+        api(
+          ["Nhóm", "Nút"],
+          [
+            ["Inline", "B · I · U · S"],
+            ["Khối", "H1 · H2 · quote"],
+            ["List", "• bullet · 1. numbered"],
+            ["Chèn", "‹› code · 🔗 link · ✦ Ask AI"],
+          ],
+        ),
+    },
+  },
+  {
+    id: "editorsuggestionmenu",
+    cat: "Editor",
+    name: "EditorSuggestionMenu",
+    desc: {
+      en: "The slash (/) command menu — the Notion-style way to insert blocks. Type / to open, keep typing to filter, ↑/↓ + Enter to pick.",
+      vi: "Menu lệnh slash (/) — kiểu Notion để chèn khối. Gõ / để mở, gõ tiếp để lọc, ↑/↓ + Enter để chọn.",
+    },
+    body: {
+      en: () =>
+        p("Triggers on <code>/</code> at the caret. Commands: <b>✦ Ask AI</b>, Heading 1–3, Bullet / Numbered list, Quote, Code block, Divider. The typed <code>/query</code> is removed when you pick.") +
+        cb(`Type "/" → filtered command list → Enter
+/  ✦ Ask AI · H1 · H2 · H3 · • list · 1. list · ❝ quote · ‹› code · ― divider`) +
+        a11y("Arrow keys move, Enter selects, Esc closes; the trigger text is cleaned up automatically."),
+      vi: () =>
+        p("Kích hoạt khi gõ <code>/</code> tại caret. Lệnh: <b>✦ Ask AI</b>, Heading 1–3, Bullet / Numbered list, Quote, Code block, Divider. Chuỗi <code>/query</code> tự xóa khi chọn.") +
+        cb(`Gõ "/" → danh sách lệnh đã lọc → Enter
+/  ✦ Ask AI · H1 · H2 · H3 · • list · 1. list · ❝ quote · ‹› code · ― divider`) +
+        a11y("Phím mũi tên di chuyển, Enter chọn, Esc đóng; chuỗi trigger tự dọn."),
+    },
+  },
+  {
+    id: "editormentionmenu",
+    cat: "Editor",
+    name: "EditorMentionMenu",
+    desc: {
+      en: "The @-mention menu for referencing notes / people / entities — the backbone of a second-brain link graph. Options come from the editor's JSON config.",
+      vi: "Menu @-mention để tham chiếu note / người / thực thể — xương sống của link graph second-brain. Options lấy từ JSON config của editor.",
+    },
+    body: {
+      en: () =>
+        p("Type <code>@</code> then filter. Picking inserts a non-editable <code>.mention</code> chip and fires <code>nes:mention</code> with the value — wire it to open/link the referenced note.") +
+        cb(`<nes-editor>
+  <script type="application/json">{ "mentions": [
+    { "value": "note-42", "label": "Spaced Repetition" }
+  ] }</script>
+</nes-editor>
+ed.addEventListener("nes:mention", (e) => open(e.detail.value));`) +
+        a11y("Each mention is a labelled, contenteditable=false atom so caret navigation skips over it cleanly."),
+      vi: () =>
+        p("Gõ <code>@</code> rồi lọc. Chọn sẽ chèn chip <code>.mention</code> không sửa được và bắn <code>nes:mention</code> kèm value — nối để mở/link note được tham chiếu.") +
+        cb(`<nes-editor>
+  <script type="application/json">{ "mentions": [
+    { "value": "note-42", "label": "Spaced Repetition" }
+  ] }</script>
+</nes-editor>
+ed.addEventListener("nes:mention", (e) => open(e.detail.value));`) +
+        a11y("Mỗi mention là atom có nhãn, contenteditable=false nên caret nhảy qua gọn gàng."),
+    },
+  },
+  {
+    id: "editoremojimenu",
+    cat: "Editor",
+    name: "EditorEmojiMenu",
+    desc: {
+      en: "The colon (:) emoji picker — type :name to filter a built-in set and insert the emoji. No dependency, no image sprite.",
+      vi: "Bộ chọn emoji bằng dấu hai chấm (:) — gõ :tên để lọc bộ emoji có sẵn và chèn. Không dependency, không sprite ảnh.",
+    },
+    body: {
+      en: () =>
+        p("Type <code>:</code> followed by a name (e.g. <code>:rocket</code>, <code>:brain</code>, <code>:sparkles</code>) → pick to insert the native emoji character. Ships a curated set covering the common AI / dev / note vocabulary.") +
+        cb(`:rocket → 🚀   :brain → 🧠   :sparkles → ✨   :bug → 🐛   :fire → 🔥`) +
+        a11y("Only opens after at least one letter is typed, so a lone colon in prose never pops a menu."),
+      vi: () =>
+        p("Gõ <code>:</code> rồi tên (vd <code>:rocket</code>, <code>:brain</code>, <code>:sparkles</code>) → chọn để chèn ký tự emoji gốc. Có sẵn bộ emoji cho từ vựng AI / dev / note phổ biến.") +
+        cb(`:rocket → 🚀   :brain → 🧠   :sparkles → ✨   :bug → 🐛   :fire → 🔥`) +
+        a11y("Chỉ mở sau khi gõ ít nhất một chữ, nên dấu hai chấm lẻ trong văn bản không bật menu."),
+    },
+  },
+  {
+    id: "editordraghandle",
+    cat: "Editor",
+    name: "EditorDragHandle",
+    desc: {
+      en: "A grip (⠿) that appears at the start of the hovered block; drag it to reorder blocks. Pure HTML5 drag — no library.",
+      vi: "Tay nắm (⠿) hiện ở đầu khối đang hover; kéo để sắp xếp lại khối. HTML5 drag thuần — không thư viện.",
+    },
+    body: {
+      en: () =>
+        p("Hover any top-level block (heading, paragraph, list) — the <code>.editor-drag</code> grip fades in on the inline-start. Drag it over another block to see the accent drop-line, release to move.") +
+        cb(`.editor-drag { /* grip shown on block hover */ }
+.editor-content .drop-before,
+.editor-content .drop-after { /* accent drop indicator */ }`) +
+        a11y("Drag is a visual enhancement; content stays fully editable and keyboard reordering (cut/paste) still works. On touch, blocks reorder via long-press drag."),
+      vi: () =>
+        p("Hover một khối cấp cao (heading, đoạn, list) — tay nắm <code>.editor-drag</code> hiện ra ở đầu dòng. Kéo qua khối khác để thấy vạch thả màu accent, thả để di chuyển.") +
+        cb(`.editor-drag { /* grip hiện khi hover khối */ }
+.editor-content .drop-before,
+.editor-content .drop-after { /* vạch thả màu accent */ }`) +
+        a11y("Kéo-thả là tăng cường trực quan; nội dung vẫn sửa được đầy đủ và sắp xếp bằng phím (cut/paste) vẫn chạy. Trên cảm ứng, kéo khối bằng long-press."),
     },
   },
 ];

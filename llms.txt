@@ -91,6 +91,14 @@ Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";
 - [ChatShimmer](https://tutranmvp.github.io/8bit-components/docs.html#/chatshimmer) — `.shimmer`: Streaming placeholder — a few shimmering lines shown while the assistant's first tokens are still on the way. Pure CSS.
 - [ChatPalette](https://tutranmvp.github.io/8bit-components/docs.html#/chatpalette) — `.chat-palette`: A framed chat panel for a modal or side-panel assistant: bordered surface with the messages area above and the prompt flush on the bottom edge.
 
+## Editor
+- [Editor](https://tutranmvp.github.io/8bit-components/docs.html#/editor) — `<nes-editor>`: Lightweight rich-text editor on native contenteditable (zero deps). Toolbar, slash/@/: menus, block drag, VSCode-style Tab autocomplete, and an AI hook — for second-brain / knowledge / blog apps.
+- [EditorToolbar](https://tutranmvp.github.io/8bit-components/docs.html#/editortoolbar) — `.editor-toolbar`: The format bar built into <nes-editor>: bold/italic/underline/strike, H1/H2, lists, quote, inline code, link, and an AI (✦) button. Scrolls horizontally on mobile.
+- [EditorSuggestionMenu](https://tutranmvp.github.io/8bit-components/docs.html#/editorsuggestionmenu) — `<nes-editor> /`: The slash (/) command menu — the Notion-style way to insert blocks. Type / to open, keep typing to filter, ↑/↓ + Enter to pick.
+- [EditorMentionMenu](https://tutranmvp.github.io/8bit-components/docs.html#/editormentionmenu) — `<nes-editor> @`: The @-mention menu for referencing notes / people / entities — the backbone of a second-brain link graph. Options come from the editor's JSON config.
+- [EditorEmojiMenu](https://tutranmvp.github.io/8bit-components/docs.html#/editoremojimenu) — `<nes-editor> :`: The colon (:) emoji picker — type :name to filter a built-in set and insert the emoji. No dependency, no image sprite.
+- [EditorDragHandle](https://tutranmvp.github.io/8bit-components/docs.html#/editordraghandle) — `.editor-drag`: A grip (⠿) that appears at the start of the hovered block; drag it to reorder blocks. Pure HTML5 drag — no library.
+
 ## Optional
 - [Full flat-text reference for RAG](https://tutranmvp.github.io/8bit-components/llms-full.txt)
 - [Structured JSON manifest](https://tutranmvp.github.io/8bit-components/components.json)
