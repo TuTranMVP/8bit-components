@@ -811,6 +811,33 @@
       "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/prompt"
     },
     {
+      "id": "terminal",
+      "name": "Terminal",
+      "category": "Typography",
+      "selector": ".terminal",
+      "kind": "class",
+      "description": "A multi-line shell session — command lines (❯) + output. For rendering the install/run steps an AI agent writes.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/terminal"
+    },
+    {
+      "id": "diff",
+      "name": "Diff",
+      "category": "Typography",
+      "selector": ".diff",
+      "kind": "class",
+      "description": "A code-diff block — added / removed / context lines with a +/− gutter. For rendering the patches an AI coding agent proposes.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/diff"
+    },
+    {
+      "id": "tasklist",
+      "name": "Tasklist",
+      "category": "Typography",
+      "selector": ".tasklist",
+      "kind": "class",
+      "description": "A checklist — done + open items with square checkboxes. For rendering the plans / to-dos an AI agent emits (Markdown - [x]).",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/tasklist"
+    },
+    {
       "id": "visualize",
       "name": "Visualize",
       "category": "Visualize",
@@ -885,6 +912,6 @@
   ],
   "counts": {
     "concepts": 4,
-    "components": 89
+    "components": 92
   }
 }

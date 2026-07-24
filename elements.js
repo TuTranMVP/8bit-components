@@ -430,7 +430,9 @@ class NesCode extends HTMLElement {
     if (this._done) return;
     this._done = true;
     const raw = this.textContent.replace(/^\n+/, "").replace(/\s+$/, "");
+    const file = this.getAttribute("file");
     this.innerHTML =
+      (file ? `<div class="cb-file">${_e(file)}</div>` : "") +
       `<div class="codeblock"><button class="cp" type="button" aria-label="Copy code">COPY</button>` +
       `<pre>${highlightCode(raw)}</pre></div>`;
     this.querySelector(".cp").addEventListener("click", (e) => {

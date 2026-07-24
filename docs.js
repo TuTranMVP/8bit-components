@@ -2605,7 +2605,12 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   </table>
 </div>`,
         ) +
-        a11y(
+h2("Parts") +
+        api(["Class", "Role"], [
+          ["<code>.table</code>", "the table — mono headers, row hover, square cells"],
+          ["<code>.table-wrap</code>", "overflow-x scroll region (make it a focusable <code>role=region</code>)"],
+        ]) +
+                a11y(
           "Use real <code>&lt;thead&gt;</code>/<code>&lt;th scope&gt;</code>. Make the scroll wrapper focusable (<code>tabindex=\"0\"</code>, <code>role=\"region\"</code>, <code>aria-label</code>) so keyboard users can scroll it.",
         ),
       vi: () =>
@@ -2618,7 +2623,12 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   </table>
 </div>`,
         ) +
-        a11y(
+h2("Thành phần") +
+        api(["Class", "Vai trò"], [
+          ["<code>.table</code>", "bảng — header mono, hover hàng, ô vuông"],
+          ["<code>.table-wrap</code>", "vùng cuộn ngang (cho focus được, <code>role=region</code>)"],
+        ]) +
+                a11y(
           "Dùng <code>&lt;thead&gt;</code>/<code>&lt;th scope&gt;</code> thật. Cho khung cuộn focus được (<code>tabindex=\"0\"</code>, <code>role=\"region\"</code>, <code>aria-label</code>) để người dùng bàn phím cuộn được.",
         ),
     },
@@ -2650,7 +2660,12 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
           "Need full control? Use <code>.codeblock</code> and wrap tokens yourself: <code>.t-sel .t-key .t-str .t-num .t-com .t-at .t-fn</code>.",
         ) +
         codeStage("// clamp the token budget") +
-        a11y(
+h2("API") +
+        apiGroups({
+          slot: [["default", "the code — escape <code>&lt;</code> in raw markup"]],
+          attr: [["<code>file</code>", "string", "—", "show a filename header above the block"]],
+        }) +
+                a11y(
           "Both variants use a real <code>&lt;button&gt;</code> to copy. Escape <code>&lt;</code> in raw markup you pass to <code>&lt;nes-code&gt;</code>, or the browser parses it as elements.",
         ),
       vi: () =>
@@ -2671,7 +2686,12 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
           "Cần kiểm soát hoàn toàn? Dùng <code>.codeblock</code> và tự bọc token: <code>.t-sel .t-key .t-str .t-num .t-com .t-at .t-fn</code>.",
         ) +
         codeStage("// kẹp ngân sách token") +
-        a11y(
+h2("API") +
+        apiGroups({
+          slot: [["default", "code — escape <code>&lt;</code> trong markup thô"]],
+          attr: [["<code>file</code>", "string", "—", "hiện header tên file trên code block"]],
+        }) +
+                a11y(
           "Cả hai cách đều dùng <code>&lt;button&gt;</code> thật để copy. Escape <code>&lt;</code> trong markup thô đưa vào <code>&lt;nes-code&gt;</code>, nếu không trình duyệt sẽ hiểu là element.",
         ),
     },
@@ -2774,7 +2794,13 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   <div class="l">Power</div>
 </div>`,
         ) +
-        a11y(
+h2("Parts") +
+        api(["Class / attr", "Role"], [
+          ["<code>.stat</code>", "container — set <code>data-accent</code> to recolor"],
+          ["<code>.n</code>", "the big number (tabular figures)"],
+          ["<code>.l</code>", "the label beneath it"],
+        ]) +
+                a11y(
           "Pair the number with a text label (as shown) so it isn't a bare figure. If it updates live, wrap it in <code>aria-live=\"polite\"</code>.",
         ),
       vi: () =>
@@ -2785,7 +2811,13 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   <div class="l">Power</div>
 </div>`,
         ) +
-        a11y(
+h2("Thành phần") +
+        api(["Class / attr", "Vai trò"], [
+          ["<code>.stat</code>", "container — đặt <code>data-accent</code> để đổi màu"],
+          ["<code>.n</code>", "số lớn (chữ số canh cột)"],
+          ["<code>.l</code>", "nhãn bên dưới"],
+        ]) +
+                a11y(
           "Kèm số với nhãn chữ (như ở đây) để không phải là con số trơ. Nếu cập nhật động, bọc trong <code>aria-live=\"polite\"</code>.",
         ),
     },
@@ -3087,7 +3119,13 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   <span class="s">★</span>
 </span>`,
         ) +
-        a11y(
+h2("Parts") +
+        api(["Class", "Role"], [
+          ["<code>.rating</code>", "wrapper (add <code>role=img</code> + <code>aria-label</code>); <code>data-accent</code> recolors"],
+          ["<code>.s</code>", "one star"],
+          ["<code>.s.on</code>", "a filled star"],
+        ]) +
+                a11y(
           "Colour alone doesn't say the score, so give the wrapper <code>role=\"img\"</code> + an <code>aria-label</code> like <code>\"4 out of 5\"</code>. For an editable rating, use radio inputs instead.",
         ),
       vi: () =>
@@ -3099,7 +3137,13 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   <span class="s">★</span>
 </span>`,
         ) +
-        a11y(
+h2("Thành phần") +
+        api(["Class", "Vai trò"], [
+          ["<code>.rating</code>", "wrapper (thêm <code>role=img</code> + <code>aria-label</code>); <code>data-accent</code> đổi màu"],
+          ["<code>.s</code>", "một ngôi sao"],
+          ["<code>.s.on</code>", "sao đã tô"],
+        ]) +
+                a11y(
           "Chỉ màu thì không nói ra điểm, nên cho wrapper <code>role=\"img\"</code> + <code>aria-label</code> kiểu <code>\"4 trên 5\"</code>. Nếu cho chấm điểm được, hãy dùng radio thay thế.",
         ),
     },
@@ -3240,7 +3284,13 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   <dt>Status</dt><dd><span class="badge clear">READY</span></dd>
 </dl>`,
         ) +
-        a11y(
+h2("Parts") +
+        api(["Element", "Role"], [
+          ["<code>dl.datalist</code>", "the list"],
+          ["<code>dt</code>", "the term / key (mono, muted)"],
+          ["<code>dd</code>", "the value"],
+        ]) +
+                a11y(
           "Use native <code>&lt;dl&gt;</code>/<code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code> so the term–value pairing is exposed to assistive tech, not just visually aligned.",
         ),
       vi: () =>
@@ -3257,7 +3307,13 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   <dt>Trạng thái</dt><dd><span class="badge clear">SẴN SÀNG</span></dd>
 </dl>`,
         ) +
-        a11y(
+h2("Thành phần") +
+        api(["Element", "Vai trò"], [
+          ["<code>dl.datalist</code>", "danh sách"],
+          ["<code>dt</code>", "khoá / term (mono, mờ)"],
+          ["<code>dd</code>", "giá trị"],
+        ]) +
+                a11y(
           "Dùng <code>&lt;dl&gt;</code>/<code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code> gốc để cặp khoá–giá trị được công nghệ hỗ trợ hiểu, không chỉ canh hàng bằng mắt.",
         ),
     },
@@ -3287,7 +3343,14 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   <li>…</li>
 </ol>`,
         ) +
-        a11y(
+h2("Parts") +
+        api(["Class / element", "Role"], [
+          ["<code>ol.timeline</code>", "the list — <code>data-accent</code> tints the line + markers"],
+          ["<code>li</code>", "one event (square marker via <code>::before</code>)"],
+          ["<code>.time</code>", "the timestamp"],
+          ["<code>.title</code>", "the event title"],
+        ]) +
+                a11y(
           "An ordered list <code>&lt;ol&gt;</code> conveys sequence. The marker is decorative (<code>::before</code>) — the time and title carry the meaning.",
         ),
       vi: () =>
@@ -3306,7 +3369,14 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   <li>…</li>
 </ol>`,
         ) +
-        a11y(
+h2("Thành phần") +
+        api(["Class / element", "Vai trò"], [
+          ["<code>ol.timeline</code>", "danh sách — <code>data-accent</code> tô đường + marker"],
+          ["<code>li</code>", "một sự kiện (marker vuông qua <code>::before</code>)"],
+          ["<code>.time</code>", "mốc thời gian"],
+          ["<code>.title</code>", "tiêu đề sự kiện"],
+        ]) +
+                a11y(
           "Danh sách có thứ tự <code>&lt;ol&gt;</code> truyền tải trình tự. Marker chỉ trang trí (<code>::before</code>) — thời gian và tiêu đề mới tải nghĩa.",
         ),
     },
@@ -3330,7 +3400,10 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   <blockquote>A quiet aside.</blockquote>
 </article>`,
         ) +
-        a11y(
+h2("API") +
+        apiGroups({ attr: [["<code>data-accent</code>", "accent name", "—", "recolor links + list markers"]] }) +
+        p("Styles the native elements inside it — <code>h1–h4</code>, <code>p</code>, <code>ul/ol</code> (square bullets), <code>a</code>, <code>code</code>, <code>blockquote</code>, <code>table</code>, <code>hr</code> — with no classes on the children.") +
+                a11y(
           "Prose only styles what's inside it — headings, lists, and links keep their native semantics. Set <code>data-accent</code> on <code>.prose</code> to recolor links and markers.",
         ),
       vi: () =>
@@ -3343,7 +3416,10 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   <blockquote>Một ghi chú nhỏ.</blockquote>
 </article>`,
         ) +
-        a11y(
+h2("API") +
+        apiGroups({ attr: [["<code>data-accent</code>", "accent name", "—", "đổi màu link + marker list"]] }) +
+        p("Style các element gốc bên trong — <code>h1–h4</code>, <code>p</code>, <code>ul/ol</code> (bullet vuông), <code>a</code>, <code>code</code>, <code>blockquote</code>, <code>table</code>, <code>hr</code> — không cần class trên con.") +
+                a11y(
           "Prose chỉ style thứ bên trong nó — heading, list, link giữ ngữ nghĩa gốc. Đặt <code>data-accent</code> trên <code>.prose</code> để đổi màu link và marker.",
         ),
     },
@@ -4270,6 +4346,9 @@ ed.addEventListener("nes:mention", (e) => open(e.detail.value));`) +
             ["<code>::card-group</code>", "<a href='#/cardgroup'>CardGroup</a>", "<code>.card-group</code>"],
             ["<code>::field-group</code>", "<a href='#/fieldgroup'>FieldGroup</a>", "<code>.field-group</code>"],
             ["<code>::prompt</code>", "<a href='#/prompt'>Prompt</a>", "<code>.prompt</code>"],
+            ["<code>::terminal</code>", "<a href='#/terminal'>Terminal</a>", "<code>.terminal</code>"],
+            ["<code>::diff</code>", "<a href='#/diff'>Diff</a>", "<code>.diff</code>"],
+            ["<code>::tasklist</code> · <code>- [x]</code>", "<a href='#/tasklist'>Tasklist</a>", "<code>.tasklist</code>"],
             ["<code>::note / ::tip / ::warning</code>", "<a href='#/alert'>Alert</a>", "<code>.callout</code>"],
             ["<code>::accordion</code>", "<a href='#/accordion'>Accordion</a>", "<code>&lt;nes-collapsible&gt;</code>"],
             ["<code>::tabs</code>", "<a href='#/tabs'>Tabs</a>", "<code>&lt;nes-tabs&gt;</code>"],
@@ -4303,6 +4382,9 @@ ed.addEventListener("nes:mention", (e) => open(e.detail.value));`) +
             ["<code>::card-group</code>", "<a href='#/cardgroup'>CardGroup</a>", "<code>.card-group</code>"],
             ["<code>::field-group</code>", "<a href='#/fieldgroup'>FieldGroup</a>", "<code>.field-group</code>"],
             ["<code>::prompt</code>", "<a href='#/prompt'>Prompt</a>", "<code>.prompt</code>"],
+            ["<code>::terminal</code>", "<a href='#/terminal'>Terminal</a>", "<code>.terminal</code>"],
+            ["<code>::diff</code>", "<a href='#/diff'>Diff</a>", "<code>.diff</code>"],
+            ["<code>::tasklist</code> · <code>- [x]</code>", "<a href='#/tasklist'>Tasklist</a>", "<code>.tasklist</code>"],
             ["<code>::note / ::tip / ::warning</code>", "<a href='#/alert'>Alert</a>", "<code>.callout</code>"],
             ["<code>::accordion</code>", "<a href='#/accordion'>Accordion</a>", "<code>&lt;nes-collapsible&gt;</code>"],
             ["<code>::tabs</code>", "<a href='#/tabs'>Tabs</a>", "<code>&lt;nes-tabs&gt;</code>"],
@@ -4711,6 +4793,175 @@ ed.addEventListener("nes:mention", (e) => open(e.detail.value));`) +
         cb(`<div class="prompt">pnpm add 8bit-nes</div>
 <div class="prompt" data-accent="teal">deploy agent</div>`) +
         a11y("Con trỏ vẽ bằng <code>::before</code> (<code>content</code>) nên chỉ trang trí — không đọc lên hay copy; chỉ text lệnh thật mới có."),
+    },
+  },
+  {
+    id: "terminal",
+    cat: "Typography",
+    name: "Terminal",
+    desc: {
+      en: "A multi-line shell session — command lines (❯) + output. For rendering the install/run steps an AI agent writes.",
+      vi: "Phiên shell nhiều dòng — dòng lệnh (❯) + output. Để render các bước cài/chạy agent AI viết ra.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "TERMINAL",
+          `<div class="terminal" style="inline-size:100%;max-inline-size:min(520px,100%)"><span class="cmd">pnpm add 8bit-nes</span><span class="out ok">✓ added 1 package in 1.2s</span><span class="cmd">pnpm build</span><span class="out">bundling…</span><span class="out ok">✓ done in 12ms</span></div>`,
+          "col",
+        ) +
+        cb(`<div class="terminal">
+  <span class="cmd">pnpm build</span>
+  <span class="out ok">✓ done in 12ms</span>
+  <span class="err">✗ 1 error</span>
+</div>`) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.cmd</code>", "a command line (auto <code>❯</code> caret in the accent color)"],
+            ["<code>.out</code>", "an output line (muted)"],
+            ["<code>.ok</code> / <code>.err</code>", "tint an output line green / red"],
+          ],
+        ) +
+        a11y("Whitespace is preserved (<code>white-space: pre</code>); the caret is decorative (<code>::before</code>), so only real text is read/copied."),
+      vi: () =>
+        stage(
+          "TERMINAL",
+          `<div class="terminal" style="inline-size:100%;max-inline-size:min(520px,100%)"><span class="cmd">pnpm add 8bit-nes</span><span class="out ok">✓ added 1 package in 1.2s</span><span class="cmd">pnpm build</span><span class="out">bundling…</span><span class="out ok">✓ done in 12ms</span></div>`,
+          "col",
+        ) +
+        cb(`<div class="terminal">
+  <span class="cmd">pnpm build</span>
+  <span class="out ok">✓ done in 12ms</span>
+  <span class="err">✗ 1 error</span>
+</div>`) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.cmd</code>", "dòng lệnh (tự thêm con trỏ <code>❯</code> màu accent)"],
+            ["<code>.out</code>", "dòng output (mờ)"],
+            ["<code>.ok</code> / <code>.err</code>", "tô dòng output xanh / đỏ"],
+          ],
+        ) +
+        a11y("Giữ khoảng trắng (<code>white-space: pre</code>); con trỏ chỉ trang trí (<code>::before</code>) nên chỉ text thật được đọc/copy."),
+    },
+  },
+  {
+    id: "diff",
+    cat: "Typography",
+    name: "Diff",
+    desc: {
+      en: "A code-diff block — added / removed / context lines with a +/− gutter. For rendering the patches an AI coding agent proposes.",
+      vi: "Khối code-diff — dòng thêm / xóa / ngữ cảnh với gutter +/−. Để render patch mà agent code AI đề xuất.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "DIFF",
+          `<div class="diff" style="inline-size:100%;max-inline-size:min(520px,100%)"><span class="ctx">  const ai = createAgent({</span><span class="del">    model: "haiku",</span><span class="add">    model: "opus-4.8",</span><span class="ctx">  })</span></div>`,
+          "col",
+        ) +
+        cb(`<div class="diff">
+  <span class="ctx">  const ai = createAgent({</span>
+  <span class="del">    model: "haiku",</span>
+  <span class="add">    model: "opus-4.8",</span>
+  <span class="ctx">  })</span>
+</div>`) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.add</code>", "an added line (green, <code>+</code> gutter)"],
+            ["<code>.del</code>", "a removed line (red, <code>−</code> gutter)"],
+            ["<code>.ctx</code>", "an unchanged context line"],
+          ],
+        ) +
+        a11y("The +/− markers are drawn with <code>::before</code>, so a screen reader / copy gets the code without the gutter noise."),
+      vi: () =>
+        stage(
+          "DIFF",
+          `<div class="diff" style="inline-size:100%;max-inline-size:min(520px,100%)"><span class="ctx">  const ai = createAgent({</span><span class="del">    model: "haiku",</span><span class="add">    model: "opus-4.8",</span><span class="ctx">  })</span></div>`,
+          "col",
+        ) +
+        cb(`<div class="diff">
+  <span class="ctx">  const ai = createAgent({</span>
+  <span class="del">    model: "haiku",</span>
+  <span class="add">    model: "opus-4.8",</span>
+  <span class="ctx">  })</span>
+</div>`) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.add</code>", "dòng thêm (xanh, gutter <code>+</code>)"],
+            ["<code>.del</code>", "dòng xóa (đỏ, gutter <code>−</code>)"],
+            ["<code>.ctx</code>", "dòng ngữ cảnh không đổi"],
+          ],
+        ) +
+        a11y("Dấu +/− vẽ bằng <code>::before</code> nên screen reader / copy lấy code không dính gutter."),
+    },
+  },
+  {
+    id: "tasklist",
+    cat: "Typography",
+    name: "Tasklist",
+    desc: {
+      en: "A checklist — done + open items with square checkboxes. For rendering the plans / to-dos an AI agent emits (Markdown - [x]).",
+      vi: "Checklist — mục xong + chưa với ô vuông. Để render plan / to-do agent AI xuất ra (Markdown - [x]).",
+    },
+    body: {
+      en: () =>
+        stage(
+          "TASKLIST",
+          `<ul class="tasklist" style="inline-size:100%;max-inline-size:min(420px,100%)">
+            <li class="done">Scaffold the design tokens</li>
+            <li class="done">Build the component recipes</li>
+            <li>Wire the AI agent hooks</li>
+            <li>Ship v1</li>
+          </ul>`,
+          "col",
+        ) +
+        cb(`<ul class="tasklist">
+  <li class="done">Done item</li>
+  <li>Open item</li>
+</ul>`) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.tasklist</code>", "the list (put on <code>&lt;ul&gt;</code>)"],
+            ["<code>li</code>", "an open task (empty square)"],
+            ["<code>li.done</code>", "a done task (checked + struck through)"],
+          ],
+        ) +
+        a11y("It's a real <code>&lt;ul&gt;/&lt;li&gt;</code> — the checkbox glyph is decorative; convey done-state in the text too if it must be machine-read."),
+      vi: () =>
+        stage(
+          "TASKLIST",
+          `<ul class="tasklist" style="inline-size:100%;max-inline-size:min(420px,100%)">
+            <li class="done">Dựng design tokens</li>
+            <li class="done">Build recipe component</li>
+            <li>Nối hook AI agent</li>
+            <li>Ship v1</li>
+          </ul>`,
+          "col",
+        ) +
+        cb(`<ul class="tasklist">
+  <li class="done">Mục xong</li>
+  <li>Mục chưa</li>
+</ul>`) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.tasklist</code>", "list (đặt trên <code>&lt;ul&gt;</code>)"],
+            ["<code>li</code>", "task chưa xong (ô trống)"],
+            ["<code>li.done</code>", "task xong (tick + gạch ngang)"],
+          ],
+        ) +
+        a11y("Là <code>&lt;ul&gt;/&lt;li&gt;</code> thật — ô tick chỉ trang trí; nếu cần máy đọc trạng thái xong thì ghi cả vào text."),
     },
   },
 

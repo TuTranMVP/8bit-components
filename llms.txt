@@ -108,6 +108,9 @@ Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";
 - [CardGroup](https://tutranmvp.github.io/8bit-components/docs.html#/cardgroup) — `.card-group`: A responsive grid of cards that reflows by itself — the ::card-group embed. Drop any number of .card children in.
 - [FieldGroup](https://tutranmvp.github.io/8bit-components/docs.html#/fieldgroup) — `.field-group`: A bordered list of prop / parameter rows — the ::field-group embed. The clean way to render an API or config reference.
 - [Prompt](https://tutranmvp.github.io/8bit-components/docs.html#/prompt) — `.prompt`: A single terminal / AI command line with an accent caret (❯) — the ::prompt embed. For showing commands or an agent's input.
+- [Terminal](https://tutranmvp.github.io/8bit-components/docs.html#/terminal) — `.terminal`: A multi-line shell session — command lines (❯) + output. For rendering the install/run steps an AI agent writes.
+- [Diff](https://tutranmvp.github.io/8bit-components/docs.html#/diff) — `.diff`: A code-diff block — added / removed / context lines with a +/− gutter. For rendering the patches an AI coding agent proposes.
+- [Tasklist](https://tutranmvp.github.io/8bit-components/docs.html#/tasklist) — `.tasklist`: A checklist — done + open items with square checkboxes. For rendering the plans / to-dos an AI agent emits (Markdown - [x]).
 
 ## Visualize
 - [Visualize](https://tutranmvp.github.io/8bit-components/docs.html#/visualize) — `<nes-mermaid>`: Turn an AI agent's diagram output (Mermaid) into on-brand visuals, and teach a concept step-by-step. Mermaid is never bundled — bring your own or lazy-load it.
