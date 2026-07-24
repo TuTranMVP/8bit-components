@@ -656,7 +656,7 @@ const COMPONENTS = [
       en: () =>
         stage(
           "CARD",
-          `<div class="card" data-accent="gold" style="max-inline-size:300px">
+          `<div class="card" data-accent="gold" style="max-inline-size:min(300px,100%)">
             <div class="head"><span class="num">1</span><span class="title">Model &amp; budget</span></div>
             <p>Pick a model per task, not by default. Clamp <code>maxTokens</code> to stop cost drift.</p>
           </div>`,
@@ -687,7 +687,7 @@ const COMPONENTS = [
       vi: () =>
         stage(
           "CARD",
-          `<div class="card" data-accent="gold" style="max-inline-size:300px">
+          `<div class="card" data-accent="gold" style="max-inline-size:min(300px,100%)">
             <div class="head"><span class="num">1</span><span class="title">Model &amp; ngân sách</span></div>
             <p>Chọn model theo tác vụ, đừng theo mặc định. Kẹp <code>maxTokens</code> để chặn trôi chi phí.</p>
           </div>`,
@@ -983,12 +983,12 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       en: () =>
         stage(
           "INPUT",
-          `<label class="field" style="inline-size:100%;max-inline-size:340px">
+          `<label class="field" style="inline-size:100%;max-inline-size:min(340px,100%)">
             <span class="label">Project name</span>
             <input class="input" placeholder="my-agent">
             <span class="hint">Lowercase, no spaces.</span>
           </label>
-          <label class="field err" style="inline-size:100%;max-inline-size:340px">
+          <label class="field err" style="inline-size:100%;max-inline-size:min(340px,100%)">
             <span class="label">API key <span class="req">*</span></span>
             <input class="input" value="nope" aria-invalid="true">
             <span class="hint">A key is required.</span>
@@ -1018,12 +1018,12 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       vi: () =>
         stage(
           "INPUT",
-          `<label class="field" style="inline-size:100%;max-inline-size:340px">
+          `<label class="field" style="inline-size:100%;max-inline-size:min(340px,100%)">
             <span class="label">Tên dự án</span>
             <input class="input" placeholder="my-agent">
             <span class="hint">Viết thường, không dấu cách.</span>
           </label>
-          <label class="field err" style="inline-size:100%;max-inline-size:340px">
+          <label class="field err" style="inline-size:100%;max-inline-size:min(340px,100%)">
             <span class="label">API key <span class="req">*</span></span>
             <input class="input" value="nope" aria-invalid="true">
             <span class="hint">Cần có key.</span>
@@ -1064,7 +1064,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       en: () =>
         stage(
           "TEXTAREA",
-          `<label class="field" style="inline-size:100%;max-inline-size:420px">
+          `<label class="field" style="inline-size:100%;max-inline-size:min(420px,100%)">
             <span class="label">System prompt</span>
             <textarea class="textarea" placeholder="You are a terse coding agent…"></textarea>
           </label>`,
@@ -1080,7 +1080,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       vi: () =>
         stage(
           "TEXTAREA",
-          `<label class="field" style="inline-size:100%;max-inline-size:420px">
+          `<label class="field" style="inline-size:100%;max-inline-size:min(420px,100%)">
             <span class="label">System prompt</span>
             <textarea class="textarea" placeholder="Bạn là một coding agent xúc tích…"></textarea>
           </label>`,
@@ -1259,12 +1259,12 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       en: () =>
         stage(
           "FIELD",
-          `<div class="field" style="inline-size:100%;max-inline-size:360px">
+          `<div class="field" style="inline-size:100%;max-inline-size:min(360px,100%)">
             <span class="label">Temperature</span>
             <input class="input" value="0">
             <span class="hint">0 is deterministic; 1 is creative.</span>
           </div>
-          <div class="field err" style="inline-size:100%;max-inline-size:360px">
+          <div class="field err" style="inline-size:100%;max-inline-size:min(360px,100%)">
             <span class="label">Max tokens <span class="req">*</span></span>
             <input class="input" value="" aria-invalid="true">
             <span class="hint">Set a ceiling to cap cost.</span>
@@ -1291,12 +1291,12 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       vi: () =>
         stage(
           "FIELD",
-          `<div class="field" style="inline-size:100%;max-inline-size:360px">
+          `<div class="field" style="inline-size:100%;max-inline-size:min(360px,100%)">
             <span class="label">Temperature</span>
             <input class="input" value="0">
             <span class="hint">0 là tất định; 1 là sáng tạo.</span>
           </div>
-          <div class="field err" style="inline-size:100%;max-inline-size:360px">
+          <div class="field err" style="inline-size:100%;max-inline-size:min(360px,100%)">
             <span class="label">Max tokens <span class="req">*</span></span>
             <input class="input" value="" aria-invalid="true">
             <span class="hint">Đặt trần để chặn chi phí.</span>
@@ -1369,7 +1369,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       en: () =>
         stage(
           "INPUTDATE",
-          `<input type="date" class="input" value="2026-07-23" style="max-inline-size:200px" aria-label="Release date">`,
+          `<input type="date" class="input" value="2026-07-23" style="max-inline-size:min(200px,100%)" aria-label="Release date">`,
         ) +
         cb(`<input type="date" class="input" value="2026-07-23" aria-label="Release date">`) +
         api(
@@ -1384,7 +1384,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       vi: () =>
         stage(
           "INPUTDATE",
-          `<input type="date" class="input" value="2026-07-23" style="max-inline-size:200px" aria-label="Ngày phát hành">`,
+          `<input type="date" class="input" value="2026-07-23" style="max-inline-size:min(200px,100%)" aria-label="Ngày phát hành">`,
         ) +
         cb(`<input type="date" class="input" value="2026-07-23" aria-label="Ngày phát hành">`) +
         api(
@@ -1408,7 +1408,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
     },
     body: {
       en: () =>
-        stage("INPUTTIME", `<input type="time" class="input" value="13:37" style="max-inline-size:160px" aria-label="Start time">`) +
+        stage("INPUTTIME", `<input type="time" class="input" value="13:37" style="max-inline-size:min(160px,100%)" aria-label="Start time">`) +
         cb(`<input type="time" class="input" value="13:37" aria-label="Start time">`) +
         api(
           ["Attr", "Effect"],
@@ -1419,7 +1419,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
         ) +
         a11y("Pair with a label; the field announces hours/minutes as separate spin segments."),
       vi: () =>
-        stage("INPUTTIME", `<input type="time" class="input" value="13:37" style="max-inline-size:160px" aria-label="Giờ bắt đầu">`) +
+        stage("INPUTTIME", `<input type="time" class="input" value="13:37" style="max-inline-size:min(160px,100%)" aria-label="Giờ bắt đầu">`) +
         cb(`<input type="time" class="input" value="13:37" aria-label="Giờ bắt đầu">`) +
         api(
           ["Thuộc tính", "Tác dụng"],
@@ -1443,7 +1443,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       en: () =>
         stage(
           "CHECKBOXGROUP",
-          `<fieldset class="control-group" style="max-inline-size:320px">
+          `<fieldset class="control-group" style="max-inline-size:min(320px,100%)">
             <legend>Frameworks</legend>
             <label class="check"><input type="checkbox" class="checkbox" checked> Vue</label>
             <label class="check"><input type="checkbox" class="checkbox"> React</label>
@@ -1470,7 +1470,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       vi: () =>
         stage(
           "CHECKBOXGROUP",
-          `<fieldset class="control-group" style="max-inline-size:320px">
+          `<fieldset class="control-group" style="max-inline-size:min(320px,100%)">
             <legend>Framework</legend>
             <label class="check"><input type="checkbox" class="checkbox" checked> Vue</label>
             <label class="check"><input type="checkbox" class="checkbox"> React</label>
@@ -1508,7 +1508,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       en: () =>
         stage(
           "RADIOGROUP",
-          `<fieldset class="control-group row" style="max-inline-size:340px">
+          `<fieldset class="control-group row" style="max-inline-size:min(340px,100%)">
             <legend>Size</legend>
             <label class="check"><input type="radio" name="sz" class="radio" checked> Small</label>
             <label class="check"><input type="radio" name="sz" class="radio"> Medium</label>
@@ -1535,7 +1535,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       vi: () =>
         stage(
           "RADIOGROUP",
-          `<fieldset class="control-group row" style="max-inline-size:340px">
+          `<fieldset class="control-group row" style="max-inline-size:min(340px,100%)">
             <legend>Cỡ</legend>
             <label class="check"><input type="radio" name="sz" class="radio" checked> Nhỏ</label>
             <label class="check"><input type="radio" name="sz" class="radio"> Vừa</label>
@@ -1778,7 +1778,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       en: () =>
         stage(
           "LISTBOX",
-          `<nes-listbox name="stack" multiple value="vue" aria-label="Stack" style="max-inline-size:300px">
+          `<nes-listbox name="stack" multiple value="vue" aria-label="Stack" style="max-inline-size:min(300px,100%)">
             <script type="application/json">[{"value":"vue","label":"Vue"},{"value":"react","label":"React"},{"value":"svelte","label":"Svelte"}]</script>
           </nes-listbox>`,
           "col",
@@ -1802,7 +1802,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       vi: () =>
         stage(
           "LISTBOX",
-          `<nes-listbox name="stack" multiple value="vue" aria-label="Stack" style="max-inline-size:300px">
+          `<nes-listbox name="stack" multiple value="vue" aria-label="Stack" style="max-inline-size:min(300px,100%)">
             <script type="application/json">[{"value":"vue","label":"Vue"},{"value":"react","label":"React"},{"value":"svelte","label":"Svelte"}]</script>
           </nes-listbox>`,
           "col",
@@ -1837,7 +1837,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       en: () =>
         stage(
           "INPUTMENU",
-          `<nes-input-menu name="lang" placeholder="Type or pick…" value="Vue" aria-label="Language" style="max-inline-size:320px">
+          `<nes-input-menu name="lang" placeholder="Type or pick…" value="Vue" aria-label="Language" style="max-inline-size:min(320px,100%)">
             <script type="application/json">["Vue","React","Svelte","Solid","Angular","Qwik"]</script>
           </nes-input-menu>`,
           "col",
@@ -1858,7 +1858,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       vi: () =>
         stage(
           "INPUTMENU",
-          `<nes-input-menu name="lang" placeholder="Gõ hoặc chọn…" value="Vue" aria-label="Ngôn ngữ" style="max-inline-size:320px">
+          `<nes-input-menu name="lang" placeholder="Gõ hoặc chọn…" value="Vue" aria-label="Ngôn ngữ" style="max-inline-size:min(320px,100%)">
             <script type="application/json">["Vue","React","Svelte","Solid","Angular","Qwik"]</script>
           </nes-input-menu>`,
           "col",
@@ -1890,7 +1890,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       en: () =>
         stage(
           "SELECTMENU",
-          `<nes-select-menu name="model" placeholder="Choose model…" value="opus" aria-label="Model" style="max-inline-size:320px">
+          `<nes-select-menu name="model" placeholder="Choose model…" value="opus" aria-label="Model" style="max-inline-size:min(320px,100%)">
             <script type="application/json">[{"value":"opus","label":"Opus 4.8"},{"value":"sonnet","label":"Sonnet 5"},{"value":"haiku","label":"Haiku 4.5"}]</script>
           </nes-select-menu>`,
           "col",
@@ -1913,7 +1913,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       vi: () =>
         stage(
           "SELECTMENU",
-          `<nes-select-menu name="model" placeholder="Chọn model…" value="opus" aria-label="Model" style="max-inline-size:320px">
+          `<nes-select-menu name="model" placeholder="Chọn model…" value="opus" aria-label="Model" style="max-inline-size:min(320px,100%)">
             <script type="application/json">[{"value":"opus","label":"Opus 4.8"},{"value":"sonnet","label":"Sonnet 5"},{"value":"haiku","label":"Haiku 4.5"}]</script>
           </nes-select-menu>`,
           "col",
@@ -1947,7 +1947,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       en: () =>
         stage(
           "FORM",
-          `<nes-form aria-label="Signup demo" style="inline-size:100%;max-inline-size:380px">
+          `<nes-form aria-label="Signup demo" style="inline-size:100%;max-inline-size:min(380px,100%)">
             <label class="field"><span class="label">Email <span class="req">*</span></span>
               <input class="input" type="email" name="email" required placeholder="you@studio.dev"></label>
             <label class="field" style="margin-block-start:var(--sp-3)"><span class="label">Handle <span class="req">*</span></span>
@@ -1982,7 +1982,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       vi: () =>
         stage(
           "FORM",
-          `<nes-form aria-label="Demo đăng ký" style="inline-size:100%;max-inline-size:380px">
+          `<nes-form aria-label="Demo đăng ký" style="inline-size:100%;max-inline-size:min(380px,100%)">
             <label class="field"><span class="label">Email <span class="req">*</span></span>
               <input class="input" type="email" name="email" required placeholder="you@studio.dev"></label>
             <label class="field" style="margin-block-start:var(--sp-3)"><span class="label">Handle <span class="req">*</span></span>
@@ -3226,7 +3226,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       en: () =>
         stage(
           "TREE",
-          `<nes-tree name="path" aria-label="Project files" style="inline-size:100%;max-inline-size:340px">
+          `<nes-tree name="path" aria-label="Project files" style="inline-size:100%;max-inline-size:min(340px,100%)">
             <script type="application/json">[
               {"label":"src","expanded":true,"children":[
                 {"label":"index.ts"},
@@ -3266,7 +3266,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       vi: () =>
         stage(
           "TREE",
-          `<nes-tree name="path" aria-label="File dự án" style="inline-size:100%;max-inline-size:340px">
+          `<nes-tree name="path" aria-label="File dự án" style="inline-size:100%;max-inline-size:min(340px,100%)">
             <script type="application/json">[
               {"label":"src","expanded":true,"children":[
                 {"label":"index.ts"},
@@ -3319,7 +3319,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       en: () =>
         stage(
           "CHAT",
-          `<div class="chat" style="block-size:280px;inline-size:100%;max-inline-size:460px">
+          `<div class="chat" style="block-size:280px;inline-size:100%;max-inline-size:min(460px,100%)">
             <nes-chat-messages>
               <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span>
                 <div class="bubble">How can I help you build today?</div></div>
@@ -3350,7 +3350,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       vi: () =>
         stage(
           "CHAT",
-          `<div class="chat" style="block-size:280px;inline-size:100%;max-inline-size:460px">
+          `<div class="chat" style="block-size:280px;inline-size:100%;max-inline-size:min(460px,100%)">
             <nes-chat-messages>
               <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span>
                 <div class="bubble">Mình giúp bạn build gì hôm nay?</div></div>
@@ -3392,7 +3392,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       en: () =>
         stage(
           "CHATMESSAGES",
-          `<nes-chat-messages style="block-size:200px;max-inline-size:460px;border:var(--bw-2) solid var(--line-hi)">
+          `<nes-chat-messages style="block-size:200px;max-inline-size:min(460px,100%);border:var(--bw-2) solid var(--line-hi)">
             <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span><div class="bubble">Line one.</div></div>
             <div class="msg user"><span class="avatar sm">TU</span><div class="bubble">Got it.</div></div>
             <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span><div class="bubble">Streaming keeps this pinned to the bottom.</div></div>
@@ -3417,7 +3417,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       vi: () =>
         stage(
           "CHATMESSAGES",
-          `<nes-chat-messages style="block-size:200px;max-inline-size:460px;border:var(--bw-2) solid var(--line-hi)">
+          `<nes-chat-messages style="block-size:200px;max-inline-size:min(460px,100%);border:var(--bw-2) solid var(--line-hi)">
             <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span><div class="bubble">Dòng một.</div></div>
             <div class="msg user"><span class="avatar sm">TU</span><div class="bubble">Rõ.</div></div>
             <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span><div class="bubble">Stream sẽ luôn ghim xuống đáy.</div></div>
@@ -3453,7 +3453,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       en: () =>
         stage(
           "CHATMESSAGE",
-          `<div style="display:flex;flex-direction:column;gap:var(--sp-3);inline-size:100%;max-inline-size:460px">
+          `<div style="display:flex;flex-direction:column;gap:var(--sp-3);inline-size:100%;max-inline-size:min(460px,100%)">
             <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span><div class="bubble">I can generate that component for you.</div></div>
             <div class="msg user"><span class="avatar sm">TU</span><div class="bubble">Yes please — square corners.</div></div>
           </div>`,
@@ -3478,7 +3478,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       vi: () =>
         stage(
           "CHATMESSAGE",
-          `<div style="display:flex;flex-direction:column;gap:var(--sp-3);inline-size:100%;max-inline-size:460px">
+          `<div style="display:flex;flex-direction:column;gap:var(--sp-3);inline-size:100%;max-inline-size:min(460px,100%)">
             <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span><div class="bubble">Mình tạo component đó cho bạn được.</div></div>
             <div class="msg user"><span class="avatar sm">TU</span><div class="bubble">Ừ — góc vuông nhé.</div></div>
           </div>`,
@@ -3512,7 +3512,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
     },
     body: {
       en: () =>
-        stage("CHATPROMPT", `<nes-chat-prompt placeholder="Message the agent…" style="inline-size:100%;max-inline-size:460px"></nes-chat-prompt>`, "col") +
+        stage("CHATPROMPT", `<nes-chat-prompt placeholder="Message the agent…" style="inline-size:100%;max-inline-size:min(460px,100%)"></nes-chat-prompt>`, "col") +
         cb(
           `<nes-chat-prompt placeholder="Message…"></nes-chat-prompt>
 <script type="module">
@@ -3533,7 +3533,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
         ) +
         a11y("The textarea grows to fit and caps at 40vh; the button is a real <code>&lt;button&gt;</code> with an <code>aria-label</code> that flips Send↔Stop."),
       vi: () =>
-        stage("CHATPROMPT", `<nes-chat-prompt placeholder="Nhắn cho agent…" style="inline-size:100%;max-inline-size:460px"></nes-chat-prompt>`, "col") +
+        stage("CHATPROMPT", `<nes-chat-prompt placeholder="Nhắn cho agent…" style="inline-size:100%;max-inline-size:min(460px,100%)"></nes-chat-prompt>`, "col") +
         cb(
           `<nes-chat-prompt placeholder="Nhắn…"></nes-chat-prompt>
 <script type="module">
@@ -3612,7 +3612,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       en: () =>
         stage(
           "CHATREASONING",
-          `<details class="reasoning" open style="inline-size:100%;max-inline-size:460px">
+          `<details class="reasoning" open style="inline-size:100%;max-inline-size:min(460px,100%)">
             <summary>Reasoning</summary>
             <div class="body">User wants a form. Prefer native controls, one accent, square corners…</div>
           </details>`,
@@ -3628,7 +3628,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       vi: () =>
         stage(
           "CHATREASONING",
-          `<details class="reasoning" open style="inline-size:100%;max-inline-size:460px">
+          `<details class="reasoning" open style="inline-size:100%;max-inline-size:min(460px,100%)">
             <summary>Suy luận</summary>
             <div class="body">User muốn một form. Ưu tiên control gốc, một accent, góc vuông…</div>
           </details>`,
@@ -3655,7 +3655,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       en: () =>
         stage(
           "CHATTOOL",
-          `<details class="tool" open style="inline-size:100%;max-inline-size:460px">
+          `<details class="tool" open style="inline-size:100%;max-inline-size:min(460px,100%)">
             <summary><span class="tname">search_docs</span><span class="badge clear">done</span></summary>
             <div class="body">{ "query": "form module", "hits": 6 }</div>
           </details>`,
@@ -3679,7 +3679,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       vi: () =>
         stage(
           "CHATTOOL",
-          `<details class="tool" open style="inline-size:100%;max-inline-size:460px">
+          `<details class="tool" open style="inline-size:100%;max-inline-size:min(460px,100%)">
             <summary><span class="tname">search_docs</span><span class="badge clear">done</span></summary>
             <div class="body">{ "query": "form module", "hits": 6 }</div>
           </details>`,
@@ -3714,7 +3714,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       en: () =>
         stage(
           "CHATSHIMMER",
-          `<div class="msg assistant" style="max-inline-size:460px"><span class="avatar sm" data-accent="teal">AI</span>
+          `<div class="msg assistant" style="max-inline-size:min(460px,100%)"><span class="avatar sm" data-accent="teal">AI</span>
             <div class="bubble" style="inline-size:220px"><div class="shimmer"><span></span><span></span><span></span></div></div>
           </div>`,
           "col",
@@ -3728,7 +3728,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       vi: () =>
         stage(
           "CHATSHIMMER",
-          `<div class="msg assistant" style="max-inline-size:460px"><span class="avatar sm" data-accent="teal">AI</span>
+          `<div class="msg assistant" style="max-inline-size:min(460px,100%)"><span class="avatar sm" data-accent="teal">AI</span>
             <div class="bubble" style="inline-size:220px"><div class="shimmer"><span></span><span></span><span></span></div></div>
           </div>`,
           "col",
@@ -3753,7 +3753,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       en: () =>
         stage(
           "CHATPALETTE",
-          `<div class="chat-palette" style="block-size:300px;inline-size:100%;max-inline-size:420px">
+          `<div class="chat-palette" style="block-size:300px;inline-size:100%;max-inline-size:min(420px,100%)">
             <nes-chat-messages>
               <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span><div class="bubble">Ask me anything about the design system.</div></div>
               <div class="msg user"><span class="avatar sm">TU</span><div class="bubble">List the form components.</div></div>
@@ -3780,7 +3780,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       vi: () =>
         stage(
           "CHATPALETTE",
-          `<div class="chat-palette" style="block-size:300px;inline-size:100%;max-inline-size:420px">
+          `<div class="chat-palette" style="block-size:300px;inline-size:100%;max-inline-size:min(420px,100%)">
             <nes-chat-messages>
               <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span><div class="bubble">Hỏi mình bất cứ gì về design system.</div></div>
               <div class="msg user"><span class="avatar sm">TU</span><div class="bubble">Liệt kê các form component.</div></div>
@@ -3820,7 +3820,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       en: () =>
         stage(
           "EDITOR",
-          `<nes-editor autocomplete aria-label="Doc" style="max-inline-size:560px">
+          `<nes-editor autocomplete aria-label="Doc" style="max-inline-size:min(560px,100%)">
             <script type="application/json">{"mentions":[{"value":"n1","label":"Second Brain"},{"value":"n2","label":"Knowledge Engine"}]}</script>
             <h2>How it works</h2>
             <p>Type <b>/</b> for blocks, <b>@</b> to mention a note, <b>:</b> for emoji. Select text to format.</p>
@@ -3866,7 +3866,7 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
       vi: () =>
         stage(
           "EDITOR",
-          `<nes-editor autocomplete aria-label="Doc" style="max-inline-size:560px">
+          `<nes-editor autocomplete aria-label="Doc" style="max-inline-size:min(560px,100%)">
             <script type="application/json">{"mentions":[{"value":"n1","label":"Second Brain"},{"value":"n2","label":"Knowledge Engine"}]}</script>
             <h2>How it works</h2>
             <p>Gõ <b>/</b> để chèn khối, <b>@</b> để nhắc note, <b>:</b> cho emoji. Bôi đen chữ để format.</p>
@@ -4123,7 +4123,7 @@ function radioStage() {
 function selectStage(label) {
   return stage(
     "SELECT",
-    `<label class="field" style="inline-size:100%;max-inline-size:340px">
+    `<label class="field" style="inline-size:100%;max-inline-size:min(340px,100%)">
       <span class="label">${label}</span>
       <select class="select">
         <option>claude-haiku-4-5</option>
@@ -4137,7 +4137,7 @@ function selectStage(label) {
 function skeletonStage() {
   return stage(
     "SKELETON",
-    `<div style="inline-size:100%;max-inline-size:420px;display:flex;flex-direction:column;gap:var(--sp-3)">
+    `<div style="inline-size:100%;max-inline-size:min(420px,100%);display:flex;flex-direction:column;gap:var(--sp-3)">
       <span class="skeleton" style="inline-size:45%"></span>
       <span class="skeleton"></span>
       <span class="skeleton" style="inline-size:80%"></span>
@@ -4220,7 +4220,7 @@ function spinnerStage() {
 function rangeStage(label) {
   return stage(
     "RANGE",
-    `<div style="inline-size:100%;max-inline-size:420px;display:flex;flex-direction:column;gap:var(--sp-4)">
+    `<div style="inline-size:100%;max-inline-size:min(420px,100%);display:flex;flex-direction:column;gap:var(--sp-4)">
       <label class="field">
         <span class="label">${label}</span>
         <input class="range" type="range" min="0" max="100" value="70" aria-label="${label}">
@@ -4270,7 +4270,7 @@ function meterStage() {
 function emptyStage(t) {
   return stage(
     "EMPTY",
-    `<div class="empty" style="inline-size:100%;max-inline-size:440px">
+    `<div class="empty" style="inline-size:100%;max-inline-size:min(440px,100%)">
       <div class="icon" aria-hidden="true">${t.icon}</div>
       <div class="title">${t.title}</div>
       <p>${t.body}</p>
@@ -4336,7 +4336,7 @@ function navlistStage(items, current, lab) {
     .join("\n      ");
   return stage(
     "NAVLIST",
-    `<nav class="navlist" aria-label="Demo" style="inline-size:100%;max-inline-size:240px">
+    `<nav class="navlist" aria-label="Demo" style="inline-size:100%;max-inline-size:min(240px,100%)">
       <span class="lab">${lab}</span>
       ${links}
     </nav>`,
@@ -4346,7 +4346,7 @@ function navlistStage(items, current, lab) {
 function datalistStage(rows) {
   return stage(
     "DATALIST",
-    `<dl class="datalist" style="inline-size:100%;max-inline-size:420px">${rows
+    `<dl class="datalist" style="inline-size:100%;max-inline-size:min(420px,100%)">${rows
       .map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`)
       .join("")}</dl>`,
     "col",
@@ -4355,7 +4355,7 @@ function datalistStage(rows) {
 function timelineStage(items) {
   return stage(
     "TIMELINE",
-    `<ol class="timeline" data-accent="good" style="inline-size:100%;max-inline-size:460px">${items
+    `<ol class="timeline" data-accent="good" style="inline-size:100%;max-inline-size:min(460px,100%)">${items
       .map(
         ([time, title, body]) =>
           `<li><div class="time">${time}</div><div class="title">${title}</div><p class="doc-p" style="margin:var(--sp-1) 0 0">${body}</p></li>`,
