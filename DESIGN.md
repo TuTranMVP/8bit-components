@@ -185,6 +185,7 @@ Words are design material — they help someone use the thing.
 | Data       | Table · Code block · Accordion (`<nes-collapsible>`) · Stat · Rating · Description list · Timeline · Prose · Tree (`<nes-tree>`)           |
 | Chat (AI)  | Chat · ChatMessages (`<nes-chat-messages>`) · ChatMessage · ChatPrompt (`<nes-chat-prompt>`) · ChatPromptSubmit · ChatReasoning · ChatTool · ChatShimmer · ChatPalette |
 | Editor (AI) | Editor (`<nes-editor>`) · EditorToolbar · EditorSuggestionMenu (`/`) · EditorMentionMenu (`@`) · EditorEmojiMenu (`:`) · EditorDragHandle — contenteditable, Tab autocomplete, AI hook |
+| Typography (MDC) | CodePreview (`.code-preview`) · CodeGroup (`<nes-tabs class="code-group">`) · CodeCollapse (`<details class="code-collapse">`) · CodeTree (`<nes-code-tree>`) · CardGroup (`.card-group`) · FieldGroup (`.field-group`) · Prompt (`.prompt`) — the render target for AI-streamed Markdown/MDC output, not a parser |
 
 Live docs: `pnpm demo`, then open `/docs.html`.
 

@@ -99,6 +99,16 @@ Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";
 - [EditorEmojiMenu](https://tutranmvp.github.io/8bit-components/docs.html#/editoremojimenu) — `<nes-editor> :`: The colon (:) emoji picker — type :name to filter a built-in set and insert the emoji. No dependency, no image sprite.
 - [EditorDragHandle](https://tutranmvp.github.io/8bit-components/docs.html#/editordraghandle) — `.editor-drag`: A grip (⠿) that appears at the start of the hovered block; drag it to reorder blocks. Pure HTML5 drag — no library.
 
+## Typography
+- [Typography](https://tutranmvp.github.io/8bit-components/docs.html#/typography) — `.prose`: Render an AI agent's streamed Markdown / MDC output as beautiful, on-brand HTML — prose embeds (::code-preview, ::code-group, ::field-group…) that map onto real components.
+- [CodePreview](https://tutranmvp.github.io/8bit-components/docs.html#/codepreview) — `.code-preview`: Live rendered result on top, its source below — the ::code-preview embed. The “here's the component, here's the code” block.
+- [CodeGroup](https://tutranmvp.github.io/8bit-components/docs.html#/codegroup) — `<nes-tabs class="code-group">`: Tab between several code blocks in one frame — the ::code-group embed. Perfect for pnpm/npm/yarn or multi-language snippets.
+- [CodeCollapse](https://tutranmvp.github.io/8bit-components/docs.html#/codecollapse) — `<details class="code-collapse">`: Hide a long code block behind a toggle — the ::code-collapse embed. Native <details>, zero JS.
+- [CodeTree](https://tutranmvp.github.io/8bit-components/docs.html#/codetree) — `<nes-code-tree>`: File tree on the left, syntax-highlighted viewer on the right — the ::code-tree embed. Ideal for rendering a repo or multi-file snippet an agent generated.
+- [CardGroup](https://tutranmvp.github.io/8bit-components/docs.html#/cardgroup) — `.card-group`: A responsive grid of cards that reflows by itself — the ::card-group embed. Drop any number of .card children in.
+- [FieldGroup](https://tutranmvp.github.io/8bit-components/docs.html#/fieldgroup) — `.field-group`: A bordered list of prop / parameter rows — the ::field-group embed. The clean way to render an API or config reference.
+- [Prompt](https://tutranmvp.github.io/8bit-components/docs.html#/prompt) — `.prompt`: A single terminal / AI command line with an accent caret (❯) — the ::prompt embed. For showing commands or an agent's input.
+
 ## Optional
 - [Full flat-text reference for RAG](https://tutranmvp.github.io/8bit-components/llms-full.txt)
 - [Structured JSON manifest](https://tutranmvp.github.io/8bit-components/components.json)

@@ -69,8 +69,9 @@ const CAT_ACCENT = {
   Data: "warn",
   Chat: "teal",
   Editor: "indigo",
+  Typography: "pink",
 };
-const CAT_ORDER = ["Element", "Form", "Feedback", "Navigation", "Overlay", "Data", "Chat", "Editor"];
+const CAT_ORDER = ["Element", "Form", "Feedback", "Navigation", "Overlay", "Data", "Chat", "Editor", "Typography"];
 
 /* ===================================================================== */
 /*  GETTING STARTED                                                       */
@@ -4040,6 +4041,472 @@ ed.addEventListener("nes:mention", (e) => open(e.detail.value));`) +
 .editor-content .drop-before,
 .editor-content .drop-after { /* vạch thả màu accent */ }`) +
         a11y("Kéo-thả là tăng cường trực quan; nội dung vẫn sửa được đầy đủ và sắp xếp bằng phím (cut/paste) vẫn chạy. Trên cảm ứng, kéo khối bằng long-press."),
+    },
+  },
+
+  /* --------------------------------------------- TYPOGRAPHY / MDC (render) */
+  {
+    id: "typography",
+    cat: "Typography",
+    name: "Typography",
+    desc: {
+      en: "Render an AI agent's streamed Markdown / MDC output as beautiful, on-brand HTML — prose embeds (::code-preview, ::code-group, ::field-group…) that map onto real components.",
+      vi: "Render output Markdown / MDC agent AI stream ra thành HTML đẹp, đúng brand — bộ prose embed (::code-preview, ::code-group, ::field-group…) ánh xạ sang component thật.",
+    },
+    body: {
+      en: () =>
+        p("An AI agent streams <strong>Markdown</strong> — and MDC (Markdown + Components). This module is the <em>render target</em>: it ships the styled result, <strong>not a parser</strong>. Your renderer (or any lightweight MDC engine) turns text into HTML; these recipes make that HTML look like the rest of the system — square frames, hard shadow, one accent per block.") +
+        p("The base is <a href='#/prose'>Prose</a> (<code>.prose</code> — rhythm for headings, lists, links, tables). Inside it, MDC block components map 1:1 onto recipes you already have:") +
+        h2("MDC → component map") +
+        api(
+          ["MDC syntax", "Renders as", "Selector"],
+          [
+            ["<code>::code-preview</code>", "<a href='#/codepreview'>CodePreview</a>", "<code>.code-preview</code>"],
+            ["<code>::code-group</code>", "<a href='#/codegroup'>CodeGroup</a>", "<code>&lt;nes-tabs class='code-group'&gt;</code>"],
+            ["<code>::code-collapse</code>", "<a href='#/codecollapse'>CodeCollapse</a>", "<code>&lt;details class='code-collapse'&gt;</code>"],
+            ["<code>::code-tree</code>", "<a href='#/codetree'>CodeTree</a>", "<code>&lt;nes-code-tree&gt;</code>"],
+            ["<code>::card-group</code>", "<a href='#/cardgroup'>CardGroup</a>", "<code>.card-group</code>"],
+            ["<code>::field-group</code>", "<a href='#/fieldgroup'>FieldGroup</a>", "<code>.field-group</code>"],
+            ["<code>::prompt</code>", "<a href='#/prompt'>Prompt</a>", "<code>.prompt</code>"],
+            ["<code>::note / ::tip / ::warning</code>", "<a href='#/alert'>Alert</a>", "<code>.callout</code>"],
+            ["<code>::accordion</code>", "<a href='#/accordion'>Accordion</a>", "<code>&lt;nes-collapsible&gt;</code>"],
+            ["<code>::tabs</code>", "<a href='#/tabs'>Tabs</a>", "<code>&lt;nes-tabs&gt;</code>"],
+            ["<code>::card</code> · <code>::steps</code>", "<a href='#/card'>Card</a> · <a href='#/steps'>Steps</a>", "<code>.card</code> · <code>.steps</code>"],
+            ["<code>:kbd</code> · <code>:badge</code> · <code>:icon</code>", "Kbd · Badge · Icon", "<code>.kbd</code> · <code>.badge</code> · <code>&lt;nes-icon&gt;</code>"],
+          ],
+        ) +
+        p("<strong>Why no parser?</strong> Same reason the Chat and Editor modules don't ship a model: parsing is heavy and opinionated, rendering is light and universal. Keep them decoupled — pipe any Markdown/MDC engine's HTML into these classes and it just works, with zero bytes of parser in your bundle.") +
+        cb(`<article class="prose">
+  <h2>Deploying your agent</h2>
+  <p>Run the command, then open the dashboard.</p>
+
+  <!-- streamed ::code-preview → -->
+  <div class="code-preview">
+    <div class="preview"><button class="btn">Deploy</button></div>
+    <nes-code>&lt;button class="btn"&gt;Deploy&lt;/button&gt;</nes-code>
+  </div>
+</article>`) +
+        a11y("Everything renders to native, semantic HTML — headings stay headings, code stays <code>&lt;pre&gt;</code>, tabs use the ARIA <code>tablist</code> pattern. Streaming-safe: each block is self-contained, so a half-streamed document still degrades gracefully."),
+      vi: () =>
+        p("Agent AI stream <strong>Markdown</strong> — và MDC (Markdown + Components). Module này là <em>đích render</em>: nó ship kết quả đã style, <strong>không phải parser</strong>. Bộ render của bạn (hoặc engine MDC nhẹ bất kỳ) biến text thành HTML; các recipe này làm HTML đó trông đúng hệ thống — khung vuông, đổ bóng cứng, một accent mỗi khối.") +
+        p("Nền tảng là <a href='#/prose'>Prose</a> (<code>.prose</code> — nhịp cho heading, list, link, bảng). Bên trong nó, các component khối MDC ánh xạ 1:1 sang recipe bạn đã có:") +
+        h2("Ánh xạ MDC → component") +
+        api(
+          ["Cú pháp MDC", "Render thành", "Selector"],
+          [
+            ["<code>::code-preview</code>", "<a href='#/codepreview'>CodePreview</a>", "<code>.code-preview</code>"],
+            ["<code>::code-group</code>", "<a href='#/codegroup'>CodeGroup</a>", "<code>&lt;nes-tabs class='code-group'&gt;</code>"],
+            ["<code>::code-collapse</code>", "<a href='#/codecollapse'>CodeCollapse</a>", "<code>&lt;details class='code-collapse'&gt;</code>"],
+            ["<code>::code-tree</code>", "<a href='#/codetree'>CodeTree</a>", "<code>&lt;nes-code-tree&gt;</code>"],
+            ["<code>::card-group</code>", "<a href='#/cardgroup'>CardGroup</a>", "<code>.card-group</code>"],
+            ["<code>::field-group</code>", "<a href='#/fieldgroup'>FieldGroup</a>", "<code>.field-group</code>"],
+            ["<code>::prompt</code>", "<a href='#/prompt'>Prompt</a>", "<code>.prompt</code>"],
+            ["<code>::note / ::tip / ::warning</code>", "<a href='#/alert'>Alert</a>", "<code>.callout</code>"],
+            ["<code>::accordion</code>", "<a href='#/accordion'>Accordion</a>", "<code>&lt;nes-collapsible&gt;</code>"],
+            ["<code>::tabs</code>", "<a href='#/tabs'>Tabs</a>", "<code>&lt;nes-tabs&gt;</code>"],
+            ["<code>::card</code> · <code>::steps</code>", "<a href='#/card'>Card</a> · <a href='#/steps'>Steps</a>", "<code>.card</code> · <code>.steps</code>"],
+            ["<code>:kbd</code> · <code>:badge</code> · <code>:icon</code>", "Kbd · Badge · Icon", "<code>.kbd</code> · <code>.badge</code> · <code>&lt;nes-icon&gt;</code>"],
+          ],
+        ) +
+        p("<strong>Sao không có parser?</strong> Cùng lý do module Chat và Editor không ship model: parse thì nặng và thiên kiến, render thì nhẹ và phổ quát. Tách rời chúng ra — đổ HTML từ engine Markdown/MDC bất kỳ vào các class này là chạy, không tốn byte parser nào trong bundle.") +
+        cb(`<article class="prose">
+  <h2>Triển khai agent</h2>
+  <p>Chạy lệnh, rồi mở dashboard.</p>
+
+  <!-- ::code-preview đã stream → -->
+  <div class="code-preview">
+    <div class="preview"><button class="btn">Deploy</button></div>
+    <nes-code>&lt;button class="btn"&gt;Deploy&lt;/button&gt;</nes-code>
+  </div>
+</article>`) +
+        a11y("Tất cả render ra HTML gốc, semantic — heading vẫn là heading, code vẫn là <code>&lt;pre&gt;</code>, tab dùng pattern ARIA <code>tablist</code>. An toàn khi stream: mỗi khối tự chứa, nên tài liệu stream dở vẫn xuống cấp mượt."),
+    },
+  },
+  {
+    id: "codepreview",
+    cat: "Typography",
+    name: "CodePreview",
+    desc: {
+      en: "Live rendered result on top, its source below — the ::code-preview embed. The “here's the component, here's the code” block.",
+      vi: "Kết quả render sống ở trên, code nguồn ở dưới — embed ::code-preview. Khối “đây là component, đây là code”.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CODE-PREVIEW",
+          `<div class="code-preview" style="inline-size:100%;max-inline-size:min(460px,100%)">
+            <div class="preview">
+              <button class="btn">Deploy</button>
+              <button class="btn outline" data-accent="cyan">Preview</button>
+            </div>
+            <nes-code>&lt;button class="btn"&gt;Deploy&lt;/button&gt;</nes-code>
+          </div>`,
+          "col",
+        ) +
+        cb(`<div class="code-preview">
+  <div class="preview">
+    <button class="btn">Deploy</button>
+  </div>
+  <nes-code>&lt;button class="btn"&gt;Deploy&lt;/button&gt;</nes-code>
+</div>`) +
+        h2("Anatomy") +
+        api(
+          ["Part", "Role"],
+          [
+            ["<code>.preview</code>", "top region — the live rendered result (flex, wraps, centered)"],
+            ["<code>&lt;nes-code&gt;</code> / <code>.codeblock</code>", "source below; its own frame is stripped — the wrapper is the frame"],
+          ],
+        ) +
+        a11y("The preview is real, interactive DOM (not a screenshot), so it stays fully keyboard- and screen-reader-accessible. The code block keeps its own copy button."),
+      vi: () =>
+        stage(
+          "CODE-PREVIEW",
+          `<div class="code-preview" style="inline-size:100%;max-inline-size:min(460px,100%)">
+            <div class="preview">
+              <button class="btn">Deploy</button>
+              <button class="btn outline" data-accent="cyan">Preview</button>
+            </div>
+            <nes-code>&lt;button class="btn"&gt;Deploy&lt;/button&gt;</nes-code>
+          </div>`,
+          "col",
+        ) +
+        cb(`<div class="code-preview">
+  <div class="preview">
+    <button class="btn">Deploy</button>
+  </div>
+  <nes-code>&lt;button class="btn"&gt;Deploy&lt;/button&gt;</nes-code>
+</div>`) +
+        h2("Cấu tạo") +
+        api(
+          ["Phần", "Vai trò"],
+          [
+            ["<code>.preview</code>", "vùng trên — kết quả render sống (flex, tự xuống dòng, canh giữa)"],
+            ["<code>&lt;nes-code&gt;</code> / <code>.codeblock</code>", "code nguồn ở dưới; khung riêng bị lược — wrapper chính là khung"],
+          ],
+        ) +
+        a11y("Preview là DOM thật, tương tác được (không phải ảnh chụp), nên vẫn truy cập đầy đủ bằng bàn phím và screen reader. Code block giữ nút copy riêng."),
+    },
+  },
+  {
+    id: "codegroup",
+    cat: "Typography",
+    name: "CodeGroup",
+    desc: {
+      en: "Tab between several code blocks in one frame — the ::code-group embed. Perfect for pnpm/npm/yarn or multi-language snippets.",
+      vi: "Chuyển tab giữa nhiều code block trong một khung — embed ::code-group. Hợp cho pnpm/npm/yarn hoặc snippet đa ngôn ngữ.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CODE-GROUP",
+          `<nes-tabs class="code-group" style="inline-size:100%;max-inline-size:min(460px,100%)">
+            <section data-label="pnpm" selected><nes-code>pnpm add 8bit-nes</nes-code></section>
+            <section data-label="npm"><nes-code>npm i 8bit-nes</nes-code></section>
+            <section data-label="yarn"><nes-code>yarn add 8bit-nes</nes-code></section>
+          </nes-tabs>`,
+          "col",
+        ) +
+        cb(`<nes-tabs class="code-group">
+  <section data-label="pnpm" selected>
+    <nes-code>pnpm add 8bit-nes</nes-code>
+  </section>
+  <section data-label="npm">
+    <nes-code>npm i 8bit-nes</nes-code>
+  </section>
+</nes-tabs>`) +
+        p("It is the <a href='#/tabs'>Tabs</a> element with a <code>code-group</code> class — you get keyboard tab nav for free, and each panel's code frame merges into the group frame.") +
+        a11y("Inherits the full ARIA <code>tablist</code> pattern from <code>&lt;nes-tabs&gt;</code>: ←/→ switch tabs, each panel is a labelled <code>tabpanel</code>."),
+      vi: () =>
+        stage(
+          "CODE-GROUP",
+          `<nes-tabs class="code-group" style="inline-size:100%;max-inline-size:min(460px,100%)">
+            <section data-label="pnpm" selected><nes-code>pnpm add 8bit-nes</nes-code></section>
+            <section data-label="npm"><nes-code>npm i 8bit-nes</nes-code></section>
+            <section data-label="yarn"><nes-code>yarn add 8bit-nes</nes-code></section>
+          </nes-tabs>`,
+          "col",
+        ) +
+        cb(`<nes-tabs class="code-group">
+  <section data-label="pnpm" selected>
+    <nes-code>pnpm add 8bit-nes</nes-code>
+  </section>
+  <section data-label="npm">
+    <nes-code>npm i 8bit-nes</nes-code>
+  </section>
+</nes-tabs>`) +
+        p("Đây là element <a href='#/tabs'>Tabs</a> gắn class <code>code-group</code> — bạn có điều hướng tab bằng phím miễn phí, và khung code từng panel gộp vào khung nhóm.") +
+        a11y("Kế thừa toàn bộ pattern ARIA <code>tablist</code> từ <code>&lt;nes-tabs&gt;</code>: ←/→ đổi tab, mỗi panel là <code>tabpanel</code> có nhãn."),
+    },
+  },
+  {
+    id: "codecollapse",
+    cat: "Typography",
+    name: "CodeCollapse",
+    desc: {
+      en: "Hide a long code block behind a toggle — the ::code-collapse embed. Native <details>, zero JS.",
+      vi: "Giấu code block dài sau một nút gạt — embed ::code-collapse. Dùng <details> gốc, không JS.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CODE-COLLAPSE",
+          `<details class="code-collapse" style="inline-size:100%;max-inline-size:min(460px,100%)">
+            <summary>Show full config</summary>
+            <nes-code>{ "build": true, "minify": true, "target": "esnext" }</nes-code>
+          </details>`,
+          "col",
+        ) +
+        cb(`<details class="code-collapse">
+  <summary>Show full config</summary>
+  <nes-code>{ "build": true }</nes-code>
+</details>`) +
+        a11y("Native <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code> — keyboard toggle (Enter/Space) and open/closed state are built in, no ARIA needed."),
+      vi: () =>
+        stage(
+          "CODE-COLLAPSE",
+          `<details class="code-collapse" style="inline-size:100%;max-inline-size:min(460px,100%)">
+            <summary>Show full config</summary>
+            <nes-code>{ "build": true, "minify": true, "target": "esnext" }</nes-code>
+          </details>`,
+          "col",
+        ) +
+        cb(`<details class="code-collapse">
+  <summary>Show full config</summary>
+  <nes-code>{ "build": true }</nes-code>
+</details>`) +
+        a11y("<code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code> gốc — gạt bằng phím (Enter/Space) và trạng thái mở/đóng có sẵn, không cần ARIA."),
+    },
+  },
+  {
+    id: "codetree",
+    cat: "Typography",
+    name: "CodeTree",
+    desc: {
+      en: "File tree on the left, syntax-highlighted viewer on the right — the ::code-tree embed. Ideal for rendering a repo or multi-file snippet an agent generated.",
+      vi: "Cây file bên trái, trình xem tô màu bên phải — embed ::code-tree. Lý tưởng để render repo hoặc snippet nhiều file agent tạo ra.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CODE-TREE",
+          `<nes-code-tree aria-label="Project" style="inline-size:100%">
+            <script type="application/json">[
+              {"label":"src","icon":"📁","expanded":true,"children":[
+                {"label":"index.ts","icon":"📄","code":"import { mount } from './app'\\n\\nmount(document.body)"},
+                {"label":"app.ts","icon":"📄","code":"export function mount(root) {\\n  root.innerHTML = '<h1>Hi</h1>'\\n}"}
+              ]},
+              {"label":"README.md","icon":"📄","code":"# my-agent\\n\\nBuilt with 8bit-nes."}
+            ]</script>
+          </nes-code-tree>`,
+          "col",
+        ) +
+        cb(`<nes-code-tree aria-label="Project">
+  <script type="application/json">
+    [{ "label": "src", "expanded": true, "children": [
+        { "label": "index.ts", "code": "import { mount } from './app'" }
+    ]},
+    { "label": "README.md", "code": "# my-agent" }]
+  </script>
+</nes-code-tree>`) +
+        h2("API") +
+        api(
+          ["JSON node field", "Meaning"],
+          [
+            ["<code>label</code>", "display name (required)"],
+            ["<code>code</code>", "file source — its presence makes the node a selectable <em>file</em>; omit it for a folder"],
+            ["<code>children</code>", "child nodes → makes the node a folder"],
+            ["<code>expanded</code>", "start the folder open"],
+            ["<code>icon</code>", "optional leading glyph (📁 / 📄 / ⚙ …)"],
+          ],
+        ) +
+        a11y("Built on the ARIA <code>tree</code> pattern (<code>role=tree/treeitem/group</code>, <code>aria-expanded</code>, <code>aria-selected</code>, <code>aria-level</code>). Folders toggle on click; files load into the viewer, which keeps a copy button. The first file is auto-selected."),
+      vi: () =>
+        stage(
+          "CODE-TREE",
+          `<nes-code-tree aria-label="Dự án" style="inline-size:100%">
+            <script type="application/json">[
+              {"label":"src","icon":"📁","expanded":true,"children":[
+                {"label":"index.ts","icon":"📄","code":"import { mount } from './app'\\n\\nmount(document.body)"},
+                {"label":"app.ts","icon":"📄","code":"export function mount(root) {\\n  root.innerHTML = '<h1>Hi</h1>'\\n}"}
+              ]},
+              {"label":"README.md","icon":"📄","code":"# my-agent\\n\\nBuilt with 8bit-nes."}
+            ]</script>
+          </nes-code-tree>`,
+          "col",
+        ) +
+        cb(`<nes-code-tree aria-label="Dự án">
+  <script type="application/json">
+    [{ "label": "src", "expanded": true, "children": [
+        { "label": "index.ts", "code": "import { mount } from './app'" }
+    ]},
+    { "label": "README.md", "code": "# my-agent" }]
+  </script>
+</nes-code-tree>`) +
+        h2("API") +
+        api(
+          ["Trường node JSON", "Ý nghĩa"],
+          [
+            ["<code>label</code>", "tên hiển thị (bắt buộc)"],
+            ["<code>code</code>", "code file — có nó thì node là <em>file</em> chọn được; bỏ đi thì là folder"],
+            ["<code>children</code>", "node con → biến node thành folder"],
+            ["<code>expanded</code>", "mở sẵn folder"],
+            ["<code>icon</code>", "glyph đầu tùy chọn (📁 / 📄 / ⚙ …)"],
+          ],
+        ) +
+        a11y("Theo pattern ARIA <code>tree</code> (<code>role=tree/treeitem/group</code>, <code>aria-expanded</code>, <code>aria-selected</code>, <code>aria-level</code>). Folder gập/mở khi click; file nạp vào trình xem có nút copy. File đầu tiên tự được chọn."),
+    },
+  },
+  {
+    id: "cardgroup",
+    cat: "Typography",
+    name: "CardGroup",
+    desc: {
+      en: "A responsive grid of cards that reflows by itself — the ::card-group embed. Drop any number of .card children in.",
+      vi: "Lưới card responsive tự dàn lại — embed ::card-group. Bỏ số card bất kỳ vào.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CARD-GROUP",
+          `<div class="card-group" style="inline-size:100%">
+            <a class="card" data-accent="blue"><div class="head"><span class="title">Guides</span></div><p>Step-by-step tutorials.</p></a>
+            <a class="card" data-accent="teal"><div class="head"><span class="title">API</span></div><p>Full reference.</p></a>
+            <a class="card" data-accent="pink"><div class="head"><span class="title">Examples</span></div><p>Copy-paste recipes.</p></a>
+          </div>`,
+          "col",
+        ) +
+        cb(`<div class="card-group">
+  <a class="card"><div class="head"><span class="title">Guides</span></div><p>…</p></a>
+  <a class="card"><div class="head"><span class="title">API</span></div><p>…</p></a>
+</div>`) +
+        p("Columns are automatic: <code>repeat(auto-fill, minmax(min(100%, 240px), 1fr))</code> — one column on a phone, as many as fit on a wide screen, never overflowing.") +
+        a11y("Just a layout wrapper — the cards keep their own semantics. Use a real <code>&lt;a&gt;</code> for linked cards so they stay focusable."),
+      vi: () =>
+        stage(
+          "CARD-GROUP",
+          `<div class="card-group" style="inline-size:100%">
+            <a class="card" data-accent="blue"><div class="head"><span class="title">Hướng dẫn</span></div><p>Tutorial từng bước.</p></a>
+            <a class="card" data-accent="teal"><div class="head"><span class="title">API</span></div><p>Tài liệu đầy đủ.</p></a>
+            <a class="card" data-accent="pink"><div class="head"><span class="title">Ví dụ</span></div><p>Recipe copy-paste.</p></a>
+          </div>`,
+          "col",
+        ) +
+        cb(`<div class="card-group">
+  <a class="card"><div class="head"><span class="title">Hướng dẫn</span></div><p>…</p></a>
+  <a class="card"><div class="head"><span class="title">API</span></div><p>…</p></a>
+</div>`) +
+        p("Số cột tự động: <code>repeat(auto-fill, minmax(min(100%, 240px), 1fr))</code> — một cột trên điện thoại, bao nhiêu vừa thì bấy nhiêu trên màn rộng, không bao giờ tràn.") +
+        a11y("Chỉ là wrapper layout — card giữ ngữ nghĩa riêng. Dùng <code>&lt;a&gt;</code> thật cho card có link để vẫn focus được."),
+    },
+  },
+  {
+    id: "fieldgroup",
+    cat: "Typography",
+    name: "FieldGroup",
+    desc: {
+      en: "A bordered list of prop / parameter rows — the ::field-group embed. The clean way to render an API or config reference.",
+      vi: "Danh sách hàng prop / tham số có viền — embed ::field-group. Cách gọn để render tài liệu API hoặc config.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "FIELD-GROUP",
+          `<div class="field-group" style="inline-size:100%;max-inline-size:min(500px,100%)">
+            <div class="field-row">
+              <span class="name">accent</span><span class="type">string</span>
+              <p>Accent name applied to the block. Defaults to <code>good</code>.</p>
+            </div>
+            <div class="field-row">
+              <span class="name">timeout</span><span class="type">number</span><span class="req">*</span>
+              <p>Auto-dismiss delay in ms; 0 keeps it until removed.</p>
+            </div>
+          </div>`,
+          "col",
+        ) +
+        cb(`<div class="field-group">
+  <div class="field-row">
+    <span class="name">accent</span>
+    <span class="type">string</span>
+    <p>Accent name applied to the block.</p>
+  </div>
+</div>`) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.field-row</code>", "one parameter; stack as many as needed"],
+            ["<code>.name</code>", "the prop name (mono, bold)"],
+            ["<code>.type</code>", "its type (cyan mono)"],
+            ["<code>.req</code>", "a red <code>*</code> required marker"],
+            ["<code>p</code>", "the description (muted)"],
+          ],
+        ) +
+        a11y("Semantic text rows — no special roles needed. For a full comparison matrix, use the standard <a href='#/table'>Table</a> instead."),
+      vi: () =>
+        stage(
+          "FIELD-GROUP",
+          `<div class="field-group" style="inline-size:100%;max-inline-size:min(500px,100%)">
+            <div class="field-row">
+              <span class="name">accent</span><span class="type">string</span>
+              <p>Tên accent áp cho khối. Mặc định <code>good</code>.</p>
+            </div>
+            <div class="field-row">
+              <span class="name">timeout</span><span class="type">number</span><span class="req">*</span>
+              <p>Thời gian tự ẩn (ms); 0 giữ đến khi bị gỡ.</p>
+            </div>
+          </div>`,
+          "col",
+        ) +
+        cb(`<div class="field-group">
+  <div class="field-row">
+    <span class="name">accent</span>
+    <span class="type">string</span>
+    <p>Tên accent áp cho khối.</p>
+  </div>
+</div>`) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.field-row</code>", "một tham số; xếp bao nhiêu tùy ý"],
+            ["<code>.name</code>", "tên prop (mono, đậm)"],
+            ["<code>.type</code>", "kiểu của nó (mono cyan)"],
+            ["<code>.req</code>", "dấu <code>*</code> bắt buộc màu đỏ"],
+            ["<code>p</code>", "mô tả (mờ)"],
+          ],
+        ) +
+        a11y("Hàng text semantic — không cần role đặc biệt. Cần ma trận so sánh đầy đủ thì dùng <a href='#/table'>Table</a> chuẩn."),
+    },
+  },
+  {
+    id: "prompt",
+    cat: "Typography",
+    name: "Prompt",
+    desc: {
+      en: "A single terminal / AI command line with an accent caret (❯) — the ::prompt embed. For showing commands or an agent's input.",
+      vi: "Một dòng lệnh terminal / AI với con trỏ nhấn (❯) — embed ::prompt. Để hiện lệnh hoặc input của agent.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "PROMPT",
+          `<div class="prompt" style="inline-size:100%;max-inline-size:min(460px,100%)">pnpm add 8bit-nes</div>
+           <div class="prompt" data-accent="teal" style="inline-size:100%;max-inline-size:min(460px,100%)">deploy my agent to production</div>`,
+          "col",
+        ) +
+        cb(`<div class="prompt">pnpm add 8bit-nes</div>
+<div class="prompt" data-accent="teal">deploy my agent</div>`) +
+        a11y("The caret is drawn with <code>::before</code> (<code>content</code>), so it is decorative — not read aloud or copied; only the real command text is."),
+      vi: () =>
+        stage(
+          "PROMPT",
+          `<div class="prompt" style="inline-size:100%;max-inline-size:min(460px,100%)">pnpm add 8bit-nes</div>
+           <div class="prompt" data-accent="teal" style="inline-size:100%;max-inline-size:min(460px,100%)">deploy agent lên production</div>`,
+          "col",
+        ) +
+        cb(`<div class="prompt">pnpm add 8bit-nes</div>
+<div class="prompt" data-accent="teal">deploy agent</div>`) +
+        a11y("Con trỏ vẽ bằng <code>::before</code> (<code>content</code>) nên chỉ trang trí — không đọc lên hay copy; chỉ text lệnh thật mới có."),
     },
   },
 ];
