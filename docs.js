@@ -5873,34 +5873,52 @@ const pageEl = document.getElementById("page");
 let tocObs = null;
 function buildToc() {
   const toc = document.getElementById("toc");
-  if (!toc) return;
+  const tocm = document.getElementById("tocm");
   tocObs?.disconnect();
   const heads = [...pageEl.querySelectorAll(".doc-h2")];
   if (heads.length < 2) {
-    toc.hidden = true;
-    toc.innerHTML = "";
+    if (toc) {
+      toc.hidden = true;
+      toc.innerHTML = "";
+    }
+    if (tocm) {
+      tocm.hidden = true;
+      tocm.open = false;
+    }
     return;
   }
   const used = {};
-  const links = heads.map((h) => {
-    let id = slug(h.textContent);
-    if (used[id]) id += `-${used[id]++}`;
-    else used[id] = 1;
-    h.id = id;
-    return `<button class="toc-link" type="button" data-to="${id}">${esc(h.textContent)}</button>`;
-  });
-  toc.hidden = false;
-  toc.innerHTML = `<span class="toc-lab">${UI[LANG].onpage}</span>${links.join("")}`;
+  const links = heads
+    .map((h) => {
+      let id = slug(h.textContent);
+      if (used[id]) id += `-${used[id]++}`;
+      else used[id] = 1;
+      h.id = id;
+      return `<button class="toc-link" type="button" data-to="${id}">${esc(h.textContent)}</button>`;
+    })
+    .join("");
+  if (toc) {
+    toc.hidden = false;
+    toc.innerHTML = `<span class="toc-lab">${UI[LANG].onpage}</span>${links}`;
+  }
+  if (tocm) {
+    tocm.hidden = false;
+    tocm.open = false;
+    tocm.querySelector(".toc-m-lab").textContent = `${UI[LANG].onpage} · ${heads.length}`;
+    tocm.querySelector(".toc-m-list").innerHTML = links;
+  }
 
-  const map = new Map([...toc.querySelectorAll(".toc-link")].map((a) => [a.dataset.to, a]));
-  map.get(heads[0].id)?.setAttribute("aria-current", "true"); // sensible default
+  // scroll-spy over BOTH the desktop rail and the mobile bar
+  const setCurrent = (id) => {
+    for (const a of document.querySelectorAll('.toc-link[aria-current="true"]'))
+      a.removeAttribute("aria-current");
+    for (const a of document.querySelectorAll(`.toc-link[data-to="${id}"]`))
+      a.setAttribute("aria-current", "true");
+  };
+  setCurrent(heads[0].id); // sensible default
   tocObs = new IntersectionObserver(
     (entries) => {
-      for (const en of entries) {
-        if (!en.isIntersecting) continue;
-        for (const a of map.values()) a.removeAttribute("aria-current");
-        map.get(en.target.id)?.setAttribute("aria-current", "true");
-      }
+      for (const en of entries) if (en.isIntersecting) setCurrent(en.target.id);
     },
     { rootMargin: `-${TOP_H + 8}px 0px -68% 0px`, threshold: 0 },
   );
@@ -5970,6 +5988,7 @@ document.addEventListener("click", (e) => {
   const tl = e.target.closest(".toc-link");
   if (tl) {
     document.getElementById(tl.dataset.to)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    tl.closest(".toc-m")?.removeAttribute("open"); // collapse the mobile bar after a tap
     return;
   }
   const lb = e.target.closest("[data-lang]");

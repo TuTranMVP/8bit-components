@@ -455,6 +455,53 @@
       border-inline-start-color: var(--primary);
     }
 
+    /* ---- mobile "On this page": a collapsible sticky bar (the right rail is
+         dropped ≤1180px, so the TOC lives here instead). Clean + one-tap. ---- */
+    .toc-m {
+      display: none;
+      margin-block-end: var(--sp-5);
+      background: var(--panel);
+      border: var(--bw-2) solid var(--line-hi);
+    }
+
+    .toc-m>summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-2);
+      padding: var(--sp-3) var(--sp-4);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--primary);
+    }
+
+    .toc-m>summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .toc-m>summary::after {
+      content: "▾";
+      transition: rotate var(--dur-fast);
+    }
+
+    .toc-m[open]>summary::after {
+      rotate: 180deg;
+    }
+
+    .toc-m-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-1);
+      padding: 0 var(--sp-3) var(--sp-3);
+      max-block-size: 50dvh;
+      overflow-y: auto;
+      border-block-start: var(--bw) solid var(--line-hi);
+    }
+
     /* ---- drop the TOC rail before it crowds the content ---- */
     @media (max-width:1180px) {
       .app {
@@ -463,6 +510,18 @@
 
       .toc {
         display: none;
+      }
+
+      .toc-m:not([hidden]) {
+        display: block;
+        position: sticky;
+        inset-block-start: var(--top-h);
+        z-index: 20;
+      }
+
+      /* headings clear the header + the collapsed TOC bar when scrolled to */
+      .doc-h2 {
+        scroll-margin-top: calc(var(--top-h) + 3.4rem);
       }
     }
 
@@ -556,6 +615,10 @@
     <div class="scrim" data-menu></div>
     <main class="content" id="main">
       <div class="doc-wrap">
+        <details class="toc-m" id="tocm" hidden>
+          <summary><span class="toc-m-lab"></span></summary>
+          <div class="toc-m-list"></div>
+        </details>
         <article id="page" tabindex="-1"></article>
       </div>
     </main>
