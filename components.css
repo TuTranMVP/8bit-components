@@ -252,6 +252,14 @@
     &.quest {
       --accent: var(--purple);
     }
+
+    &.info {
+      --accent: var(--blue);
+    }
+
+    &.warn {
+      --accent: var(--warn);
+    }
   }
 
   /* ------------------------------------------------------------------ BADGE */

@@ -327,6 +327,22 @@
       padding: .25em .7em;
     }
 
+    /* typed API sub-tables: a small mono caption per kind (Attributes / Props / … ) */
+    .api-group+.api-group {
+      margin-block-start: var(--sp-5);
+    }
+
+    .api-kind {
+      display: block;
+      margin-block-end: var(--sp-2);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--accent, var(--good));
+    }
+
     .grid-cards {
       display: grid;
       gap: var(--sp-5);

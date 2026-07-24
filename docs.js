@@ -64,6 +64,60 @@ const api = (cols, rows) =>
     .map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join("")}</tr>`)
     .join("")}</tbody></table></div>`;
 
+/* ---- callouts: one glance = the critical thing to know. Four semantic kinds. */
+const CALLOUT = {
+  note: { cls: "info", label: { en: "NOTE", vi: "LƯU Ý" } },
+  tip: { cls: "tip", label: { en: "TIP", vi: "MẸO" } },
+  warn: { cls: "warn", label: { en: "CAUTION", vi: "THẬN TRỌNG" } },
+  crit: { cls: "gotcha", label: { en: "CRITICAL", vi: "QUAN TRỌNG" } },
+};
+const callout = (kind, t) => {
+  const c = CALLOUT[kind] || CALLOUT.note;
+  return `<div class="callout ${c.cls}"><b>${tr(c.label)}</b> — ${t}</div>`;
+};
+const note = (t) => callout("note", t);
+const warn = (t) => callout("warn", t);
+const crit = (t) => callout("crit", t);
+
+/* ---- typed API tables: one small grid per kind (Attributes / Props / Methods /
+   Events / Slots), every row = Name · Type · Default · Meaning. Read one table →
+   use the component; no source-diving. Pass only the groups that apply.
+   Row shape: [name, type, default, meaning]; slot rows: [name, meaning]. */
+const API_KIND = {
+  attr: { en: "Attributes", vi: "Thuộc tính (HTML)" },
+  prop: { en: "Properties (JS)", vi: "Property (JS)" },
+  method: { en: "Methods", vi: "Method" },
+  event: { en: "Events", vi: "Sự kiện" },
+  slot: { en: "Content / slots", vi: "Nội dung / slot" },
+};
+const API_COL = {
+  name: { en: "Name", vi: "Tên" },
+  type: { en: "Type", vi: "Kiểu" },
+  def: { en: "Default", vi: "Mặc định" },
+  desc: { en: "Meaning", vi: "Ý nghĩa" },
+};
+function apiGroups(groups) {
+  const th = (c) => `<th>${c}</th>`;
+  const td = (c) => `<td>${c == null || c === "" ? "—" : c}</td>`;
+  let out = "";
+  for (const kind of ["attr", "prop", "method", "event", "slot"]) {
+    const rows = groups[kind];
+    if (!rows || !rows.length) continue;
+    const isSlot = kind === "slot";
+    const cols = isSlot
+      ? [tr(API_COL.name), tr(API_COL.desc)]
+      : [tr(API_COL.name), tr(API_COL.type), tr(API_COL.def), tr(API_COL.desc)];
+    const body = rows
+      .map((r) => `<tr>${(isSlot ? [r[0], r[1]] : [r[0], r[1], r[2], r[3]]).map(td).join("")}</tr>`)
+      .join("");
+    out +=
+      `<div class="api-group"><span class="api-kind">${tr(API_KIND[kind])}</span>` +
+      `<div class="table-wrap"><table class="table"><thead><tr>${cols.map(th).join("")}</tr></thead>` +
+      `<tbody>${body}</tbody></table></div></div>`;
+  }
+  return out;
+}
+
 const CAT_ACCENT = {
   Element: "gold",
   Form: "blue",
@@ -1579,30 +1633,28 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       en: () =>
         stage("INPUTNUMBER", `<nes-number name="qty" min="1" max="8" value="2" aria-label="Players"></nes-number>`) +
         cb(`<nes-number name="qty" min="1" max="8" value="2" aria-label="Players"></nes-number>`) +
-        api(
-          ["Attr / prop", "Meaning"],
-          [
-            ["<code>name</code>", "submitted form key"],
-            ["<code>min</code> / <code>max</code> / <code>step</code>", "clamp + increment"],
-            ["<code>value</code>", "initial number"],
-            ["<code>.value</code> (prop)", "read the current value"],
-            ["<code>nes:change</code>", "fires with <code>{ value }</code>"],
+        apiGroups({
+          attr: [
+            ["<code>name</code>", "string", "—", "form key on submit"],
+            ["<code>min</code> / <code>max</code> / <code>step</code>", "number", "<code>step=1</code>", "clamp bounds + increment"],
+            ["<code>value</code>", "number", "—", "initial number"],
           ],
-        ) +
+          prop: [["<code>.value</code>", "string", "—", "current value (native input string)"]],
+          event: [["<code>nes:change</code>", "<code>{ value }</code>", "—", "the value changed"]],
+        }) +
         a11y("Buttons are real <code>&lt;button&gt;</code>s; the field is a real number input, so keyboard ↑/↓ and typing both work."),
       vi: () =>
         stage("INPUTNUMBER", `<nes-number name="qty" min="1" max="8" value="2" aria-label="Người chơi"></nes-number>`) +
         cb(`<nes-number name="qty" min="1" max="8" value="2" aria-label="Người chơi"></nes-number>`) +
-        api(
-          ["Attr / prop", "Ý nghĩa"],
-          [
-            ["<code>name</code>", "khóa form khi submit"],
-            ["<code>min</code> / <code>max</code> / <code>step</code>", "kẹp + bước tăng"],
-            ["<code>value</code>", "số ban đầu"],
-            ["<code>.value</code> (prop)", "đọc giá trị hiện tại"],
-            ["<code>nes:change</code>", "bắn kèm <code>{ value }</code>"],
+        apiGroups({
+          attr: [
+            ["<code>name</code>", "string", "—", "khóa form khi submit"],
+            ["<code>min</code> / <code>max</code> / <code>step</code>", "number", "<code>step=1</code>", "cận kẹp + bước tăng"],
+            ["<code>value</code>", "number", "—", "số ban đầu"],
           ],
-        ) +
+          prop: [["<code>.value</code>", "string", "—", "giá trị hiện tại (chuỗi input gốc)"]],
+          event: [["<code>nes:change</code>", "<code>{ value }</code>", "—", "giá trị thay đổi"]],
+        }) +
         a11y("Nút là <code>&lt;button&gt;</code> thật; ô là number input thật, nên ↑/↓ bàn phím và gõ tay đều chạy."),
     },
   },
@@ -1624,16 +1676,16 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
         ) +
         cb(`<nes-rating name="score" max="5" value="3"></nes-rating>
 <nes-rating max="5" value="4" readonly></nes-rating>`) +
-        api(
-          ["Attr / prop", "Meaning"],
-          [
-            ["<code>max</code>", "star count (default 5)"],
-            ["<code>value</code>", "initial score"],
-            ["<code>readonly</code>", "display only (role=img)"],
-            ["<code>size=\"lg\"</code>","larger stars"],
-            ["<code>nes:change</code>", "fires with <code>{ value }</code>"],
+        apiGroups({
+          attr: [
+            ["<code>max</code>", "number", "<code>5</code>", "number of stars"],
+            ["<code>value</code>", "number", "<code>0</code>", "initial score"],
+            ["<code>readonly</code>", "boolean", "<code>false</code>", "display only (<code>role=img</code>)"],
+            ["<code>size</code>", '<code>"lg"</code>', "—", "larger stars"],
           ],
-        ) +
+          prop: [["<code>.value</code>", "number", "<code>0</code>", "current score"]],
+          event: [["<code>nes:change</code>", "<code>{ value }</code>", "—", "the score changed"]],
+        }) +
         a11y("Interactive mode is a <code>radiogroup</code> with roving focus and ←/→ keys; read-only mode is an <code>img</code> with an <code>aria-label</code> like “4 of 5”."),
       vi: () =>
         stage(
@@ -1644,16 +1696,16 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
         ) +
         cb(`<nes-rating name="score" max="5" value="3"></nes-rating>
 <nes-rating max="5" value="4" readonly></nes-rating>`) +
-        api(
-          ["Attr / prop", "Ý nghĩa"],
-          [
-            ["<code>max</code>", "số sao (mặc định 5)"],
-            ["<code>value</code>", "điểm ban đầu"],
-            ["<code>readonly</code>", "chỉ hiển thị (role=img)"],
-            ["<code>size=\"lg\"</code>","sao to hơn"],
-            ["<code>nes:change</code>", "bắn kèm <code>{ value }</code>"],
+        apiGroups({
+          attr: [
+            ["<code>max</code>", "number", "<code>5</code>", "số sao"],
+            ["<code>value</code>", "number", "<code>0</code>", "điểm ban đầu"],
+            ["<code>readonly</code>", "boolean", "<code>false</code>", "chỉ hiển thị (<code>role=img</code>)"],
+            ["<code>size</code>", '<code>"lg"</code>', "—", "sao to hơn"],
           ],
-        ) +
+          prop: [["<code>.value</code>", "number", "<code>0</code>", "điểm hiện tại"]],
+          event: [["<code>nes:change</code>", "<code>{ value }</code>", "—", "điểm thay đổi"]],
+        }) +
         a11y("Chế độ tương tác là <code>radiogroup</code> với roving focus và phím ←/→; chế độ readonly là <code>img</code> với <code>aria-label</code> như “4 trên 5”."),
     },
   },
@@ -1669,30 +1721,36 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       en: () =>
         stage("PININPUT", `<nes-pin length="4" name="otp" numeric aria-label="One-time code"></nes-pin>`) +
         cb(`<nes-pin length="6" name="otp" numeric></nes-pin>`) +
-        api(
-          ["Attr / event", "Meaning"],
-          [
-            ["<code>length</code>", "number of cells (default 4)"],
-            ["<code>numeric</code>", "digits only + numeric keypad"],
-            ["<code>mask</code>", "obscure like a password"],
-            ["<code>nes:change</code>", "fires each edit"],
-            ["<code>nes:complete</code>", "fires with <code>{ value }</code> when full"],
+        apiGroups({
+          attr: [
+            ["<code>length</code>", "number", "<code>4</code>", "number of cells"],
+            ["<code>numeric</code>", "boolean", "<code>false</code>", "digits only + numeric keypad"],
+            ["<code>mask</code>", "boolean", "<code>false</code>", "obscure entry like a password"],
+            ["<code>name</code>", "string", "—", "form key for the joined value"],
           ],
-        ) +
+          prop: [["<code>.value</code>", "string", '<code>""</code>', "current code (read-only)"]],
+          event: [
+            ["<code>nes:change</code>", "<code>{ value }</code>", "—", "fires on each edit"],
+            ["<code>nes:complete</code>", "<code>{ value }</code>", "—", "all cells filled"],
+          ],
+        }) +
         a11y("Each cell is a labelled input; Backspace steps back, ←/→ move, and a paste fills across the cells."),
       vi: () =>
         stage("PININPUT", `<nes-pin length="4" name="otp" numeric aria-label="Mã OTP"></nes-pin>`) +
         cb(`<nes-pin length="6" name="otp" numeric></nes-pin>`) +
-        api(
-          ["Attr / event", "Ý nghĩa"],
-          [
-            ["<code>length</code>", "số ô (mặc định 4)"],
-            ["<code>numeric</code>", "chỉ số + bàn phím số"],
-            ["<code>mask</code>", "che như mật khẩu"],
-            ["<code>nes:change</code>", "bắn mỗi lần sửa"],
-            ["<code>nes:complete</code>", "bắn kèm <code>{ value }</code> khi đầy"],
+        apiGroups({
+          attr: [
+            ["<code>length</code>", "number", "<code>4</code>", "số ô"],
+            ["<code>numeric</code>", "boolean", "<code>false</code>", "chỉ số + bàn phím số"],
+            ["<code>mask</code>", "boolean", "<code>false</code>", "che như mật khẩu"],
+            ["<code>name</code>", "string", "—", "khóa form cho value đã nối"],
           ],
-        ) +
+          prop: [["<code>.value</code>", "string", '<code>""</code>', "mã hiện tại (chỉ đọc)"]],
+          event: [
+            ["<code>nes:change</code>", "<code>{ value }</code>", "—", "bắn mỗi lần sửa"],
+            ["<code>nes:complete</code>", "<code>{ value }</code>", "—", "khi đầy tất cả ô"],
+          ],
+        }) +
         a11y("Mỗi ô là input có nhãn; Backspace lùi, ←/→ di chuyển, và dán sẽ điền tràn qua các ô."),
     },
   },
@@ -1708,28 +1766,28 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       en: () =>
         stage("INPUTTAGS", `<nes-tags name="labels" value="agent,retro" placeholder="add tag…" aria-label="Labels"></nes-tags>`, "col") +
         cb(`<nes-tags name="labels" value="agent,retro" placeholder="add tag…"></nes-tags>`) +
-        api(
-          ["Attr / prop", "Meaning"],
-          [
-            ["<code>value</code>", "comma-separated initial tags"],
-            ["<code>max</code>", "cap the number of tags"],
-            ["<code>.value</code> (prop)", "current tags as <code>string[]</code>"],
-            ["<code>nes:change</code>", "fires with <code>{ value: string[] }</code>"],
+        apiGroups({
+          attr: [
+            ["<code>name</code>", "string", "—", "form key (hidden input, comma-joined)"],
+            ["<code>value</code>", "string", "—", "comma-separated initial tags"],
+            ["<code>max</code>", "number", "—", "cap the number of tags"],
           ],
-        ) +
+          prop: [["<code>.value</code>", "string[]", "<code>[]</code>", "current tags (read-only)"]],
+          event: [["<code>nes:change</code>", "<code>{ value: string[] }</code>", "—", "the tag list changed"]],
+        }) +
         a11y("A hidden <code>&lt;input name&gt;</code> carries the comma-joined value, so it submits inside any form with zero wiring."),
       vi: () =>
         stage("INPUTTAGS", `<nes-tags name="labels" value="agent,retro" placeholder="thêm tag…" aria-label="Nhãn"></nes-tags>`, "col") +
         cb(`<nes-tags name="labels" value="agent,retro" placeholder="thêm tag…"></nes-tags>`) +
-        api(
-          ["Attr / prop", "Ý nghĩa"],
-          [
-            ["<code>value</code>", "tag ban đầu, ngăn bởi dấu phẩy"],
-            ["<code>max</code>", "giới hạn số tag"],
-            ["<code>.value</code> (prop)", "tag hiện tại dạng <code>string[]</code>"],
-            ["<code>nes:change</code>", "bắn kèm <code>{ value: string[] }</code>"],
+        apiGroups({
+          attr: [
+            ["<code>name</code>", "string", "—", "khóa form (input ẩn, nối dấu phẩy)"],
+            ["<code>value</code>", "string", "—", "tag ban đầu, ngăn bởi dấu phẩy"],
+            ["<code>max</code>", "number", "—", "giới hạn số tag"],
           ],
-        ) +
+          prop: [["<code>.value</code>", "string[]", "<code>[]</code>", "tag hiện tại (chỉ đọc)"]],
+          event: [["<code>nes:change</code>", "<code>{ value: string[] }</code>", "—", "danh sách tag thay đổi"]],
+        }) +
         a11y("Một <code>&lt;input name&gt;</code> ẩn giữ value nối bằng dấu phẩy, nên nó submit trong mọi form mà không cần nối tay."),
     },
   },
@@ -1745,30 +1803,30 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
       en: () =>
         stage("FILEUPLOAD", `<nes-file name="asset" accept="image/*" multiple label="Drop art or click"></nes-file>`, "col") +
         cb(`<nes-file name="asset" accept="image/*" multiple label="Drop art or click"></nes-file>`) +
-        api(
-          ["Attr / prop", "Meaning"],
-          [
-            ["<code>name</code>", "form field name"],
-            ["<code>accept</code>", "MIME / extension filter"],
-            ["<code>multiple</code>", "allow more than one file"],
-            ["<code>.files</code> (prop)", "chosen files as <code>File[]</code>"],
-            ["<code>nes:change</code>", "fires with <code>{ files }</code>"],
+        apiGroups({
+          attr: [
+            ["<code>name</code>", "string", "—", "form field name"],
+            ["<code>accept</code>", "string", "—", "MIME / extension filter"],
+            ["<code>multiple</code>", "boolean", "<code>false</code>", "allow more than one file"],
+            ["<code>label</code>", "string", "—", "prompt text inside the drop zone"],
           ],
-        ) +
+          prop: [["<code>.files</code>", "File[]", "<code>[]</code>", "chosen files (read-only)"]],
+          event: [["<code>nes:change</code>", "<code>{ files }</code>", "—", "the file selection changed"]],
+        }) +
         a11y("The drop target is a real <code>&lt;button&gt;</code> that opens the native picker — fully keyboard-operable, drag is an enhancement."),
       vi: () =>
         stage("FILEUPLOAD", `<nes-file name="asset" accept="image/*" multiple label="Thả ảnh hoặc click"></nes-file>`, "col") +
         cb(`<nes-file name="asset" accept="image/*" multiple label="Thả ảnh hoặc click"></nes-file>`) +
-        api(
-          ["Attr / prop", "Ý nghĩa"],
-          [
-            ["<code>name</code>", "tên field trong form"],
-            ["<code>accept</code>", "lọc MIME / đuôi file"],
-            ["<code>multiple</code>", "cho phép nhiều file"],
-            ["<code>.files</code> (prop)", "file đã chọn dạng <code>File[]</code>"],
-            ["<code>nes:change</code>", "bắn kèm <code>{ files }</code>"],
+        apiGroups({
+          attr: [
+            ["<code>name</code>", "string", "—", "tên field trong form"],
+            ["<code>accept</code>", "string", "—", "lọc MIME / đuôi file"],
+            ["<code>multiple</code>", "boolean", "<code>false</code>", "cho phép nhiều file"],
+            ["<code>label</code>", "string", "—", "chữ nhắc trong vùng thả"],
           ],
-        ) +
+          prop: [["<code>.files</code>", "File[]", "<code>[]</code>", "file đã chọn (chỉ đọc)"]],
+          event: [["<code>nes:change</code>", "<code>{ files }</code>", "—", "lựa chọn file thay đổi"]],
+        }) +
         a11y("Vùng thả là <code>&lt;button&gt;</code> thật mở picker gốc — thao tác bàn phím đầy đủ, kéo-thả chỉ là bổ sung."),
     },
   },
@@ -1794,16 +1852,16 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
     [{ "value": "vue", "label": "Vue" }, { "value": "react", "label": "React" }]
   </script>
 </nes-listbox>`) +
-        api(
-          ["Attr / prop", "Meaning"],
-          [
-            ["JSON child", "options: strings or <code>{value,label,disabled}</code>"],
-            ["<code>multiple</code>", "select many (space toggles)"],
-            ["<code>value</code>", "initial selection(s), comma-separated"],
-            ["<code>.value</code> (prop)", "<code>string</code> or <code>string[]</code>"],
-            ["<code>nes:change</code>", "fires on every change"],
+        apiGroups({
+          slot: [["<code>&lt;script type='application/json'&gt;</code>", "options: strings or <code>{ value, label, disabled }[]</code>"]],
+          attr: [
+            ["<code>multiple</code>", "boolean", "<code>false</code>", "select many (Space toggles)"],
+            ["<code>name</code>", "string", "—", "form key (hidden input)"],
+            ["<code>value</code>", "string", "—", "initial selection(s), comma-separated"],
           ],
-        ) +
+          prop: [["<code>.value</code>", "<code>string | string[] | null</code>", "<code>null</code>", "current selection(s) (read-only)"]],
+          event: [["<code>nes:change</code>", "<code>{ value }</code>", "—", "the selection changed"]],
+        }) +
         a11y("Implements the ARIA <code>listbox</code> pattern: roving <code>aria-activedescendant</code>, ↑/↓/Home/End, Space/Enter to select."),
       vi: () =>
         stage(
@@ -1818,16 +1876,16 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
     [{ "value": "vue", "label": "Vue" }, { "value": "react", "label": "React" }]
   </script>
 </nes-listbox>`) +
-        api(
-          ["Attr / prop", "Ý nghĩa"],
-          [
-            ["JSON con", "options: chuỗi hoặc <code>{value,label,disabled}</code>"],
-            ["<code>multiple</code>", "chọn nhiều (Space bật/tắt)"],
-            ["<code>value</code>", "lựa chọn ban đầu, ngăn dấu phẩy"],
-            ["<code>.value</code> (prop)", "<code>string</code> hoặc <code>string[]</code>"],
-            ["<code>nes:change</code>", "bắn mỗi lần đổi"],
+        apiGroups({
+          slot: [["<code>&lt;script type='application/json'&gt;</code>", "options: chuỗi hoặc <code>{ value, label, disabled }[]</code>"]],
+          attr: [
+            ["<code>multiple</code>", "boolean", "<code>false</code>", "chọn nhiều (Space bật/tắt)"],
+            ["<code>name</code>", "string", "—", "khóa form (input ẩn)"],
+            ["<code>value</code>", "string", "—", "lựa chọn ban đầu, ngăn dấu phẩy"],
           ],
-        ) +
+          prop: [["<code>.value</code>", "<code>string | string[] | null</code>", "<code>null</code>", "lựa chọn hiện tại (chỉ đọc)"]],
+          event: [["<code>nes:change</code>", "<code>{ value }</code>", "—", "lựa chọn thay đổi"]],
+        }) +
         a11y("Theo pattern ARIA <code>listbox</code>: roving <code>aria-activedescendant</code>, ↑/↓/Home/End, Space/Enter để chọn."),
     },
   },
@@ -1851,15 +1909,16 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
         cb(`<nes-input-menu name="lang" placeholder="Type or pick…">
   <script type="application/json">["Vue", "React", "Svelte", "Solid"]</script>
 </nes-input-menu>`) +
-        api(
-          ["Attr / prop", "Meaning"],
-          [
-            ["JSON child", "suggestion options"],
-            ["<code>value</code>", "initial text"],
-            ["<code>.value</code> (prop)", "current text (free-form)"],
-            ["<code>nes:change</code>", "fires with <code>{ value }</code>"],
+        apiGroups({
+          slot: [["<code>&lt;script type='application/json'&gt;</code>", "suggestion options: strings or <code>{ value, label }[]</code>"]],
+          attr: [
+            ["<code>name</code>", "string", "—", "form key"],
+            ["<code>value</code>", "string", "—", "initial text"],
+            ["<code>placeholder</code>", "string", "—", "empty-field hint"],
           ],
-        ) +
+          prop: [["<code>.value</code>", "string", '<code>""</code>', "current text (free-form — any typed value is kept)"]],
+          event: [["<code>nes:change</code>", "<code>{ value }</code>", "—", "the text changed"]],
+        }) +
         a11y("An ARIA <code>combobox</code>: <code>aria-expanded</code>, <code>aria-activedescendant</code>, ↑/↓ to move, Enter to pick, Esc to close."),
       vi: () =>
         stage(
@@ -1872,15 +1931,16 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
         cb(`<nes-input-menu name="lang" placeholder="Gõ hoặc chọn…">
   <script type="application/json">["Vue", "React", "Svelte", "Solid"]</script>
 </nes-input-menu>`) +
-        api(
-          ["Attr / prop", "Ý nghĩa"],
-          [
-            ["JSON con", "các gợi ý"],
-            ["<code>value</code>", "chữ ban đầu"],
-            ["<code>.value</code> (prop)", "chữ hiện tại (tự do)"],
-            ["<code>nes:change</code>", "bắn kèm <code>{ value }</code>"],
+        apiGroups({
+          slot: [["<code>&lt;script type='application/json'&gt;</code>", "gợi ý: chuỗi hoặc <code>{ value, label }[]</code>"]],
+          attr: [
+            ["<code>name</code>", "string", "—", "khóa form"],
+            ["<code>value</code>", "string", "—", "chữ ban đầu"],
+            ["<code>placeholder</code>", "string", "—", "gợi ý khi ô trống"],
           ],
-        ) +
+          prop: [["<code>.value</code>", "string", '<code>""</code>', "chữ hiện tại (tự do — giữ nguyên chữ đã gõ)"]],
+          event: [["<code>nes:change</code>", "<code>{ value }</code>", "—", "chữ thay đổi"]],
+        }) +
         a11y("Là ARIA <code>combobox</code>: <code>aria-expanded</code>, <code>aria-activedescendant</code>, ↑/↓ để di chuyển, Enter để chọn, Esc để đóng."),
     },
   },
@@ -1906,16 +1966,17 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
     [{ "value": "opus", "label": "Opus 4.8" }, { "value": "sonnet", "label": "Sonnet 5" }]
   </script>
 </nes-select-menu>`) +
-        api(
-          ["Attr / prop", "Meaning"],
-          [
-            ["JSON child", "options (value must exist here)"],
-            ["<code>value</code>", "initial selected value"],
-            ["<code>.value</code> (prop)", "current value"],
-            ["<code>nes:change</code>", "fires with <code>{ value }</code>"],
+        apiGroups({
+          slot: [["<code>&lt;script type='application/json'&gt;</code>", "options: <code>{ value, label, disabled }[]</code> — the value must exist here"]],
+          attr: [
+            ["<code>name</code>", "string", "—", "form key"],
+            ["<code>value</code>", "string", "—", "initial selected value"],
+            ["<code>placeholder</code>", "string", "—", "shown before a pick"],
           ],
-        ) +
-        a11y("Use over native <code>&lt;select&gt;</code> only when you need search/filter — the native one is lighter and pickier-friendly on mobile."),
+          prop: [["<code>.value</code>", "string", '<code>""</code>', "current value (always one of the options)"]],
+          event: [["<code>nes:change</code>", "<code>{ value }</code>", "—", "the selection changed"]],
+        }) +
+        note("Reach for this over a native <code>&lt;select&gt;</code> only when you need search/filter — the native control is lighter and friendlier on mobile."),
       vi: () =>
         stage(
           "SELECTMENU",
@@ -1929,16 +1990,17 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
     [{ "value": "opus", "label": "Opus 4.8" }, { "value": "sonnet", "label": "Sonnet 5" }]
   </script>
 </nes-select-menu>`) +
-        api(
-          ["Attr / prop", "Ý nghĩa"],
-          [
-            ["JSON con", "options (value phải nằm ở đây)"],
-            ["<code>value</code>", "value chọn ban đầu"],
-            ["<code>.value</code> (prop)", "value hiện tại"],
-            ["<code>nes:change</code>", "bắn kèm <code>{ value }</code>"],
+        apiGroups({
+          slot: [["<code>&lt;script type='application/json'&gt;</code>", "options: <code>{ value, label, disabled }[]</code> — value phải nằm ở đây"]],
+          attr: [
+            ["<code>name</code>", "string", "—", "khóa form"],
+            ["<code>value</code>", "string", "—", "value chọn ban đầu"],
+            ["<code>placeholder</code>", "string", "—", "hiện trước khi chọn"],
           ],
-        ) +
-        a11y("Chỉ dùng thay <code>&lt;select&gt;</code> gốc khi cần tìm kiếm/lọc — bản gốc nhẹ hơn và thân thiện hơn trên mobile."),
+          prop: [["<code>.value</code>", "string", '<code>""</code>', "value hiện tại (luôn thuộc options)"]],
+          event: [["<code>nes:change</code>", "<code>{ value }</code>", "—", "lựa chọn thay đổi"]],
+        }) +
+        note("Chỉ dùng thay <code>&lt;select&gt;</code> gốc khi cần tìm kiếm/lọc — bản gốc nhẹ hơn và thân thiện hơn trên mobile."),
     },
   },
   {
@@ -1974,17 +2036,16 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
   document.querySelector("nes-form")
     .addEventListener("nes:submit", (e) => console.log(e.detail.data));
 </script>`) +
-        api(
-          ["Feature", "Behaviour"],
-          [
-            ["Native validation", "uses <code>required</code>, <code>type</code>, <code>minlength</code>, <code>pattern</code>, …"],
-            ["<code>data-error</code>", "override the message for a control"],
-            ["Inline errors", "invalid controls get <code>aria-invalid</code> + a <code>.field.err</code> message"],
-            ["<code>nes:submit</code>", "fires only when valid, with <code>{ data, form }</code>"],
-            ["<code>nes:invalid</code>", "fires when a submit is blocked"],
+        apiGroups({
+          prop: [["<code>.form</code>", "HTMLFormElement", "—", "the wrapped <code>&lt;form&gt;</code> (created on connect)"]],
+          method: [["<code>.submit()</code>", "<code>() → void</code>", "—", "validate every control, then submit"]],
+          event: [
+            ["<code>nes:submit</code>", "<code>{ data, form }</code>", "—", "fires only when all fields are valid"],
+            ["<code>nes:invalid</code>", "<code>{}</code>", "—", "a submit was blocked by validation"],
           ],
-        ) +
-        a11y("Validation is the platform’s own, so messages are localized and the first invalid control is focused. Custom <code>&lt;nes-*&gt;</code> controls submit via their hidden inputs."),
+        }) +
+        note("Validation is the platform's own — set <code>required</code>, <code>type</code>, <code>minlength</code>, <code>pattern</code>… on inputs; override a message with <code>data-error</code>. Invalid controls get <code>aria-invalid</code> + an inline <code>.field.err</code> message.") +
+        a11y("Messages are localized by the browser and the first invalid control is focused. Custom <code>&lt;nes-*&gt;</code> controls submit via their hidden inputs."),
       vi: () =>
         stage(
           "FORM",
@@ -2009,17 +2070,16 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
   document.querySelector("nes-form")
     .addEventListener("nes:submit", (e) => console.log(e.detail.data));
 </script>`) +
-        api(
-          ["Tính năng", "Hành vi"],
-          [
-            ["Validation gốc", "dùng <code>required</code>, <code>type</code>, <code>minlength</code>, <code>pattern</code>, …"],
-            ["<code>data-error</code>", "ghi đè thông báo cho một control"],
-            ["Lỗi inline", "control lỗi được <code>aria-invalid</code> + thông báo <code>.field.err</code>"],
-            ["<code>nes:submit</code>", "chỉ bắn khi hợp lệ, kèm <code>{ data, form }</code>"],
-            ["<code>nes:invalid</code>", "bắn khi submit bị chặn"],
+        apiGroups({
+          prop: [["<code>.form</code>", "HTMLFormElement", "—", "thẻ <code>&lt;form&gt;</code> được bọc (tạo khi connect)"]],
+          method: [["<code>.submit()</code>", "<code>() → void</code>", "—", "kiểm tra mọi control rồi submit"]],
+          event: [
+            ["<code>nes:submit</code>", "<code>{ data, form }</code>", "—", "chỉ bắn khi mọi field hợp lệ"],
+            ["<code>nes:invalid</code>", "<code>{}</code>", "—", "submit bị validation chặn"],
           ],
-        ) +
-        a11y("Validation là của nền tảng nên thông báo được bản địa hóa và control lỗi đầu tiên được focus. Các control <code>&lt;nes-*&gt;</code> submit qua input ẩn của chúng."),
+        }) +
+        note("Validation là của nền tảng — đặt <code>required</code>, <code>type</code>, <code>minlength</code>, <code>pattern</code>… lên input; ghi đè thông báo bằng <code>data-error</code>. Control lỗi được <code>aria-invalid</code> + thông báo <code>.field.err</code> inline.") +
+        a11y("Thông báo được trình duyệt bản địa hóa và control lỗi đầu tiên được focus. Các control <code>&lt;nes-*&gt;</code> submit qua input ẩn của chúng."),
     },
   },
 
@@ -3254,18 +3314,19 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   </script>
 </nes-tree>`) +
         h2("API") +
-        api(
-          ["Attr / prop / event", "Meaning"],
-          [
-            ["JSON child", "nodes: <code>{ label, value?, icon?, disabled?, expanded?, children? }</code>"],
-            ["<code>multiple</code>", "select many (default single)"],
-            ["<code>name</code>", "hidden input with comma-joined value(s)"],
-            ["<code>value</code>", "initial selection(s), comma-separated"],
-            ["<code>.value</code> (prop)", "<code>string</code> or <code>string[]</code>"],
-            ["<code>nes:change</code>", "selection changed → <code>{ value }</code>"],
-            ["<code>nes:toggle</code>", "expand/collapse → <code>{ value, expanded }</code>"],
+        apiGroups({
+          slot: [["<code>&lt;script type='application/json'&gt;</code>", "nodes: <code>{ label, value?, icon?, disabled?, expanded?, children? }[]</code>"]],
+          attr: [
+            ["<code>multiple</code>", "boolean", "<code>false</code>", "allow selecting many nodes at once"],
+            ["<code>name</code>", "string", "—", "emit a hidden input carrying the comma-joined value(s)"],
+            ["<code>value</code>", "string", "—", "initial selection(s), comma-separated"],
           ],
-        ) +
+          prop: [["<code>.value</code>", "<code>string | string[] | null</code>", "<code>null</code>", "current selection(s) (read-only)"]],
+          event: [
+            ["<code>nes:change</code>", "<code>{ value }</code>", "—", "the selection changed"],
+            ["<code>nes:toggle</code>", "<code>{ value, expanded }</code>", "—", "a folder expanded or collapsed"],
+          ],
+        }) +
         a11y(
           "Implements the ARIA <code>tree</code> pattern: <code>role=tree/treeitem/group</code>, <code>aria-expanded</code>, <code>aria-selected</code>, <code>aria-level</code>, roving <code>aria-activedescendant</code>. Keys: ↑/↓ move, → expand/enter, ← collapse/parent, Home/End, Enter/Space select.",
         ),
@@ -3294,18 +3355,19 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   </script>
 </nes-tree>`) +
         h2("API") +
-        api(
-          ["Attr / prop / event", "Ý nghĩa"],
-          [
-            ["JSON con", "node: <code>{ label, value?, icon?, disabled?, expanded?, children? }</code>"],
-            ["<code>multiple</code>", "chọn nhiều (mặc định một)"],
-            ["<code>name</code>", "input ẩn chứa value nối bằng dấu phẩy"],
-            ["<code>value</code>", "lựa chọn ban đầu, ngăn dấu phẩy"],
-            ["<code>.value</code> (prop)", "<code>string</code> hoặc <code>string[]</code>"],
-            ["<code>nes:change</code>", "đổi lựa chọn → <code>{ value }</code>"],
-            ["<code>nes:toggle</code>", "mở/gập → <code>{ value, expanded }</code>"],
+        apiGroups({
+          slot: [["<code>&lt;script type='application/json'&gt;</code>", "node: <code>{ label, value?, icon?, disabled?, expanded?, children? }[]</code>"]],
+          attr: [
+            ["<code>multiple</code>", "boolean", "<code>false</code>", "cho chọn nhiều node cùng lúc"],
+            ["<code>name</code>", "string", "—", "phát input ẩn chứa value nối bằng dấu phẩy"],
+            ["<code>value</code>", "string", "—", "lựa chọn ban đầu, ngăn bằng dấu phẩy"],
           ],
-        ) +
+          prop: [["<code>.value</code>", "<code>string | string[] | null</code>", "<code>null</code>", "lựa chọn hiện tại (chỉ đọc)"]],
+          event: [
+            ["<code>nes:change</code>", "<code>{ value }</code>", "—", "lựa chọn thay đổi"],
+            ["<code>nes:toggle</code>", "<code>{ value, expanded }</code>", "—", "một folder mở hoặc gập"],
+          ],
+        }) +
         a11y(
           "Theo pattern ARIA <code>tree</code>: <code>role=tree/treeitem/group</code>, <code>aria-expanded</code>, <code>aria-selected</code>, <code>aria-level</code>, roving <code>aria-activedescendant</code>. Phím: ↑/↓ di chuyển, → mở/vào trong, ← gập/lên cha, Home/End, Enter/Space chọn.",
         ),
@@ -3411,15 +3473,12 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   <div class="msg user">…</div>
 </nes-chat-messages>`,
         ) +
-        api(
-          ["Method / behaviour", "Meaning"],
-          [
-            ["auto-scroll", "MutationObserver sticks to bottom when pinned"],
-            ["stay-put", "if scrolled up >80px, new messages don't yank"],
-            ["<code>.scrollToBottom()</code>", "force-scroll (re-pins)"],
-          ],
-        ) +
-        a11y("It only adds the <code>.chat-messages</code> layout + scroll behaviour; put an <code>aria-live=\"polite\"</code> region inside if you want new assistant text announced."),
+        apiGroups({
+          slot: [["default", "message rows (<code>.msg</code>) — any HTML you append"]],
+          method: [["<code>.scrollToBottom()</code>", "<code>() → void</code>", "—", "force-scroll to the newest message (re-pins)"]],
+        }) +
+        note("Auto-pins to the bottom while streaming (a MutationObserver), but if the reader scrolled up &gt;80px new messages won't yank the view.") +
+        a11y("Put an <code>aria-live=\"polite\"</code> region inside if you want new assistant text announced to screen readers."),
       vi: () =>
         stage(
           "CHATMESSAGES",
@@ -3436,15 +3495,12 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   <div class="msg user">…</div>
 </nes-chat-messages>`,
         ) +
-        api(
-          ["Method / hành vi", "Ý nghĩa"],
-          [
-            ["auto-scroll", "MutationObserver bám đáy khi đang ghim"],
-            ["stay-put", "cuộn lên >80px thì tin mới không giật"],
-            ["<code>.scrollToBottom()</code>", "ép cuộn (ghim lại)"],
-          ],
-        ) +
-        a11y("Nó chỉ thêm layout <code>.chat-messages</code> + hành vi cuộn; đặt vùng <code>aria-live=\"polite\"</code> bên trong nếu muốn đọc tin assistant mới."),
+        apiGroups({
+          slot: [["mặc định", "các dòng tin (<code>.msg</code>) — HTML bạn append"]],
+          method: [["<code>.scrollToBottom()</code>", "<code>() → void</code>", "—", "ép cuộn tới tin mới nhất (ghim lại)"]],
+        }) +
+        note("Tự ghim đáy khi stream (MutationObserver), nhưng nếu người đọc đã cuộn lên &gt;80px thì tin mới không giật màn hình.") +
+        a11y("Đặt vùng <code>aria-live=\"polite\"</code> bên trong nếu muốn đọc tin assistant mới cho screen reader."),
     },
   },
   {
@@ -3526,17 +3582,21 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
     .addEventListener("nes:submit", (e) => send(e.detail.value));
 </script>`,
         ) +
-        api(
-          ["Attr / prop / event", "Meaning"],
-          [
-            ["<code>placeholder</code>", "textarea placeholder"],
-            ["<code>busy</code> (attr)", "streaming → Send becomes Stop"],
-            ["<code>.setBusy(bool)</code>", "toggle busy from JS"],
-            ["<code>.value</code>", "read / set the draft text"],
-            ["<code>nes:submit</code>", "Enter or Send → <code>{ value }</code>, then clears"],
-            ["<code>nes:stop</code>", "Stop pressed while busy"],
+        apiGroups({
+          attr: [
+            ["<code>placeholder</code>", "string", "—", "textarea placeholder"],
+            ["<code>busy</code>", "boolean", "<code>false</code>", "streaming → Send button becomes Stop"],
           ],
-        ) +
+          prop: [["<code>.value</code>", "string", '<code>""</code>', "read / set the draft text"]],
+          method: [
+            ["<code>.setBusy(on)</code>", "<code>(boolean) → void</code>", "—", "toggle busy from JS"],
+            ["<code>.focus()</code>", "<code>() → void</code>", "—", "focus the textarea"],
+          ],
+          event: [
+            ["<code>nes:submit</code>", "<code>{ value }</code>", "—", "Enter or Send — then the field clears"],
+            ["<code>nes:stop</code>", "<code>{}</code>", "—", "Stop pressed while busy"],
+          ],
+        }) +
         a11y("The textarea grows to fit and caps at 40vh; the button is a real <code>&lt;button&gt;</code> with an <code>aria-label</code> that flips Send↔Stop."),
       vi: () =>
         stage("CHATPROMPT", `<nes-chat-prompt placeholder="Nhắn cho agent…" style="inline-size:100%;max-inline-size:min(460px,100%)"></nes-chat-prompt>`, "col") +
@@ -3547,17 +3607,21 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
     .addEventListener("nes:submit", (e) => send(e.detail.value));
 </script>`,
         ) +
-        api(
-          ["Attr / prop / event", "Ý nghĩa"],
-          [
-            ["<code>placeholder</code>", "placeholder textarea"],
-            ["<code>busy</code> (attr)", "đang stream → Gửi thành Dừng"],
-            ["<code>.setBusy(bool)</code>", "bật/tắt busy từ JS"],
-            ["<code>.value</code>", "đọc / gán bản nháp"],
-            ["<code>nes:submit</code>", "Enter hoặc Gửi → <code>{ value }</code>, rồi xóa"],
-            ["<code>nes:stop</code>", "bấm Dừng khi đang busy"],
+        apiGroups({
+          attr: [
+            ["<code>placeholder</code>", "string", "—", "placeholder textarea"],
+            ["<code>busy</code>", "boolean", "<code>false</code>", "đang stream → nút Gửi thành Dừng"],
           ],
-        ) +
+          prop: [["<code>.value</code>", "string", '<code>""</code>', "đọc / gán bản nháp"]],
+          method: [
+            ["<code>.setBusy(on)</code>", "<code>(boolean) → void</code>", "—", "bật/tắt busy từ JS"],
+            ["<code>.focus()</code>", "<code>() → void</code>", "—", "focus vào textarea"],
+          ],
+          event: [
+            ["<code>nes:submit</code>", "<code>{ value }</code>", "—", "Enter hoặc Gửi — rồi ô tự xóa"],
+            ["<code>nes:stop</code>", "<code>{}</code>", "—", "bấm Dừng khi đang busy"],
+          ],
+        }) +
         a11y("Textarea giãn theo nội dung, tối đa 40vh; nút là <code>&lt;button&gt;</code> thật với <code>aria-label</code> đổi Gửi↔Dừng."),
     },
   },
@@ -3850,24 +3914,35 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
 </script>`,
         ) +
         h2("API") +
-        api(
-          ["Attr / prop / method / event", "Meaning"],
-          [
-            ["<code>name</code>", "hidden input with the HTML value (form submit)"],
-            ["<code>placeholder</code>", "empty-state text"],
-            ["<code>autocomplete</code>", "enable ghost Tab suggestions"],
-            ["JSON <code>{ mentions }</code>", "@-mention options"],
-            ["<code>.value</code>", "get / set HTML content"],
-            ["<code>.suggest(ctx)</code>", "async provider for Tab autocomplete"],
-            ["<code>.insert(html)</code>", "insert at caret (AI output)"],
-            ["<code>nes:input</code>", "content changed → <code>{ html, text }</code>"],
-            ["<code>nes:submit</code>", "⌘/Ctrl+Enter → send to agent"],
-            ["<code>nes:ai</code>", "AI action → <code>{ text, insert() }</code>"],
-            ["<code>nes:mention</code> / <code>nes:suggest</code>", "mention picked / request a completion"],
+        apiGroups({
+          slot: [
+            ["<code>&lt;script type='application/json'&gt;</code>", "<code>{ mentions: { value, label }[] }</code> for @-mention"],
+            ["default HTML", "initial document content"],
           ],
-        ) +
+          attr: [
+            ["<code>name</code>", "string", "—", "hidden input carrying the HTML value (form submit)"],
+            ["<code>placeholder</code>", "string", "—", "empty-state text"],
+            ["<code>autocomplete</code>", "boolean", "<code>false</code>", "enable ghost Tab suggestions"],
+          ],
+          prop: [
+            ["<code>.value</code>", "string", '<code>""</code>', "get / set HTML content"],
+            ["<code>.suggest</code>", "<code>(ctx) → string | Promise&lt;string&gt;</code>", "—", "your Tab-autocomplete provider (BYO model)"],
+          ],
+          method: [
+            ["<code>.insert(html)</code>", "<code>(string) → void</code>", "—", "insert at the caret (AI output)"],
+            ["<code>.showGhost(text)</code>", "<code>(string) → void</code>", "—", "show a dim inline suggestion (Tab accepts)"],
+          ],
+          event: [
+            ["<code>nes:input</code>", "<code>{ html, text }</code>", "—", "content changed"],
+            ["<code>nes:submit</code>", "<code>{ html }</code>", "—", "⌘/Ctrl+Enter → send to agent"],
+            ["<code>nes:ai</code>", "<code>{ text, insert() }</code>", "—", "AI action invoked (✦ / /ai)"],
+            ["<code>nes:mention</code>", "<code>{ value, label }</code>", "—", "an @-mention was picked"],
+          ],
+        }) +
+        crit("Autocomplete and AI are <strong>bring-your-own-model</strong> — set <code>.suggest</code> and listen for <code>nes:ai</code>. The editor ships no model and makes no network calls.") +
+        note("A lightweight contenteditable editor (zero-dep) — not a ProseMirror clone. Chosen for zero-build bundle size.") +
         a11y(
-          "The surface is a labelled <code>role=\"textbox\"</code>; toolbar is a <code>role=\"toolbar\"</code>; menus are keyboard-driven (↑/↓/Enter/Esc). It's a lightweight contenteditable editor — not a ProseMirror clone — chosen for zero-build, zero-dep bundle size. Bring your own model for suggest/AI.",
+          "The surface is a labelled <code>role=\"textbox\"</code>; the toolbar is a <code>role=\"toolbar\"</code>; menus are keyboard-driven (↑/↓/Enter/Esc).",
         ),
       vi: () =>
         stage(
@@ -3896,24 +3971,35 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
 </script>`,
         ) +
         h2("API") +
-        api(
-          ["Attr / prop / method / event", "Ý nghĩa"],
-          [
-            ["<code>name</code>", "input ẩn chứa HTML (submit form)"],
-            ["<code>placeholder</code>", "chữ khi trống"],
-            ["<code>autocomplete</code>", "bật gợi ý ghost bằng Tab"],
-            ["JSON <code>{ mentions }</code>", "danh sách @-mention"],
-            ["<code>.value</code>", "đọc / gán HTML"],
-            ["<code>.suggest(ctx)</code>", "provider async cho Tab autocomplete"],
-            ["<code>.insert(html)</code>", "chèn tại caret (output AI)"],
-            ["<code>nes:input</code>", "nội dung đổi → <code>{ html, text }</code>"],
-            ["<code>nes:submit</code>", "⌘/Ctrl+Enter → gửi agent"],
-            ["<code>nes:ai</code>", "hành động AI → <code>{ text, insert() }</code>"],
-            ["<code>nes:mention</code> / <code>nes:suggest</code>", "chọn mention / xin gợi ý"],
+        apiGroups({
+          slot: [
+            ["<code>&lt;script type='application/json'&gt;</code>", "<code>{ mentions: { value, label }[] }</code> cho @-mention"],
+            ["HTML mặc định", "nội dung ban đầu của doc"],
           ],
-        ) +
+          attr: [
+            ["<code>name</code>", "string", "—", "input ẩn chứa HTML (submit form)"],
+            ["<code>placeholder</code>", "string", "—", "chữ khi trống"],
+            ["<code>autocomplete</code>", "boolean", "<code>false</code>", "bật gợi ý ghost bằng Tab"],
+          ],
+          prop: [
+            ["<code>.value</code>", "string", '<code>""</code>', "đọc / gán HTML"],
+            ["<code>.suggest</code>", "<code>(ctx) → string | Promise&lt;string&gt;</code>", "—", "provider Tab-autocomplete của bạn (BYO model)"],
+          ],
+          method: [
+            ["<code>.insert(html)</code>", "<code>(string) → void</code>", "—", "chèn tại caret (output AI)"],
+            ["<code>.showGhost(text)</code>", "<code>(string) → void</code>", "—", "hiện gợi ý ghost mờ (Tab để nhận)"],
+          ],
+          event: [
+            ["<code>nes:input</code>", "<code>{ html, text }</code>", "—", "nội dung thay đổi"],
+            ["<code>nes:submit</code>", "<code>{ html }</code>", "—", "⌘/Ctrl+Enter → gửi agent"],
+            ["<code>nes:ai</code>", "<code>{ text, insert() }</code>", "—", "hành động AI (✦ / /ai)"],
+            ["<code>nes:mention</code>", "<code>{ value, label }</code>", "—", "chọn một @-mention"],
+          ],
+        }) +
+        crit("Autocomplete và AI là <strong>bring-your-own-model</strong> — gán <code>.suggest</code> và nghe <code>nes:ai</code>. Editor không ship model, không gọi mạng.") +
+        note("Editor contenteditable nhẹ (zero-dep) — không phải ProseMirror clone. Chọn để bundle zero-build.") +
         a11y(
-          "Vùng soạn là <code>role=\"textbox\"</code> có nhãn; toolbar là <code>role=\"toolbar\"</code>; menu điều khiển bằng phím (↑/↓/Enter/Esc). Đây là editor contenteditable nhẹ — không phải ProseMirror clone — chọn để zero-build, zero-dep. Model do bạn cắm vào cho suggest/AI.",
+          "Vùng soạn là <code>role=\"textbox\"</code> có nhãn; toolbar là <code>role=\"toolbar\"</code>; menu điều khiển bằng phím (↑/↓/Enter/Esc).",
         ),
     },
   },
@@ -4314,14 +4400,15 @@ ed.addEventListener("nes:mention", (e) => open(e.detail.value));`) +
   </script>
 </nes-code-tree>`) +
         h2("API") +
+        p("The <code>&lt;script type='application/json'&gt;</code> child is an array of nodes:") +
         api(
-          ["JSON node field", "Meaning"],
+          ["Field", "Type", "Required", "Meaning"],
           [
-            ["<code>label</code>", "display name (required)"],
-            ["<code>code</code>", "file source — its presence makes the node a selectable <em>file</em>; omit it for a folder"],
-            ["<code>children</code>", "child nodes → makes the node a folder"],
-            ["<code>expanded</code>", "start the folder open"],
-            ["<code>icon</code>", "optional leading glyph (📁 / 📄 / ⚙ …)"],
+            ["<code>label</code>", "string", "<b>yes</b>", "display name"],
+            ["<code>code</code>", "string", "—", "file source — its presence marks the node a selectable <em>file</em>; omit it for a folder"],
+            ["<code>children</code>", "node[]", "—", "child nodes → makes the node a folder"],
+            ["<code>expanded</code>", "boolean", "<code>false</code>", "start the folder open"],
+            ["<code>icon</code>", "string", "—", "leading glyph (📁 / 📄 / ⚙ …)"],
           ],
         ) +
         a11y("Built on the ARIA <code>tree</code> pattern (<code>role=tree/treeitem/group</code>, <code>aria-expanded</code>, <code>aria-selected</code>, <code>aria-level</code>). Folders toggle on click; files load into the viewer, which keeps a copy button. The first file is auto-selected."),
@@ -4348,14 +4435,15 @@ ed.addEventListener("nes:mention", (e) => open(e.detail.value));`) +
   </script>
 </nes-code-tree>`) +
         h2("API") +
+        p("Con <code>&lt;script type='application/json'&gt;</code> là mảng các node:") +
         api(
-          ["Trường node JSON", "Ý nghĩa"],
+          ["Trường", "Kiểu", "Bắt buộc", "Ý nghĩa"],
           [
-            ["<code>label</code>", "tên hiển thị (bắt buộc)"],
-            ["<code>code</code>", "code file — có nó thì node là <em>file</em> chọn được; bỏ đi thì là folder"],
-            ["<code>children</code>", "node con → biến node thành folder"],
-            ["<code>expanded</code>", "mở sẵn folder"],
-            ["<code>icon</code>", "glyph đầu tùy chọn (📁 / 📄 / ⚙ …)"],
+            ["<code>label</code>", "string", "<b>có</b>", "tên hiển thị"],
+            ["<code>code</code>", "string", "—", "code file — có nó thì node là <em>file</em> chọn được; bỏ đi thì là folder"],
+            ["<code>children</code>", "node[]", "—", "node con → biến node thành folder"],
+            ["<code>expanded</code>", "boolean", "<code>false</code>", "mở sẵn folder"],
+            ["<code>icon</code>", "string", "—", "glyph đầu (📁 / 📄 / ⚙ …)"],
           ],
         ) +
         a11y("Theo pattern ARIA <code>tree</code> (<code>role=tree/treeitem/group</code>, <code>aria-expanded</code>, <code>aria-selected</code>, <code>aria-level</code>). Folder gập/mở khi click; file nạp vào trình xem có nút copy. File đầu tiên tự được chọn."),
@@ -4608,18 +4696,19 @@ enableMermaid("https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs"
 for await (const chunk of agentStream())
   d.code = chunk.textSoFar; // partial/invalid syntax keeps the last good render`) +
         h2("API") +
-        api(
-          ["Attr / prop / method / event", "Meaning"],
-          [
-            ["child <code>&lt;script type='text/mermaid'&gt;</code>", "the diagram source (or plain text content)"],
-            ["<code>.code</code> (prop)", "get/set source; setting re-renders (debounced) — use for streaming"],
-            ["<code>src</code> / <code>enableMermaid()</code>", "lazy-load URL for the mermaid ESM build"],
-            ["<code>.highlight(labels)</code>", "spotlight nodes by label (<code>string | string[]</code>); dims the rest"],
-            ["<code>nes:render</code>", "a diagram finished rendering → <code>{ ok }</code>"],
-            ["<code>nes:node</code>", "a node was clicked → <code>{ label, id }</code>"],
+        apiGroups({
+          slot: [["<code>&lt;script type='text/mermaid'&gt;</code>", "the diagram source (or the element's plain text)"]],
+          attr: [["<code>src</code>", "string (URL)", "—", "lazy-load the mermaid ESM build from here (this element only)"]],
+          prop: [["<code>.code</code>", "string", '<code>""</code>', "get/set the source; setting re-renders (debounced) — use for streaming"]],
+          method: [["<code>.highlight(labels)</code>", "<code>(string | string[]) → void</code>", "—", "spotlight nodes by label; dims the rest"]],
+          event: [
+            ["<code>nes:render</code>", "<code>{ ok }</code>", "—", "a diagram finished rendering"],
+            ["<code>nes:node</code>", "<code>{ label, id }</code>", "—", "a node was clicked"],
           ],
-        ) +
-        a11y("Renders with <code>securityLevel:'strict'</code> — safe for untrusted AI output. If mermaid isn't available the raw source is shown, never a blank box."),
+        }) +
+        crit("Mermaid (~800KB) is <strong>never bundled</strong>. Provide it via <code>globalThis.mermaid</code>, <code>enableMermaid(url)</code>, or <code>src</code> — otherwise the raw source is shown (never a blank box).") +
+        note("Renders with <code>securityLevel:'strict'</code>, so untrusted AI output can't inject scripts or HTML.") +
+        a11y("Output is SVG; add <code>accTitle</code>/<code>accDescr</code> lines to your mermaid source and screen readers get a title/description."),
       vi: () =>
         stage(
           "MERMAID",
@@ -4644,18 +4733,19 @@ for await (const chunk of agentStream())
 for await (const chunk of agentStream())
   d.code = chunk.textSoFar; // cú pháp dở/lỗi vẫn giữ bản render tốt trước đó`) +
         h2("API") +
-        api(
-          ["Attr / prop / method / event", "Ý nghĩa"],
-          [
-            ["con <code>&lt;script type='text/mermaid'&gt;</code>", "code nguồn diagram (hoặc text thuần)"],
-            ["<code>.code</code> (prop)", "đọc/ghi nguồn; ghi thì re-render (debounce) — dùng cho stream"],
-            ["<code>src</code> / <code>enableMermaid()</code>", "URL lazy-load bản mermaid ESM"],
-            ["<code>.highlight(labels)</code>", "làm nổi node theo nhãn (<code>string | string[]</code>); mờ phần còn lại"],
-            ["<code>nes:render</code>", "diagram render xong → <code>{ ok }</code>"],
-            ["<code>nes:node</code>", "click vào node → <code>{ label, id }</code>"],
+        apiGroups({
+          slot: [["<code>&lt;script type='text/mermaid'&gt;</code>", "code nguồn diagram (hoặc text thuần của element)"]],
+          attr: [["<code>src</code>", "string (URL)", "—", "lazy-load bản mermaid ESM từ đây (riêng element này)"]],
+          prop: [["<code>.code</code>", "string", '<code>""</code>', "đọc/ghi nguồn; ghi thì re-render (debounce) — dùng cho stream"]],
+          method: [["<code>.highlight(labels)</code>", "<code>(string | string[]) → void</code>", "—", "làm nổi node theo nhãn; mờ phần còn lại"]],
+          event: [
+            ["<code>nes:render</code>", "<code>{ ok }</code>", "—", "diagram render xong"],
+            ["<code>nes:node</code>", "<code>{ label, id }</code>", "—", "click vào node"],
           ],
-        ) +
-        a11y("Render với <code>securityLevel:'strict'</code> — an toàn cho output AI không tin cậy. Không có mermaid thì hiện code nguồn, không bao giờ là ô trống."),
+        }) +
+        crit("Mermaid (~800KB) <strong>không bao giờ bị bundle</strong>. Cấp qua <code>globalThis.mermaid</code>, <code>enableMermaid(url)</code>, hoặc <code>src</code> — nếu không sẽ hiện code nguồn (không bao giờ ô trống).") +
+        note("Render với <code>securityLevel:'strict'</code> nên output AI không tin cậy không thể chèn script hay HTML.") +
+        a11y("Output là SVG; thêm dòng <code>accTitle</code>/<code>accDescr</code> vào nguồn mermaid thì screen reader có title/mô tả."),
     },
   },
   {
@@ -4697,17 +4787,18 @@ for await (const chunk of agentStream())
   </script>
 </nes-walkthrough>`) +
         h2("API") +
-        api(
-          ["Attr / prop / method / event", "Meaning"],
-          [
-            ["JSON child", "steps: <code>{ title, body (HTML), focus?: string[] }</code>"],
-            ["<code>for</code>", "id of the diagram to drive — each step calls its <code>highlight(focus)</code>"],
-            ["<code>.next()</code> / <code>.prev()</code> / <code>.go(n)</code>", "programmatic navigation"],
-            ["<code>.index</code> (prop)", "current step (0-based)"],
-            ["<code>nes:step</code>", "step changed → <code>{ index, step }</code>"],
+        apiGroups({
+          slot: [["<code>&lt;script type='application/json'&gt;</code>", "steps: <code>{ title, body (HTML), focus?: string[] }[]</code>"]],
+          attr: [["<code>for</code>", "string (id)", "—", "id of the diagram to drive — each step calls its <code>highlight(focus)</code>"]],
+          prop: [["<code>.index</code>", "number", "<code>0</code>", "current step (0-based, read-only)"]],
+          method: [
+            ["<code>.next()</code> / <code>.prev()</code>", "<code>() → void</code>", "—", "move one step"],
+            ["<code>.go(n)</code>", "<code>(number) → void</code>", "—", "jump to step <code>n</code>"],
           ],
-        ) +
-        a11y("Focus the card and use ←/→ to move; the step counter is a polite live region. <code>for</code> works with any element exposing <code>highlight()</code>, not only diagrams."),
+          event: [["<code>nes:step</code>", "<code>{ index, step }</code>", "—", "the step changed"]],
+        }) +
+        note("<code>for</code> works with <em>any</em> element exposing a <code>highlight()</code> method, not only <code>&lt;nes-mermaid&gt;</code> — you can drive a code block or your own component.") +
+        a11y("Focus the card and use ←/→ to move; the step counter is a polite live region."),
       vi: () =>
         stage(
           "HOW IT WORKS",
@@ -4738,17 +4829,18 @@ for await (const chunk of agentStream())
   </script>
 </nes-walkthrough>`) +
         h2("API") +
-        api(
-          ["Attr / prop / method / event", "Ý nghĩa"],
-          [
-            ["con JSON", "step: <code>{ title, body (HTML), focus?: string[] }</code>"],
-            ["<code>for</code>", "id của diagram để điều khiển — mỗi bước gọi <code>highlight(focus)</code> của nó"],
-            ["<code>.next()</code> / <code>.prev()</code> / <code>.go(n)</code>", "điều hướng bằng code"],
-            ["<code>.index</code> (prop)", "bước hiện tại (0-based)"],
-            ["<code>nes:step</code>", "đổi bước → <code>{ index, step }</code>"],
+        apiGroups({
+          slot: [["<code>&lt;script type='application/json'&gt;</code>", "step: <code>{ title, body (HTML), focus?: string[] }[]</code>"]],
+          attr: [["<code>for</code>", "string (id)", "—", "id của diagram để điều khiển — mỗi bước gọi <code>highlight(focus)</code>"]],
+          prop: [["<code>.index</code>", "number", "<code>0</code>", "bước hiện tại (0-based, chỉ đọc)"]],
+          method: [
+            ["<code>.next()</code> / <code>.prev()</code>", "<code>() → void</code>", "—", "đi một bước"],
+            ["<code>.go(n)</code>", "<code>(number) → void</code>", "—", "nhảy tới bước <code>n</code>"],
           ],
-        ) +
-        a11y("Focus vào card rồi dùng ←/→ để đi; bộ đếm bước là live region lịch sự. <code>for</code> chạy với mọi element có <code>highlight()</code>, không chỉ diagram."),
+          event: [["<code>nes:step</code>", "<code>{ index, step }</code>", "—", "bước thay đổi"]],
+        }) +
+        note("<code>for</code> chạy với <em>bất kỳ</em> element nào có method <code>highlight()</code>, không chỉ <code>&lt;nes-mermaid&gt;</code> — bạn có thể điều khiển code block hay component của mình.") +
+        a11y("Focus vào card rồi dùng ←/→ để đi; bộ đếm bước là live region lịch sự."),
     },
   },
   {
