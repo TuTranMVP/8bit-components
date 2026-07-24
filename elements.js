@@ -2298,6 +2298,289 @@ class NesCodeTree extends HTMLElement {
   }
 }
 
+/* ========================================================================== */
+/*  <nes-mermaid>  —  render Mermaid diagrams from AI/LLM output, NES-themed.   */
+/*  Zero-dep: mermaid is NEVER bundled. Bring your own (globalThis.mermaid) or  */
+/*  set a `src` URL / enableMermaid(url) to lazy-load it on demand — no diagram */
+/*  on the page → no mermaid fetched. Streaming-safe: set `.code` on each chunk */
+/*  → invalid/partial syntax keeps the last good render. AI output is untrusted */
+/*  → securityLevel:"strict".                                                   */
+/* ========================================================================== */
+
+/** Mermaid config (themeVariables + fonts) mapped to 8-BIT NES tokens.
+ *  BYO users can call `mermaid.initialize(mermaidTheme())`; we apply it on
+ *  lazy-load automatically. Reads live token values off the document root. */
+export function mermaidTheme(root) {
+  const cs = getComputedStyle(root || document.documentElement);
+  const v = (n, f) => (cs.getPropertyValue(n) || f).trim();
+  const ink = v("--ink", "#e8e8f0");
+  const line = v("--line-hi", "#4b4b6a");
+  const panel = v("--panel-2", "#1a1a2e");
+  const slot = v("--slot", "#0d0d16");
+  const accent = v("--primary", "#57d977");
+  const bg = v("--bg", "#0d0d16");
+  return {
+    startOnLoad: false,
+    securityLevel: "strict",
+    theme: "base",
+    fontFamily: v("--font-body", "monospace"),
+    themeVariables: {
+      darkMode: true,
+      background: bg,
+      primaryColor: panel,
+      primaryTextColor: ink,
+      primaryBorderColor: line,
+      lineColor: line,
+      secondaryColor: v("--panel", panel),
+      tertiaryColor: slot,
+      textColor: ink,
+      mainBkg: panel,
+      nodeBorder: line,
+      clusterBkg: slot,
+      clusterBorder: line,
+      titleColor: ink,
+      edgeLabelBackground: bg,
+      actorBkg: panel,
+      actorBorder: line,
+      actorTextColor: ink,
+      signalColor: ink,
+      signalTextColor: ink,
+      labelBoxBkgColor: panel,
+      labelBoxBorderColor: line,
+      labelTextColor: ink,
+      noteBkgColor: slot,
+      noteTextColor: ink,
+      noteBorderColor: line,
+      activationBkgColor: accent,
+      pie1: accent,
+    },
+    flowchart: { htmlLabels: false, curve: "linear", useMaxWidth: true },
+    sequence: { useMaxWidth: true },
+  };
+}
+
+/** Opt into lazy-loading mermaid from `url` (CDN or self-hosted ESM build). */
+export function enableMermaid(url) {
+  NesMermaid.src = String(url || "");
+}
+
+class NesMermaid extends HTMLElement {
+  connectedCallback() {
+    if (this._init) return;
+    this._init = true;
+    const scr = this.querySelector('script[type="text/mermaid"]');
+    this._code = (scr ? scr.textContent : this.textContent || "").trim();
+    this.innerHTML = "";
+    this.view = el("div", { class: "mermaid-view" });
+    this.appendChild(this.view);
+    NesMermaid._n = (NesMermaid._n || 0) + 1;
+    this._rid = `nes-mmd-${NesMermaid._n}`;
+    this._rendered = false;
+    this.view.addEventListener("click", (e) => {
+      const g = e.target.closest(".node, .actor");
+      if (g)
+        this.dispatchEvent(
+          new CustomEvent("nes:node", {
+            bubbles: true,
+            detail: { label: (g.textContent || "").trim(), id: g.id || "" },
+          }),
+        );
+    });
+    this._raw();
+    this.render();
+  }
+  get code() {
+    return this._code;
+  }
+  set code(v) {
+    this._code = String(v == null ? "" : v).trim();
+    this.render();
+  }
+  _raw() {
+    if (this._rendered) return;
+    this.view.innerHTML = "";
+    const pre = document.createElement("pre");
+    pre.className = "mmd-raw";
+    pre.textContent = this._code || "…";
+    this.view.appendChild(pre);
+  }
+  render() {
+    clearTimeout(this._t);
+    this._t = setTimeout(() => this._draw(), 120);
+  }
+  async _lib() {
+    if (globalThis.mermaid) return globalThis.mermaid;
+    const src = this.getAttribute("src") || NesMermaid.src;
+    if (!src) return null;
+    if (!NesMermaid._p) {
+      NesMermaid._p = import(src)
+        .then((m) => {
+          const lib = m.default || m.mermaid || m;
+          lib.initialize(mermaidTheme());
+          return lib;
+        })
+        .catch((e) => {
+          NesMermaid._p = null;
+          throw e;
+        });
+    }
+    return NesMermaid._p;
+  }
+  async _draw() {
+    const code = this._code;
+    if (!code) {
+      this._raw();
+      return;
+    }
+    let lib = null;
+    try {
+      lib = await this._lib();
+    } catch {
+      lib = null;
+    }
+    if (!lib) {
+      this._raw();
+      return;
+    }
+    if (globalThis.mermaid && !NesMermaid._themed) {
+      try {
+        lib.initialize(mermaidTheme());
+      } catch {
+        /* app owns config */
+      }
+      NesMermaid._themed = true;
+    }
+    try {
+      if (lib.parse) await lib.parse(code);
+      this._v = (this._v || 0) + 1;
+      const out = await lib.render(`${this._rid}-${this._v}`, code);
+      const svg = typeof out === "string" ? out : out.svg;
+      this.view.innerHTML = svg;
+      if (out && typeof out.bindFunctions === "function") out.bindFunctions(this.view);
+      this._rendered = true;
+      this._reapplyFocus();
+      this.dispatchEvent(new CustomEvent("nes:render", { bubbles: true, detail: { ok: true } }));
+    } catch {
+      if (!this._rendered) this._raw();
+    }
+  }
+  highlight(focus) {
+    this._focus = Array.isArray(focus) ? focus : focus ? [focus] : [];
+    this._reapplyFocus();
+  }
+  _reapplyFocus() {
+    const v = this.view;
+    if (!v) return;
+    for (const n of v.querySelectorAll(".nes-focus")) n.classList.remove("nes-focus");
+    const want = (this._focus || []).map((s) => String(s).toLowerCase());
+    if (!want.length) {
+      v.classList.remove("has-focus");
+      return;
+    }
+    let hit = false;
+    for (const n of v.querySelectorAll(".node, .actor, .cluster")) {
+      const t = (n.textContent || "").trim().toLowerCase();
+      if (want.some((w) => t === w || t.includes(w))) {
+        n.classList.add("nes-focus");
+        hit = true;
+      }
+    }
+    v.classList.toggle("has-focus", hit);
+  }
+}
+NesMermaid.src = "";
+
+/* ========================================================================== */
+/*  <nes-walkthrough>  —  step-by-step "How it works". Prev/Next + arrow keys + */
+/*  progress dots. Each step may `focus` labels in a target diagram (via `for`) */
+/*  so a principle unfolds one piece at a time — a learning primitive.          */
+/*  <nes-walkthrough for="diagram"><script type="application/json">             */
+/*    [{ "title":"1 · Request", "body":"<p>…</p>", "focus":["Client","API"] }]  */
+/*  </script></nes-walkthrough>                                                 */
+/* ========================================================================== */
+class NesWalkthrough extends HTMLElement {
+  connectedCallback() {
+    if (this._init) return;
+    this._init = true;
+    const scr = this.querySelector('script[type="application/json"]');
+    let raw = [];
+    try {
+      raw = JSON.parse(scr?.textContent || "[]");
+    } catch {
+      raw = [];
+    }
+    this.steps = Array.isArray(raw) ? raw : [];
+    this.i = 0;
+    this.innerHTML = "";
+    this.wrap = el("div", {
+      class: "walkthrough",
+      tabindex: "0",
+      role: "group",
+      "aria-label": this.getAttribute("aria-label") || "Walkthrough",
+    });
+    const head = el("div", { class: "wt-head" });
+    this.titleEl = el("div", { class: "wt-title" });
+    this.count = el("span", { class: "wt-count", "aria-live": "polite" });
+    head.append(this.titleEl, this.count);
+    this.dots = el("div", { class: "wt-dots" });
+    this.bodyEl = el("div", { class: "wt-body" });
+    const foot = el("div", { class: "wt-foot" });
+    this.prevBtn = el("button", { class: "btn sm ghost", type: "button" });
+    this.prevBtn.textContent = "‹ PREV";
+    this.nextBtn = el("button", { class: "btn sm", type: "button" });
+    this.nextBtn.textContent = "NEXT ›";
+    foot.append(this.prevBtn, this.dots, this.nextBtn);
+    this.wrap.append(head, this.bodyEl, foot);
+    this.appendChild(this.wrap);
+    this.prevBtn.addEventListener("click", () => this.prev());
+    this.nextBtn.addEventListener("click", () => this.next());
+    this.wrap.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        this.next();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        this.prev();
+      }
+    });
+    this.steps.forEach((_, k) => {
+      const d = el("button", { class: "wt-dot", type: "button", "aria-label": `Step ${k + 1}` });
+      d.addEventListener("click", () => this.go(k));
+      this.dots.appendChild(d);
+    });
+    this.go(0);
+  }
+  get target() {
+    const f = this.getAttribute("for");
+    return f ? document.getElementById(f) : null;
+  }
+  get index() {
+    return this.i;
+  }
+  next() {
+    this.go(this.i + 1);
+  }
+  prev() {
+    this.go(this.i - 1);
+  }
+  go(n) {
+    const last = this.steps.length - 1;
+    this.i = Math.max(0, Math.min(n, last < 0 ? 0 : last));
+    const s = this.steps[this.i] || {};
+    this.titleEl.textContent = s.title || "";
+    this.bodyEl.innerHTML = s.body || "";
+    this.count.textContent = this.steps.length ? `${this.i + 1} / ${this.steps.length}` : "0 / 0";
+    [...this.dots.children].forEach((d, k) => d.setAttribute("aria-current", String(k === this.i)));
+    this.prevBtn.disabled = this.i <= 0;
+    this.nextBtn.disabled = this.i >= last;
+    const t = this.target;
+    if (t && typeof t.highlight === "function") t.highlight(s.focus || []);
+    this.dispatchEvent(
+      new CustomEvent("nes:step", { bubbles: true, detail: { index: this.i, step: s } }),
+    );
+  }
+}
+
 /* ------------------------------------------------------------- self-register */
 const defs = {
   "nes-sound": NesSound,
@@ -2321,6 +2604,8 @@ const defs = {
   "nes-icon": NesIcon,
   "nes-editor": NesEditor,
   "nes-code-tree": NesCodeTree,
+  "nes-mermaid": NesMermaid,
+  "nes-walkthrough": NesWalkthrough,
 };
 for (const [tag, cls] of Object.entries(defs)) {
   if (!customElements.get(tag)) customElements.define(tag, cls);

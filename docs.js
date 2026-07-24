@@ -3,8 +3,12 @@
    No build step. Content is data; a hash router renders one page at a time.
    Language is persisted (localStorage) and auto-detected on first visit.
    ========================================================================== */
-import { store, toast } from "./elements.js";
+import { enableMermaid, store, toast } from "./elements.js";
 import { icon, iconNames } from "./icons.js";
+
+// dogfood the Visualize module: opt the docs site into lazy-loading mermaid
+// (the exact one-liner we document). The shipped library bundles none of it.
+enableMermaid("https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs");
 
 /* --------------------------------------------------------------- state */
 let LANG =
@@ -70,8 +74,9 @@ const CAT_ACCENT = {
   Chat: "teal",
   Editor: "indigo",
   Typography: "pink",
+  Visualize: "lime",
 };
-const CAT_ORDER = ["Element", "Form", "Feedback", "Navigation", "Overlay", "Data", "Chat", "Editor", "Typography"];
+const CAT_ORDER = ["Element", "Form", "Feedback", "Navigation", "Overlay", "Data", "Chat", "Editor", "Typography", "Visualize"];
 
 /* ===================================================================== */
 /*  GETTING STARTED                                                       */
@@ -4507,6 +4512,298 @@ ed.addEventListener("nes:mention", (e) => open(e.detail.value));`) +
         cb(`<div class="prompt">pnpm add 8bit-nes</div>
 <div class="prompt" data-accent="teal">deploy agent</div>`) +
         a11y("Con trỏ vẽ bằng <code>::before</code> (<code>content</code>) nên chỉ trang trí — không đọc lên hay copy; chỉ text lệnh thật mới có."),
+    },
+  },
+
+  /* ------------------------------------------------ VISUALIZE (diagrams) */
+  {
+    id: "visualize",
+    cat: "Visualize",
+    name: "Visualize",
+    desc: {
+      en: "Turn an AI agent's diagram output (Mermaid) into on-brand visuals, and teach a concept step-by-step. Mermaid is never bundled — bring your own or lazy-load it.",
+      vi: "Biến output diagram (Mermaid) của agent AI thành hình đúng brand, và dạy một khái niệm từng bước. Mermaid không bao giờ bị bundle — tự nạp hoặc lazy-load.",
+    },
+    body: {
+      en: () =>
+        p("LLMs are fluent in <strong>Mermaid</strong> — they emit <code>graph</code>, <code>sequenceDiagram</code>, <code>erDiagram</code> naturally. This module renders that output as diagrams themed to the system (square, hard shadow, the accent palette + fonts), then lets a learner step <em>through</em> it — built for system-design tools, domain learning, and 'how it works' explainers.") +
+        p("<strong>Mermaid is heavy (~800KB gzipped) — so it is never bundled.</strong> Same decoupling as Chat/Editor (bring-your-own-model) and MDC (bring-your-own-parser): we ship the frame + theme + interactions; you choose how mermaid loads. Three ways, zero bytes by default:") +
+        api(
+          ["Strategy", "How", "When"],
+          [
+            ["BYO instance", "set <code>globalThis.mermaid</code> (script tag / import)", "you already use mermaid / self-host it"],
+            ["Lazy-load", "<code>enableMermaid(url)</code> once, or <code>&lt;nes-mermaid src='…'&gt;</code>", "fetch on demand, only when a diagram is on the page"],
+            ["None", "do nothing", "the diagram shows its raw source (graceful) — no fetch"],
+          ],
+        ) +
+        cb(`import { enableMermaid } from "8bit-nes";
+// load mermaid on demand — a CDN or your own self-hosted copy:
+enableMermaid("https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs");`) +
+        h2("The three pieces") +
+        api(
+          ["Piece", "Selector", "Role"],
+          [
+            ["<a href='#/mermaid'>Mermaid</a>", "<code>&lt;nes-mermaid&gt;</code>", "render + theme a diagram; streaming-safe; <code>highlight()</code> + click events"],
+            ["<a href='#/walkthrough'>Walkthrough</a>", "<code>&lt;nes-walkthrough&gt;</code>", "step through a concept; each step spotlights part of a diagram"],
+            ["<a href='#/lens'>Lens</a>", "<code>&lt;nes-tabs class='lens'&gt;</code>", "one concept, many angles (flow / sequence / data / trade-offs)"],
+          ],
+        ) +
+        a11y("AI output is untrusted, so diagrams render with mermaid's <code>securityLevel:'strict'</code> (no scripts / HTML injection). The walkthrough is keyboard-driven (←/→) with a polite live region announcing each step."),
+      vi: () =>
+        p("LLM rất thạo <strong>Mermaid</strong> — chúng sinh <code>graph</code>, <code>sequenceDiagram</code>, <code>erDiagram</code> tự nhiên. Module này render output đó thành diagram đúng brand (vuông, bóng cứng, palette accent + font), rồi cho người học đi <em>xuyên qua</em> nó — dựng cho tool system-design, học domain, và giải thích 'how it works'.") +
+        p("<strong>Mermaid nặng (~800KB gzip) — nên không bao giờ bundle.</strong> Tách rời giống Chat/Editor (tự mang model) và MDC (tự mang parser): mình ship khung + theme + tương tác; bạn chọn cách nạp mermaid. Ba cách, mặc định 0 byte:") +
+        api(
+          ["Cách", "Làm sao", "Khi nào"],
+          [
+            ["BYO instance", "gán <code>globalThis.mermaid</code> (thẻ script / import)", "bạn đã dùng mermaid / tự host"],
+            ["Lazy-load", "<code>enableMermaid(url)</code> một lần, hoặc <code>&lt;nes-mermaid src='…'&gt;</code>", "nạp theo yêu cầu, chỉ khi có diagram trên trang"],
+            ["Không", "khỏi làm gì", "diagram hiện code nguồn (mượt) — không fetch"],
+          ],
+        ) +
+        cb(`import { enableMermaid } from "8bit-nes";
+// nạp mermaid theo yêu cầu — CDN hoặc bản tự host của bạn:
+enableMermaid("https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs");`) +
+        h2("Ba mảnh ghép") +
+        api(
+          ["Mảnh", "Selector", "Vai trò"],
+          [
+            ["<a href='#/mermaid'>Mermaid</a>", "<code>&lt;nes-mermaid&gt;</code>", "render + theme diagram; an toàn stream; <code>highlight()</code> + sự kiện click"],
+            ["<a href='#/walkthrough'>Walkthrough</a>", "<code>&lt;nes-walkthrough&gt;</code>", "đi qua khái niệm từng bước; mỗi bước làm nổi bật một phần diagram"],
+            ["<a href='#/lens'>Lens</a>", "<code>&lt;nes-tabs class='lens'&gt;</code>", "một khái niệm, nhiều góc (flow / sequence / data / đánh đổi)"],
+          ],
+        ) +
+        a11y("Output AI không đáng tin nên diagram render với <code>securityLevel:'strict'</code> (không script / chèn HTML). Walkthrough điều khiển bằng phím (←/→) với live region thông báo từng bước."),
+    },
+  },
+  {
+    id: "mermaid",
+    cat: "Visualize",
+    name: "Mermaid",
+    desc: {
+      en: "Render a Mermaid diagram themed to the system. Streaming-safe (set .code per chunk) and AI-safe (strict). Mermaid isn't bundled.",
+      vi: "Render diagram Mermaid theo brand. An toàn khi stream (set .code mỗi chunk) và an toàn với AI (strict). Không bundle mermaid.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "MERMAID",
+          `<nes-mermaid style="inline-size:100%;max-inline-size:min(560px,100%)"><script type="text/mermaid">graph LR
+  Client[Client] --> CDN[CDN]
+  CDN --> LB[Load Balancer]
+  LB --> API[API Server]
+  API --> Cache[(Redis)]
+  API --> DB[(Database)]</script></nes-mermaid>`,
+          "col",
+        ) +
+        cb(`<nes-mermaid>
+  <script type="text/mermaid">
+    graph LR
+      Client --> CDN --> LB --> API
+      API --> Cache[(Redis)]
+      API --> DB[(Database)]
+  </script>
+</nes-mermaid>`) +
+        h2("Streaming from an agent") +
+        cb(`const d = document.querySelector("nes-mermaid");
+for await (const chunk of agentStream())
+  d.code = chunk.textSoFar; // partial/invalid syntax keeps the last good render`) +
+        h2("API") +
+        api(
+          ["Attr / prop / method / event", "Meaning"],
+          [
+            ["child <code>&lt;script type='text/mermaid'&gt;</code>", "the diagram source (or plain text content)"],
+            ["<code>.code</code> (prop)", "get/set source; setting re-renders (debounced) — use for streaming"],
+            ["<code>src</code> / <code>enableMermaid()</code>", "lazy-load URL for the mermaid ESM build"],
+            ["<code>.highlight(labels)</code>", "spotlight nodes by label (<code>string | string[]</code>); dims the rest"],
+            ["<code>nes:render</code>", "a diagram finished rendering → <code>{ ok }</code>"],
+            ["<code>nes:node</code>", "a node was clicked → <code>{ label, id }</code>"],
+          ],
+        ) +
+        a11y("Renders with <code>securityLevel:'strict'</code> — safe for untrusted AI output. If mermaid isn't available the raw source is shown, never a blank box."),
+      vi: () =>
+        stage(
+          "MERMAID",
+          `<nes-mermaid style="inline-size:100%;max-inline-size:min(560px,100%)"><script type="text/mermaid">graph LR
+  Client[Client] --> CDN[CDN]
+  CDN --> LB[Load Balancer]
+  LB --> API[API Server]
+  API --> Cache[(Redis)]
+  API --> DB[(Database)]</script></nes-mermaid>`,
+          "col",
+        ) +
+        cb(`<nes-mermaid>
+  <script type="text/mermaid">
+    graph LR
+      Client --> CDN --> LB --> API
+      API --> Cache[(Redis)]
+      API --> DB[(Database)]
+  </script>
+</nes-mermaid>`) +
+        h2("Stream từ agent") +
+        cb(`const d = document.querySelector("nes-mermaid");
+for await (const chunk of agentStream())
+  d.code = chunk.textSoFar; // cú pháp dở/lỗi vẫn giữ bản render tốt trước đó`) +
+        h2("API") +
+        api(
+          ["Attr / prop / method / event", "Ý nghĩa"],
+          [
+            ["con <code>&lt;script type='text/mermaid'&gt;</code>", "code nguồn diagram (hoặc text thuần)"],
+            ["<code>.code</code> (prop)", "đọc/ghi nguồn; ghi thì re-render (debounce) — dùng cho stream"],
+            ["<code>src</code> / <code>enableMermaid()</code>", "URL lazy-load bản mermaid ESM"],
+            ["<code>.highlight(labels)</code>", "làm nổi node theo nhãn (<code>string | string[]</code>); mờ phần còn lại"],
+            ["<code>nes:render</code>", "diagram render xong → <code>{ ok }</code>"],
+            ["<code>nes:node</code>", "click vào node → <code>{ label, id }</code>"],
+          ],
+        ) +
+        a11y("Render với <code>securityLevel:'strict'</code> — an toàn cho output AI không tin cậy. Không có mermaid thì hiện code nguồn, không bao giờ là ô trống."),
+    },
+  },
+  {
+    id: "walkthrough",
+    cat: "Visualize",
+    name: "Walkthrough",
+    desc: {
+      en: "Step-by-step 'How it works'. Prev/Next + arrow keys; each step spotlights part of a diagram so a principle unfolds one piece at a time.",
+      vi: "'How it works' từng bước. Prev/Next + phím mũi tên; mỗi bước làm nổi bật một phần diagram để nguyên lí bung ra từng mảnh.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "HOW IT WORKS",
+          `<div style="display:flex;flex-direction:column;gap:var(--sp-4);inline-size:100%;max-inline-size:min(560px,100%)">
+            <nes-mermaid id="wt-demo-dia"><script type="text/mermaid">graph LR
+  Client[Client] --> CDN[CDN]
+  CDN --> LB[Load Balancer]
+  LB --> API[API Server]
+  API --> Cache[(Redis)]
+  API --> DB[(Database)]</script></nes-mermaid>
+            <nes-walkthrough for="wt-demo-dia" aria-label="Request flow">
+              <script type="application/json">[
+                {"title":"1 · Client","body":"<p>A browser sends the request.</p>","focus":["Client"]},
+                {"title":"2 · Edge cache","body":"<p>The CDN serves static hits from the edge, close to the user.</p>","focus":["CDN"]},
+                {"title":"3 · Balance","body":"<p>The load balancer routes to a healthy API node.</p>","focus":["Load Balancer"]},
+                {"title":"4 · Compute","body":"<p>The API server runs the business logic.</p>","focus":["API Server"]},
+                {"title":"5 · Data","body":"<p>Hot reads hit Redis; everything else hits the database.</p>","focus":["Redis","Database"]}
+              ]</script>
+            </nes-walkthrough>
+          </div>`,
+          "col",
+        ) +
+        cb(`<nes-mermaid id="flow"> … </nes-mermaid>
+<nes-walkthrough for="flow">
+  <script type="application/json">
+    [{ "title": "1 · Client", "body": "<p>…</p>", "focus": ["Client"] },
+     { "title": "2 · Data",   "body": "<p>…</p>", "focus": ["Redis","Database"] }]
+  </script>
+</nes-walkthrough>`) +
+        h2("API") +
+        api(
+          ["Attr / prop / method / event", "Meaning"],
+          [
+            ["JSON child", "steps: <code>{ title, body (HTML), focus?: string[] }</code>"],
+            ["<code>for</code>", "id of the diagram to drive — each step calls its <code>highlight(focus)</code>"],
+            ["<code>.next()</code> / <code>.prev()</code> / <code>.go(n)</code>", "programmatic navigation"],
+            ["<code>.index</code> (prop)", "current step (0-based)"],
+            ["<code>nes:step</code>", "step changed → <code>{ index, step }</code>"],
+          ],
+        ) +
+        a11y("Focus the card and use ←/→ to move; the step counter is a polite live region. <code>for</code> works with any element exposing <code>highlight()</code>, not only diagrams."),
+      vi: () =>
+        stage(
+          "HOW IT WORKS",
+          `<div style="display:flex;flex-direction:column;gap:var(--sp-4);inline-size:100%;max-inline-size:min(560px,100%)">
+            <nes-mermaid id="wt-demo-dia-vi"><script type="text/mermaid">graph LR
+  Client[Client] --> CDN[CDN]
+  CDN --> LB[Load Balancer]
+  LB --> API[API Server]
+  API --> Cache[(Redis)]
+  API --> DB[(Database)]</script></nes-mermaid>
+            <nes-walkthrough for="wt-demo-dia-vi" aria-label="Luồng request">
+              <script type="application/json">[
+                {"title":"1 · Client","body":"<p>Trình duyệt gửi request.</p>","focus":["Client"]},
+                {"title":"2 · Cache biên","body":"<p>CDN phục vụ tài nguyên tĩnh ở biên, gần người dùng.</p>","focus":["CDN"]},
+                {"title":"3 · Cân bằng","body":"<p>Load balancer định tuyến tới node API khỏe.</p>","focus":["Load Balancer"]},
+                {"title":"4 · Tính toán","body":"<p>API server chạy business logic.</p>","focus":["API Server"]},
+                {"title":"5 · Dữ liệu","body":"<p>Đọc nóng vào Redis; còn lại vào database.</p>","focus":["Redis","Database"]}
+              ]</script>
+            </nes-walkthrough>
+          </div>`,
+          "col",
+        ) +
+        cb(`<nes-mermaid id="flow"> … </nes-mermaid>
+<nes-walkthrough for="flow">
+  <script type="application/json">
+    [{ "title": "1 · Client", "body": "<p>…</p>", "focus": ["Client"] },
+     { "title": "2 · Data",   "body": "<p>…</p>", "focus": ["Redis","Database"] }]
+  </script>
+</nes-walkthrough>`) +
+        h2("API") +
+        api(
+          ["Attr / prop / method / event", "Ý nghĩa"],
+          [
+            ["con JSON", "step: <code>{ title, body (HTML), focus?: string[] }</code>"],
+            ["<code>for</code>", "id của diagram để điều khiển — mỗi bước gọi <code>highlight(focus)</code> của nó"],
+            ["<code>.next()</code> / <code>.prev()</code> / <code>.go(n)</code>", "điều hướng bằng code"],
+            ["<code>.index</code> (prop)", "bước hiện tại (0-based)"],
+            ["<code>nes:step</code>", "đổi bước → <code>{ index, step }</code>"],
+          ],
+        ) +
+        a11y("Focus vào card rồi dùng ←/→ để đi; bộ đếm bước là live region lịch sự. <code>for</code> chạy với mọi element có <code>highlight()</code>, không chỉ diagram."),
+    },
+  },
+  {
+    id: "lens",
+    cat: "Visualize",
+    name: "Lens",
+    desc: {
+      en: "See one concept from many angles — flow, sequence, data, trade-offs — as tabs. Pure composition over Tabs; deepens understanding.",
+      vi: "Nhìn một khái niệm từ nhiều góc — flow, sequence, data, đánh đổi — dạng tab. Thuần composition trên Tabs; hiểu sâu hơn.",
+    },
+    body: {
+      en: () =>
+        p("Understanding a system means seeing it from more than one angle. <em>Lens</em> is just <a href='#/tabs'>Tabs</a> with a <code>lens</code> class — one diagram (or explanation) per angle, no new component to learn.") +
+        stage(
+          "LENS",
+          `<nes-tabs class="lens" style="inline-size:100%;max-inline-size:min(560px,100%)">
+            <section data-label="Flow" selected><nes-mermaid><script type="text/mermaid">graph LR
+  A[Request] --> B[API] --> C[(DB)]</script></nes-mermaid></section>
+            <section data-label="Sequence"><nes-mermaid><script type="text/mermaid">sequenceDiagram
+  Client->>API: GET /order
+  API->>DB: query
+  DB-->>API: rows
+  API-->>Client: 200 OK</script></nes-mermaid></section>
+            <section data-label="Trade-offs"><div class="prose"><ul><li>Cache → faster reads, staleness risk</li><li>Sync writes → consistent, slower</li></ul></div></section>
+          </nes-tabs>`,
+          "col",
+        ) +
+        cb(`<nes-tabs class="lens">
+  <section data-label="Flow" selected><nes-mermaid>…</nes-mermaid></section>
+  <section data-label="Sequence"><nes-mermaid>…</nes-mermaid></section>
+  <section data-label="Trade-offs"><div class="prose"><ul>…</ul></div></section>
+</nes-tabs>`) +
+        a11y("Inherits the ARIA tablist pattern from <a href='#/tabs'>Tabs</a> — ←/→ switch angles, each panel is a labelled tabpanel."),
+      vi: () =>
+        p("Hiểu một hệ thống nghĩa là nhìn nó từ nhiều hơn một góc. <em>Lens</em> chỉ là <a href='#/tabs'>Tabs</a> gắn class <code>lens</code> — một diagram (hoặc giải thích) mỗi góc, không component mới nào phải học.") +
+        stage(
+          "LENS",
+          `<nes-tabs class="lens" style="inline-size:100%;max-inline-size:min(560px,100%)">
+            <section data-label="Flow" selected><nes-mermaid><script type="text/mermaid">graph LR
+  A[Request] --> B[API] --> C[(DB)]</script></nes-mermaid></section>
+            <section data-label="Sequence"><nes-mermaid><script type="text/mermaid">sequenceDiagram
+  Client->>API: GET /order
+  API->>DB: query
+  DB-->>API: rows
+  API-->>Client: 200 OK</script></nes-mermaid></section>
+            <section data-label="Đánh đổi"><div class="prose"><ul><li>Cache → đọc nhanh hơn, rủi ro cũ dữ liệu</li><li>Ghi đồng bộ → nhất quán, chậm hơn</li></ul></div></section>
+          </nes-tabs>`,
+          "col",
+        ) +
+        cb(`<nes-tabs class="lens">
+  <section data-label="Flow" selected><nes-mermaid>…</nes-mermaid></section>
+  <section data-label="Sequence"><nes-mermaid>…</nes-mermaid></section>
+  <section data-label="Đánh đổi"><div class="prose"><ul>…</ul></div></section>
+</nes-tabs>`) +
+        a11y("Kế thừa pattern ARIA tablist từ <a href='#/tabs'>Tabs</a> — ←/→ đổi góc, mỗi panel là tabpanel có nhãn."),
     },
   },
 ];

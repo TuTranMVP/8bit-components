@@ -809,10 +809,46 @@
       "kind": "class",
       "description": "A single terminal / AI command line with an accent caret (❯) — the ::prompt embed. For showing commands or an agent's input.",
       "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/prompt"
+    },
+    {
+      "id": "visualize",
+      "name": "Visualize",
+      "category": "Visualize",
+      "selector": "<nes-mermaid>",
+      "kind": "element",
+      "description": "Turn an AI agent's diagram output (Mermaid) into on-brand visuals, and teach a concept step-by-step. Mermaid is never bundled — bring your own or lazy-load it.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/visualize"
+    },
+    {
+      "id": "mermaid",
+      "name": "Mermaid",
+      "category": "Visualize",
+      "selector": "<nes-mermaid>",
+      "kind": "element",
+      "description": "Render a Mermaid diagram themed to the system. Streaming-safe (set .code per chunk) and AI-safe (strict). Mermaid isn't bundled.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/mermaid"
+    },
+    {
+      "id": "walkthrough",
+      "name": "Walkthrough",
+      "category": "Visualize",
+      "selector": "<nes-walkthrough>",
+      "kind": "element",
+      "description": "Step-by-step 'How it works'. Prev/Next + arrow keys; each step spotlights part of a diagram so a principle unfolds one piece at a time.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/walkthrough"
+    },
+    {
+      "id": "lens",
+      "name": "Lens",
+      "category": "Visualize",
+      "selector": "<nes-tabs class=\"lens\">",
+      "kind": "element",
+      "description": "See one concept from many angles — flow, sequence, data, trade-offs — as tabs. Pure composition over Tabs; deepens understanding.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/lens"
     }
   ],
   "counts": {
     "concepts": 4,
-    "components": 81
+    "components": 85
   }
 }

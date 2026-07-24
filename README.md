@@ -90,7 +90,7 @@ import manifest from "8bit-nes/components.json" with { type: "json" };
 | `tokens.css`            | source of truth    | `:root` vars, 3 `@font-face`, `@layer` order                                                  | —                  |
 | `base.css`              | reset + primitives | reset, focus→gold, reduced-motion, `.pixel-box` (notch), elevation, accent mapper, motion     | tokens             |
 | `components.css`        | stateless recipes  | Element/Form/Feedback/Nav/Overlay/Data recipes (see catalog below)                            | tokens, base       |
-| `elements.js`           | stateful           | app: `<nes-quiz> <nes-hud> <nes-collapsible> <nes-sound> <nes-tabs> <nes-code>`; form: `<nes-form> <nes-number> <nes-rating> <nes-tags> <nes-pin> <nes-file> <nes-listbox> <nes-input-menu> <nes-select-menu>`; data: `<nes-tree>`; chat: `<nes-chat-prompt> <nes-chat-messages>`; editor: `<nes-editor>`; typography: `<nes-code-tree>` + `store/bleep/grantXP/toast` | tokens, components |
+| `elements.js`           | stateful           | app: `<nes-quiz> <nes-hud> <nes-collapsible> <nes-sound> <nes-tabs> <nes-code>`; form: `<nes-form> <nes-number> <nes-rating> <nes-tags> <nes-pin> <nes-file> <nes-listbox> <nes-input-menu> <nes-select-menu>`; data: `<nes-tree>`; chat: `<nes-chat-prompt> <nes-chat-messages>`; editor: `<nes-editor>`; typography: `<nes-code-tree>`; visualize: `<nes-mermaid> <nes-walkthrough>` + `store/bleep/grantXP/toast/enableMermaid` | tokens, components |
 | `icons.js`              | pixel icons        | tree-shakeable `<svg>`-string exports + `icon()` helper; `<nes-icon>` renders by name         | —                  |
 | `demo.html`             | gallery + test     | every component wired together                                                                | all                |
 | `docs.html` + `docs.js` | documentation site | Nuxt-UI-style sidebar + per-component pages (Usage / preview / API / a11y)                    | all                |
@@ -110,6 +110,7 @@ import manifest from "8bit-nes/components.json" with { type: "json" };
 | Chat (AI)  | Chat (`.chat`) · ChatMessages (`<nes-chat-messages>`) · ChatMessage (`.msg`) · ChatPrompt (`<nes-chat-prompt>`) · ChatPromptSubmit (`.chat-submit`) · ChatReasoning · ChatTool · ChatShimmer · ChatPalette |
 | Editor (AI) | Editor (`<nes-editor>`) · EditorToolbar · EditorSuggestionMenu (`/`) · EditorMentionMenu (`@`) · EditorEmojiMenu (`:`) · EditorDragHandle — VSCode-style Tab autocomplete + AI hook, contenteditable, zero-dep |
 | Typography (MDC) | CodePreview (`.code-preview`) · CodeGroup (`<nes-tabs class="code-group">`) · CodeCollapse (`<details class="code-collapse">`) · CodeTree (`<nes-code-tree>`) · CardGroup (`.card-group`) · FieldGroup (`.field-group`) · Prompt (`.prompt`) — render an AI agent's streamed Markdown/MDC output as on-brand HTML (the render target, not a parser) |
+| Visualize | Mermaid (`<nes-mermaid>`) · Walkthrough (`<nes-walkthrough>`) · Lens (`<nes-tabs class="lens">`) — render an AI agent's Mermaid diagrams on-brand + teach a concept step-by-step. Mermaid is never bundled (bring-your-own / lazy-load via `enableMermaid`); `securityLevel:strict` for untrusted output |
 
 Run the docs site locally with `pnpm demo`, then open `/docs.html`.
 

@@ -105,6 +105,10 @@ const SELECTOR = {
   cardgroup: ".card-group",
   fieldgroup: ".field-group",
   prompt: ".prompt",
+  visualize: "<nes-mermaid>",
+  mermaid: "<nes-mermaid>",
+  walkthrough: "<nes-walkthrough>",
+  lens: '<nes-tabs class="lens">',
 };
 const kindOf = (sel) =>
   !sel
@@ -160,6 +164,7 @@ const CAT_ORDER = [
   "Chat",
   "Editor",
   "Typography",
+  "Visualize",
 ];
 const byCat = (cat) => components.filter((c) => c.category === cat);
 const missing = components.filter((c) => !c.selector).map((c) => c.id);

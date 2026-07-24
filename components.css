@@ -348,7 +348,9 @@
   nes-chat-prompt,
   nes-chat-messages,
   nes-editor,
-  nes-code-tree {
+  nes-code-tree,
+  nes-mermaid,
+  nes-walkthrough {
     display: block;
   }
 
@@ -3122,6 +3124,162 @@
       border-inline-end: 0;
       border-block-end: var(--bw-2) solid var(--line-hi);
       max-block-size: 10rem;
+    }
+  }
+
+  /* ===================================================================== */
+  /*  VISUALIZE MODULE. On-brand Mermaid diagrams (AI/LLM output) + a       */
+  /*  step-through "How it works" walkthrough. Mermaid is NEVER bundled     */
+  /*  (bring-your-own / lazy-load); we ship the frame, theme, and focus.    */
+  /* ===================================================================== */
+
+  nes-mermaid {
+    --accent: var(--primary);
+  }
+
+  .mermaid-view {
+    inline-size: 100%;
+    overflow: auto;
+    padding: var(--sp-4);
+    background: var(--panel);
+    border: var(--bw-2) solid var(--line-hi);
+  }
+
+  .mermaid-view svg {
+    display: block;
+    max-inline-size: 100%;
+    block-size: auto;
+    margin-inline: auto;
+  }
+
+  /* enforce the brand — square corners on every generated diagram shape */
+  .mermaid-view :is(.node, .cluster) rect,
+  .mermaid-view rect.actor,
+  .mermaid-view .label-container {
+    rx: 0;
+    ry: 0;
+  }
+
+  /* raw fallback: no mermaid yet, mid-stream, or invalid syntax */
+  .mermaid-view .mmd-raw {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--fs-body);
+    color: var(--muted);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* focus mode: dim the rest, spotlight the current step's nodes */
+  .mermaid-view.has-focus :is(.node, .actor, .cluster):not(.nes-focus) {
+    opacity: 0.3;
+    transition: opacity var(--dur-fast);
+  }
+
+  .mermaid-view .nes-focus :is(rect, polygon, circle, path) {
+    stroke: var(--accent);
+    stroke-width: 3px;
+  }
+
+  /* Walkthrough — step-by-step "How it works" */
+  .walkthrough {
+    --accent: var(--primary);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+    inline-size: 100%;
+    padding: var(--sp-4);
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    outline: none;
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 var(--bw-2) var(--accent);
+    }
+  }
+
+  .wt-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--sp-3);
+  }
+
+  .wt-title {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: var(--fs-h3);
+    color: var(--ink);
+  }
+
+  .wt-count {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: var(--fs-chip);
+    color: var(--muted);
+  }
+
+  .wt-body {
+    min-block-size: 3.5rem;
+    color: var(--text);
+
+    &> :first-child {
+      margin-block-start: 0;
+    }
+
+    &> :last-child {
+      margin-block-end: 0;
+    }
+  }
+
+  .wt-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+  }
+
+  .wt-dots {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--sp-2);
+  }
+
+  .wt-dot {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    padding: 0;
+    cursor: pointer;
+    background: var(--panel-2);
+    border: var(--bw) solid var(--line-hi);
+    transition: background var(--dur-fast);
+
+    &[aria-current="true"] {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+  }
+
+  /* Lens — one concept, many angles: <nes-tabs class="lens"> (framed tabs) */
+  nes-tabs.lens {
+    border: var(--bw-2) solid var(--line-hi);
+    background: var(--slot);
+
+    &>.tablist {
+      background: var(--panel-2);
+      border-block-end: var(--bw-2) solid var(--line-hi);
+      padding-inline: var(--sp-2);
+    }
+
+    & .tabpanel {
+      padding: var(--sp-4);
+    }
+
+    & .mermaid-view {
+      border: 0;
+      padding: 0;
     }
   }
 

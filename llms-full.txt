@@ -129,7 +129,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Theming: https://tutranmvp.github.io/8bit-components/docs.html#/theming
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
-## Component reference (81 components)
+## Component reference (85 components)
 
 ## Element
 
@@ -553,6 +553,28 @@ toast("<b>Saved.</b>", { accent: "good" });
 - selector: `.prompt` (class) · category: Typography
 - A single terminal / AI command line with an accent caret (❯) — the ::prompt embed. For showing commands or an agent's input.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/prompt
+
+## Visualize
+
+### Visualize
+- selector: `<nes-mermaid>` (element) · category: Visualize
+- Turn an AI agent's diagram output (Mermaid) into on-brand visuals, and teach a concept step-by-step. Mermaid is never bundled — bring your own or lazy-load it.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/visualize
+
+### Mermaid
+- selector: `<nes-mermaid>` (element) · category: Visualize
+- Render a Mermaid diagram themed to the system. Streaming-safe (set .code per chunk) and AI-safe (strict). Mermaid isn't bundled.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/mermaid
+
+### Walkthrough
+- selector: `<nes-walkthrough>` (element) · category: Visualize
+- Step-by-step 'How it works'. Prev/Next + arrow keys; each step spotlights part of a diagram so a principle unfolds one piece at a time.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/walkthrough
+
+### Lens
+- selector: `<nes-tabs class="lens">` (element) · category: Visualize
+- See one concept from many angles — flow, sequence, data, trade-offs — as tabs. Pure composition over Tabs; deepens understanding.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/lens
 
 ---
 Generated from docs.js by scripts/gen-llms.mjs. Do not edit by hand — run `pnpm gen:llms`.
