@@ -130,6 +130,13 @@ in [DESIGN.md](DESIGN.md).
 - `fonts/nes-mono-400.woff2` / `-700.woff2` — NES Mono: chrome, labels, numbers, code.
 - `fonts/nes-sans-var.woff2` — NES Sans variable (wght 300–700): body, đọc tiếng Việt có dấu.
 
+**Weights & styles.** NES Sans is variable so any weight **300–700** is real (regular 400, medium
+500, bold 700 all interpolate). NES Mono ships **400 + 700** (crisp static faces — it's chrome/code,
+so no separate medium by design). **Italic** works for both: neither ships an italic face, so the
+browser synthesizes oblique — `font-synthesis: style` keeps the real weights crisp (no faux-bold)
+while allowing the slant, which costs **0 bytes** vs a ~100 KB italic set. `<b>/<strong>` → 700,
+`<i>/<em>` → oblique.
+
 Latin + Vietnamese subset (~171KB tổng), full diacritic coverage verified. License: `fonts/LICENSE-FONTS.txt` (SIL OFL 1.1).
 Zero-FOUT: preload 2 file critical — snippet trong comment đầu `tokens.css`.
 ## Wire it up
