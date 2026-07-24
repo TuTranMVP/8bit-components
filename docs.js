@@ -869,6 +869,32 @@ const COMPONENTS = [
           </div>`,
         ) +
         p(`${iconNames.length} icons. Recolor with <code>data-accent</code> on any ancestor, or just set <code>color</code>.`) +
+        h2("Variants") +
+        stage(
+          "VARIANTS",
+          `<div style="display:flex;align-items:center;gap:var(--sp-4);flex-wrap:wrap">
+            <nes-icon name="star" class="i-sm"></nes-icon>
+            <nes-icon name="star" class="i-md"></nes-icon>
+            <nes-icon name="star" class="i-lg"></nes-icon>
+            <nes-icon name="star" class="i-xl"></nes-icon>
+            <nes-icon name="loader" class="i-lg i-spin"></nes-icon>
+            <nes-icon name="heart" class="i-lg" style="color:var(--crit)"></nes-icon>
+            <span class="i-lg" data-accent="cyan" style="color:var(--accent)"><nes-icon name="bolt"></nes-icon></span>
+            <span class="icon-box"><nes-icon name="rocket"></nes-icon></span>
+            <span class="icon-box solid" data-accent="purple"><nes-icon name="sparkles"></nes-icon></span>
+            <span class="icon-box lg" data-accent="cyan"><nes-icon name="bot"></nes-icon></span>
+          </div>`,
+        ) +
+        api(
+          ["Variant", "Effect"],
+          [
+            ["<code>.i-sm .i-md .i-lg .i-xl</code>", "preset sizes (icons are 1em → set the box)"],
+            ["<code>size</code> attr / <code>font-size</code>", "any custom size"],
+            ["<code>.i-spin</code>", "rotate — for loader / refresh (respects reduced-motion)"],
+            ["<code>color</code> / <code>data-accent</code>", "recolor via currentColor"],
+            ["<code>.icon-box</code> + <code>.solid</code> / <code>.lg</code>", "square icon tile (feature/nav)"],
+          ],
+        ) +
         h2("Usage") +
         cb(
           `<!-- no build: the element (registered by "8bit-nes") -->
@@ -899,6 +925,32 @@ el.innerHTML = icon("search", { size: 20, label: "Search" });`,
           </div>`,
         ) +
         p(`${iconNames.length} icon. Đổi màu bằng <code>data-accent</code> trên phần tử cha, hoặc chỉ cần set <code>color</code>.`) +
+        h2("Biến thể") +
+        stage(
+          "VARIANTS",
+          `<div style="display:flex;align-items:center;gap:var(--sp-4);flex-wrap:wrap">
+            <nes-icon name="star" class="i-sm"></nes-icon>
+            <nes-icon name="star" class="i-md"></nes-icon>
+            <nes-icon name="star" class="i-lg"></nes-icon>
+            <nes-icon name="star" class="i-xl"></nes-icon>
+            <nes-icon name="loader" class="i-lg i-spin"></nes-icon>
+            <nes-icon name="heart" class="i-lg" style="color:var(--crit)"></nes-icon>
+            <span class="i-lg" data-accent="cyan" style="color:var(--accent)"><nes-icon name="bolt"></nes-icon></span>
+            <span class="icon-box"><nes-icon name="rocket"></nes-icon></span>
+            <span class="icon-box solid" data-accent="purple"><nes-icon name="sparkles"></nes-icon></span>
+            <span class="icon-box lg" data-accent="cyan"><nes-icon name="bot"></nes-icon></span>
+          </div>`,
+        ) +
+        api(
+          ["Biến thể", "Tác dụng"],
+          [
+            ["<code>.i-sm .i-md .i-lg .i-xl</code>", "cỡ dựng sẵn (icon là 1em → chỉnh khung)"],
+            ["<code>size</code> attr / <code>font-size</code>", "cỡ tùy ý"],
+            ["<code>.i-spin</code>", "xoay — cho loader / refresh (tôn trọng reduced-motion)"],
+            ["<code>color</code> / <code>data-accent</code>", "đổi màu qua currentColor"],
+            ["<code>.icon-box</code> + <code>.solid</code> / <code>.lg</code>", "ô icon vuông (feature/nav)"],
+          ],
+        ) +
         h2("Dùng") +
         cb(
           `<!-- không build: dùng element (đã đăng ký bởi "8bit-nes") -->

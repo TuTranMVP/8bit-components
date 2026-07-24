@@ -361,6 +361,63 @@
     display: block;
   }
 
+  /* ---- icon variants: size (icons are 1em, so a class just sets the box), a
+     spin for loaders, and .icon-box — a square tile for feature/nav icons. ---- */
+  .i-sm {
+    font-size: .875rem;
+  }
+
+  .i-md {
+    font-size: 1.25rem;
+  }
+
+  .i-lg {
+    font-size: 1.75rem;
+  }
+
+  .i-xl {
+    font-size: 2.5rem;
+  }
+
+  .i-spin>svg,
+  nes-icon.i-spin>svg {
+    transform-origin: center;
+    animation: nes-spin 1s linear infinite;
+  }
+
+  @keyframes nes-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* square icon tile: soft accent by default, .solid fills, .lg enlarges */
+  .icon-box {
+    --accent: var(--primary);
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    font-size: 1.25rem;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 15%, var(--panel));
+    border: var(--bw-2) solid var(--accent);
+    box-shadow: var(--sh-1);
+  }
+
+  .icon-box.solid {
+    color: var(--ink-on-accent);
+    background: var(--accent);
+    border-color: var(--accent-d);
+  }
+
+  .icon-box.lg {
+    inline-size: 3.5rem;
+    block-size: 3.5rem;
+    font-size: 1.75rem;
+  }
+
   /* --------------------------------------------------------------- CODE BLOCK */
   .codeblock {
     max-inline-size: 100%;
