@@ -7,19 +7,17 @@
   <title>8-BIT NES · CDN starter</title>
 
   <!-- ═══ 8-BIT NES via jsDelivr CDN ═══════════════════════════════════════
-       Pinned to a commit → immutable + cached forever. Bump the pin to upgrade.
-       After the package is published to npm, prefer the versioned form:
-         https://cdn.jsdelivr.net/npm/8bit-nes@0.1.0/all.min.css
-         https://cdn.jsdelivr.net/npm/8bit-nes@0.1.0/elements.min.js
+       Pinned to a published npm version → immutable + cached forever.
+       Bump @0.2.0 to upgrade. Everything (fonts + CSS + JS) ships in the package.
        ════════════════════════════════════════════════════════════════════ -->
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="https://cdn.jsdelivr.net/gh/TuTranMVP/8bit-components@a1614cb/fonts/nes-mono-400.woff2">
+    href="https://cdn.jsdelivr.net/npm/8bit-nes@0.2.0/fonts/nes-mono-400.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="https://cdn.jsdelivr.net/gh/TuTranMVP/8bit-components@a1614cb/fonts/nes-sans-var.woff2">
+    href="https://cdn.jsdelivr.net/npm/8bit-nes@0.2.0/fonts/nes-sans-var.woff2">
   <link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/gh/TuTranMVP/8bit-components@a1614cb/all.min.css">
+    href="https://cdn.jsdelivr.net/npm/8bit-nes@0.2.0/all.min.css">
   <script type="module"
-    src="https://cdn.jsdelivr.net/gh/TuTranMVP/8bit-components@a1614cb/elements.min.js"></script>
+    src="https://cdn.jsdelivr.net/npm/8bit-nes@0.2.0/elements.min.js"></script>
 </head>
 
 <body
@@ -73,7 +71,7 @@
 
   <!-- import a JS helper straight from the CDN module -->
   <script type="module">
-    import { toast } from "https://cdn.jsdelivr.net/gh/TuTranMVP/8bit-components@a1614cb/elements.min.js";
+    import { toast } from "https://cdn.jsdelivr.net/npm/8bit-nes@0.2.0/elements.min.js";
 
     // toast helper
     document.getElementById("toast-btn")

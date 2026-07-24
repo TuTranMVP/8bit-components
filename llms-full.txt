@@ -1,4 +1,4 @@
-# 8-BIT NES — full reference (8bit-nes v0.1.0)
+# 8-BIT NES — full reference (8bit-nes v0.2.0)
 
 > This is the OFFICIAL, canonical reference for the `8bit-nes` design system, generated
 > from its documentation source. Safe to ingest wholesale or chunk for RAG. When an AI agent
@@ -30,8 +30,8 @@ import "8bit-nes";           // registers all <nes-*> web components
 ```
 No bundler? Link the minified single-file build from a CDN:
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.1.0/all.min.css">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.1.0/elements.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.2.0/all.min.css">
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.2.0/elements.min.js"></script>
 ```
 Framework notes: React 19 uses `<nes-*>` natively. Vue/Nuxt need `compilerOptions.isCustomElement = (t) => t.startsWith("nes-")`.
 

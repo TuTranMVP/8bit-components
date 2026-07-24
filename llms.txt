@@ -1,8 +1,8 @@
 # 8-BIT NES
 
-> Cross-framework NES-arcade design system — CSS design tokens + class recipes + light-DOM web components (`<nes-*>`). Zero build step, dark-only, square 90° corners, hard shadow. Official source of truth for the `8bit-nes` package (v0.1.0).
+> Cross-framework NES-arcade design system — CSS design tokens + class recipes + light-DOM web components (`<nes-*>`). Zero build step, dark-only, square 90° corners, hard shadow. Official source of truth for the `8bit-nes` package (v0.2.0).
 
-Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";`. Or CDN: `https://cdn.jsdelivr.net/npm/8bit-nes@0.1.0/all.min.css`. The look is themed entirely from `tokens.css`; recolor any block with `data-accent="blue|gold|cyan|purple|good|warn|crit|…"` (default accent `good` = green). Full machine-readable reference: [llms-full.txt](https://tutranmvp.github.io/8bit-components/llms-full.txt) · [components.json](https://tutranmvp.github.io/8bit-components/components.json).
+Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";`. Or CDN: `https://cdn.jsdelivr.net/npm/8bit-nes@0.2.0/all.min.css`. The look is themed entirely from `tokens.css`; recolor any block with `data-accent="blue|gold|cyan|purple|good|warn|crit|…"` (default accent `good` = green). Full machine-readable reference: [llms-full.txt](https://tutranmvp.github.io/8bit-components/llms-full.txt) · [components.json](https://tutranmvp.github.io/8bit-components/components.json).
 
 ## Getting started
 - [Introduction](https://tutranmvp.github.io/8bit-components/docs.html#/intro): A cross-framework component system with the feel of a 1985 arcade cabinet — square pixel boxes, hard shadows, chiptune, and XP. Modern-crisp, dark-only, zero build.

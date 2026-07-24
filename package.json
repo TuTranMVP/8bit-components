@@ -1,6 +1,6 @@
 {
   "name": "8bit-nes",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "NES 8-bit retro-modern design system. Design tokens + class-based CSS components + light-DOM web components. Cross-framework: HTML, Vue 3, Nuxt, React.",
   "license": "MIT",
   "type": "module",
@@ -45,7 +45,8 @@
     "components.json",
     "llms.txt",
     "llms-full.txt",
-    "fonts/"
+    "fonts/",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "gen:llms": "node scripts/gen-llms.mjs",
