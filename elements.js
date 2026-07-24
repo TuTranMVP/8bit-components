@@ -1651,6 +1651,11 @@ class NesIcon extends HTMLElement {
 /* ========================================================================== */
 const EDITOR_SLASH = [
   { key: "✦", label: "Ask AI…", ai: true },
+  { key: "文", label: "Translate", aiCmd: "translate" },
+  { key: "↑", label: "Improve writing", aiCmd: "improve" },
+  { key: "→", label: "Continue writing", aiCmd: "continue" },
+  { key: "✓", label: "Fix grammar", aiCmd: "fix" },
+  { key: "∑", label: "Summarize", aiCmd: "summarize" },
   { key: "H1", label: "Heading 1", act: ["formatBlock", "h1"] },
   { key: "H2", label: "Heading 2", act: ["formatBlock", "h2"] },
   { key: "H3", label: "Heading 3", act: ["formatBlock", "h3"] },
@@ -1721,6 +1726,10 @@ class NesEditor extends HTMLElement {
     this.innerHTML = "";
     this.menuOpen = false;
     this.ghost = null;
+    // ghost-suggest mode: "continue" (same language) | "translate" (ghost the
+    // target-lang rendering) | "correct" (ghost a grammar fix). Cycled by the
+    // toolbar language chip when target-lang is set.
+    this._mode = this.getAttribute("suggest-mode") || "continue";
     this.build(initial);
   }
   disconnectedCallback() {
@@ -1750,6 +1759,10 @@ class NesEditor extends HTMLElement {
     this.grip.textContent = "⠿";
     this.renderToolbar();
     this.wrap.append(this.bar, this.area, this.menu, this.grip);
+    if (this.hasAttribute("stats")) {
+      this.statsEl = el("div", { class: "editor-stats", "aria-hidden": "true" });
+      this.wrap.appendChild(this.statsEl);
+    }
     this.appendChild(this.wrap);
     if (this.name) {
       this.hidden_ = el("input", { type: "hidden", name: this.name });
@@ -1809,6 +1822,31 @@ class NesEditor extends HTMLElement {
       if (it.state) this._btns.push({ el: b, state: it.state });
       this.bar.appendChild(b);
     }
+    // bilingual ghost chip: shows SRC ▸ TGT + the mode glyph; click cycles the
+    // ghost-suggest mode (continue → translate → correct) and re-suggests.
+    if (this.getAttribute("target-lang")) {
+      this.bar.appendChild(el("span", { class: "editor-sep", "aria-hidden": "true" }));
+      const src = (this.getAttribute("lang") || "src").toUpperCase();
+      const tgt = this.getAttribute("target-lang").toUpperCase();
+      const MODES = ["continue", "translate", "correct"];
+      const GLYPH = { continue: "→", translate: "文", correct: "✓" };
+      const chip = el("button", { type: "button", class: "editor-lang" });
+      const paint = () => {
+        chip.innerHTML = `<span class="pair">${_e(src)}<span class="arw">▸</span>${_e(tgt)}</span><span class="m">${GLYPH[this._mode] || "→"}</span>`;
+        chip.title = `Ghost mode: ${this._mode} (${src} → ${tgt})`;
+        chip.setAttribute("aria-label", chip.title);
+      };
+      chip.addEventListener("mousedown", (e) => e.preventDefault());
+      chip.addEventListener("click", () => {
+        this._mode = MODES[(MODES.indexOf(this._mode) + 1) % MODES.length];
+        paint();
+        this.clearGhost();
+        this.area.focus();
+        this.scheduleSuggest();
+      });
+      paint();
+      this.bar.appendChild(chip);
+    }
   }
   exec(cmd, val) {
     this.area.focus();
@@ -1819,15 +1857,31 @@ class NesEditor extends HTMLElement {
     const t = getSelection()?.toString();
     if (t) this.exec("insertHTML", `<code>${_e(t)}</code>`);
   }
-  triggerAI() {
+  triggerAI(command = "ask") {
+    const sel = getSelection();
+    const selection = sel && !sel.isCollapsed ? sel.toString() : "";
     this.dispatchEvent(
       new CustomEvent("nes:ai", {
         bubbles: true,
-        detail: { text: this.text(), insert: (h) => this.insert(h) },
+        detail: {
+          command,
+          text: this.text(),
+          selection,
+          lang: this.getAttribute("lang") || "",
+          targetLang: this.getAttribute("target-lang") || "",
+          insert: (h) => this.insert(h),
+          replace: (h) => this.replaceSelection(h),
+        },
       }),
     );
   }
   insert(html) {
+    this.area.focus();
+    document.execCommand("insertHTML", false, html);
+    this.sync();
+  }
+  /** replace the current selection with html (or insert at caret if none). */
+  replaceSelection(html) {
     this.area.focus();
     document.execCommand("insertHTML", false, html);
     this.sync();
@@ -1863,6 +1917,14 @@ class NesEditor extends HTMLElement {
     const empty = !this.area.textContent.trim() && !this.area.querySelector("img,hr,.mention");
     this.area.toggleAttribute("data-empty", empty);
     if (this.hidden_) this.hidden_.value = this.html();
+    this.updateStats();
+  }
+  updateStats() {
+    if (!this.statsEl) return;
+    const t = this.text().trim();
+    const words = t ? t.split(/\s+/).length : 0;
+    const mins = Math.max(1, Math.ceil(words / 200));
+    this.statsEl.textContent = `${words} words · ${t.length} chars · ~${mins} min`;
   }
   onInput() {
     this.clearGhost();
@@ -2024,7 +2086,8 @@ class NesEditor extends HTMLElement {
     if (!it) return;
     this.removeTrigger();
     if (this.menuKind === "/") {
-      if (it.ai) this.triggerAI();
+      if (it.ai) this.triggerAI("ask");
+      else if (it.aiCmd) this.triggerAI(it.aiCmd);
       else if (it.insert) this.exec("insertHTML", it.insert);
       else if (it.act) this.exec(...it.act);
     } else if (this.menuKind === "@") {
@@ -2048,13 +2111,41 @@ class NesEditor extends HTMLElement {
     if (!this.hasAttribute("autocomplete") && !this.suggest) return;
     this._sg = setTimeout(() => this.requestSuggest(), 600);
   }
+  /** split the document text at the caret + get the current block's text.
+   *  Gives a suggest provider enough context to translate or continue. */
+  caretSplit() {
+    const all = this.text();
+    const sel = getSelection();
+    let before = all;
+    let block = "";
+    if (sel?.rangeCount && this.area.contains(sel.anchorNode)) {
+      const r = sel.getRangeAt(0);
+      const pre = document.createRange();
+      pre.selectNodeContents(this.area);
+      pre.setEnd(r.startContainer, r.startOffset);
+      before = pre.toString();
+      const b = this.blockFrom(r.startContainer);
+      if (b) block = b.textContent || "";
+    }
+    return { before, after: all.slice(before.length), block };
+  }
   async requestSuggest() {
     if (this.menuOpen || this.ghost) return;
     const text = this.text();
+    const { before, after, block } = this.caretSplit();
+    const ctx = {
+      text,
+      textBefore: before,
+      textAfter: after,
+      block,
+      lang: this.getAttribute("lang") || "",
+      targetLang: this.getAttribute("target-lang") || "",
+      mode: this._mode,
+    };
     let out = "";
     if (this.suggest) {
       try {
-        out = (await this.suggest({ text })) || "";
+        out = (await this.suggest(ctx)) || "";
       } catch {
         out = "";
       }
@@ -2064,7 +2155,7 @@ class NesEditor extends HTMLElement {
       this.dispatchEvent(
         new CustomEvent("nes:suggest", {
           bubbles: true,
-          detail: { text, accept: (s) => this.showGhost(s) },
+          detail: { ...ctx, accept: (s) => this.showGhost(s) },
         }),
       );
   }

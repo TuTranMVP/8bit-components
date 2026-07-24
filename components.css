@@ -2723,6 +2723,49 @@
     background: var(--line-hi);
   }
 
+  /* bilingual ghost chip: SRC ▸ TGT + mode glyph (toggles suggest mode) */
+  .editor-lang {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    margin-inline-start: auto;
+    padding-inline: var(--sp-2);
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    color: var(--muted);
+
+    & .pair {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25em;
+    }
+
+    & .arw {
+      color: var(--primary);
+    }
+
+    & .m {
+      min-inline-size: 1.2em;
+      text-align: center;
+      color: var(--ink-on-accent);
+      background: var(--primary);
+      border: var(--bw) solid var(--primary);
+    }
+  }
+
+  /* blog-writing stats footer (words · chars · reading time) */
+  .editor-stats {
+    padding: var(--sp-2) var(--sp-4);
+    border-block-start: var(--bw-2) solid var(--line-hi);
+    background: var(--panel-2);
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-chrome);
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
   /* Editor content (contenteditable prose) */
   .editor-content {
     min-block-size: 8rem;
