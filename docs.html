@@ -352,10 +352,6 @@
       overscroll-behavior-x: contain;
     }
 
-    .doc-page .table {
-      min-inline-size: 40rem;
-    }
-
     .doc-page .table td,
     .doc-page .table th {
       font-size: var(--fs-label);
@@ -363,16 +359,21 @@
       vertical-align: top;
     }
 
-    /* first column (name/selector) never wraps mid-token */
+    /* short columns (name / selector) shrink to fit their content on one line
+       (inline-size:1% + nowrap = shrink-to-content), giving the freed width to
+       the description column. Middle columns auto-size to their content too. */
+    .doc-page .table th:first-child,
     .doc-page .table td:first-child {
+      inline-size: 1%;
       white-space: nowrap;
     }
 
-    /* the last column (Meaning) is the flexible one — give it room */
-    .doc-page .table td:last-child,
-    .doc-page .table th:last-child {
-      inline-size: 55%;
-      white-space: normal;
+    /* the last column (Meaning / description) soaks up the remaining width and
+       keeps a readable floor — the wrapper scrolls only if even that won't fit,
+       so short tables fit the viewport with no scroll at all. */
+    .doc-page .table th:last-child,
+    .doc-page .table td:last-child {
+      min-inline-size: 14rem;
       overflow-wrap: anywhere;
     }
 
