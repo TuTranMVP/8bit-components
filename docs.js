@@ -4,6 +4,7 @@
    Language is persisted (localStorage) and auto-detected on first visit.
    ========================================================================== */
 import { store, toast } from "./elements.js";
+import { icon, iconNames } from "./icons.js";
 
 /* --------------------------------------------------------------- state */
 let LANG =
@@ -846,6 +847,77 @@ const COMPONENTS = [
   },
 
   /* -------------------------------------------------------- FORM */
+  {
+    id: "icon",
+    cat: "Element",
+    name: "Icon",
+    desc: {
+      en: "Pixel icon set on a 16×16 grid. currentColor + 1em, so icons inherit text color/accent and scale with font-size. Tree-shakeable named exports.",
+      vi: "Bộ icon pixel trên lưới 16×16. currentColor + 1em nên icon thừa hưởng màu chữ/accent và scale theo font-size. Named export tree-shake được.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "ICON",
+          `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:var(--sp-3);inline-size:100%">
+            ${iconNames
+              .map(
+                (n) =>
+                  `<span title="${n}" style="display:flex;flex-direction:column;align-items:center;gap:var(--sp-2);color:var(--muted)"><span style="font-size:24px;color:var(--ink)">${icon(n)}</span><code style="font-size:var(--fs-label)">${n}</code></span>`,
+              )
+              .join("")}
+          </div>`,
+        ) +
+        p(`${iconNames.length} icons. Recolor with <code>data-accent</code> on any ancestor, or just set <code>color</code>.`) +
+        h2("Usage") +
+        cb(
+          `<!-- no build: the element (registered by "8bit-nes") -->
+<nes-icon name="search"></nes-icon>
+<button class="btn"><nes-icon name="download"></nes-icon> Save</button>
+
+<!-- bundler: import only what you use → tree-shaken -->
+import { search, download } from "8bit-nes/icons";
+el.innerHTML = search;
+
+<!-- dynamic by name -->
+import { icon } from "8bit-nes/icons";
+el.innerHTML = icon("search", { size: 20, label: "Search" });`,
+        ) +
+        h2("Extend") +
+        p(`Add <code>export const foo = S('&lt;path d="…"/&gt;')</code> to <code>icons.js</code> and list it in <code>icons</code>. Draw on the 16×16 grid; it's instantly tree-shakeable and available to <code>&lt;nes-icon&gt;</code>.`) +
+        a11y("Icons are decorative by default (<code>aria-hidden</code>). If an icon carries meaning on its own (e.g. an icon-only button), pass <code>label</code> / the <code>label</code> attribute so it becomes a labelled <code>role=\"img\"</code>."),
+      vi: () =>
+        stage(
+          "ICON",
+          `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:var(--sp-3);inline-size:100%">
+            ${iconNames
+              .map(
+                (n) =>
+                  `<span title="${n}" style="display:flex;flex-direction:column;align-items:center;gap:var(--sp-2);color:var(--muted)"><span style="font-size:24px;color:var(--ink)">${icon(n)}</span><code style="font-size:var(--fs-label)">${n}</code></span>`,
+              )
+              .join("")}
+          </div>`,
+        ) +
+        p(`${iconNames.length} icon. Đổi màu bằng <code>data-accent</code> trên phần tử cha, hoặc chỉ cần set <code>color</code>.`) +
+        h2("Dùng") +
+        cb(
+          `<!-- không build: dùng element (đã đăng ký bởi "8bit-nes") -->
+<nes-icon name="search"></nes-icon>
+<button class="btn"><nes-icon name="download"></nes-icon> Lưu</button>
+
+<!-- bundler: chỉ import cái cần → tree-shake -->
+import { search, download } from "8bit-nes/icons";
+el.innerHTML = search;
+
+<!-- động theo tên -->
+import { icon } from "8bit-nes/icons";
+el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
+        ) +
+        h2("Mở rộng") +
+        p(`Thêm <code>export const foo = S('&lt;path d="…"/&gt;')</code> vào <code>icons.js</code> và liệt kê trong <code>icons</code>. Vẽ trên lưới 16×16; icon tự động tree-shake được và dùng ngay với <code>&lt;nes-icon&gt;</code>.`) +
+        a11y("Icon mặc định chỉ trang trí (<code>aria-hidden</code>). Nếu icon tự mang nghĩa (vd nút chỉ có icon), truyền <code>label</code> / thuộc tính <code>label</code> để nó thành <code>role=\"img\"</code> có nhãn."),
+    },
+  },
   {
     id: "input",
     cat: "Form",

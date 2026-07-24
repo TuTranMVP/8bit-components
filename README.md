@@ -91,6 +91,7 @@ import manifest from "8bit-nes/components.json" with { type: "json" };
 | `base.css`              | reset + primitives | reset, focus→gold, reduced-motion, `.pixel-box` (notch), elevation, accent mapper, motion     | tokens             |
 | `components.css`        | stateless recipes  | Element/Form/Feedback/Nav/Overlay/Data recipes (see catalog below)                            | tokens, base       |
 | `elements.js`           | stateful           | app: `<nes-quiz> <nes-hud> <nes-collapsible> <nes-sound> <nes-tabs> <nes-code>`; form: `<nes-form> <nes-number> <nes-rating> <nes-tags> <nes-pin> <nes-file> <nes-listbox> <nes-input-menu> <nes-select-menu>`; data: `<nes-tree>`; chat: `<nes-chat-prompt> <nes-chat-messages>` + `store/bleep/grantXP/toast` | tokens, components |
+| `icons.js`              | pixel icons        | tree-shakeable `<svg>`-string exports + `icon()` helper; `<nes-icon>` renders by name         | —                  |
 | `demo.html`             | gallery + test     | every component wired together                                                                | all                |
 | `docs.html` + `docs.js` | documentation site | Nuxt-UI-style sidebar + per-component pages (Usage / preview / API / a11y)                    | all                |
 
@@ -100,7 +101,7 @@ import manifest from "8bit-nes/components.json" with { type: "json" };
 
 | Category   | Components                                                                     |
 |------------|--------------------------------------------------------------------------------|
-| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator                        |
+| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator · Icon (`<nes-icon>` / `8bit-nes/icons`) |
 | Form       | Input · Textarea · Select · Checkbox · CheckboxGroup · Radio · RadioGroup · Switch · Field · **Form** (`<nes-form>`) · Slider (`.range`) · Segmented control · InputNumber (`<nes-number>`) · InputRating (`<nes-rating>`) · InputTags (`<nes-tags>`) · PinInput (`<nes-pin>`) · ColorPicker · InputDate · InputTime · FileUpload (`<nes-file>`) · Listbox (`<nes-listbox>`) · InputMenu (`<nes-input-menu>`) · SelectMenu (`<nes-select-menu>`) |
 | Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast · Spinner · Meter · Empty state · Banner |
 | Navigation | Tabs (`<nes-tabs>`) · Breadcrumb · Pagination · Steps · Nav list                          |

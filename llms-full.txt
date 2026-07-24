@@ -129,7 +129,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Theming: https://tutranmvp.github.io/8bit-components/docs.html#/theming
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
-## Component reference (66 components)
+## Component reference (67 components)
 
 ## Element
 
@@ -167,6 +167,11 @@ toast("<b>Saved.</b>", { accent: "good" });
 - selector: `.separator` (class) · category: Element
 - Divider between content. Solid or dashed; horizontal or vertical.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/separator
+
+### Icon
+- selector: `<nes-icon>` (element) · category: Element
+- Pixel icon set on a 16×16 grid. currentColor + 1em, so icons inherit text color/accent and scale with font-size. Tree-shakeable named exports.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/icon
 
 ## Form
 

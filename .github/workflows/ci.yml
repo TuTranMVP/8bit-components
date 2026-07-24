@@ -27,7 +27,7 @@ jobs:
         run: pnpm build
 
       - name: Fail if committed build artifacts are stale
-        run: git diff --exit-code -- all.min.css elements.min.js llms.txt llms-full.txt components.json
+        run: git diff --exit-code -- all.min.css elements.min.js icons.min.js llms.txt llms-full.txt components.json
 
       - name: Verify publish contents (dry run)
         run: npm pack --dry-run

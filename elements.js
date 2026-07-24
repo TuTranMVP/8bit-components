@@ -5,6 +5,8 @@
    Import once:  <script type="module" src="./elements.js"></script>
    ========================================================================== */
 
+import { icon } from "./icons.js";
+
 /* ------------------------------------------------------------ safe storage */
 export const store = {
   _m: {},
@@ -1619,6 +1621,29 @@ class NesChatMessages extends HTMLElement {
   }
 }
 
+/* ========================================================================== */
+/*  <nes-icon>  —  render a pixel icon by name (no-build convenience).          */
+/*  <nes-icon name="check"></nes-icon>  ·  add label="…" for a meaningful icon. */
+/*  Bundler users after tree-shaking: import { check } from "8bit-nes/icons".   */
+/* ========================================================================== */
+class NesIcon extends HTMLElement {
+  static get observedAttributes() {
+    return ["name", "label", "size"];
+  }
+  connectedCallback() {
+    this.render();
+  }
+  attributeChangedCallback() {
+    if (this.isConnected) this.render();
+  }
+  render() {
+    const name = this.getAttribute("name");
+    this.innerHTML = name
+      ? icon(name, { label: this.getAttribute("label"), size: this.getAttribute("size") })
+      : "";
+  }
+}
+
 /* ------------------------------------------------------------- self-register */
 const defs = {
   "nes-sound": NesSound,
@@ -1639,6 +1664,7 @@ const defs = {
   "nes-tree": NesTree,
   "nes-chat-prompt": NesChatPrompt,
   "nes-chat-messages": NesChatMessages,
+  "nes-icon": NesIcon,
 };
 for (const [tag, cls] of Object.entries(defs)) {
   if (!customElements.get(tag)) customElements.define(tag, cls);

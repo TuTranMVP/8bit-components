@@ -31,7 +31,7 @@ jobs:
           mkdir -p _site
           cp index.html docs.html demo.html docs.js \
              all.css all.min.css tokens.css base.css components.css \
-             elements.js elements.min.js \
+             elements.js elements.min.js icons.js icons.min.js \
              llms.txt llms-full.txt components.json \
              og.png robots.txt sitemap.xml _site/
           cp -r fonts _site/fonts

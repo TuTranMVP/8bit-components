@@ -31,6 +31,7 @@ const SELECTOR = {
   avatar: ".avatar",
   kbd: ".kbd",
   separator: ".separator",
+  icon: "<nes-icon>",
   input: ".input",
   textarea: ".textarea",
   select: ".select",
