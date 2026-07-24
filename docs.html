@@ -144,6 +144,26 @@
       color: var(--ink-on-accent);
     }
 
+    /* ---- mobile UX: no accidental zoom, keep pinch-zoom (a11y) ----
+       `touch-action: manipulation` on the whole page kills the double-tap-to-zoom
+       gesture (and the 300ms tap delay) site-wide — a quick double-tap fires two
+       clicks, it doesn't zoom. Pinch-zoom is untouched, so the WCAG zoom
+       affordance stays. Text-entry fields are floored at 16px so focusing them
+       never triggers iOS focus-zoom. */
+    body {
+      touch-action: manipulation;
+    }
+
+    @media (pointer: coarse) {
+
+      .search,
+      input,
+      select,
+      textarea {
+        font-size: max(16px, var(--fs-body));
+      }
+    }
+
     /* ---- app grid: sidebar + content ---- */
     .app {
       display: grid;
