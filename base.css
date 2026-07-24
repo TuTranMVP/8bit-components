@@ -65,7 +65,10 @@
     font-family: var(--font-body);
     font-size: var(--fs-body);
     line-height: var(--lh-body);
-    font-synthesis: none;
+    /* keep weight crisp from the real 400/700 faces (no faux-bold), but let the
+       browser synthesize oblique for italic — neither font ships an italic face,
+       and a faux slant costs 0 bytes vs a ~100 KB italic set (Lightweight/ROI). */
+    font-synthesis: style;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
   }
