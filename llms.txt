@@ -114,6 +114,10 @@ Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";
 - [Mermaid](https://tutranmvp.github.io/8bit-components/docs.html#/mermaid) — `<nes-mermaid>`: Render a Mermaid diagram themed to the system. Streaming-safe (set .code per chunk) and AI-safe (strict). Mermaid isn't bundled.
 - [Walkthrough](https://tutranmvp.github.io/8bit-components/docs.html#/walkthrough) — `<nes-walkthrough>`: Step-by-step 'How it works'. Prev/Next + arrow keys; each step spotlights part of a diagram so a principle unfolds one piece at a time.
 - [Lens](https://tutranmvp.github.io/8bit-components/docs.html#/lens) — `<nes-tabs class="lens">`: See one concept from many angles — flow, sequence, data, trade-offs — as tabs. Pure composition over Tabs; deepens understanding.
+- [Zoom](https://tutranmvp.github.io/8bit-components/docs.html#/zoom) — `<nes-zoom>`: Pan + zoom any content — wheel, drag, buttons, keyboard. Wrap a big AI-generated diagram (or an image) to make it explorable. Zero-dep.
+- [Annotate](https://tutranmvp.github.io/8bit-components/docs.html#/annotate) — `<nes-annotate>`: Numbered hotspot markers with popovers, positioned over any image or diagram. Point at the parts to explain how something works.
+- [Compare](https://tutranmvp.github.io/8bit-components/docs.html#/compare) — `<nes-compare>`: A before/after slider: two layers, a draggable divider. Compare two architectures, designs, or states side-by-side.
+- [Legend](https://tutranmvp.github.io/8bit-components/docs.html#/legend) — `.legend`: A compact color / shape key for a diagram. Pure CSS — one swatch per meaning, recolored with data-accent.
 
 ## Optional
 - [Full flat-text reference for RAG](https://tutranmvp.github.io/8bit-components/llms-full.txt)

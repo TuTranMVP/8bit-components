@@ -417,14 +417,21 @@
 
     <!-- VISUALIZE MODULE -->
     <section>
-      <span class="lab">Visualize — Mermaid (BYO/lazy, 0 bundle) + step-through &lt;nes-walkthrough&gt; · &lt;nes-mermaid&gt;</span>
+      <span class="lab">Visualize — Mermaid + step-through + zoom · annotate · compare · legend (all 0-bundle)</span>
       <div style="display:flex;flex-direction:column;gap:var(--sp-4);max-inline-size:min(560px,100%)">
-        <nes-mermaid id="demo-dia"><script type="text/mermaid">graph LR
+        <nes-zoom aria-label="Architecture" style="block-size:200px">
+          <nes-mermaid id="demo-dia"><script type="text/mermaid">graph LR
   Client[Client] --> CDN[CDN]
   CDN --> LB[Load Balancer]
   LB --> API[API Server]
   API --> Cache[(Redis)]
   API --> DB[(Database)]</script></nes-mermaid>
+        </nes-zoom>
+        <div class="legend">
+          <span class="legend-item" data-accent="good">Service</span>
+          <span class="legend-item" data-accent="cyan">Cache</span>
+          <span class="legend-item" data-accent="warn">Edge</span>
+        </div>
         <nes-walkthrough for="demo-dia" aria-label="Request flow">
           <script type="application/json">[
             {"title":"1 · Client","body":"<p>Trình duyệt gửi request.</p>","focus":["Client"]},
@@ -434,6 +441,10 @@
             {"title":"5 · Data","body":"<p>Đọc nóng vào Redis; còn lại vào database.</p>","focus":["Redis","Database"]}
           ]</script>
         </nes-walkthrough>
+        <nes-compare value="55" aria-label="Monolith vs microservices">
+          <div style="display:grid;place-items:center;min-block-size:120px;background:var(--panel-2);color:var(--ink);font-family:var(--font-mono)">MONOLITH</div>
+          <div style="display:grid;place-items:center;min-block-size:120px;background:var(--slot);color:var(--muted);font-family:var(--font-mono)">MICROSERVICES</div>
+        </nes-compare>
       </div>
     </section>
 
