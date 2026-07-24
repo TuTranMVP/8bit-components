@@ -226,8 +226,8 @@
           <span class="label">Color / Date / Time</span>
           <div class="row" style="align-items:center">
             <input type="color" class="swatch" value="#56d364" aria-label="Accent colour">
-            <input type="date" class="input" value="2026-07-23" style="max-inline-size:180px" aria-label="Date">
-            <input type="time" class="input" value="13:37" style="max-inline-size:140px" aria-label="Time">
+            <input type="date" class="input" value="2026-07-23" style="max-inline-size:min(180px,100%)" aria-label="Date">
+            <input type="time" class="input" value="13:37" style="max-inline-size:min(140px,100%)" aria-label="Time">
           </div>
         </div>
 
@@ -306,7 +306,7 @@
 
       <div style="margin-block-start:var(--sp-5)">
         <span class="lab">Form · &lt;nes-form&gt; — native validation → nes:submit</span>
-        <nes-form aria-label="Signup demo" style="max-inline-size:380px">
+        <nes-form aria-label="Signup demo" style="max-inline-size:min(380px,100%)">
           <label class="field">
             <span class="label">Email <span class="req">*</span></span>
             <input class="input" type="email" name="email" required placeholder="you@studio.dev">
@@ -349,7 +349,7 @@
     <!-- AI CHAT MODULE -->
     <section>
       <span class="lab">AI Chat module — &lt;nes-chat-prompt&gt; · &lt;nes-chat-messages&gt;</span>
-      <div class="chat-palette" style="block-size:340px;max-inline-size:520px">
+      <div class="chat-palette" style="block-size:340px;max-inline-size:min(520px,100%)">
         <nes-chat-messages id="demo-chat">
           <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span>
             <div class="bubble">Chào! Mình là agent 8-bit. Hỏi mình về design system nhé.</div>
@@ -376,7 +376,7 @@
     <!-- EDITOR MODULE -->
     <section>
       <span class="lab">Editor · &lt;nes-editor&gt; — / commands · @ mention · : emoji · ✦ AI · Tab autocomplete</span>
-      <nes-editor autocomplete name="doc" aria-label="Doc" style="max-inline-size:640px">
+      <nes-editor autocomplete name="doc" aria-label="Doc" style="max-inline-size:min(640px,100%)">
         <script type="application/json">{"mentions":[{"value":"n1","label":"Second Brain"},{"value":"n2","label":"Knowledge Engine"},{"value":"n3","label":"Spaced Repetition"}]}</script>
         <h2>How it works</h2>
         <p>Editor nhẹ cho app AI second-brain. Gõ <b>/</b> chèn khối, <b>@</b> nhắc note, <b>:</b> emoji. ⌘↵ gửi cho agent.</p>
