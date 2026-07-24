@@ -118,6 +118,20 @@ function apiGroups(groups) {
   return out;
 }
 
+// shared inline diagram used by the Visualize demos (renders with no deps)
+const VIZ_SVG = `<svg viewBox="0 0 460 130" xmlns="http://www.w3.org/2000/svg" font-family="monospace" font-size="11" style="inline-size:100%;block-size:auto">
+  <g fill="var(--panel-2)" stroke="var(--line-hi)" stroke-width="2">
+    <rect x="10" y="45" width="90" height="40"/><rect x="150" y="45" width="90" height="40"/>
+    <rect x="300" y="8" width="90" height="40"/><rect x="300" y="82" width="90" height="40"/>
+  </g>
+  <g stroke="var(--primary)" stroke-width="2" fill="none">
+    <line x1="100" y1="65" x2="150" y2="65"/><line x1="240" y1="65" x2="300" y2="30"/><line x1="240" y1="65" x2="300" y2="104"/>
+  </g>
+  <g fill="var(--ink)" text-anchor="middle">
+    <text x="55" y="69">Client</text><text x="195" y="69">API</text><text x="345" y="32">Cache</text><text x="345" y="106">DB</text>
+  </g>
+</svg>`;
+
 const CAT_ACCENT = {
   Element: "gold",
   Form: "blue",
@@ -4896,6 +4910,226 @@ for await (const chunk of agentStream())
   <section data-label="Đánh đổi"><div class="prose"><ul>…</ul></div></section>
 </nes-tabs>`) +
         a11y("Kế thừa pattern ARIA tablist từ <a href='#/tabs'>Tabs</a> — ←/→ đổi góc, mỗi panel là tabpanel có nhãn."),
+    },
+  },
+  {
+    id: "zoom",
+    cat: "Visualize",
+    name: "Zoom",
+    desc: {
+      en: "Pan + zoom any content — wheel, drag, buttons, keyboard. Wrap a big AI-generated diagram (or an image) to make it explorable. Zero-dep.",
+      vi: "Pan + zoom bất kỳ nội dung — cuộn, kéo, nút, phím. Bọc một diagram lớn AI sinh (hoặc ảnh) để khám phá được. Zero-dep.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "ZOOM",
+          `<nes-zoom aria-label="Architecture" style="inline-size:100%;max-inline-size:min(520px,100%);block-size:220px">${VIZ_SVG}</nes-zoom>`,
+          "col",
+        ) +
+        cb(`<nes-zoom aria-label="Architecture" style="block-size:320px">
+  <nes-mermaid> … a large diagram … </nes-mermaid>
+</nes-zoom>`) +
+        h2("API") +
+        apiGroups({
+          slot: [["default", "any content — a diagram, <code>&lt;nes-mermaid&gt;</code>, an <code>&lt;img&gt;</code>, or SVG"]],
+          attr: [
+            ["<code>min</code> / <code>max</code>", "number", "<code>0.4</code> / <code>5</code>", "zoom-scale bounds"],
+          ],
+          method: [
+            ["<code>.zoomBy(f)</code> / <code>.zoomTo(s)</code>", "<code>(number) → void</code>", "—", "zoom relative / absolute"],
+            ["<code>.reset()</code>", "<code>() → void</code>", "—", "back to 1× centered"],
+          ],
+        }) +
+        note("Wheel to zoom, drag to pan, double-click or <code>0</code> to reset, <code>+</code>/<code>−</code> to step. On touch it takes over one-finger drag (<code>touch-action:none</code>).") +
+        a11y("The viewport is focusable and keyboard-driven; controls are real <code>&lt;button&gt;</code>s with labels."),
+      vi: () =>
+        stage(
+          "ZOOM",
+          `<nes-zoom aria-label="Kiến trúc" style="inline-size:100%;max-inline-size:min(520px,100%);block-size:220px">${VIZ_SVG}</nes-zoom>`,
+          "col",
+        ) +
+        cb(`<nes-zoom aria-label="Kiến trúc" style="block-size:320px">
+  <nes-mermaid> … một diagram lớn … </nes-mermaid>
+</nes-zoom>`) +
+        h2("API") +
+        apiGroups({
+          slot: [["mặc định", "nội dung bất kỳ — diagram, <code>&lt;nes-mermaid&gt;</code>, <code>&lt;img&gt;</code>, hay SVG"]],
+          attr: [["<code>min</code> / <code>max</code>", "number", "<code>0.4</code> / <code>5</code>", "cận tỷ lệ zoom"]],
+          method: [
+            ["<code>.zoomBy(f)</code> / <code>.zoomTo(s)</code>", "<code>(number) → void</code>", "—", "zoom tương đối / tuyệt đối"],
+            ["<code>.reset()</code>", "<code>() → void</code>", "—", "về 1× canh giữa"],
+          ],
+        }) +
+        note("Cuộn để zoom, kéo để pan, double-click hoặc <code>0</code> để reset, <code>+</code>/<code>−</code> để bước. Trên cảm ứng nó chiếm kéo một ngón (<code>touch-action:none</code>).") +
+        a11y("Viewport focus được và điều khiển bằng phím; nút là <code>&lt;button&gt;</code> thật có nhãn."),
+    },
+  },
+  {
+    id: "annotate",
+    cat: "Visualize",
+    name: "Annotate",
+    desc: {
+      en: "Numbered hotspot markers with popovers, positioned over any image or diagram. Point at the parts to explain how something works.",
+      vi: "Điểm nóng đánh số kèm popover, đặt trên ảnh/diagram bất kỳ. Chỉ vào từng phần để giải thích cách hoạt động.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "ANNOTATE",
+          `<nes-annotate aria-label="Architecture" style="inline-size:100%;max-inline-size:min(520px,100%)">
+            <script type="application/json">[
+              {"x":12,"y":50,"title":"Client","body":"<p>The browser or app sends the request.</p>"},
+              {"x":42,"y":50,"title":"API","body":"<p>Runs the business logic.</p>"},
+              {"x":73,"y":23,"title":"Cache","body":"<p>Serves hot reads fast.</p>"}
+            ]</script>${VIZ_SVG}</nes-annotate>`,
+          "col",
+        ) +
+        cb(`<nes-annotate>
+  <script type="application/json">
+    [{ "x": 42, "y": 50, "title": "API", "body": "<p>Runs the logic.</p>" }]
+  </script>
+  <img src="architecture.png" alt="…">
+</nes-annotate>`) +
+        h2("API") +
+        p("Each point in the JSON:") +
+        api(
+          ["Field", "Type", "Required", "Meaning"],
+          [
+            ["<code>x</code> / <code>y</code>", "number", "<b>yes</b>", "marker position, in % of the content box"],
+            ["<code>title</code>", "string", "—", "popover heading"],
+            ["<code>body</code>", "string (HTML)", "—", "popover content"],
+            ["<code>label</code>", "string | number", "index+1", "text shown in the marker"],
+          ],
+        ) +
+        apiGroups({ event: [["<code>nes:annotate</code>", "<code>{ index }</code>", "—", "a marker was opened"]] }) +
+        a11y("Markers are real <code>&lt;button&gt;</code>s (focusable, Enter to open); Esc or an outside click closes the popover."),
+      vi: () =>
+        stage(
+          "ANNOTATE",
+          `<nes-annotate aria-label="Kiến trúc" style="inline-size:100%;max-inline-size:min(520px,100%)">
+            <script type="application/json">[
+              {"x":12,"y":50,"title":"Client","body":"<p>Trình duyệt/app gửi request.</p>"},
+              {"x":42,"y":50,"title":"API","body":"<p>Chạy business logic.</p>"},
+              {"x":73,"y":23,"title":"Cache","body":"<p>Phục vụ đọc nóng nhanh.</p>"}
+            ]</script>${VIZ_SVG}</nes-annotate>`,
+          "col",
+        ) +
+        cb(`<nes-annotate>
+  <script type="application/json">
+    [{ "x": 42, "y": 50, "title": "API", "body": "<p>Chạy logic.</p>" }]
+  </script>
+  <img src="architecture.png" alt="…">
+</nes-annotate>`) +
+        h2("API") +
+        p("Mỗi điểm trong JSON:") +
+        api(
+          ["Trường", "Kiểu", "Bắt buộc", "Ý nghĩa"],
+          [
+            ["<code>x</code> / <code>y</code>", "number", "<b>có</b>", "vị trí marker, theo % của khung nội dung"],
+            ["<code>title</code>", "string", "—", "tiêu đề popover"],
+            ["<code>body</code>", "string (HTML)", "—", "nội dung popover"],
+            ["<code>label</code>", "string | number", "index+1", "chữ hiện trong marker"],
+          ],
+        ) +
+        apiGroups({ event: [["<code>nes:annotate</code>", "<code>{ index }</code>", "—", "một marker được mở"]] }) +
+        a11y("Marker là <code>&lt;button&gt;</code> thật (focus được, Enter để mở); Esc hoặc click ra ngoài để đóng popover."),
+    },
+  },
+  {
+    id: "compare",
+    cat: "Visualize",
+    name: "Compare",
+    desc: {
+      en: "A before/after slider: two layers, a draggable divider. Compare two architectures, designs, or states side-by-side.",
+      vi: "Slider before/after: hai lớp, vạch chia kéo được. So sánh hai kiến trúc, thiết kế, hay trạng thái cạnh nhau.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "COMPARE",
+          `<nes-compare aria-label="Monolith vs microservices" value="52" style="inline-size:100%;max-inline-size:min(520px,100%)">
+            <div style="display:grid;place-items:center;min-block-size:150px;background:var(--panel-2);color:var(--ink);font-family:var(--font-mono)">MONOLITH<br>1 deploy</div>
+            <div style="display:grid;place-items:center;min-block-size:150px;background:var(--slot);color:var(--muted);font-family:var(--font-mono)">MICROSERVICES<br>N deploys</div>
+          </nes-compare>`,
+          "col",
+        ) +
+        cb(`<nes-compare value="50">
+  <img data-label="Before" src="v1.png" alt="…">  <!-- A: revealed layer -->
+  <img data-label="After"  src="v2.png" alt="…">  <!-- B: base layer -->
+</nes-compare>`) +
+        h2("API") +
+        apiGroups({
+          slot: [["first two children", "layer A (revealed on the left) over layer B (base) — same size"]],
+          attr: [["<code>value</code>", "number (0–100)", "<code>50</code>", "initial divider position, in %"]],
+          method: [["<code>.set(pos)</code>", "<code>(number) → void</code>", "—", "move the divider to <code>pos</code> %"]],
+        }) +
+        note("Best with two same-size layers (images, or fixed-size panels). Drag the divider, or focus it and use ←/→.") +
+        a11y("The divider is a <code>role=\"slider\"</code> with <code>aria-valuenow</code>; fully keyboard-operable."),
+      vi: () =>
+        stage(
+          "COMPARE",
+          `<nes-compare aria-label="Monolith vs microservices" value="52" style="inline-size:100%;max-inline-size:min(520px,100%)">
+            <div style="display:grid;place-items:center;min-block-size:150px;background:var(--panel-2);color:var(--ink);font-family:var(--font-mono)">MONOLITH<br>1 deploy</div>
+            <div style="display:grid;place-items:center;min-block-size:150px;background:var(--slot);color:var(--muted);font-family:var(--font-mono)">MICROSERVICES<br>N deploys</div>
+          </nes-compare>`,
+          "col",
+        ) +
+        cb(`<nes-compare value="50">
+  <img data-label="Trước" src="v1.png" alt="…">  <!-- A: lớp hiện ra -->
+  <img data-label="Sau"   src="v2.png" alt="…">  <!-- B: lớp nền -->
+</nes-compare>`) +
+        h2("API") +
+        apiGroups({
+          slot: [["hai con đầu tiên", "lớp A (hiện bên trái) đè lên lớp B (nền) — cùng kích thước"]],
+          attr: [["<code>value</code>", "number (0–100)", "<code>50</code>", "vị trí vạch chia ban đầu, theo %"]],
+          method: [["<code>.set(pos)</code>", "<code>(number) → void</code>", "—", "đưa vạch chia tới <code>pos</code> %"]],
+        }) +
+        note("Tốt nhất với hai lớp cùng kích thước (ảnh, hoặc panel cố định). Kéo vạch chia, hoặc focus rồi dùng ←/→.") +
+        a11y("Vạch chia là <code>role=\"slider\"</code> có <code>aria-valuenow</code>; thao tác phím đầy đủ."),
+    },
+  },
+  {
+    id: "legend",
+    cat: "Visualize",
+    name: "Legend",
+    desc: {
+      en: "A compact color / shape key for a diagram. Pure CSS — one swatch per meaning, recolored with data-accent.",
+      vi: "Chú giải màu / ký hiệu gọn cho diagram. Thuần CSS — một ô màu mỗi ý nghĩa, đổi màu bằng data-accent.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "LEGEND",
+          `<div class="legend">
+            <span class="legend-item" data-accent="good">Service</span>
+            <span class="legend-item" data-accent="cyan">Cache</span>
+            <span class="legend-item" data-accent="warn">Queue</span>
+            <span class="legend-item" data-accent="crit">External</span>
+          </div>`,
+          "col",
+        ) +
+        cb(`<div class="legend">
+  <span class="legend-item" data-accent="good">Service</span>
+  <span class="legend-item" data-accent="cyan">Cache</span>
+</div>`) +
+        a11y("Plain inline text with a decorative swatch (<code>::before</code>); the meaning is in the label, so it's read correctly."),
+      vi: () =>
+        stage(
+          "LEGEND",
+          `<div class="legend">
+            <span class="legend-item" data-accent="good">Service</span>
+            <span class="legend-item" data-accent="cyan">Cache</span>
+            <span class="legend-item" data-accent="warn">Queue</span>
+            <span class="legend-item" data-accent="crit">External</span>
+          </div>`,
+          "col",
+        ) +
+        cb(`<div class="legend">
+  <span class="legend-item" data-accent="good">Service</span>
+  <span class="legend-item" data-accent="cyan">Cache</span>
+</div>`) +
+        a11y("Chữ inline thường với ô màu trang trí (<code>::before</code>); ý nghĩa nằm ở nhãn nên được đọc đúng."),
     },
   },
 ];

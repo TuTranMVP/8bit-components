@@ -358,7 +358,10 @@
   nes-editor,
   nes-code-tree,
   nes-mermaid,
-  nes-walkthrough {
+  nes-walkthrough,
+  nes-zoom,
+  nes-annotate,
+  nes-compare {
     display: block;
   }
 
@@ -3288,6 +3291,204 @@
     & .mermaid-view {
       border: 0;
       padding: 0;
+    }
+  }
+
+  /* autoplay explainer: a subtle animated accent bar under the head */
+  .walkthrough.is-auto .wt-head {
+    border-block-end: var(--bw-2) solid var(--accent);
+    padding-block-end: var(--sp-2);
+  }
+
+  /* Zoom — pan/zoom viewport for big diagrams & images */
+  nes-zoom {
+    position: relative;
+  }
+
+  .zoom-view {
+    inline-size: 100%;
+    block-size: 100%;
+    min-block-size: 12rem;
+    overflow: hidden;
+    background: var(--panel);
+    border: var(--bw-2) solid var(--line-hi);
+    cursor: grab;
+    touch-action: none;
+
+    &.grabbing {
+      cursor: grabbing;
+    }
+  }
+
+  .zoom-stage {
+    inline-size: 100%;
+    transform-origin: center center;
+    will-change: transform;
+
+    & svg,
+    & img {
+      display: block;
+      max-inline-size: 100%;
+      block-size: auto;
+      margin-inline: auto;
+      pointer-events: none;
+    }
+  }
+
+  .zoom-bar {
+    position: absolute;
+    inset-block-start: var(--sp-2);
+    inset-inline-end: var(--sp-2);
+    display: flex;
+    gap: var(--sp-2);
+  }
+
+  /* Annotate — numbered hotspots + popover over any content */
+  nes-annotate {
+    position: relative;
+  }
+
+  .anno-canvas {
+    position: relative;
+    inline-size: 100%;
+
+    & img {
+      display: block;
+      max-inline-size: 100%;
+      block-size: auto;
+    }
+  }
+
+  .anno-pin {
+    position: absolute;
+    translate: -50% -50%;
+    inline-size: 1.6rem;
+    block-size: 1.6rem;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    font-weight: 700;
+    color: var(--ink-on-accent);
+    background: var(--accent, var(--primary));
+    border: var(--bw-2) solid var(--ink);
+    box-shadow: var(--sh-2);
+    cursor: pointer;
+    z-index: 1;
+
+    &:hover,
+    &.active {
+      background: var(--ink);
+      color: var(--accent, var(--primary));
+    }
+  }
+
+  .anno-pop {
+    position: absolute;
+    z-index: 2;
+    inline-size: min(16rem, 80%);
+    margin-block-start: 1.2rem;
+    margin-inline-start: 0.6rem;
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--panel-2);
+    border: var(--bw-2) solid var(--accent, var(--primary));
+    box-shadow: var(--sh-3);
+    font-size: var(--fs-body);
+    color: var(--text);
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .anno-title {
+    margin-block-end: var(--sp-1);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--accent, var(--primary));
+  }
+
+  /* Compare — A/B before-after slider */
+  .compare {
+    position: relative;
+    display: grid;
+    inline-size: 100%;
+    overflow: hidden;
+    border: var(--bw-2) solid var(--line-hi);
+    user-select: none;
+    touch-action: pan-y;
+
+    &>.cmp-a,
+    &>.cmp-b {
+      grid-area: 1 / 1;
+      inline-size: 100%;
+    }
+
+    & img {
+      display: block;
+      inline-size: 100%;
+      block-size: auto;
+      pointer-events: none;
+    }
+
+    &>.cmp-a {
+      z-index: 1;
+    }
+  }
+
+  .cmp-handle {
+    position: absolute;
+    z-index: 2;
+    inset-block: 0;
+    inline-size: var(--bw-2);
+    translate: -50% 0;
+    background: var(--accent, var(--primary));
+    cursor: ew-resize;
+
+    &::before {
+      content: "◀▶";
+      position: absolute;
+      inset-block-start: 50%;
+      inset-inline-start: 50%;
+      translate: -50% -50%;
+      padding: 0.2em 0.4em;
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      color: var(--ink-on-accent);
+      background: var(--accent, var(--primary));
+      white-space: nowrap;
+    }
+
+    &:focus-visible {
+      outline: var(--bw-2) solid var(--ink);
+      outline-offset: 2px;
+    }
+  }
+
+  /* Legend — a color / shape key for a diagram */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-4);
+  }
+
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    color: var(--muted);
+
+    &::before {
+      content: "";
+      inline-size: 0.9rem;
+      block-size: 0.9rem;
+      flex: none;
+      background: var(--accent, var(--primary));
+      border: var(--bw) solid var(--line-hi);
     }
   }
 

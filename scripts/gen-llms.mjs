@@ -109,6 +109,10 @@ const SELECTOR = {
   mermaid: "<nes-mermaid>",
   walkthrough: "<nes-walkthrough>",
   lens: '<nes-tabs class="lens">',
+  zoom: "<nes-zoom>",
+  annotate: "<nes-annotate>",
+  compare: "<nes-compare>",
+  legend: ".legend",
 };
 const kindOf = (sel) =>
   !sel

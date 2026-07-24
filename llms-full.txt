@@ -129,7 +129,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Theming: https://tutranmvp.github.io/8bit-components/docs.html#/theming
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
-## Component reference (85 components)
+## Component reference (89 components)
 
 ## Element
 
@@ -575,6 +575,26 @@ toast("<b>Saved.</b>", { accent: "good" });
 - selector: `<nes-tabs class="lens">` (element) · category: Visualize
 - See one concept from many angles — flow, sequence, data, trade-offs — as tabs. Pure composition over Tabs; deepens understanding.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/lens
+
+### Zoom
+- selector: `<nes-zoom>` (element) · category: Visualize
+- Pan + zoom any content — wheel, drag, buttons, keyboard. Wrap a big AI-generated diagram (or an image) to make it explorable. Zero-dep.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/zoom
+
+### Annotate
+- selector: `<nes-annotate>` (element) · category: Visualize
+- Numbered hotspot markers with popovers, positioned over any image or diagram. Point at the parts to explain how something works.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/annotate
+
+### Compare
+- selector: `<nes-compare>` (element) · category: Visualize
+- A before/after slider: two layers, a draggable divider. Compare two architectures, designs, or states side-by-side.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/compare
+
+### Legend
+- selector: `.legend` (class) · category: Visualize
+- A compact color / shape key for a diagram. Pure CSS — one swatch per meaning, recolored with data-accent.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/legend
 
 ---
 Generated from docs.js by scripts/gen-llms.mjs. Do not edit by hand — run `pnpm gen:llms`.

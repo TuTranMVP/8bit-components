@@ -203,6 +203,50 @@ export declare class NesWalkthroughElement extends HTMLElement {
   go(n: number): void;
   next(): void;
   prev(): void;
+  /** stop autoplay (also called automatically on the first user interaction). */
+  stopAuto(): void;
+}
+
+/**
+ * <nes-zoom>: pan + zoom wrapper for any content (big diagrams, images,
+ * screenshots). Wheel / drag / buttons / keyboard (`+` `-` `0`). Zero-dep CSS
+ * transform — wrap an <nes-mermaid> to make a large diagram explorable.
+ */
+export declare class NesZoomElement extends HTMLElement {
+  zoomBy(factor: number): void;
+  zoomTo(scale: number): void;
+  reset(): void;
+}
+
+/** One hotspot of a {@link NesAnnotateElement} (x/y are percentages). */
+export interface AnnotatePoint {
+  x: number;
+  y: number;
+  /** marker label (defaults to its 1-based index). */
+  label?: string | number;
+  title?: string;
+  /** popover body as HTML. */
+  body?: string;
+}
+/**
+ * <nes-annotate>: numbered hotspot markers + popovers positioned (by %) over
+ * any child content (image, diagram). Reads a `<script type="application/json">`
+ * of {@link AnnotatePoint}[]. Emits `nes:annotate`. Great for spatial "how it
+ * works" explanations.
+ */
+export declare class NesAnnotateElement extends HTMLElement {
+  open(index: number): void;
+  close(): void;
+}
+
+/**
+ * <nes-compare>: before/after A-B slider. Takes its first two element children
+ * (A over B) and reveals A with a draggable divider. Pointer + keyboard (←/→).
+ * Set the initial split with the `value` attribute (0–100).
+ */
+export declare class NesCompareElement extends HTMLElement {
+  /** move the divider to `pos` percent (0–100). */
+  set(pos: number): void;
 }
 
 /** Context passed to an editor's `suggest` provider (ghost autocomplete). */
@@ -267,6 +311,9 @@ declare global {
     "nes-code-tree": NesCodeTreeElement;
     "nes-mermaid": NesMermaidElement;
     "nes-walkthrough": NesWalkthroughElement;
+    "nes-zoom": NesZoomElement;
+    "nes-annotate": NesAnnotateElement;
+    "nes-compare": NesCompareElement;
   }
   interface DocumentEventMap {
     "nes:xp": CustomEvent<{ amount: number }>;
@@ -287,5 +334,6 @@ declare global {
     "nes:render": CustomEvent<{ ok: boolean }>;
     "nes:node": CustomEvent<{ label: string; id: string }>;
     "nes:step": CustomEvent<{ index: number; step: WalkthroughStep }>;
+    "nes:annotate": CustomEvent<{ index: number }>;
   }
 }

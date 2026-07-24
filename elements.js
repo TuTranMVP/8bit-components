@@ -2549,6 +2549,26 @@ class NesWalkthrough extends HTMLElement {
       this.dots.appendChild(d);
     });
     this.go(0);
+    // autoplay: explainer mode — advances on a timer, wraps, and stops for good
+    // the moment the reader takes control (click / key).
+    if (this.hasAttribute("autoplay") && this.steps.length > 1) {
+      const iv = Math.max(800, parseInt(this.getAttribute("interval"), 10) || 3500);
+      this.wrap.classList.add("is-auto");
+      this._timer = setInterval(() => this.go((this.i + 1) % this.steps.length), iv);
+      const stop = () => this.stopAuto();
+      this.wrap.addEventListener("pointerdown", stop, { once: true });
+      this.wrap.addEventListener("keydown", stop, { once: true });
+    }
+  }
+  disconnectedCallback() {
+    this.stopAuto();
+  }
+  stopAuto() {
+    if (this._timer) {
+      clearInterval(this._timer);
+      this._timer = null;
+      this.wrap.classList.remove("is-auto");
+    }
   }
   get target() {
     const f = this.getAttribute("for");
@@ -2581,6 +2601,230 @@ class NesWalkthrough extends HTMLElement {
   }
 }
 
+/* ========================================================================== */
+/*  <nes-zoom>  —  pan + zoom any content (big diagrams, images, screenshots). */
+/*  Wheel / drag / buttons / keyboard (+ − 0). Zero-dep — pure CSS transform.   */
+/*  Wrap an <nes-mermaid> to make a large AI-generated architecture explorable. */
+/* ========================================================================== */
+class NesZoom extends HTMLElement {
+  connectedCallback() {
+    if (this._done) return;
+    this._done = true;
+    this._min = parseFloat(this.getAttribute("min")) || 0.4;
+    this._max = parseFloat(this.getAttribute("max")) || 5;
+    this.stage = el("div", { class: "zoom-stage" });
+    while (this.firstChild) this.stage.appendChild(this.firstChild);
+    this.viewport = el("div", {
+      class: "zoom-view",
+      tabindex: "0",
+      "aria-label": this.getAttribute("aria-label") || "Zoomable view",
+    });
+    this.viewport.appendChild(this.stage);
+    const bar = el("div", { class: "zoom-bar" });
+    const mk = (glyph, label, fn) => {
+      const b = el("button", { class: "btn sm icon", type: "button", "aria-label": label });
+      b.textContent = glyph;
+      b.addEventListener("click", fn);
+      bar.appendChild(b);
+    };
+    mk("−", "Zoom out", () => this.zoomBy(1 / 1.25));
+    mk("⟳", "Reset", () => this.reset());
+    mk("+", "Zoom in", () => this.zoomBy(1.25));
+    this.append(this.viewport, bar);
+    this.s = 1;
+    this.tx = 0;
+    this.ty = 0;
+    this._apply();
+    this.viewport.addEventListener(
+      "wheel",
+      (e) => {
+        e.preventDefault();
+        this.zoomBy(e.deltaY < 0 ? 1.12 : 1 / 1.12);
+      },
+      { passive: false },
+    );
+    let px = 0;
+    let py = 0;
+    let drag = false;
+    this.viewport.addEventListener("pointerdown", (e) => {
+      drag = true;
+      px = e.clientX;
+      py = e.clientY;
+      this.viewport.setPointerCapture(e.pointerId);
+      this.viewport.classList.add("grabbing");
+    });
+    this.viewport.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      this.tx += e.clientX - px;
+      this.ty += e.clientY - py;
+      px = e.clientX;
+      py = e.clientY;
+      this._apply();
+    });
+    const end = () => {
+      drag = false;
+      this.viewport.classList.remove("grabbing");
+    };
+    this.viewport.addEventListener("pointerup", end);
+    this.viewport.addEventListener("pointercancel", end);
+    this.viewport.addEventListener("dblclick", () => this.reset());
+    this.viewport.addEventListener("keydown", (e) => {
+      if (e.key === "+" || e.key === "=") this.zoomBy(1.25);
+      else if (e.key === "-") this.zoomBy(1 / 1.25);
+      else if (e.key === "0") this.reset();
+    });
+  }
+  zoomBy(f) {
+    this.zoomTo(this.s * f);
+  }
+  zoomTo(s) {
+    this.s = Math.min(this._max, Math.max(this._min, s));
+    this._apply();
+  }
+  reset() {
+    this.s = 1;
+    this.tx = 0;
+    this.ty = 0;
+    this._apply();
+  }
+  _apply() {
+    this.stage.style.transform = `translate(${this.tx}px, ${this.ty}px) scale(${this.s})`;
+  }
+}
+
+/* ========================================================================== */
+/*  <nes-annotate>  —  numbered hotspot markers + popovers over any content.    */
+/*  <nes-annotate><script type="application/json">                             */
+/*    [{ "x":30, "y":40, "title":"Cache", "body":"<p>…</p>" }]  (x/y in %)      */
+/*  </script><img src="architecture.png"></nes-annotate>                        */
+/* ========================================================================== */
+class NesAnnotate extends HTMLElement {
+  connectedCallback() {
+    if (this._done) return;
+    this._done = true;
+    const scr = this.querySelector('script[type="application/json"]');
+    let pts = [];
+    try {
+      pts = JSON.parse(scr?.textContent || "[]");
+    } catch {
+      pts = [];
+    }
+    if (scr) scr.remove();
+    this.pts = Array.isArray(pts) ? pts : [];
+    this.canvas = el("div", { class: "anno-canvas" });
+    while (this.firstChild) this.canvas.appendChild(this.firstChild);
+    this.pop = el("div", { class: "anno-pop", role: "dialog" });
+    this.pop.hidden = true;
+    this.pts.forEach((pt, i) => {
+      const pin = el("button", {
+        class: "anno-pin",
+        type: "button",
+        "aria-label": pt.title || pt.label || `Point ${i + 1}`,
+      });
+      pin.textContent = pt.label != null ? String(pt.label) : String(i + 1);
+      pin.style.insetInlineStart = `${pt.x || 0}%`;
+      pin.style.insetBlockStart = `${pt.y || 0}%`;
+      pin.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.open(i, pin);
+      });
+      this.canvas.appendChild(pin);
+    });
+    this.append(this.canvas, this.pop);
+    this.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") this.close();
+    });
+    this._away = (e) => {
+      if (!this.contains(e.target)) this.close();
+    };
+    document.addEventListener("click", this._away);
+  }
+  disconnectedCallback() {
+    document.removeEventListener("click", this._away);
+  }
+  open(i, pin) {
+    const pt = this.pts[i] || {};
+    this.pop.innerHTML =
+      (pt.title ? `<div class="anno-title">${pt.title}</div>` : "") + `<div>${pt.body || ""}</div>`;
+    this.pop.style.insetInlineStart = pin.style.insetInlineStart;
+    this.pop.style.insetBlockStart = pin.style.insetBlockStart;
+    this.pop.hidden = false;
+    for (const p of this.canvas.querySelectorAll(".anno-pin")) p.classList.remove("active");
+    pin.classList.add("active");
+    this.dispatchEvent(new CustomEvent("nes:annotate", { bubbles: true, detail: { index: i } }));
+  }
+  close() {
+    this.pop.hidden = true;
+    for (const p of this.canvas.querySelectorAll(".anno-pin")) p.classList.remove("active");
+  }
+}
+
+/* ========================================================================== */
+/*  <nes-compare>  —  A/B before-after slider. Two children; drag the divider.  */
+/*  <nes-compare><img data-label="Before" …><img data-label="After" …></nes-compare> */
+/* ========================================================================== */
+class NesCompare extends HTMLElement {
+  connectedCallback() {
+    if (this._done) return;
+    this._done = true;
+    const kids = [...this.children].filter((n) => n.nodeType === 1 && n.tagName !== "SCRIPT");
+    const a = kids[0];
+    const b = kids[1];
+    if (!a || !b) return;
+    a.classList.add("cmp-a");
+    b.classList.add("cmp-b");
+    this.wrap = el("div", { class: "compare" });
+    this.wrap.append(b, a);
+    this.handle = el("div", {
+      class: "cmp-handle",
+      role: "slider",
+      tabindex: "0",
+      "aria-label": this.getAttribute("aria-label") || "Compare",
+      "aria-valuemin": "0",
+      "aria-valuemax": "100",
+    });
+    this.wrap.appendChild(this.handle);
+    this.appendChild(this.wrap);
+    this.a = a;
+    const posFromX = (x) => {
+      const r = this.wrap.getBoundingClientRect();
+      return r.width ? ((x - r.left) / r.width) * 100 : 50;
+    };
+    let drag = false;
+    this.handle.addEventListener("pointerdown", (e) => {
+      drag = true;
+      this.handle.setPointerCapture(e.pointerId);
+    });
+    this.wrap.addEventListener("pointermove", (e) => {
+      if (drag) this.set(posFromX(e.clientX));
+    });
+    const end = () => {
+      drag = false;
+    };
+    this.wrap.addEventListener("pointerup", end);
+    this.wrap.addEventListener("pointercancel", end);
+    this.wrap.addEventListener("pointerdown", (e) => {
+      if (e.target !== this.handle) this.set(posFromX(e.clientX));
+    });
+    this.handle.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        this.set(this.pos - 2);
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        this.set(this.pos + 2);
+      }
+    });
+    this.set(parseFloat(this.getAttribute("value")) || 50);
+  }
+  set(p) {
+    this.pos = Math.min(100, Math.max(0, p));
+    this.a.style.clipPath = `inset(0 ${100 - this.pos}% 0 0)`;
+    this.handle.style.insetInlineStart = `${this.pos}%`;
+    this.handle.setAttribute("aria-valuenow", String(Math.round(this.pos)));
+  }
+}
+
 /* ------------------------------------------------------------- self-register */
 const defs = {
   "nes-sound": NesSound,
@@ -2606,6 +2850,9 @@ const defs = {
   "nes-code-tree": NesCodeTree,
   "nes-mermaid": NesMermaid,
   "nes-walkthrough": NesWalkthrough,
+  "nes-zoom": NesZoom,
+  "nes-annotate": NesAnnotate,
+  "nes-compare": NesCompare,
 };
 for (const [tag, cls] of Object.entries(defs)) {
   if (!customElements.get(tag)) customElements.define(tag, cls);
