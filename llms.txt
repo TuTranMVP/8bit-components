@@ -18,7 +18,7 @@ Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";
 - [Avatar](https://tutranmvp.github.io/8bit-components/docs.html#/avatar) — `.avatar`: User image or initials. Square by design so the hard shadow stays crisp; group them to overlap.
 - [Kbd](https://tutranmvp.github.io/8bit-components/docs.html#/kbd) — `.kbd`: Keyboard key hint. Inline, mono, inset — for shortcuts in prose.
 - [Separator](https://tutranmvp.github.io/8bit-components/docs.html#/separator) — `.separator`: Divider between content. Solid or dashed; horizontal or vertical.
-- [Icon](https://tutranmvp.github.io/8bit-components/docs.html#/icon) — `<nes-icon>`: Pixel icon set on a 16×16 grid. currentColor + 1em, so icons inherit text color/accent and scale with font-size. Tree-shakeable named exports.
+- [Icon](https://tutranmvp.github.io/8bit-components/docs.html#/icon) — `<nes-icon>`: Pixel icon set on a 16×16 grid. currentColor + 1em, so icons inherit text color/accent and scale with font-size. Vector — razor-sharp at any DPR (low-res & retina). Tree-shakeable named exports.
 
 ## Form
 - [Input](https://tutranmvp.github.io/8bit-components/docs.html#/input) — `.input`: Single-line text field. Recessed on the screen surface; focus flips the border to gold.

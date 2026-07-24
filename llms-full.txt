@@ -170,7 +170,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 
 ### Icon
 - selector: `<nes-icon>` (element) · category: Element
-- Pixel icon set on a 16×16 grid. currentColor + 1em, so icons inherit text color/accent and scale with font-size. Tree-shakeable named exports.
+- Pixel icon set on a 16×16 grid. currentColor + 1em, so icons inherit text color/accent and scale with font-size. Vector — razor-sharp at any DPR (low-res & retina). Tree-shakeable named exports.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/icon
 
 ## Form

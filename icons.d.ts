@@ -1,5 +1,6 @@
 /* 8-BIT NES — pixel icons. Each named export is a self-contained <svg> string
-   (fill=currentColor, 1em, crispEdges). Import only what you use — tree-shakeable. */
+   (fill=currentColor, 1em, vector — razor-sharp at any DPR). Import only what you
+   use — tree-shakeable. */
 
 export declare const check: string;
 export declare const close: string;
