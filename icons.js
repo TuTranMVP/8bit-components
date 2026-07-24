@@ -2,8 +2,10 @@
    8-BIT NES · icons.js  —  pixel icon set (side-effect-free ESM)
 
    Each icon is a self-contained <svg> STRING on a 16×16 grid: fill=currentColor
-   (inherits text/accent color), sized 1em (scales with font-size), and rendered
-   crispEdges for the blocky 8-bit look.
+   (inherits text/accent color) and sized 1em (scales with font-size). Being
+   vector, they are razor-sharp at ANY device-pixel-ratio — low-res and retina
+   alike. shape-rendering=geometricPrecision keeps curves/diagonals smooth at
+   every size (the blocky 8-bit character lives in the pixel-grid geometry).
 
    ── Tree-shaking ──────────────────────────────────────────────────────────
    Import only what you use — the rest is dropped by the bundler (this file has
@@ -23,7 +25,7 @@
 
 /** wrap inner markup as a themed, 1em, crisp-edged svg string. */
 const S = (inner) =>
-  `<svg viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" shape-rendering="crispEdges">${inner}</svg>`;
+  `<svg viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" shape-rendering="geometricPrecision">${inner}</svg>`;
 
 /* ---- navigation / action ---- */
 export const check = S('<path d="M6.2 11.4 2.6 7.8l1.6-1.6 2 2 5.6-5.6 1.6 1.6z"/>');

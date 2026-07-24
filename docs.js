@@ -852,8 +852,8 @@ const COMPONENTS = [
     cat: "Element",
     name: "Icon",
     desc: {
-      en: "Pixel icon set on a 16×16 grid. currentColor + 1em, so icons inherit text color/accent and scale with font-size. Tree-shakeable named exports.",
-      vi: "Bộ icon pixel trên lưới 16×16. currentColor + 1em nên icon thừa hưởng màu chữ/accent và scale theo font-size. Named export tree-shake được.",
+      en: "Pixel icon set on a 16×16 grid. currentColor + 1em, so icons inherit text color/accent and scale with font-size. Vector — razor-sharp at any DPR (low-res & retina). Tree-shakeable named exports.",
+      vi: "Bộ icon pixel trên lưới 16×16. currentColor + 1em nên icon thừa hưởng màu chữ/accent và scale theo font-size. Vector — siêu nét ở mọi DPR (màn phân giải thấp & retina). Named export tree-shake được.",
     },
     body: {
       en: () =>
