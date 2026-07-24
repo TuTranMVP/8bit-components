@@ -91,6 +91,12 @@ const SELECTOR = {
   chattool: ".tool",
   chatshimmer: ".shimmer",
   chatpalette: ".chat-palette",
+  editor: "<nes-editor>",
+  editortoolbar: ".editor-toolbar",
+  editorsuggestionmenu: "<nes-editor> /",
+  editormentionmenu: "<nes-editor> @",
+  editoremojimenu: "<nes-editor> :",
+  editordraghandle: ".editor-drag",
 };
 const kindOf = (sel) =>
   !sel
@@ -136,7 +142,16 @@ for (const m of docs.matchAll(re)) {
   });
 }
 
-const CAT_ORDER = ["Element", "Form", "Feedback", "Navigation", "Overlay", "Data", "Chat"];
+const CAT_ORDER = [
+  "Element",
+  "Form",
+  "Feedback",
+  "Navigation",
+  "Overlay",
+  "Data",
+  "Chat",
+  "Editor",
+];
 const byCat = (cat) => components.filter((c) => c.category === cat);
 const missing = components.filter((c) => !c.selector).map((c) => c.id);
 if (missing.length) console.warn("gen-llms: no selector mapped for:", missing.join(", "));

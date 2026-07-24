@@ -373,6 +373,17 @@
       </div>
     </section>
 
+    <!-- EDITOR MODULE -->
+    <section>
+      <span class="lab">Editor · &lt;nes-editor&gt; — / commands · @ mention · : emoji · ✦ AI · Tab autocomplete</span>
+      <nes-editor autocomplete name="doc" aria-label="Doc" style="max-inline-size:640px">
+        <script type="application/json">{"mentions":[{"value":"n1","label":"Second Brain"},{"value":"n2","label":"Knowledge Engine"},{"value":"n3","label":"Spaced Repetition"}]}</script>
+        <h2>How it works</h2>
+        <p>Editor nhẹ cho app AI second-brain. Gõ <b>/</b> chèn khối, <b>@</b> nhắc note, <b>:</b> emoji. ⌘↵ gửi cho agent.</p>
+        <ul><li>Zero dependency — contenteditable native</li><li>Tab autocomplete kiểu VSCode</li></ul>
+      </nes-editor>
+    </section>
+
     <div style="height:var(--sp-7)"></div>
   </main>
 
@@ -382,6 +393,12 @@
   <script type="module" src="./elements.js"></script>
   <script type="module">
     import { toast } from "./elements.js";
+    // editor: fake VSCode-style autocomplete + AI generate (demo only)
+    const ed = document.querySelector("nes-editor");
+    if (ed) {
+      ed.suggest = ({ text }) => (text.trimEnd().endsWith("because") ? " it keeps the bundle tiny and dependency-free." : "");
+      ed.addEventListener("nes:ai", (e) => e.detail.insert("<p><b>AI ✦</b> — draft: 8-BIT NES is a zero-build design system…</p>"));
+    }
     document.addEventListener("nes:submit", (e) => {
       // <nes-form> submit → detail.data; <nes-chat-prompt> submit → detail.value
       if (e.detail?.data) {

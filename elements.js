@@ -1644,6 +1644,532 @@ class NesIcon extends HTMLElement {
   }
 }
 
+/* ========================================================================== */
+/*  EDITOR MODULE  —  lightweight rich text on native contenteditable (0 dep). */
+/*  <nes-editor> = Editor + Toolbar + Suggestion(/) + Mention(@) + Emoji(:)    */
+/*  menus + block DragHandle + VSCode-style Tab autocomplete + AI hook.        */
+/* ========================================================================== */
+const EDITOR_SLASH = [
+  { key: "✦", label: "Ask AI…", ai: true },
+  { key: "H1", label: "Heading 1", act: ["formatBlock", "h1"] },
+  { key: "H2", label: "Heading 2", act: ["formatBlock", "h2"] },
+  { key: "H3", label: "Heading 3", act: ["formatBlock", "h3"] },
+  { key: "•", label: "Bullet list", act: ["insertUnorderedList"] },
+  { key: "1.", label: "Numbered list", act: ["insertOrderedList"] },
+  { key: "❝", label: "Quote", act: ["formatBlock", "blockquote"] },
+  { key: "‹›", label: "Code block", act: ["formatBlock", "pre"] },
+  { key: "―", label: "Divider", insert: "<hr><p><br></p>" },
+];
+const EDITOR_EMOJI = [
+  ["smile", "🙂"],
+  ["grin", "😀"],
+  ["joy", "😂"],
+  ["heart", "❤️"],
+  ["fire", "🔥"],
+  ["star", "⭐"],
+  ["check", "✅"],
+  ["cross", "❌"],
+  ["warn", "⚠️"],
+  ["bulb", "💡"],
+  ["rocket", "🚀"],
+  ["tada", "🎉"],
+  ["up", "👍"],
+  ["down", "👎"],
+  ["eyes", "👀"],
+  ["brain", "🧠"],
+  ["robot", "🤖"],
+  ["sparkles", "✨"],
+  ["book", "📚"],
+  ["note", "📝"],
+  ["pin", "📌"],
+  ["link", "🔗"],
+  ["clock", "⏰"],
+  ["calendar", "📅"],
+  ["target", "🎯"],
+  ["bug", "🐛"],
+  ["computer", "💻"],
+  ["game", "🎮"],
+  ["zap", "⚡"],
+  ["think", "🤔"],
+  ["party", "🥳"],
+  ["100", "💯"],
+  ["lock", "🔒"],
+  ["key", "🔑"],
+  ["mail", "📧"],
+];
+
+class NesEditor extends HTMLElement {
+  connectedCallback() {
+    if (this._done) return;
+    this._done = true;
+    this.name = this.getAttribute("name");
+    this.placeholder = this.getAttribute("placeholder") || "Write, or press / for commands…";
+    const scr = this.querySelector('script[type="application/json"]');
+    let cfg = {};
+    try {
+      cfg = JSON.parse(scr?.textContent || "{}");
+    } catch {
+      cfg = {};
+    }
+    scr?.remove();
+    this.mentions = (Array.isArray(cfg) ? cfg : cfg.mentions || []).map((o) =>
+      o && typeof o === "object"
+        ? { value: String(o.value ?? o.label), label: String(o.label ?? o.value) }
+        : { value: String(o), label: String(o) },
+    );
+    const initial = this.innerHTML.trim();
+    this.innerHTML = "";
+    this.menuOpen = false;
+    this.ghost = null;
+    this.build(initial);
+  }
+  disconnectedCallback() {
+    document.removeEventListener("selectionchange", this._sc);
+    document.removeEventListener("pointerdown", this._onDoc);
+  }
+  build(initial) {
+    this.wrap = el("div", { class: "editor" });
+    this.bar = el("div", { class: "editor-toolbar", role: "toolbar", "aria-label": "Format" });
+    this.area = el("div", {
+      class: "editor-content",
+      contenteditable: "true",
+      role: "textbox",
+      "aria-multiline": "true",
+      "aria-label": this.getAttribute("aria-label") || "Editor",
+    });
+    this.area.dataset.placeholder = this.placeholder;
+    this.area.innerHTML = initial || "<p><br></p>";
+    this.menu = el("div", { class: "editor-menu", role: "listbox" });
+    this.menu.hidden = true;
+    this.grip = el("div", {
+      class: "editor-drag",
+      draggable: "true",
+      "aria-hidden": "true",
+      title: "Drag to reorder",
+    });
+    this.grip.textContent = "⠿";
+    this.renderToolbar();
+    this.wrap.append(this.bar, this.area, this.menu, this.grip);
+    this.appendChild(this.wrap);
+    if (this.name) {
+      this.hidden_ = el("input", { type: "hidden", name: this.name });
+      this.appendChild(this.hidden_);
+    }
+    this.area.addEventListener("input", () => this.onInput());
+    this.area.addEventListener("keydown", (e) => this.onKey(e));
+    this._sc = () => {
+      if (this.contains(document.activeElement)) this.syncActive();
+    };
+    document.addEventListener("selectionchange", this._sc);
+    this._onDoc = (e) => {
+      if (!this.contains(e.target)) this.closeMenu();
+    };
+    document.addEventListener("pointerdown", this._onDoc);
+    this.area.addEventListener("mousemove", (e) => this.showHandle(e));
+    this.area.addEventListener("mouseleave", () => this.grip.classList.remove("show"));
+    this.wireDrag();
+    this.sync();
+  }
+  renderToolbar() {
+    const BAR = [
+      { cmd: "bold", label: "<b>B</b>", title: "Bold", state: "bold" },
+      { cmd: "italic", label: "<i>I</i>", title: "Italic", state: "italic" },
+      { cmd: "underline", label: "<u>U</u>", title: "Underline", state: "underline" },
+      { cmd: "strikeThrough", label: "<s>S</s>", title: "Strikethrough", state: "strikeThrough" },
+      { sep: true },
+      { block: "h1", label: "H1", title: "Heading 1" },
+      { block: "h2", label: "H2", title: "Heading 2" },
+      { sep: true },
+      { cmd: "insertUnorderedList", label: "•", title: "Bullet list" },
+      { cmd: "insertOrderedList", label: "1.", title: "Numbered list" },
+      { block: "blockquote", label: "❝", title: "Quote" },
+      { code: true, label: "‹›", title: "Inline code" },
+      { link: true, label: "🔗", title: "Link" },
+      { sep: true },
+      { ai: true, label: icon("sparkles"), title: "Ask AI" },
+    ];
+    this._btns = [];
+    for (const it of BAR) {
+      if (it.sep) {
+        this.bar.appendChild(el("span", { class: "editor-sep", "aria-hidden": "true" }));
+        continue;
+      }
+      const b = el("button", { type: "button", title: it.title, "aria-label": it.title });
+      b.innerHTML = it.label;
+      b.addEventListener("mousedown", (e) => e.preventDefault());
+      b.addEventListener("click", () => {
+        if (it.cmd) this.exec(it.cmd);
+        else if (it.block) this.exec("formatBlock", it.block);
+        else if (it.code) this.wrapCode();
+        else if (it.link) {
+          const url = prompt("Link URL:");
+          if (url) this.exec("createLink", url);
+        } else if (it.ai) this.triggerAI();
+      });
+      if (it.state) this._btns.push({ el: b, state: it.state });
+      this.bar.appendChild(b);
+    }
+  }
+  exec(cmd, val) {
+    this.area.focus();
+    document.execCommand(cmd, false, val);
+    this.sync();
+  }
+  wrapCode() {
+    const t = getSelection()?.toString();
+    if (t) this.exec("insertHTML", `<code>${_e(t)}</code>`);
+  }
+  triggerAI() {
+    this.dispatchEvent(
+      new CustomEvent("nes:ai", {
+        bubbles: true,
+        detail: { text: this.text(), insert: (h) => this.insert(h) },
+      }),
+    );
+  }
+  insert(html) {
+    this.area.focus();
+    document.execCommand("insertHTML", false, html);
+    this.sync();
+  }
+  syncActive() {
+    for (const { el: b, state } of this._btns || []) {
+      let on = false;
+      try {
+        on = document.queryCommandState(state);
+      } catch {}
+      b.classList.toggle("on", on);
+    }
+  }
+  /* ---- content ---- */
+  html() {
+    const c = this.area.cloneNode(true);
+    for (const g of c.querySelectorAll(".ghost")) g.remove();
+    return c.innerHTML;
+  }
+  text() {
+    const c = this.area.cloneNode(true);
+    for (const g of c.querySelectorAll(".ghost")) g.remove();
+    return c.textContent;
+  }
+  get value() {
+    return this.html();
+  }
+  set value(v) {
+    this.area.innerHTML = v || "<p><br></p>";
+    this.sync();
+  }
+  sync() {
+    const empty = !this.area.textContent.trim() && !this.area.querySelector("img,hr,.mention");
+    this.area.toggleAttribute("data-empty", empty);
+    if (this.hidden_) this.hidden_.value = this.html();
+  }
+  onInput() {
+    this.clearGhost();
+    this.sync();
+    const tok = (this._token = this.currentToken());
+    if (tok) this.openTrigger(tok);
+    else {
+      this.closeMenu();
+      this.scheduleSuggest();
+    }
+    this.dispatchEvent(
+      new CustomEvent("nes:input", {
+        bubbles: true,
+        detail: { html: this.html(), text: this.text() },
+      }),
+    );
+  }
+  onKey(e) {
+    if (this.menuOpen) {
+      const n = this.menuItems.length;
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        this.active = (this.active + 1) % n;
+        return this.paintMenu();
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        this.active = (this.active - 1 + n) % n;
+        return this.paintMenu();
+      }
+      if (e.key === "Enter") {
+        e.preventDefault();
+        return this.selectItem(this.active);
+      }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        return this.closeMenu();
+      }
+    }
+    if (e.key === "Tab" && this.ghost) {
+      e.preventDefault();
+      return this.acceptGhost();
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      bleep(SFX.coin);
+      return this.dispatchEvent(
+        new CustomEvent("nes:submit", {
+          bubbles: true,
+          detail: { html: this.html(), text: this.text() },
+        }),
+      );
+    }
+    if (!["Shift", "Control", "Meta", "Alt", "Tab"].includes(e.key)) this.clearGhost();
+  }
+  /* ---- trigger menus (/ @ :) ---- */
+  currentToken() {
+    const sel = getSelection();
+    if (!sel?.rangeCount) return null;
+    const r = sel.getRangeAt(0);
+    if (r.startContainer.nodeType !== 3) return null;
+    const upto = r.startContainer.textContent.slice(0, r.startOffset);
+    const m = upto.match(/(?:^|\s)([/@:])([\w-]*)$/);
+    if (!m) return null;
+    return {
+      char: m[1],
+      query: m[2],
+      node: r.startContainer,
+      start: r.startOffset - m[2].length - 1,
+      end: r.startOffset,
+    };
+  }
+  openTrigger(tok) {
+    let items;
+    if (tok.char === "/") {
+      const q = tok.query.toLowerCase();
+      items = EDITOR_SLASH.filter(
+        (s) => !q || s.label.toLowerCase().includes(q) || s.key.toLowerCase().includes(q),
+      );
+    } else if (tok.char === "@") {
+      const q = tok.query.toLowerCase();
+      items = this.mentions
+        .filter((m) => !q || m.label.toLowerCase().includes(q))
+        .map((m) => ({ key: "@", label: m.label, mention: m }));
+    } else {
+      const q = tok.query.toLowerCase();
+      if (!q) return this.closeMenu();
+      items = EDITOR_EMOJI.filter(([n]) => n.includes(q))
+        .slice(0, 12)
+        .map(([n, c]) => ({ key: c, label: n, emoji: c }));
+    }
+    if (!items.length) return this.closeMenu();
+    this.menuKind = tok.char;
+    this.menuItems = items;
+    this.active = 0;
+    this.renderMenu();
+    this.openMenu();
+  }
+  renderMenu() {
+    this.menu.innerHTML = "";
+    this.itemEls = this.menuItems.map((it, i) => {
+      const b = el("button", { type: "button", class: "menuitem", role: "option" });
+      b.innerHTML = `<span class="k">${it.key}</span><span>${_e(it.label)}</span>`;
+      b.addEventListener("mousedown", (e) => e.preventDefault());
+      b.addEventListener("mousemove", () => {
+        this.active = i;
+        this.paintMenu();
+      });
+      b.addEventListener("click", () => this.selectItem(i));
+      this.menu.appendChild(b);
+      return b;
+    });
+    this.paintMenu();
+  }
+  paintMenu() {
+    this.itemEls?.forEach((b, i) => b.classList.toggle("active", i === this.active));
+    this.itemEls?.[this.active]?.scrollIntoView({ block: "nearest" });
+  }
+  openMenu() {
+    this.menu.hidden = false;
+    this.menuOpen = true;
+    const rect = this.caretRect();
+    if (rect) {
+      const host = this.wrap.getBoundingClientRect();
+      this.menu.style.left = `${Math.min(rect.left - host.left, host.width - 200)}px`;
+      this.menu.style.top = `${rect.bottom - host.top + 4}px`;
+    }
+  }
+  closeMenu() {
+    this.menu.hidden = true;
+    this.menuOpen = false;
+  }
+  caretRect() {
+    const sel = getSelection();
+    if (!sel?.rangeCount) return null;
+    const r = sel.getRangeAt(0).cloneRange();
+    r.collapse(true);
+    return r.getClientRects()[0] || r.getBoundingClientRect();
+  }
+  removeTrigger() {
+    const t = this._token;
+    if (!t) return;
+    try {
+      const r = document.createRange();
+      r.setStart(t.node, t.start);
+      r.setEnd(t.node, Math.min(t.end, t.node.textContent.length));
+      r.deleteContents();
+      const sel = getSelection();
+      sel.removeAllRanges();
+      const c = document.createRange();
+      c.setStart(t.node, t.start);
+      c.collapse(true);
+      sel.addRange(c);
+    } catch {}
+  }
+  selectItem(i) {
+    const it = this.menuItems[i];
+    this.closeMenu();
+    if (!it) return;
+    this.removeTrigger();
+    if (this.menuKind === "/") {
+      if (it.ai) this.triggerAI();
+      else if (it.insert) this.exec("insertHTML", it.insert);
+      else if (it.act) this.exec(...it.act);
+    } else if (this.menuKind === "@") {
+      this.exec(
+        "insertHTML",
+        `<span class="mention" contenteditable="false">@${_e(it.mention.label)}</span>&nbsp;`,
+      );
+      this.dispatchEvent(
+        new CustomEvent("nes:mention", {
+          bubbles: true,
+          detail: { value: it.mention.value, label: it.mention.label },
+        }),
+      );
+    } else {
+      this.exec("insertHTML", `${it.emoji} `);
+    }
+  }
+  /* ---- VSCode-style ghost autocomplete ---- */
+  scheduleSuggest() {
+    clearTimeout(this._sg);
+    if (!this.hasAttribute("autocomplete") && !this.suggest) return;
+    this._sg = setTimeout(() => this.requestSuggest(), 600);
+  }
+  async requestSuggest() {
+    if (this.menuOpen || this.ghost) return;
+    const text = this.text();
+    let out = "";
+    if (this.suggest) {
+      try {
+        out = (await this.suggest({ text })) || "";
+      } catch {
+        out = "";
+      }
+    }
+    if (out) this.showGhost(out);
+    else
+      this.dispatchEvent(
+        new CustomEvent("nes:suggest", {
+          bubbles: true,
+          detail: { text, accept: (s) => this.showGhost(s) },
+        }),
+      );
+  }
+  showGhost(text) {
+    this.clearGhost();
+    if (!text || this.menuOpen) return;
+    const sel = getSelection();
+    if (!sel?.rangeCount || !this.area.contains(sel.anchorNode)) return;
+    const span = el("span", { class: "ghost", contenteditable: "false" });
+    span.textContent = text;
+    this._ghostText = text;
+    const r = sel.getRangeAt(0);
+    r.collapse(false);
+    r.insertNode(span);
+    const c = document.createRange();
+    c.setStartBefore(span);
+    c.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(c);
+    this.ghost = span;
+  }
+  acceptGhost() {
+    if (!this.ghost) return;
+    const tn = document.createTextNode(this._ghostText);
+    this.ghost.replaceWith(tn);
+    const sel = getSelection();
+    const c = document.createRange();
+    c.setStartAfter(tn);
+    c.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(c);
+    this.ghost = null;
+    this._ghostText = "";
+    this.sync();
+    bleep(SFX.unlock);
+  }
+  clearGhost() {
+    if (this.ghost) {
+      this.ghost.remove();
+      this.ghost = null;
+      this._ghostText = "";
+    }
+  }
+  /* ---- block drag handle ---- */
+  blockFrom(node) {
+    while (node && node !== this.area) {
+      if (node.parentElement === this.area) return node;
+      node = node.parentElement;
+    }
+    return null;
+  }
+  showHandle(e) {
+    if (this._dragBlock) return;
+    const block = this.blockFrom(e.target);
+    if (!block) return this.grip.classList.remove("show");
+    const host = this.wrap.getBoundingClientRect();
+    const b = block.getBoundingClientRect();
+    this.grip.style.top = `${b.top - host.top}px`;
+    this.grip.style.left = "2px";
+    this.grip.classList.add("show");
+    this._gripBlock = block;
+  }
+  wireDrag() {
+    this.grip.addEventListener("dragstart", (e) => {
+      this._dragBlock = this._gripBlock;
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", "");
+    });
+    this.area.addEventListener("dragover", (e) => {
+      if (!this._dragBlock) return;
+      e.preventDefault();
+      const tgt = this.blockFrom(e.target);
+      this.clearDrop();
+      if (tgt && tgt !== this._dragBlock) {
+        const b = tgt.getBoundingClientRect();
+        const after = e.clientY > b.top + b.height / 2;
+        tgt.classList.add(after ? "drop-after" : "drop-before");
+        this._drop = { tgt, after };
+      }
+    });
+    this.area.addEventListener("drop", (e) => {
+      if (!this._dragBlock || !this._drop) return;
+      e.preventDefault();
+      this._drop.after
+        ? this._drop.tgt.after(this._dragBlock)
+        : this._drop.tgt.before(this._dragBlock);
+      this.clearDrop();
+      this._dragBlock = null;
+      this.sync();
+    });
+    this.grip.addEventListener("dragend", () => {
+      this.clearDrop();
+      this._dragBlock = null;
+    });
+  }
+  clearDrop() {
+    for (const n of this.area.querySelectorAll(".drop-before,.drop-after"))
+      n.classList.remove("drop-before", "drop-after");
+    this._drop = null;
+  }
+  focus() {
+    this.area?.focus();
+  }
+}
+
 /* ------------------------------------------------------------- self-register */
 const defs = {
   "nes-sound": NesSound,
@@ -1665,6 +2191,7 @@ const defs = {
   "nes-chat-prompt": NesChatPrompt,
   "nes-chat-messages": NesChatMessages,
   "nes-icon": NesIcon,
+  "nes-editor": NesEditor,
 };
 for (const [tag, cls] of Object.entries(defs)) {
   if (!customElements.get(tag)) customElements.define(tag, cls);
