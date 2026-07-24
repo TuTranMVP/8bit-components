@@ -415,6 +415,28 @@
       <div class="prompt" data-accent="teal" style="max-inline-size:min(560px,100%)">deploy my agent to production</div>
     </section>
 
+    <!-- VISUALIZE MODULE -->
+    <section>
+      <span class="lab">Visualize — Mermaid (BYO/lazy, 0 bundle) + step-through &lt;nes-walkthrough&gt; · &lt;nes-mermaid&gt;</span>
+      <div style="display:flex;flex-direction:column;gap:var(--sp-4);max-inline-size:min(560px,100%)">
+        <nes-mermaid id="demo-dia"><script type="text/mermaid">graph LR
+  Client[Client] --> CDN[CDN]
+  CDN --> LB[Load Balancer]
+  LB --> API[API Server]
+  API --> Cache[(Redis)]
+  API --> DB[(Database)]</script></nes-mermaid>
+        <nes-walkthrough for="demo-dia" aria-label="Request flow">
+          <script type="application/json">[
+            {"title":"1 · Client","body":"<p>Trình duyệt gửi request.</p>","focus":["Client"]},
+            {"title":"2 · Edge","body":"<p>CDN phục vụ tài nguyên tĩnh ở biên.</p>","focus":["CDN"]},
+            {"title":"3 · Balance","body":"<p>Load balancer chọn node API khỏe.</p>","focus":["Load Balancer"]},
+            {"title":"4 · Compute","body":"<p>API server chạy business logic.</p>","focus":["API Server"]},
+            {"title":"5 · Data","body":"<p>Đọc nóng vào Redis; còn lại vào database.</p>","focus":["Redis","Database"]}
+          ]</script>
+        </nes-walkthrough>
+      </div>
+    </section>
+
     <div style="height:var(--sp-7)"></div>
   </main>
 
@@ -423,7 +445,9 @@
 
   <script type="module" src="./elements.js"></script>
   <script type="module">
-    import { toast } from "./elements.js";
+    import { enableMermaid, toast } from "./elements.js";
+    // opt into lazy-loading mermaid (the exact one-liner the docs document)
+    enableMermaid("https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs");
     // editor: fake VSCode-style autocomplete + AI generate (demo only)
     const ed = document.querySelector("nes-editor");
     if (ed) {

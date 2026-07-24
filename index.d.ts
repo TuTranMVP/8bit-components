@@ -152,6 +152,59 @@ export interface CodeTreeNode {
  */
 export declare class NesCodeTreeElement extends HTMLElement {}
 
+/* ---- Visualize module ---- */
+
+/** Mermaid config (themeVariables + fonts) mapped to 8-BIT NES tokens. Pass the
+ *  result to `mermaid.initialize(...)` when bringing your own mermaid instance. */
+export declare function mermaidTheme(root?: Element): Record<string, unknown>;
+
+/** Opt into lazy-loading mermaid from `url` (a CDN or self-hosted ESM build).
+ *  Until called (or `globalThis.mermaid` set, or a per-element `src`), diagrams
+ *  render their raw source and no mermaid is fetched — zero bytes by default. */
+export declare function enableMermaid(url: string): void;
+
+/**
+ * <nes-mermaid>: render a Mermaid diagram, themed to the system. Mermaid itself
+ * is never bundled — it uses `globalThis.mermaid`, a per-element `src`, or the
+ * URL from {@link enableMermaid}. Streaming-safe: assign `.code` on each chunk;
+ * partial/invalid syntax keeps the last good render. Renders with
+ * `securityLevel:"strict"` since AI output is untrusted. Emits `nes:render` and
+ * `nes:node` (on node click).
+ */
+export declare class NesMermaidElement extends HTMLElement {
+  /** current diagram source; set it to (re-)render (debounced). */
+  code: string;
+  /** force a (debounced) re-render. */
+  render(): void;
+  /** spotlight nodes whose label matches (string or array); dims the rest. */
+  highlight(focus: string | string[]): void;
+  /** default lazy-load URL for all instances (see {@link enableMermaid}). */
+  static src: string;
+}
+
+/** One step of a {@link NesWalkthroughElement}. */
+export interface WalkthroughStep {
+  title?: string;
+  /** step content as HTML. */
+  body?: string;
+  /** node labels to spotlight in the `for` target (if it has `highlight()`). */
+  focus?: string[];
+}
+/**
+ * <nes-walkthrough>: step-by-step "How it works". Prev/Next + arrow keys +
+ * progress dots. Reads a `<script type="application/json">` of
+ * {@link WalkthroughStep}[]. With `for="<id>"` pointing at a {@link
+ * NesMermaidElement} (or anything exposing `highlight()`), each step spotlights
+ * its `focus` labels — a principle unfolds one piece at a time. Emits `nes:step`.
+ */
+export declare class NesWalkthroughElement extends HTMLElement {
+  /** current step index (0-based). */
+  readonly index: number;
+  go(n: number): void;
+  next(): void;
+  prev(): void;
+}
+
 /** Context passed to an editor's `suggest` provider (ghost autocomplete). */
 export interface EditorSuggestContext {
   text: string;
@@ -212,6 +265,8 @@ declare global {
     "nes-icon": NesIconElement;
     "nes-editor": NesEditorElement;
     "nes-code-tree": NesCodeTreeElement;
+    "nes-mermaid": NesMermaidElement;
+    "nes-walkthrough": NesWalkthroughElement;
   }
   interface DocumentEventMap {
     "nes:xp": CustomEvent<{ amount: number }>;
@@ -229,5 +284,8 @@ declare global {
     "nes:mention": CustomEvent<{ value: string; label: string }>;
     "nes:ai": CustomEvent<{ text: string; insert: (html: string) => void }>;
     "nes:suggest": CustomEvent<{ text: string; accept: (suggestion: string) => void }>;
+    "nes:render": CustomEvent<{ ok: boolean }>;
+    "nes:node": CustomEvent<{ label: string; id: string }>;
+    "nes:step": CustomEvent<{ index: number; step: WalkthroughStep }>;
   }
 }
