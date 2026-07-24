@@ -3136,6 +3136,148 @@
     }
   }
 
+  /* Terminal — a multi-line shell session: command lines (❯) + output. */
+  .terminal {
+    --accent: var(--primary);
+    inline-size: 100%;
+    overflow-x: auto;
+    padding: var(--sp-4);
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    font-family: var(--font-mono);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--muted);
+    white-space: pre;
+
+    & .cmd {
+      display: block;
+      color: var(--ink);
+    }
+
+    & .cmd::before {
+      content: "❯ ";
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    & .out {
+      display: block;
+      color: var(--muted);
+    }
+
+    & .ok {
+      color: var(--good);
+    }
+
+    & .err {
+      color: var(--crit);
+    }
+  }
+
+  /* Diff — a code diff block: added / removed / context lines with a gutter. */
+  .diff {
+    inline-size: 100%;
+    overflow-x: auto;
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    font-family: var(--font-mono);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    white-space: pre;
+
+    & .add,
+    & .del,
+    & .ctx {
+      display: block;
+      padding-inline: var(--sp-6) var(--sp-3);
+      color: var(--text);
+    }
+
+    & .add {
+      background: color-mix(in srgb, var(--good) 14%, transparent);
+    }
+
+    & .del {
+      background: color-mix(in srgb, var(--crit) 14%, transparent);
+    }
+
+    & .add::before,
+    & .del::before,
+    & .ctx::before {
+      display: inline-block;
+      inline-size: 1.2em;
+      margin-inline-start: -1.6em;
+      color: var(--dim);
+      content: " ";
+    }
+
+    & .add::before {
+      content: "+";
+      color: var(--good);
+    }
+
+    & .del::before {
+      content: "-";
+      color: var(--crit);
+    }
+  }
+
+  /* Tasklist — a GitHub-style checklist (AI plans / todos): done + open items. */
+  .tasklist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    inline-size: 100%;
+
+    & li {
+      display: flex;
+      align-items: baseline;
+      gap: var(--sp-2);
+      padding-block: var(--sp-1);
+      color: var(--text);
+    }
+
+    & li::before {
+      content: "";
+      flex: none;
+      inline-size: 0.9rem;
+      block-size: 0.9rem;
+      translate: 0 0.15em;
+      background: var(--panel-2);
+      border: var(--bw-2) solid var(--line-hi);
+    }
+
+    & li.done {
+      color: var(--muted);
+      text-decoration: line-through;
+      text-decoration-color: var(--line-hi);
+    }
+
+    & li.done::before {
+      content: "✓";
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: var(--ink-on-accent);
+      background: var(--good);
+      border-color: var(--good);
+    }
+  }
+
+  /* Code block filename header (opt-in via <nes-code file="…">) */
+  .cb-file {
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--panel-2);
+    border: var(--bw-2) solid var(--line-hi);
+    border-block-end: 0;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-chrome);
+    color: var(--muted);
+  }
+
   /* CodeTree — <nes-code-tree>: file tree (left) + code viewer (right) */
   .code-tree {
     display: grid;

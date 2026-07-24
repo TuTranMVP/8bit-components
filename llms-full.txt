@@ -129,7 +129,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Theming: https://tutranmvp.github.io/8bit-components/docs.html#/theming
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
-## Component reference (89 components)
+## Component reference (92 components)
 
 ## Element
 
@@ -553,6 +553,21 @@ toast("<b>Saved.</b>", { accent: "good" });
 - selector: `.prompt` (class) · category: Typography
 - A single terminal / AI command line with an accent caret (❯) — the ::prompt embed. For showing commands or an agent's input.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/prompt
+
+### Terminal
+- selector: `.terminal` (class) · category: Typography
+- A multi-line shell session — command lines (❯) + output. For rendering the install/run steps an AI agent writes.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/terminal
+
+### Diff
+- selector: `.diff` (class) · category: Typography
+- A code-diff block — added / removed / context lines with a +/− gutter. For rendering the patches an AI coding agent proposes.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/diff
+
+### Tasklist
+- selector: `.tasklist` (class) · category: Typography
+- A checklist — done + open items with square checkboxes. For rendering the plans / to-dos an AI agent emits (Markdown - [x]).
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/tasklist
 
 ## Visualize
 
