@@ -970,6 +970,14 @@ const COMPONENTS = [
             ["<code>.icon-box</code> + <code>.solid</code> / <code>.lg</code>", "square icon tile (feature/nav)"],
           ],
         ) +
+        h2("API") +
+        apiGroups({
+          attr: [
+            ["<code>name</code>", "string", "—", "icon to render — <strong>required</strong> (see the grid)"],
+            ["<code>label</code>", "string", "—", "accessible name; without it the icon is <code>aria-hidden</code> (decorative)"],
+            ["<code>size</code>", "string", "<code>1em</code>", "custom size (else it scales with <code>font-size</code>)"],
+          ],
+        }) +
         h2("Usage") +
         cb(
           `<!-- no build: the element (registered by "8bit-nes") -->
@@ -1026,6 +1034,14 @@ el.innerHTML = icon("search", { size: 20, label: "Search" });`,
             ["<code>.icon-box</code> + <code>.solid</code> / <code>.lg</code>", "ô icon vuông (feature/nav)"],
           ],
         ) +
+        h2("API") +
+        apiGroups({
+          attr: [
+            ["<code>name</code>", "string", "—", "icon để render — <strong>bắt buộc</strong> (xem lưới trên)"],
+            ["<code>label</code>", "string", "—", "tên truy cập; không có thì icon là <code>aria-hidden</code> (trang trí)"],
+            ["<code>size</code>", "string", "<code>1em</code>", "cỡ tùy ý (nếu không thì scale theo <code>font-size</code>)"],
+          ],
+        }) +
         h2("Dùng") +
         cb(
           `<!-- không build: dùng element (đã đăng ký bởi "8bit-nes") -->
@@ -2296,6 +2312,14 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   <section data-label="Logs">…</section>
 </nes-tabs>`,
         ) +
+        h2("API") +
+        apiGroups({
+          slot: [
+            ["<code>&lt;section data-label='…'&gt;</code>", "one child per tab; <code>data-label</code> is the tab's text"],
+            ["<code>selected</code> (on a section)", "the panel shown first (defaults to the first)"],
+          ],
+        }) +
+        note("Add the <code>lens</code> or <code>code-group</code> class to frame it as a multi-view — see <a href='#/lens'>Lens</a> / <a href='#/codegroup'>CodeGroup</a>.") +
         a11y(
           "Implements the WAI-ARIA tabs pattern: <code>tablist</code>/<code>tab</code>/<code>tabpanel</code> roles, <code>aria-selected</code>, Left/Right arrow navigation, and roving <code>tabindex</code>.",
         ),
@@ -2316,6 +2340,14 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   <section data-label="Logs">…</section>
 </nes-tabs>`,
         ) +
+        h2("API") +
+        apiGroups({
+          slot: [
+            ["<code>&lt;section data-label='…'&gt;</code>", "mỗi con là một tab; <code>data-label</code> là chữ trên tab"],
+            ["<code>selected</code> (trên section)", "panel hiện đầu tiên (mặc định là panel đầu)"],
+          ],
+        }) +
+        note("Thêm class <code>lens</code> hoặc <code>code-group</code> để đóng khung thành multi-view — xem <a href='#/lens'>Lens</a> / <a href='#/codegroup'>CodeGroup</a>.") +
         a11y(
           "Cài theo mẫu WAI-ARIA tabs: role <code>tablist</code>/<code>tab</code>/<code>tabpanel</code>, <code>aria-selected</code>, điều hướng phím Trái/Phải, và roving <code>tabindex</code>.",
         ),
@@ -2674,6 +2706,17 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   <p>Pick a model per task…</p>
 </nes-collapsible>`,
         ) +
+        h2("API") +
+        apiGroups({
+          slot: [
+            ["<code>slot=\"head\"</code>", "the header / toggle label"],
+            ["default", "the collapsible body content"],
+          ],
+          attr: [
+            ["<code>open</code>", "boolean", "<code>false</code>", "start expanded"],
+            ["<code>accent</code>", "accent name", "—", "recolor the header + border"],
+          ],
+        }) +
         a11y(
           "The header is a <code>&lt;button aria-expanded&gt;</code>; the body uses the <code>hidden</code> attribute, so closed content leaves the tab order.",
         ),
@@ -2698,6 +2741,17 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
   <p>Chọn model theo tác vụ…</p>
 </nes-collapsible>`,
         ) +
+        h2("API") +
+        apiGroups({
+          slot: [
+            ["<code>slot=\"head\"</code>", "nhãn header / nút gập"],
+            ["default", "nội dung thân gập được"],
+          ],
+          attr: [
+            ["<code>open</code>", "boolean", "<code>false</code>", "mở sẵn"],
+            ["<code>accent</code>", "accent name", "—", "đổi màu header + viền"],
+          ],
+        }) +
         a11y(
           "Header là <code>&lt;button aria-expanded&gt;</code>; phần thân dùng thuộc tính <code>hidden</code>, nên nội dung đóng rời khỏi thứ tự tab.",
         ),
