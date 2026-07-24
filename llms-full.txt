@@ -129,7 +129,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Theming: https://tutranmvp.github.io/8bit-components/docs.html#/theming
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
-## Component reference (57 components)
+## Component reference (66 components)
 
 ## Element
 
@@ -427,6 +427,53 @@ toast("<b>Saved.</b>", { accent: "good" });
 - selector: `<nes-tree>` (element) · category: Data
 - Hierarchical folder/file list. Expand/collapse, single or multiple selection, full keyboard nav. Data via child JSON.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/tree
+
+## Chat
+
+### Chat
+- selector: `.chat` (class) · category: Chat
+- The chatbot shell: a flex column with a scrolling message area and a prompt pinned to the bottom. Compose it from the parts below.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/chat
+
+### ChatMessages
+- selector: `<nes-chat-messages>` (element) · category: Chat
+- Scroll container that auto-sticks to the newest message while streaming — but won't yank the view if the reader scrolled up.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/chatmessages
+
+### ChatMessage
+- selector: `.msg` (class) · category: Chat
+- One message row: an avatar + a square bubble. .assistant sits left on the panel; .user mirrors right and tints with the accent.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/chatmessage
+
+### ChatPrompt
+- selector: `<nes-chat-prompt>` (element) · category: Chat
+- The input: an auto-growing textarea + send button. Enter sends, Shift+Enter = newline. Fires nes:submit with the text, then clears.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/chatprompt
+
+### ChatPromptSubmit
+- selector: `.chat-submit` (class) · category: Chat
+- The send/stop button used inside ChatPrompt. Add .busy to turn the green send into a red stop. Usable standalone too.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/chatpromptsubmit
+
+### ChatReasoning
+- selector: `.reasoning` (class) · category: Chat
+- A collapsed "thinking" block for reasoning tokens. Native <details> — zero JS. Dashed, mono, muted; the summary goes gold when open.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/chatreasoning
+
+### ChatTool
+- selector: `.tool` (class) · category: Chat
+- Shows a tool/function call: name + status badge in the summary, args/result in the body. Native <details>; status via a .badge.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/chattool
+
+### ChatShimmer
+- selector: `.shimmer` (class) · category: Chat
+- Streaming placeholder — a few shimmering lines shown while the assistant's first tokens are still on the way. Pure CSS.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/chatshimmer
+
+### ChatPalette
+- selector: `.chat-palette` (class) · category: Chat
+- A framed chat panel for a modal or side-panel assistant: bordered surface with the messages area above and the prompt flush on the bottom edge.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/chatpalette
 
 ---
 Generated from docs.js by scripts/gen-llms.mjs. Do not edit by hand — run `pnpm gen:llms`.

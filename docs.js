@@ -66,8 +66,9 @@ const CAT_ACCENT = {
   Navigation: "cyan",
   Overlay: "purple",
   Data: "warn",
+  Chat: "teal",
 };
-const CAT_ORDER = ["Element", "Form", "Feedback", "Navigation", "Overlay", "Data"];
+const CAT_ORDER = ["Element", "Form", "Feedback", "Navigation", "Overlay", "Data", "Chat"];
 
 /* ===================================================================== */
 /*  GETTING STARTED                                                       */
@@ -3177,6 +3178,507 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
         a11y(
           "Theo pattern ARIA <code>tree</code>: <code>role=tree/treeitem/group</code>, <code>aria-expanded</code>, <code>aria-selected</code>, <code>aria-level</code>, roving <code>aria-activedescendant</code>. Phím: ↑/↓ di chuyển, → mở/vào trong, ← gập/lên cha, Home/End, Enter/Space chọn.",
         ),
+    },
+  },
+
+  /* -------------------------------------------------------- CHAT (AI) */
+  {
+    id: "chat",
+    cat: "Chat",
+    name: "Chat",
+    desc: {
+      en: "The chatbot shell: a flex column with a scrolling message area and a prompt pinned to the bottom. Compose it from the parts below.",
+      vi: "Vỏ chatbot: cột flex với vùng tin nhắn cuộn được và ô nhập ghim ở đáy. Ghép từ các phần bên dưới.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CHAT",
+          `<div class="chat" style="block-size:280px;inline-size:100%;max-inline-size:460px">
+            <nes-chat-messages>
+              <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span>
+                <div class="bubble">How can I help you build today?</div></div>
+              <div class="msg user"><span class="avatar sm">TU</span>
+                <div class="bubble">Scaffold a settings form.</div></div>
+            </nes-chat-messages>
+            <nes-chat-prompt placeholder="Message the agent…"></nes-chat-prompt>
+          </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="chat">
+  <nes-chat-messages>
+    <div class="msg assistant">…</div>
+    <div class="msg user">…</div>
+  </nes-chat-messages>
+  <nes-chat-prompt placeholder="Message…"></nes-chat-prompt>
+</div>`,
+        ) +
+        api(
+          ["Part", "Role"],
+          [
+            ["<code>.chat</code>", "flex-column shell (give it a height)"],
+            ["<code>&lt;nes-chat-messages&gt;</code>", "scrolling message list"],
+            ["<code>&lt;nes-chat-prompt&gt;</code>", "the input, pinned to the bottom"],
+          ],
+        ),
+      vi: () =>
+        stage(
+          "CHAT",
+          `<div class="chat" style="block-size:280px;inline-size:100%;max-inline-size:460px">
+            <nes-chat-messages>
+              <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span>
+                <div class="bubble">Mình giúp bạn build gì hôm nay?</div></div>
+              <div class="msg user"><span class="avatar sm">TU</span>
+                <div class="bubble">Dựng form cài đặt.</div></div>
+            </nes-chat-messages>
+            <nes-chat-prompt placeholder="Nhắn cho agent…"></nes-chat-prompt>
+          </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="chat">
+  <nes-chat-messages>
+    <div class="msg assistant">…</div>
+    <div class="msg user">…</div>
+  </nes-chat-messages>
+  <nes-chat-prompt placeholder="Nhắn…"></nes-chat-prompt>
+</div>`,
+        ) +
+        api(
+          ["Phần", "Vai trò"],
+          [
+            ["<code>.chat</code>", "vỏ cột flex (cần đặt chiều cao)"],
+            ["<code>&lt;nes-chat-messages&gt;</code>", "danh sách tin nhắn cuộn"],
+            ["<code>&lt;nes-chat-prompt&gt;</code>", "ô nhập, ghim đáy"],
+          ],
+        ),
+    },
+  },
+  {
+    id: "chatmessages",
+    cat: "Chat",
+    name: "ChatMessages",
+    desc: {
+      en: "Scroll container that auto-sticks to the newest message while streaming — but won't yank the view if the reader scrolled up.",
+      vi: "Vùng cuộn tự bám tin nhắn mới nhất khi đang stream — nhưng không giật màn hình nếu người đọc đã cuộn lên.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CHATMESSAGES",
+          `<nes-chat-messages style="block-size:200px;max-inline-size:460px;border:var(--bw-2) solid var(--line-hi)">
+            <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span><div class="bubble">Line one.</div></div>
+            <div class="msg user"><span class="avatar sm">TU</span><div class="bubble">Got it.</div></div>
+            <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span><div class="bubble">Streaming keeps this pinned to the bottom.</div></div>
+          </nes-chat-messages>`,
+          "col",
+        ) +
+        cb(
+          `<nes-chat-messages>
+  <div class="msg assistant">…</div>
+  <div class="msg user">…</div>
+</nes-chat-messages>`,
+        ) +
+        api(
+          ["Method / behaviour", "Meaning"],
+          [
+            ["auto-scroll", "MutationObserver sticks to bottom when pinned"],
+            ["stay-put", "if scrolled up >80px, new messages don't yank"],
+            ["<code>.scrollToBottom()</code>", "force-scroll (re-pins)"],
+          ],
+        ) +
+        a11y("It only adds the <code>.chat-messages</code> layout + scroll behaviour; put an <code>aria-live=\"polite\"</code> region inside if you want new assistant text announced."),
+      vi: () =>
+        stage(
+          "CHATMESSAGES",
+          `<nes-chat-messages style="block-size:200px;max-inline-size:460px;border:var(--bw-2) solid var(--line-hi)">
+            <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span><div class="bubble">Dòng một.</div></div>
+            <div class="msg user"><span class="avatar sm">TU</span><div class="bubble">Rõ.</div></div>
+            <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span><div class="bubble">Stream sẽ luôn ghim xuống đáy.</div></div>
+          </nes-chat-messages>`,
+          "col",
+        ) +
+        cb(
+          `<nes-chat-messages>
+  <div class="msg assistant">…</div>
+  <div class="msg user">…</div>
+</nes-chat-messages>`,
+        ) +
+        api(
+          ["Method / hành vi", "Ý nghĩa"],
+          [
+            ["auto-scroll", "MutationObserver bám đáy khi đang ghim"],
+            ["stay-put", "cuộn lên >80px thì tin mới không giật"],
+            ["<code>.scrollToBottom()</code>", "ép cuộn (ghim lại)"],
+          ],
+        ) +
+        a11y("Nó chỉ thêm layout <code>.chat-messages</code> + hành vi cuộn; đặt vùng <code>aria-live=\"polite\"</code> bên trong nếu muốn đọc tin assistant mới."),
+    },
+  },
+  {
+    id: "chatmessage",
+    cat: "Chat",
+    name: "ChatMessage",
+    desc: {
+      en: "One message row: an avatar + a square bubble. .assistant sits left on the panel; .user mirrors right and tints with the accent.",
+      vi: "Một dòng tin: avatar + bong bóng vuông. .assistant bên trái nền panel; .user lật phải và nhuộm màu accent.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CHATMESSAGE",
+          `<div style="display:flex;flex-direction:column;gap:var(--sp-3);inline-size:100%;max-inline-size:460px">
+            <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span><div class="bubble">I can generate that component for you.</div></div>
+            <div class="msg user"><span class="avatar sm">TU</span><div class="bubble">Yes please — square corners.</div></div>
+          </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="msg assistant">
+  <span class="avatar sm">AI</span>
+  <div class="bubble">…markdown or text…</div>
+</div>
+<div class="msg user"><span class="avatar sm">TU</span><div class="bubble">…</div></div>`,
+        ) +
+        api(
+          ["Class", "Effect"],
+          [
+            ["<code>.msg</code>", "row: avatar + bubble"],
+            ["<code>.msg.assistant</code>", "left aligned, panel bubble"],
+            ["<code>.msg.user</code>", "mirrored right, accent-tinted bubble"],
+            ["<code>.bubble</code>", "the square content box"],
+          ],
+        ),
+      vi: () =>
+        stage(
+          "CHATMESSAGE",
+          `<div style="display:flex;flex-direction:column;gap:var(--sp-3);inline-size:100%;max-inline-size:460px">
+            <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span><div class="bubble">Mình tạo component đó cho bạn được.</div></div>
+            <div class="msg user"><span class="avatar sm">TU</span><div class="bubble">Ừ — góc vuông nhé.</div></div>
+          </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="msg assistant">
+  <span class="avatar sm">AI</span>
+  <div class="bubble">…markdown hoặc text…</div>
+</div>
+<div class="msg user"><span class="avatar sm">TU</span><div class="bubble">…</div></div>`,
+        ) +
+        api(
+          ["Class", "Tác dụng"],
+          [
+            ["<code>.msg</code>", "dòng: avatar + bubble"],
+            ["<code>.msg.assistant</code>", "canh trái, bubble panel"],
+            ["<code>.msg.user</code>", "lật phải, bubble nhuộm accent"],
+            ["<code>.bubble</code>", "hộp nội dung vuông"],
+          ],
+        ),
+    },
+  },
+  {
+    id: "chatprompt",
+    cat: "Chat",
+    name: "ChatPrompt",
+    desc: {
+      en: "The input: an auto-growing textarea + send button. Enter sends, Shift+Enter = newline. Fires nes:submit with the text, then clears.",
+      vi: "Ô nhập: textarea tự giãn + nút gửi. Enter gửi, Shift+Enter = xuống dòng. Bắn nes:submit kèm text rồi xóa.",
+    },
+    body: {
+      en: () =>
+        stage("CHATPROMPT", `<nes-chat-prompt placeholder="Message the agent…" style="inline-size:100%;max-inline-size:460px"></nes-chat-prompt>`, "col") +
+        cb(
+          `<nes-chat-prompt placeholder="Message…"></nes-chat-prompt>
+<script type="module">
+  document.querySelector("nes-chat-prompt")
+    .addEventListener("nes:submit", (e) => send(e.detail.value));
+</script>`,
+        ) +
+        api(
+          ["Attr / prop / event", "Meaning"],
+          [
+            ["<code>placeholder</code>", "textarea placeholder"],
+            ["<code>busy</code> (attr)", "streaming → Send becomes Stop"],
+            ["<code>.setBusy(bool)</code>", "toggle busy from JS"],
+            ["<code>.value</code>", "read / set the draft text"],
+            ["<code>nes:submit</code>", "Enter or Send → <code>{ value }</code>, then clears"],
+            ["<code>nes:stop</code>", "Stop pressed while busy"],
+          ],
+        ) +
+        a11y("The textarea grows to fit and caps at 40vh; the button is a real <code>&lt;button&gt;</code> with an <code>aria-label</code> that flips Send↔Stop."),
+      vi: () =>
+        stage("CHATPROMPT", `<nes-chat-prompt placeholder="Nhắn cho agent…" style="inline-size:100%;max-inline-size:460px"></nes-chat-prompt>`, "col") +
+        cb(
+          `<nes-chat-prompt placeholder="Nhắn…"></nes-chat-prompt>
+<script type="module">
+  document.querySelector("nes-chat-prompt")
+    .addEventListener("nes:submit", (e) => send(e.detail.value));
+</script>`,
+        ) +
+        api(
+          ["Attr / prop / event", "Ý nghĩa"],
+          [
+            ["<code>placeholder</code>", "placeholder textarea"],
+            ["<code>busy</code> (attr)", "đang stream → Gửi thành Dừng"],
+            ["<code>.setBusy(bool)</code>", "bật/tắt busy từ JS"],
+            ["<code>.value</code>", "đọc / gán bản nháp"],
+            ["<code>nes:submit</code>", "Enter hoặc Gửi → <code>{ value }</code>, rồi xóa"],
+            ["<code>nes:stop</code>", "bấm Dừng khi đang busy"],
+          ],
+        ) +
+        a11y("Textarea giãn theo nội dung, tối đa 40vh; nút là <code>&lt;button&gt;</code> thật với <code>aria-label</code> đổi Gửi↔Dừng."),
+    },
+  },
+  {
+    id: "chatpromptsubmit",
+    cat: "Chat",
+    name: "ChatPromptSubmit",
+    desc: {
+      en: "The send/stop button used inside ChatPrompt. Add .busy to turn the green send into a red stop. Usable standalone too.",
+      vi: "Nút gửi/dừng dùng trong ChatPrompt. Thêm .busy để đổi nút gửi xanh thành dừng đỏ. Dùng riêng cũng được.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CHATPROMPTSUBMIT",
+          `<button class="chat-submit" aria-label="Send">▶</button>
+           <button class="chat-submit busy" aria-label="Stop">■</button>`,
+        ) +
+        cb(`<button class="chat-submit" aria-label="Send">▶</button>
+<button class="chat-submit busy" aria-label="Stop">■</button>`) +
+        api(
+          ["Class", "State"],
+          [
+            ["<code>.chat-submit</code>", "idle → accent (green) send"],
+            ["<code>.chat-submit.busy</code>", "streaming → crit (red) stop"],
+            ["<code>[disabled]</code>", "dimmed, not clickable"],
+          ],
+        ) +
+        a11y("Always give it an <code>aria-label</code> (Send / Stop) — it is icon-only."),
+      vi: () =>
+        stage(
+          "CHATPROMPTSUBMIT",
+          `<button class="chat-submit" aria-label="Gửi">▶</button>
+           <button class="chat-submit busy" aria-label="Dừng">■</button>`,
+        ) +
+        cb(`<button class="chat-submit" aria-label="Gửi">▶</button>
+<button class="chat-submit busy" aria-label="Dừng">■</button>`) +
+        api(
+          ["Class", "Trạng thái"],
+          [
+            ["<code>.chat-submit</code>", "nghỉ → gửi accent (xanh)"],
+            ["<code>.chat-submit.busy</code>", "đang stream → dừng crit (đỏ)"],
+            ["<code>[disabled]</code>", "mờ, không bấm"],
+          ],
+        ) +
+        a11y("Luôn cho <code>aria-label</code> (Gửi / Dừng) — nút chỉ có icon."),
+    },
+  },
+  {
+    id: "chatreasoning",
+    cat: "Chat",
+    name: "ChatReasoning",
+    desc: {
+      en: "A collapsed \"thinking\" block for reasoning tokens. Native <details> — zero JS. Dashed, mono, muted; the summary goes gold when open.",
+      vi: "Khối \"suy nghĩ\" gập lại cho reasoning tokens. <details> gốc — không JS. Viền đứt, mono, mờ; summary chuyển gold khi mở.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CHATREASONING",
+          `<details class="reasoning" open style="inline-size:100%;max-inline-size:460px">
+            <summary>Reasoning</summary>
+            <div class="body">User wants a form. Prefer native controls, one accent, square corners…</div>
+          </details>`,
+          "col",
+        ) +
+        cb(
+          `<details class="reasoning">
+  <summary>Reasoning</summary>
+  <div class="body">…chain-of-thought text…</div>
+</details>`,
+        ) +
+        a11y("It's a native <code>&lt;details&gt;/&lt;summary&gt;</code>: keyboard-toggle and expanded-state come for free."),
+      vi: () =>
+        stage(
+          "CHATREASONING",
+          `<details class="reasoning" open style="inline-size:100%;max-inline-size:460px">
+            <summary>Suy luận</summary>
+            <div class="body">User muốn một form. Ưu tiên control gốc, một accent, góc vuông…</div>
+          </details>`,
+          "col",
+        ) +
+        cb(
+          `<details class="reasoning">
+  <summary>Suy luận</summary>
+  <div class="body">…chuỗi suy nghĩ…</div>
+</details>`,
+        ) +
+        a11y("Là <code>&lt;details&gt;/&lt;summary&gt;</code> gốc: toggle bàn phím và trạng thái mở có sẵn."),
+    },
+  },
+  {
+    id: "chattool",
+    cat: "Chat",
+    name: "ChatTool",
+    desc: {
+      en: "Shows a tool/function call: name + status badge in the summary, args/result in the body. Native <details>; status via a .badge.",
+      vi: "Hiển thị lời gọi tool/function: tên + badge trạng thái ở summary, args/kết quả ở body. <details> gốc; trạng thái bằng .badge.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CHATTOOL",
+          `<details class="tool" open style="inline-size:100%;max-inline-size:460px">
+            <summary><span class="tname">search_docs</span><span class="badge clear">done</span></summary>
+            <div class="body">{ "query": "form module", "hits": 6 }</div>
+          </details>`,
+          "col",
+        ) +
+        cb(
+          `<details class="tool">
+  <summary><span class="tname">search_docs</span><span class="badge clear">done</span></summary>
+  <div class="body">{ "query": "…", "hits": 6 }</div>
+</details>`,
+        ) +
+        api(
+          ["Piece", "Role"],
+          [
+            ["<code>.tool</code>", "the tool-call block"],
+            ["<code>.tname</code>", "tool name (cyan / function hue)"],
+            ["<code>.badge</code>", "status: <code>.warn</code> running · <code>.clear</code> done · <code>.crit</code> error"],
+            ["<code>.body</code>", "args / result (mono, scrolls)"],
+          ],
+        ),
+      vi: () =>
+        stage(
+          "CHATTOOL",
+          `<details class="tool" open style="inline-size:100%;max-inline-size:460px">
+            <summary><span class="tname">search_docs</span><span class="badge clear">done</span></summary>
+            <div class="body">{ "query": "form module", "hits": 6 }</div>
+          </details>`,
+          "col",
+        ) +
+        cb(
+          `<details class="tool">
+  <summary><span class="tname">search_docs</span><span class="badge clear">done</span></summary>
+  <div class="body">{ "query": "…", "hits": 6 }</div>
+</details>`,
+        ) +
+        api(
+          ["Phần", "Vai trò"],
+          [
+            ["<code>.tool</code>", "khối lời gọi tool"],
+            ["<code>.tname</code>", "tên tool (cyan / màu function)"],
+            ["<code>.badge</code>", "trạng thái: <code>.warn</code> chạy · <code>.clear</code> xong · <code>.crit</code> lỗi"],
+            ["<code>.body</code>", "args / kết quả (mono, cuộn)"],
+          ],
+        ),
+    },
+  },
+  {
+    id: "chatshimmer",
+    cat: "Chat",
+    name: "ChatShimmer",
+    desc: {
+      en: "Streaming placeholder — a few shimmering lines shown while the assistant's first tokens are still on the way. Pure CSS.",
+      vi: "Placeholder khi đang stream — vài dòng lấp lánh hiển thị trong lúc token đầu của assistant chưa tới. Thuần CSS.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CHATSHIMMER",
+          `<div class="msg assistant" style="max-inline-size:460px"><span class="avatar sm" data-accent="teal">AI</span>
+            <div class="bubble" style="inline-size:220px"><div class="shimmer"><span></span><span></span><span></span></div></div>
+          </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="bubble">
+  <div class="shimmer"><span></span><span></span><span></span></div>
+</div>`,
+        ) +
+        a11y("Decorative — pair it with an <code>aria-live</code> status like \"Assistant is typing…\" for non-visual users."),
+      vi: () =>
+        stage(
+          "CHATSHIMMER",
+          `<div class="msg assistant" style="max-inline-size:460px"><span class="avatar sm" data-accent="teal">AI</span>
+            <div class="bubble" style="inline-size:220px"><div class="shimmer"><span></span><span></span><span></span></div></div>
+          </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="bubble">
+  <div class="shimmer"><span></span><span></span><span></span></div>
+</div>`,
+        ) +
+        a11y("Chỉ trang trí — đi kèm một status <code>aria-live</code> như \"Assistant đang gõ…\" cho người dùng không nhìn màn hình."),
+    },
+  },
+  {
+    id: "chatpalette",
+    cat: "Chat",
+    name: "ChatPalette",
+    desc: {
+      en: "A framed chat panel for a modal or side-panel assistant: bordered surface with the messages area above and the prompt flush on the bottom edge.",
+      vi: "Panel chat có khung cho assistant dạng modal hoặc side-panel: bề mặt viền, vùng tin nhắn ở trên và prompt sát mép đáy.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CHATPALETTE",
+          `<div class="chat-palette" style="block-size:300px;inline-size:100%;max-inline-size:420px">
+            <nes-chat-messages>
+              <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span><div class="bubble">Ask me anything about the design system.</div></div>
+              <div class="msg user"><span class="avatar sm">TU</span><div class="bubble">List the form components.</div></div>
+            </nes-chat-messages>
+            <nes-chat-prompt placeholder="Ask…"></nes-chat-prompt>
+          </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="chat-palette">
+  <nes-chat-messages>…</nes-chat-messages>
+  <nes-chat-prompt placeholder="Ask…"></nes-chat-prompt>
+</div>`,
+        ) +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.chat-palette</code>", "bordered, elevated chat panel"],
+            ["nested <code>.chat-messages</code>", "gets padding; scrolls"],
+            ["nested <code>.chat-prompt</code>", "borderless, sits on the bottom edge"],
+          ],
+        ) +
+        a11y("Drop it inside a <code>&lt;dialog class=\"modal\"&gt;</code> for a command-palette-style assistant; the dialog handles focus trap + Esc."),
+      vi: () =>
+        stage(
+          "CHATPALETTE",
+          `<div class="chat-palette" style="block-size:300px;inline-size:100%;max-inline-size:420px">
+            <nes-chat-messages>
+              <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span><div class="bubble">Hỏi mình bất cứ gì về design system.</div></div>
+              <div class="msg user"><span class="avatar sm">TU</span><div class="bubble">Liệt kê các form component.</div></div>
+            </nes-chat-messages>
+            <nes-chat-prompt placeholder="Hỏi…"></nes-chat-prompt>
+          </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="chat-palette">
+  <nes-chat-messages>…</nes-chat-messages>
+  <nes-chat-prompt placeholder="Hỏi…"></nes-chat-prompt>
+</div>`,
+        ) +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.chat-palette</code>", "panel chat có viền, nổi khối"],
+            ["<code>.chat-messages</code> lồng trong", "có padding; cuộn"],
+            ["<code>.chat-prompt</code> lồng trong", "không viền, nằm sát mép đáy"],
+          ],
+        ) +
+        a11y("Đặt trong <code>&lt;dialog class=\"modal\"&gt;</code> để làm assistant kiểu command-palette; dialog lo focus trap + Esc."),
     },
   },
 ];

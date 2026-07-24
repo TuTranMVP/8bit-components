@@ -1519,6 +1519,106 @@ class NesTree extends HTMLElement {
   }
 }
 
+/* ========================================================================== */
+/*  AI CHAT MODULE  —  stateful bits (bubbles/tool/reasoning are pure CSS)      */
+/* ========================================================================== */
+
+/* <nes-chat-prompt>  —  auto-growing prompt + send/stop button.
+   Enter sends, Shift+Enter = newline. Add the `busy` attribute while streaming
+   to flip Send → Stop. Fires nes:submit {value} and nes:stop.                 */
+class NesChatPrompt extends HTMLElement {
+  static get observedAttributes() {
+    return ["busy"];
+  }
+  connectedCallback() {
+    if (this._done) return;
+    this._done = true;
+    this.innerHTML = "";
+    this.box = el("div", { class: "chat-prompt" });
+    this.ta = el("textarea", {
+      rows: "1",
+      "aria-label": this.getAttribute("aria-label") || "Message",
+    });
+    this.ta.placeholder = this.getAttribute("placeholder") || "Message…";
+    this.btn = el("button", { type: "button", class: "chat-submit", "aria-label": "Send" });
+    this.btn.textContent = "▶";
+    this.ta.addEventListener("input", () => this.autosize());
+    this.ta.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        this.send();
+      }
+    });
+    this.btn.addEventListener("click", () => (this.busy ? this.stop() : this.send()));
+    this.box.append(this.ta, this.btn);
+    this.appendChild(this.box);
+    if (this.hasAttribute("busy")) this.setBusy(true);
+  }
+  attributeChangedCallback(name) {
+    if (name === "busy" && this.btn) this.setBusy(this.hasAttribute("busy"));
+  }
+  autosize() {
+    this.ta.style.height = "auto";
+    this.ta.style.height = `${Math.min(this.ta.scrollHeight, window.innerHeight * 0.4)}px`;
+  }
+  send() {
+    const value = this.ta.value.trim();
+    if (!value || this.busy) return;
+    this.dispatchEvent(new CustomEvent("nes:submit", { bubbles: true, detail: { value } }));
+    this.ta.value = "";
+    this.autosize();
+    bleep(SFX.unlock);
+  }
+  stop() {
+    this.dispatchEvent(new CustomEvent("nes:stop", { bubbles: true, detail: {} }));
+  }
+  setBusy(b) {
+    this.busy = !!b;
+    this.box.setAttribute("aria-busy", String(this.busy));
+    this.btn.classList.toggle("busy", this.busy);
+    this.btn.setAttribute("aria-label", this.busy ? "Stop" : "Send");
+    this.btn.textContent = this.busy ? "■" : "▶";
+  }
+  focus() {
+    this.ta?.focus();
+  }
+  get value() {
+    return this.ta?.value ?? "";
+  }
+  set value(v) {
+    if (this.ta) {
+      this.ta.value = v;
+      this.autosize();
+    }
+  }
+}
+
+/* <nes-chat-messages>  —  scroll container that sticks to the newest message
+   while streaming, but won't yank the view if the user has scrolled up.        */
+class NesChatMessages extends HTMLElement {
+  connectedCallback() {
+    if (this._done) return;
+    this._done = true;
+    this.classList.add("chat-messages");
+    this._pin = true;
+    this.addEventListener("scroll", () => {
+      this._pin = this.scrollHeight - this.scrollTop - this.clientHeight < 80;
+    });
+    this._obs = new MutationObserver(() => {
+      if (this._pin) this.scrollToBottom();
+    });
+    this._obs.observe(this, { childList: true, subtree: true, characterData: true });
+    requestAnimationFrame(() => this.scrollToBottom());
+  }
+  disconnectedCallback() {
+    this._obs?.disconnect();
+  }
+  scrollToBottom() {
+    this.scrollTop = this.scrollHeight;
+    this._pin = true;
+  }
+}
+
 /* ------------------------------------------------------------- self-register */
 const defs = {
   "nes-sound": NesSound,
@@ -1537,6 +1637,8 @@ const defs = {
   "nes-input-menu": NesInputMenu,
   "nes-select-menu": NesSelectMenu,
   "nes-tree": NesTree,
+  "nes-chat-prompt": NesChatPrompt,
+  "nes-chat-messages": NesChatMessages,
 };
 for (const [tag, cls] of Object.entries(defs)) {
   if (!customElements.get(tag)) customElements.define(tag, cls);

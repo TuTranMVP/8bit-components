@@ -320,6 +320,33 @@
       </div>
     </section>
 
+    <!-- AI CHAT MODULE -->
+    <section>
+      <span class="lab">AI Chat module — &lt;nes-chat-prompt&gt; · &lt;nes-chat-messages&gt;</span>
+      <div class="chat-palette" style="block-size:340px;max-inline-size:520px">
+        <nes-chat-messages id="demo-chat">
+          <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span>
+            <div class="bubble">Chào! Mình là agent 8-bit. Hỏi mình về design system nhé.</div>
+          </div>
+          <div class="msg user"><span class="avatar sm">TU</span>
+            <div class="bubble">Liệt kê các form component.</div>
+          </div>
+          <div class="msg assistant"><span class="avatar sm" data-accent="teal">AI</span>
+            <div class="bubble">
+              <details class="reasoning"><summary>Reasoning</summary>
+                <div class="body">User cần danh sách. Trả gọn, dùng tool tra cứu.</div></details>
+              <details class="tool" style="margin-block-start:var(--sp-2)">
+                <summary><span class="tname">search_docs</span><span class="badge clear">done</span></summary>
+                <div class="body">{ "query": "form", "hits": 20 }</div>
+              </details>
+              <p style="margin-block-end:0">Input, Select, Checkbox, Radio, Switch, Form, Tags, Pin…</p>
+            </div>
+          </div>
+        </nes-chat-messages>
+        <nes-chat-prompt placeholder="Nhắn cho agent…"></nes-chat-prompt>
+      </div>
+    </section>
+
     <div style="height:var(--sp-7)"></div>
   </main>
 
@@ -329,9 +356,34 @@
   <script type="module" src="./elements.js"></script>
   <script type="module">
     import { toast } from "./elements.js";
-    document.addEventListener("nes:submit", (e) =>
-      toast(`<b>Submitted.</b> ${Object.keys(e.detail.data).length} fields.`, { accent: "good" }),
-    );
+    document.addEventListener("nes:submit", (e) => {
+      // <nes-form> submit → detail.data; <nes-chat-prompt> submit → detail.value
+      if (e.detail?.data) {
+        toast(`<b>Submitted.</b> ${Object.keys(e.detail.data).length} fields.`, { accent: "good" });
+        return;
+      }
+      const list = document.getElementById("demo-chat");
+      if (!list || !e.detail?.value) return;
+      const add = (cls, html) => {
+        const m = document.createElement("div");
+        m.className = `msg ${cls}`;
+        m.innerHTML =
+          cls === "user"
+            ? `<span class="avatar sm">TU</span><div class="bubble"></div>`
+            : `<span class="avatar sm" data-accent="teal">AI</span><div class="bubble">${html}</div>`;
+        if (cls === "user") m.querySelector(".bubble").textContent = e.detail.value;
+        list.appendChild(m);
+        return m;
+      };
+      add("user");
+      const bot = add("assistant", `<div class="shimmer"><span></span><span></span><span></span></div>`);
+      const prompt = e.target;
+      prompt.setBusy?.(true);
+      setTimeout(() => {
+        bot.querySelector(".bubble").textContent = "Demo reply — nối API model của bạn vào nes:submit là xong.";
+        prompt.setBusy?.(false);
+      }, 1400);
+    });
   </script>
 </body>
 

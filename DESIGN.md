@@ -183,6 +183,7 @@ Words are design material — they help someone use the thing.
 | Navigation | Tabs (`<nes-tabs>`) · Breadcrumb · Pagination · Steps · Nav list                          |
 | Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) |
 | Data       | Table · Code block · Accordion (`<nes-collapsible>`) · Stat · Rating · Description list · Timeline · Prose · Tree (`<nes-tree>`)           |
+| Chat (AI)  | Chat · ChatMessages (`<nes-chat-messages>`) · ChatMessage · ChatPrompt (`<nes-chat-prompt>`) · ChatPromptSubmit · ChatReasoning · ChatTool · ChatShimmer · ChatPalette |
 
 Live docs: `pnpm demo`, then open `/docs.html`.
 
