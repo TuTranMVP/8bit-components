@@ -4164,6 +4164,304 @@ h2("API") +
     },
   },
 
+  {
+    id: "composer",
+    cat: "Chat",
+    name: "Composer",
+    desc: {
+      en: "The full prompt box — ChatGPT / Claude-Code style: attachment chips on top, a growing textarea, and a toolbar footer with icon actions, a model picker, a char hint and send.",
+      vi: "Hộp nhập đầy đủ — kiểu ChatGPT / Claude-Code: chip đính kèm ở trên, textarea co giãn, và thanh công cụ đáy với nút icon, chọn model, đếm ký tự và gửi.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "COMPOSER",
+          `<div class="composer" style="inline-size:100%;max-inline-size:min(560px,100%)">
+             <div class="composer-attach">
+               <span class="attach"><nes-icon name="file"></nes-icon><span class="attach-name">pricing-q3.pdf</span><span class="attach-size">240 KB</span><button class="attach-x" aria-label="Remove"><nes-icon name="close"></nes-icon></button></span>
+               <span class="attach"><nes-icon name="image"></nes-icon><span class="attach-name">chart.png</span><span class="attach-size">88 KB</span><button class="attach-x" aria-label="Remove"><nes-icon name="close"></nes-icon></button></span>
+             </div>
+             <textarea rows="2" placeholder="Ask anything…">Summarise the attached pricing deck</textarea>
+             <div class="composer-bar">
+               <button class="btn ghost xs icon" aria-label="Attach file"><nes-icon name="paperclip"></nes-icon></button>
+               <button class="btn ghost xs icon" aria-label="Add image"><nes-icon name="image"></nes-icon></button>
+               <button class="btn ghost xs"><nes-icon name="cpu"></nes-icon> GPT-4o <nes-icon name="chevronDown"></nes-icon></button>
+               <span class="composer-hint">42 / 8k</span>
+               <button class="chat-submit" aria-label="Send"><nes-icon name="send"></nes-icon></button>
+             </div>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="composer">
+  <!-- optional attachment chips -->
+  <div class="composer-attach">
+    <span class="attach">
+      <nes-icon name="file"></nes-icon>
+      <span class="attach-name">pricing-q3.pdf</span>
+      <span class="attach-size">240 KB</span>
+      <button class="attach-x" aria-label="Remove"><nes-icon name="close"></nes-icon></button>
+    </span>
+  </div>
+
+  <textarea rows="2" placeholder="Ask anything…"></textarea>
+
+  <!-- toolbar: actions + model · left, hint + send · right -->
+  <div class="composer-bar">
+    <button class="btn ghost xs icon" aria-label="Attach file"><nes-icon name="paperclip"></nes-icon></button>
+    <button class="btn ghost xs"><nes-icon name="cpu"></nes-icon> GPT-4o <nes-icon name="chevronDown"></nes-icon></button>
+    <span class="composer-hint">0 / 8k</span>
+    <button class="chat-submit" aria-label="Send"><nes-icon name="send"></nes-icon></button>
+  </div>
+</div>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.composer</code>", "the box — gold focus ring on <code>:focus-within</code>"],
+            ["<code>.composer-attach</code>", "row of <code>.attach</code> chips (optional)"],
+            ["<code>textarea</code>", "the prompt — grows to 40vh"],
+            ["<code>.composer-bar</code>", "the toolbar footer"],
+            ["<code>.composer-hint</code>", "char / token count — floats right, pushing send with it"],
+            ["<code>.attach</code>", "one file pill — name ellipsizes, <code>.attach-x</code> removes it"],
+          ],
+        ) +
+        note(
+          `The send button is the same <code>.chat-submit</code> as <a href="#/chatpromptsubmit">ChatPromptSubmit</a> — add <code>.busy</code> to flip it to a stop while streaming. Actions are plain <code>.btn.ghost.xs</code>; the model picker can be a <a href="#/dropdown">Dropdown</a>.`,
+        ) +
+        a11y(
+          `Give every icon button an <code>aria-label</code>. Submit on Enter, newline on Shift+Enter — but keep the visible send button for touch and screen readers.`,
+        ),
+      vi: () =>
+        stage(
+          "COMPOSER",
+          `<div class="composer" style="inline-size:100%;max-inline-size:min(560px,100%)">
+             <div class="composer-attach">
+               <span class="attach"><nes-icon name="file"></nes-icon><span class="attach-name">pricing-q3.pdf</span><span class="attach-size">240 KB</span><button class="attach-x" aria-label="Xoá"><nes-icon name="close"></nes-icon></button></span>
+               <span class="attach"><nes-icon name="image"></nes-icon><span class="attach-name">chart.png</span><span class="attach-size">88 KB</span><button class="attach-x" aria-label="Xoá"><nes-icon name="close"></nes-icon></button></span>
+             </div>
+             <textarea rows="2" placeholder="Hỏi bất cứ điều gì…">Tóm tắt bộ slide giá đính kèm</textarea>
+             <div class="composer-bar">
+               <button class="btn ghost xs icon" aria-label="Đính kèm file"><nes-icon name="paperclip"></nes-icon></button>
+               <button class="btn ghost xs icon" aria-label="Thêm ảnh"><nes-icon name="image"></nes-icon></button>
+               <button class="btn ghost xs"><nes-icon name="cpu"></nes-icon> GPT-4o <nes-icon name="chevronDown"></nes-icon></button>
+               <span class="composer-hint">42 / 8k</span>
+               <button class="chat-submit" aria-label="Gửi"><nes-icon name="send"></nes-icon></button>
+             </div>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="composer">
+  <!-- chip đính kèm (tuỳ chọn) -->
+  <div class="composer-attach">
+    <span class="attach">
+      <nes-icon name="file"></nes-icon>
+      <span class="attach-name">pricing-q3.pdf</span>
+      <span class="attach-size">240 KB</span>
+      <button class="attach-x" aria-label="Xoá"><nes-icon name="close"></nes-icon></button>
+    </span>
+  </div>
+
+  <textarea rows="2" placeholder="Hỏi bất cứ điều gì…"></textarea>
+
+  <!-- thanh: actions + model · trái, hint + gửi · phải -->
+  <div class="composer-bar">
+    <button class="btn ghost xs icon" aria-label="Đính kèm file"><nes-icon name="paperclip"></nes-icon></button>
+    <button class="btn ghost xs"><nes-icon name="cpu"></nes-icon> GPT-4o <nes-icon name="chevronDown"></nes-icon></button>
+    <span class="composer-hint">0 / 8k</span>
+    <button class="chat-submit" aria-label="Gửi"><nes-icon name="send"></nes-icon></button>
+  </div>
+</div>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.composer</code>", "hộp — viền focus vàng khi <code>:focus-within</code>"],
+            ["<code>.composer-attach</code>", "hàng chip <code>.attach</code> (tuỳ chọn)"],
+            ["<code>textarea</code>", "ô nhập — co giãn tới 40vh"],
+            ["<code>.composer-bar</code>", "thanh công cụ đáy"],
+            ["<code>.composer-hint</code>", "đếm ký tự / token — dạt phải, đẩy nút gửi theo"],
+            ["<code>.attach</code>", "một pill file — tên rút gọn, <code>.attach-x</code> để xoá"],
+          ],
+        ) +
+        note(
+          `Nút gửi chính là <code>.chat-submit</code> như <a href="#/chatpromptsubmit">ChatPromptSubmit</a> — thêm <code>.busy</code> để đổi thành nút dừng khi đang stream. Actions là <code>.btn.ghost.xs</code> thường; ô chọn model có thể là <a href="#/dropdown">Dropdown</a>.`,
+        ) +
+        a11y(
+          `Đặt <code>aria-label</code> cho mọi nút icon. Enter để gửi, Shift+Enter xuống dòng — nhưng giữ nút gửi hiện rõ cho cảm ứng và screen reader.`,
+        ),
+    },
+  },
+  {
+    id: "suggestions",
+    cat: "Chat",
+    name: "Suggestions",
+    desc: {
+      en: "Prompt starters on an empty chat, or follow-up chips after an answer — a wrap of tap-to-send pills that guide the next turn.",
+      vi: "Gợi ý mở đầu khi chat trống, hoặc chip follow-up sau câu trả lời — một hàng pill bấm-để-gửi dẫn lượt tiếp theo.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "SUGGEST",
+          `<div class="suggest" style="max-inline-size:min(560px,100%)">
+             <button class="suggest-item">Explain the pricing tiers <nes-icon name="arrowRight"></nes-icon></button>
+             <button class="suggest-item">Draft a follow-up email <nes-icon name="arrowRight"></nes-icon></button>
+             <button class="suggest-item">Compare with competitors <nes-icon name="arrowRight"></nes-icon></button>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="suggest">
+  <button class="suggest-item">Explain the pricing tiers <nes-icon name="arrowRight"></nes-icon></button>
+  <button class="suggest-item">Draft a follow-up email <nes-icon name="arrowRight"></nes-icon></button>
+  <button class="suggest-item">Compare with competitors <nes-icon name="arrowRight"></nes-icon></button>
+</div>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.suggest</code>", "the wrap row"],
+            ["<code>button.suggest-item</code>", "one starter / follow-up — hook it to fill or submit the prompt"],
+          ],
+        ) +
+        note(
+          `Real <code>&lt;button&gt;</code>s, so a click can fill the composer or submit straight away. For big empty-state starter <em>cards</em>, use a <a href="#/card">Card</a> grid instead.`,
+        ) +
+        a11y(
+          `The buttons are keyboard- and screen-reader-ready. Sitting above an empty chat, a short <code>&lt;h2&gt;</code> like "Try asking…" gives them context.`,
+        ),
+      vi: () =>
+        stage(
+          "SUGGEST",
+          `<div class="suggest" style="max-inline-size:min(560px,100%)">
+             <button class="suggest-item">Giải thích các gói giá <nes-icon name="arrowRight"></nes-icon></button>
+             <button class="suggest-item">Soạn email theo sau <nes-icon name="arrowRight"></nes-icon></button>
+             <button class="suggest-item">So sánh với đối thủ <nes-icon name="arrowRight"></nes-icon></button>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="suggest">
+  <button class="suggest-item">Giải thích các gói giá <nes-icon name="arrowRight"></nes-icon></button>
+  <button class="suggest-item">Soạn email theo sau <nes-icon name="arrowRight"></nes-icon></button>
+  <button class="suggest-item">So sánh với đối thủ <nes-icon name="arrowRight"></nes-icon></button>
+</div>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.suggest</code>", "hàng wrap"],
+            ["<code>button.suggest-item</code>", "một gợi ý / follow-up — gắn để điền hoặc gửi prompt"],
+          ],
+        ) +
+        note(
+          `Là <code>&lt;button&gt;</code> thật, nên click có thể điền vào composer hoặc gửi ngay. Nếu muốn <em>card</em> gợi ý lớn cho empty-state, dùng lưới <a href="#/card">Card</a>.`,
+        ) +
+        a11y(
+          `Nút sẵn sàng cho bàn phím + screen reader. Đặt trên chat trống, một <code>&lt;h2&gt;</code> ngắn như "Thử hỏi…" cho ngữ cảnh.`,
+        ),
+    },
+  },
+  {
+    id: "citations",
+    cat: "Chat",
+    name: "Citations",
+    desc: {
+      en: "Grounded answers: an inline [n] marker in the prose that links down to a numbered sources list under the message. Zero JS — the marker jumps to a matching id.",
+      vi: "Câu trả lời có dẫn nguồn: marker [n] trong đoạn văn liên kết xuống danh sách nguồn đánh số dưới tin nhắn. Không JS — marker nhảy tới id trùng.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CITE",
+          `<div style="max-inline-size:min(560px,100%)">
+             <p style="color:var(--text);margin:0 0 var(--sp-2)">API pricing rose about 12% quarter-over-quarter<a class="cite" href="#s1" aria-label="Source 1">1</a>, driven mostly by the new tool-use tier<a class="cite" href="#s2" aria-label="Source 2">2</a>.</p>
+             <ol class="sources">
+               <li class="source" id="s1"><span class="source-n">1</span><a class="source-title" href="#">Q3 2025 Pricing Update</a><span class="source-host">stripe.com</span></li>
+               <li class="source" id="s2"><span class="source-n">2</span><a class="source-title" href="#">Tool-use billing explained</a><span class="source-host">docs.example.com</span></li>
+             </ol>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<p>API pricing rose about 12%<a class="cite" href="#s1" aria-label="Source 1">1</a>.</p>
+
+<ol class="sources">
+  <li class="source" id="s1">
+    <span class="source-n">1</span>
+    <a class="source-title" href="…">Q3 2025 Pricing Update</a>
+    <span class="source-host">stripe.com</span>
+  </li>
+</ol>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>a.cite</code>", "inline [n] marker — <code>href=\"#s1\"</code> jumps to its source"],
+            ["<code>ol.sources</code>", "the numbered list under the message"],
+            ["<code>li.source</code>", "one source — give it a matching <code>id</code>"],
+            ["<code>.source-n</code>", "the index box"],
+            ["<code>.source-title</code>", "the linked title"],
+            ["<code>.source-host</code>", "the domain / origin"],
+          ],
+        ) +
+        note(
+          `Match each <code>.cite</code>'s <code>href="#s1"</code> to a <code>.source</code> <code>id="s1"</code> — clicking a marker scrolls to its source with zero JavaScript.`,
+        ) +
+        a11y(
+          `Number markers in reading order and mirror them in the list. Label each marker (<code>aria-label="Source 1"</code>) so it doesn't read as a bare "1".`,
+        ),
+      vi: () =>
+        stage(
+          "CITE",
+          `<div style="max-inline-size:min(560px,100%)">
+             <p style="color:var(--text);margin:0 0 var(--sp-2)">Giá API tăng khoảng 12% so với quý trước<a class="cite" href="#s1" aria-label="Nguồn 1">1</a>, chủ yếu do gói tool-use mới<a class="cite" href="#s2" aria-label="Nguồn 2">2</a>.</p>
+             <ol class="sources">
+               <li class="source" id="s1"><span class="source-n">1</span><a class="source-title" href="#">Cập nhật giá Q3 2025</a><span class="source-host">stripe.com</span></li>
+               <li class="source" id="s2"><span class="source-n">2</span><a class="source-title" href="#">Giải thích tính phí tool-use</a><span class="source-host">docs.example.com</span></li>
+             </ol>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<p>Giá API tăng khoảng 12%<a class="cite" href="#s1" aria-label="Nguồn 1">1</a>.</p>
+
+<ol class="sources">
+  <li class="source" id="s1">
+    <span class="source-n">1</span>
+    <a class="source-title" href="…">Cập nhật giá Q3 2025</a>
+    <span class="source-host">stripe.com</span>
+  </li>
+</ol>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>a.cite</code>", "marker [n] inline — <code>href=\"#s1\"</code> nhảy tới nguồn"],
+            ["<code>ol.sources</code>", "danh sách đánh số dưới tin nhắn"],
+            ["<code>li.source</code>", "một nguồn — gắn <code>id</code> trùng"],
+            ["<code>.source-n</code>", "ô số thứ tự"],
+            ["<code>.source-title</code>", "tiêu đề có link"],
+            ["<code>.source-host</code>", "tên miền / nguồn gốc"],
+          ],
+        ) +
+        note(
+          `Khớp <code>href="#s1"</code> của mỗi <code>.cite</code> với <code>id="s1"</code> của <code>.source</code> — bấm marker sẽ cuộn tới nguồn, không cần JavaScript.`,
+        ) +
+        a11y(
+          `Đánh số marker theo thứ tự đọc và lặp lại trong danh sách. Gắn nhãn mỗi marker (<code>aria-label="Nguồn 1"</code>) để không đọc trơ thành "1".`,
+        ),
+    },
+  },
+
   /* -------------------------------------------------------- AGENTS */
   {
     id: "agent",
