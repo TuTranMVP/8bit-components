@@ -1,12 +1,16 @@
 {
   "name": "8bit-nes",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "NES 8-bit retro-modern design system. Design tokens + class-based CSS components + light-DOM web components. Cross-framework: HTML, Vue 3, Nuxt, React.",
   "license": "MIT",
   "type": "module",
+  "main": "./elements.js",
+  "module": "./elements.js",
+  "unpkg": "./elements.min.js",
   "sideEffects": [
     "*.css",
-    "./elements.js"
+    "./elements.js",
+    "./elements.min.js"
   ],
   "exports": {
     ".": {
@@ -15,9 +19,18 @@
     },
     "./elements.js": "./elements.js",
     "./elements.min.js": "./elements.min.js",
-    "./icons": "./icons.js",
-    "./icons.js": "./icons.js",
-    "./icons.min.js": "./icons.min.js",
+    "./icons": {
+      "types": "./icons.d.ts",
+      "default": "./icons.js"
+    },
+    "./icons.js": {
+      "types": "./icons.d.ts",
+      "default": "./icons.js"
+    },
+    "./icons.min.js": {
+      "types": "./icons.d.ts",
+      "default": "./icons.min.js"
+    },
     "./all.css": "./all.css",
     "./all.min.css": "./all.min.css",
     "./tokens.css": "./tokens.css",
