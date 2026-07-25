@@ -685,6 +685,42 @@
       "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/chatpalette"
     },
     {
+      "id": "agent",
+      "name": "Agent",
+      "category": "Agents",
+      "selector": ".agent",
+      "kind": "class",
+      "description": "One agent in a multi-agent crew: a status light, name + model, and its current task. Drive the light with data-state — thinking / running blink live.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/agent"
+    },
+    {
+      "id": "usage",
+      "name": "Context usage",
+      "category": "Agents",
+      "selector": ".usage",
+      "kind": "class",
+      "description": "A stacked token-budget bar — see how the context window is spent across system, history, tools and response, and how much is still free.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/usage"
+    },
+    {
+      "id": "trace",
+      "name": "Trace",
+      "category": "Agents",
+      "selector": ".trace",
+      "kind": "class",
+      "description": "A vertical run trace — what the agent planned, which tools it called, and the result. Marks share the run-state colours; wrap any step in <details> for zero-JS expand of the tool I/O.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/trace"
+    },
+    {
+      "id": "feedback",
+      "name": "Feedback bar",
+      "category": "Agents",
+      "selector": ".feedback",
+      "kind": "class",
+      "description": "The bar under an AI response: rate / copy / regenerate on the left, run metrics (model · tokens · latency) on the right. Closes the human-in-the-loop.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/feedback"
+    },
+    {
       "id": "editor",
       "name": "Editor",
       "category": "Editor",
@@ -912,6 +948,6 @@
   ],
   "counts": {
     "concepts": 4,
-    "components": 92
+    "components": 96
   }
 }

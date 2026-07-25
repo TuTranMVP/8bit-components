@@ -129,7 +129,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Theming: https://tutranmvp.github.io/8bit-components/docs.html#/theming
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
-## Component reference (92 components)
+## Component reference (96 components)
 
 ## Element
 
@@ -479,6 +479,28 @@ toast("<b>Saved.</b>", { accent: "good" });
 - selector: `.chat-palette` (class) · category: Chat
 - A framed chat panel for a modal or side-panel assistant: bordered surface with the messages area above and the prompt flush on the bottom edge.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/chatpalette
+
+## Agents
+
+### Agent
+- selector: `.agent` (class) · category: Agents
+- One agent in a multi-agent crew: a status light, name + model, and its current task. Drive the light with data-state — thinking / running blink live.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/agent
+
+### Context usage
+- selector: `.usage` (class) · category: Agents
+- A stacked token-budget bar — see how the context window is spent across system, history, tools and response, and how much is still free.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/usage
+
+### Trace
+- selector: `.trace` (class) · category: Agents
+- A vertical run trace — what the agent planned, which tools it called, and the result. Marks share the run-state colours; wrap any step in <details> for zero-JS expand of the tool I/O.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/trace
+
+### Feedback bar
+- selector: `.feedback` (class) · category: Agents
+- The bar under an AI response: rate / copy / regenerate on the left, run metrics (model · tokens · latency) on the right. Closes the human-in-the-loop.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/feedback
 
 ## Editor
 
