@@ -2,6 +2,17 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.4.1
+
+Housekeeping — no visual or API change.
+
+- Added a `--bw-1` (1px) hairline token; the 8 raw `1px` borders (dots, tag
+  pills, tiny markers) now flow from it — keeps the "every value from tokens"
+  contract intact.
+- Removed a byte-identical re-implementation of `.menuitem` inside
+  `.editor-menu`; the editor menu now reuses the base recipe + its own
+  `.k`/`.sub`/`.active` extras.
+
 ## 0.4.0
 
 Unified control-size system — one scale so every control lines up.
