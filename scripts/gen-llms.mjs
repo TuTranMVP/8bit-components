@@ -327,7 +327,43 @@ No bundler? Link the minified single-file build from a CDN:
 <link rel="stylesheet" href="${manifest.install.cdnCss}">
 <script type="module" src="${manifest.install.cdnJs}"></script>
 \`\`\`
-Framework notes: React 19 uses \`<nes-*>\` natively. Vue/Nuxt need \`compilerOptions.isCustomElement = (t) => t.startsWith("nes-")\`.
+## Framework setup (verified, copy-paste exact)
+Do these steps precisely to install into another repo. Import CSS + elements ONCE at the app entry (never per-component).
+
+- HTML / any framework, zero-build: use the CDN \`<link>\` + \`<script type="module">\` above. \`<nes-*>\` self-register; class recipes work immediately.
+
+- Vite + Vue 3.3+ (incl. 3.5): Vue MUST be told \`<nes-*>\` are custom elements, or it errors "failed to resolve component".
+\`\`\`ts
+// vite.config.ts
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+export default defineConfig({
+  plugins: [vue({ template: { compilerOptions: { isCustomElement: (t) => t.startsWith("nes-") } } })],
+});
+\`\`\`
+\`\`\`ts
+// src/main.ts
+import "${pkg.name}/all.css";  // tokens + base + components
+import "${pkg.name}";          // registers every <nes-*> (side-effect, once)
+\`\`\`
+Vite auto-bundles the 3 woff2 fonts (the CSS references them with relative \`url()\`); no font config needed.
+
+- Nuxt 3: \`customElements\` needs the browser, so register in a CLIENT plugin; set CSS + isCustomElement in the config.
+\`\`\`ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+  css: ["${pkg.name}/all.css"],
+  vue: { compilerOptions: { isCustomElement: (t) => t.startsWith("nes-") } },
+});
+// plugins/8bit.client.ts
+import "${pkg.name}";
+\`\`\`
+
+- React 19+: \`<nes-*>\` work natively (props map to attributes). \`import "${pkg.name}/all.css"; import "${pkg.name}";\` once at entry. React <=18: set custom-element properties/events through a \`ref\`.
+
+- Events: every \`nes:*\` event is a bubbling CustomEvent — read the payload from \`event.detail\` (e.g. \`nes:submit\` -> \`{ data, form }\`, \`nes:change\` -> \`{ value }\`). Vue: \`@nes:submit="fn"\` then \`fn(e){ e.detail }\`. There is no two-way \`v-model\`; bind via \`@nes:change\`. Inside \`<nes-form>\` (or a native form) the controls keep a hidden \`<input name>\`, so they submit with zero wiring.
+
+- Sizing & theming: put \`data-size="xs|sm|md|lg|xl"\` on a control — or on a wrapper to size a whole row at once (shared height scale). Recolor any block with \`data-accent\` (see below).
 
 ## Theming & the accent system
 Change the look ONLY in \`tokens.css\`, never inside a component. Recolor a block by setting \`data-accent\` on its container; descendants pick it up via \`--accent\`:
