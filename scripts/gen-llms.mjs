@@ -123,6 +123,10 @@ const SELECTOR = {
   usage: ".usage",
   trace: ".trace",
   feedback: ".feedback",
+  graph: "<nes-graph>",
+  note: ".note",
+  backlinks: ".backlinks",
+  wikilink: ".wikilink",
 };
 const kindOf = (sel) =>
   !sel
@@ -180,6 +184,7 @@ const CAT_ORDER = [
   "Editor",
   "Typography",
   "Visualize",
+  "Second Brain",
 ];
 const byCat = (cat) => components.filter((c) => c.category === cat);
 const missing = components.filter((c) => !c.selector).map((c) => c.id);

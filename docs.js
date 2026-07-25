@@ -144,8 +144,9 @@ const CAT_ACCENT = {
   Editor: "indigo",
   Typography: "pink",
   Visualize: "lime",
+  "Second Brain": "purple",
 };
-const CAT_ORDER = ["Element", "Form", "Feedback", "Navigation", "Overlay", "Data", "Chat", "Agents", "Editor", "Typography", "Visualize"];
+const CAT_ORDER = ["Element", "Form", "Feedback", "Navigation", "Overlay", "Data", "Chat", "Agents", "Editor", "Typography", "Visualize", "Second Brain"];
 
 /* ===================================================================== */
 /*  GETTING STARTED                                                       */
@@ -6359,6 +6360,354 @@ for await (const chunk of agentStream())
   <span class="legend-item" data-accent="cyan">Cache</span>
 </div>`) +
         a11y("Chữ inline thường với ô màu trang trí (<code>::before</code>); ý nghĩa nằm ở nhãn nên được đọc đúng."),
+    },
+  },
+
+  /* --------------------------------------------------- SECOND BRAIN */
+  {
+    id: "graph",
+    cat: "Second Brain",
+    name: "Graph",
+    desc: {
+      en: "A knowledge graph — nodes (notes / concepts) + edges, force-laid-out deterministically as crisp SVG. Click a node to light its neighbourhood. Zero deps; wrap in <nes-zoom> to pan/zoom.",
+      vi: "Đồ thị tri thức — node (note / concept) + cạnh, tự dàn theo lực một cách tất định thành SVG sắc nét. Bấm một node để sáng vùng lân cận. Không phụ thuộc; bọc <nes-zoom> để pan/zoom.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "GRAPH",
+          `<nes-graph aria-label="Knowledge graph" style="inline-size:100%;max-inline-size:min(640px,100%)"><script type="application/json">{"nodes":[{"id":"pkm","label":"PKM","group":"purple"},{"id":"zettel","label":"Zettelkasten","group":"purple"},{"id":"atomic","label":"Atomic notes","group":"cyan"},{"id":"link","label":"Linking","group":"cyan"},{"id":"graph","label":"Graph view","group":"lime"},{"id":"moc","label":"Map of content","group":"gold"},{"id":"daily","label":"Daily notes","group":"gold"},{"id":"tag","label":"Tags","group":"good"}],"edges":[{"source":"pkm","target":"zettel"},{"source":"pkm","target":"moc"},{"source":"zettel","target":"atomic"},{"source":"zettel","target":"link"},{"source":"atomic","target":"link"},{"source":"link","target":"graph"},{"source":"moc","target":"link"},{"source":"daily","target":"atomic"},{"source":"tag","target":"link"},{"source":"moc","target":"daily"}]}<\/script></nes-graph>`,
+          "col",
+        ) +
+        cb(
+          `<nes-graph aria-label="Knowledge graph">
+  <script type="application/json">
+  {
+    "nodes": [
+      { "id": "pkm",    "label": "PKM",         "group": "purple" },
+      { "id": "atomic", "label": "Atomic notes", "group": "cyan" },
+      { "id": "graph",  "label": "Graph view",   "group": "lime" }
+    ],
+    "edges": [
+      { "source": "pkm", "target": "atomic" },
+      { "source": "atomic", "target": "graph" }
+    ]
+  }
+  <\/script>
+</nes-graph>
+
+<!-- pan / zoom: just wrap it -->
+<nes-zoom><nes-graph> … </nes-graph></nes-zoom>`,
+        ) +
+        h2("API") +
+        apiGroups({
+          attr: [
+            ["data", "JSON", "—", "graph as <code>{nodes,edges}</code> (or use a child script / the <code>.data</code> prop)"],
+            ["focus", "node id", "—", "light a node + its neighbours, dim the rest; unset clears"],
+            ["aria-label", "string", `"Knowledge graph"`, "label for the SVG"],
+          ],
+          prop: [["data", "{nodes,edges}", "—", "get / set the graph — re-lays-out on set"]],
+          method: [["focusNode(id)", "(id?)⇒void", "—", "focus a node; omit / null to clear"]],
+          event: [["nes:node", "CustomEvent", "—", "a node was clicked — <code>detail {id,label,group}</code>"]],
+          slot: [["script[type=application/json]", "the <code>{nodes,edges}</code> data (read once, then removed)"]],
+        }) +
+        note(
+          `<b>node</b> = <code>{ id, label?, group?, x?, y? }</code> · <b>edge</b> = <code>{ source, target }</code>. <code>group</code> is any accent (purple / cyan / lime…) and colours the node; give <code>x</code>/<code>y</code> (0–100) to pin a node, or omit them and the layout places it.`,
+        ) +
+        a11y(
+          `Each node is a focusable <code>role="button"</code> with an <code>aria-label</code> and Enter/Space support; the SVG carries a label. Colour is decorative — the node label carries the meaning.`,
+        ),
+      vi: () =>
+        stage(
+          "GRAPH",
+          `<nes-graph aria-label="Đồ thị tri thức" style="inline-size:100%;max-inline-size:min(640px,100%)"><script type="application/json">{"nodes":[{"id":"pkm","label":"PKM","group":"purple"},{"id":"zettel","label":"Zettelkasten","group":"purple"},{"id":"atomic","label":"Atomic notes","group":"cyan"},{"id":"link","label":"Linking","group":"cyan"},{"id":"graph","label":"Graph view","group":"lime"},{"id":"moc","label":"Map of content","group":"gold"},{"id":"daily","label":"Daily notes","group":"gold"},{"id":"tag","label":"Tags","group":"good"}],"edges":[{"source":"pkm","target":"zettel"},{"source":"pkm","target":"moc"},{"source":"zettel","target":"atomic"},{"source":"zettel","target":"link"},{"source":"atomic","target":"link"},{"source":"link","target":"graph"},{"source":"moc","target":"link"},{"source":"daily","target":"atomic"},{"source":"tag","target":"link"},{"source":"moc","target":"daily"}]}<\/script></nes-graph>`,
+          "col",
+        ) +
+        cb(
+          `<nes-graph aria-label="Đồ thị tri thức">
+  <script type="application/json">
+  {
+    "nodes": [
+      { "id": "pkm",    "label": "PKM",         "group": "purple" },
+      { "id": "atomic", "label": "Atomic notes", "group": "cyan" },
+      { "id": "graph",  "label": "Graph view",   "group": "lime" }
+    ],
+    "edges": [
+      { "source": "pkm", "target": "atomic" },
+      { "source": "atomic", "target": "graph" }
+    ]
+  }
+  <\/script>
+</nes-graph>
+
+<!-- pan / zoom: chỉ cần bọc lại -->
+<nes-zoom><nes-graph> … </nes-graph></nes-zoom>`,
+        ) +
+        h2("API") +
+        apiGroups({
+          attr: [
+            ["data", "JSON", "—", "đồ thị dạng <code>{nodes,edges}</code> (hoặc dùng script con / prop <code>.data</code>)"],
+            ["focus", "node id", "—", "sáng một node + lân cận, mờ phần còn lại; bỏ để xoá"],
+            ["aria-label", "string", `"Đồ thị tri thức"`, "nhãn cho SVG"],
+          ],
+          prop: [["data", "{nodes,edges}", "—", "lấy / gán đồ thị — dàn lại khi gán"]],
+          method: [["focusNode(id)", "(id?)⇒void", "—", "focus một node; bỏ / null để xoá"]],
+          event: [["nes:node", "CustomEvent", "—", "một node được bấm — <code>detail {id,label,group}</code>"]],
+          slot: [["script[type=application/json]", "dữ liệu <code>{nodes,edges}</code> (đọc một lần rồi gỡ)"]],
+        }) +
+        note(
+          `<b>node</b> = <code>{ id, label?, group?, x?, y? }</code> · <b>edge</b> = <code>{ source, target }</code>. <code>group</code> là accent bất kỳ (purple / cyan / lime…) để tô node; cho <code>x</code>/<code>y</code> (0–100) để ghim, hoặc bỏ trống để layout tự đặt.`,
+        ) +
+        a11y(
+          `Mỗi node là <code>role="button"</code> focus được, có <code>aria-label</code> và hỗ trợ Enter/Space; SVG có nhãn. Màu chỉ trang trí — nhãn node mới tải nghĩa.`,
+        ),
+    },
+  },
+  {
+    id: "note",
+    cat: "Second Brain",
+    name: "Note card",
+    desc: {
+      en: "One note in a vault or search result: title + timestamp, a 2-line excerpt, tag pills and a link / backlink readout. data-accent classifies it by folder or domain.",
+      vi: "Một note trong vault hoặc kết quả tìm: tiêu đề + thời gian, trích 2 dòng, chip tag và số link / backlink. data-accent phân loại theo thư mục hoặc domain.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "NOTE",
+          `<div style="display:flex;flex-direction:column;gap:var(--sp-3);inline-size:100%;max-inline-size:min(460px,100%)">
+             <article class="note" data-accent="purple"><div class="note-head"><h3 class="note-title">Zettelkasten method</h3><span class="note-time">2d ago</span></div><p class="note-excerpt">Atomic notes, one idea each, densely linked so structure emerges from the links instead of folders.</p><div class="note-tags"><span class="tag">#pkm</span><span class="tag">#method</span></div><div class="note-meta"><nes-icon name="link"></nes-icon> 12 links <nes-icon name="gitBranch"></nes-icon> 4 backlinks</div></article>
+             <article class="note" data-accent="cyan"><div class="note-head"><h3 class="note-title">Atomic notes</h3><span class="note-time">5d ago</span></div><p class="note-excerpt">A note should hold exactly one idea, titled as a claim, so it can be linked and reused anywhere.</p><div class="note-tags"><span class="tag">#pkm</span></div><div class="note-meta"><nes-icon name="link"></nes-icon> 7 links <nes-icon name="gitBranch"></nes-icon> 9 backlinks</div></article>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<article class="note" data-accent="purple">
+  <div class="note-head">
+    <h3 class="note-title">Zettelkasten method</h3>
+    <span class="note-time">2d ago</span>
+  </div>
+  <p class="note-excerpt">Atomic notes, one idea each, densely linked…</p>
+  <div class="note-tags"><span class="tag">#pkm</span><span class="tag">#method</span></div>
+  <div class="note-meta"><nes-icon name="link"></nes-icon> 12 links <nes-icon name="gitBranch"></nes-icon> 4 backlinks</div>
+</article>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>article.note</code>", "the card — <code>data-accent</code> = folder / domain colour"],
+            ["<code>.note-head</code>", "title + timestamp row"],
+            ["<code>.note-title</code>", "note title (mono)"],
+            ["<code>.note-time</code>", "updated time — floats right"],
+            ["<code>.note-excerpt</code>", "preview — clamped to 2 lines"],
+            ["<code>.note-tags</code>", "row of <code>.tag</code> pills"],
+            ["<code>.note-meta</code>", "link / backlink counts"],
+          ],
+        ) +
+        note(
+          `Excerpt clamps to two lines, so cards stay the same height in a grid or list. Drop notes into a <code>.grid-cards</code> for a vault view. Tags are <a href="#/wikilink">Tag</a> pills.`,
+        ) +
+        a11y(
+          `Wrap the card in an <code>&lt;a&gt;</code> (or add a heading link) so the whole note is one keyboard target; the <code>.note-meta</code> icons are decorative.`,
+        ),
+      vi: () =>
+        stage(
+          "NOTE",
+          `<div style="display:flex;flex-direction:column;gap:var(--sp-3);inline-size:100%;max-inline-size:min(460px,100%)">
+             <article class="note" data-accent="purple"><div class="note-head"><h3 class="note-title">Phương pháp Zettelkasten</h3><span class="note-time">2 ngày trước</span></div><p class="note-excerpt">Note nguyên tử, mỗi note một ý, liên kết dày để cấu trúc nổi lên từ link thay vì thư mục.</p><div class="note-tags"><span class="tag">#pkm</span><span class="tag">#method</span></div><div class="note-meta"><nes-icon name="link"></nes-icon> 12 links <nes-icon name="gitBranch"></nes-icon> 4 backlinks</div></article>
+             <article class="note" data-accent="cyan"><div class="note-head"><h3 class="note-title">Note nguyên tử</h3><span class="note-time">5 ngày trước</span></div><p class="note-excerpt">Một note chỉ nên chứa đúng một ý, đặt tên như một luận điểm, để link và tái dùng ở bất cứ đâu.</p><div class="note-tags"><span class="tag">#pkm</span></div><div class="note-meta"><nes-icon name="link"></nes-icon> 7 links <nes-icon name="gitBranch"></nes-icon> 9 backlinks</div></article>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<article class="note" data-accent="purple">
+  <div class="note-head">
+    <h3 class="note-title">Phương pháp Zettelkasten</h3>
+    <span class="note-time">2 ngày trước</span>
+  </div>
+  <p class="note-excerpt">Note nguyên tử, mỗi note một ý, liên kết dày…</p>
+  <div class="note-tags"><span class="tag">#pkm</span><span class="tag">#method</span></div>
+  <div class="note-meta"><nes-icon name="link"></nes-icon> 12 links <nes-icon name="gitBranch"></nes-icon> 4 backlinks</div>
+</article>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>article.note</code>", "thẻ — <code>data-accent</code> = màu thư mục / domain"],
+            ["<code>.note-head</code>", "hàng tiêu đề + thời gian"],
+            ["<code>.note-title</code>", "tiêu đề note (mono)"],
+            ["<code>.note-time</code>", "thời gian cập nhật — dạt phải"],
+            ["<code>.note-excerpt</code>", "xem trước — cắt còn 2 dòng"],
+            ["<code>.note-tags</code>", "hàng chip <code>.tag</code>"],
+            ["<code>.note-meta</code>", "số link / backlink"],
+          ],
+        ) +
+        note(
+          `Excerpt cắt còn hai dòng nên các thẻ cùng chiều cao trong lưới / danh sách. Bỏ note vào <code>.grid-cards</code> để có view vault. Tag là pill <a href="#/wikilink">Tag</a>.`,
+        ) +
+        a11y(
+          `Bọc thẻ trong <code>&lt;a&gt;</code> (hoặc thêm link tiêu đề) để cả note là một target bàn phím; icon ở <code>.note-meta</code> chỉ trang trí.`,
+        ),
+    },
+  },
+  {
+    id: "backlinks",
+    cat: "Second Brain",
+    name: "Backlinks",
+    desc: {
+      en: "Linked references — the notes that point at this one, each with the sentence it was mentioned in. <mark> highlights the match.",
+      vi: "Tham chiếu ngược — các note trỏ tới note này, kèm câu chứa từ được nhắc. <mark> làm nổi phần khớp.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "BACKLINKS",
+          `<section class="backlinks" style="inline-size:100%;max-inline-size:min(460px,100%)">
+             <h4 class="backlinks-head"><nes-icon name="gitBranch"></nes-icon> 3 linked references</h4>
+             <a class="backlink" href="#"><span class="backlink-title">Daily · 2025-07-20</span><span class="backlink-ctx">…started building a <mark>second brain</mark> with atomic notes today…</span></a>
+             <a class="backlink" href="#"><span class="backlink-title">Map of content · PKM</span><span class="backlink-ctx">…the <mark>second brain</mark> idea maps cleanly onto a graph…</span></a>
+             <a class="backlink" href="#"><span class="backlink-title">Tools I use</span><span class="backlink-ctx">…Obsidian is my <mark>second brain</mark> of choice for now…</span></a>
+           </section>`,
+          "col",
+        ) +
+        cb(
+          `<section class="backlinks">
+  <h4 class="backlinks-head"><nes-icon name="gitBranch"></nes-icon> 3 linked references</h4>
+  <a class="backlink" href="…">
+    <span class="backlink-title">Daily · 2025-07-20</span>
+    <span class="backlink-ctx">…building a <mark>second brain</mark> with atomic notes…</span>
+  </a>
+</section>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>section.backlinks</code>", "the panel"],
+            ["<code>.backlinks-head</code>", "count heading"],
+            ["<code>a.backlink</code>", "one referencing note (a link)"],
+            ["<code>.backlink-title</code>", "the source note"],
+            ["<code>.backlink-ctx</code>", "the sentence — <code>&lt;mark&gt;</code> the match"],
+          ],
+        ) +
+        note(
+          `Pairs with the <a href="#/graph">Graph</a>: the graph shows the shape of the links, backlinks show the exact sentences behind them.`,
+        ) +
+        a11y(
+          `Each backlink is a real link; <code>&lt;mark&gt;</code> conveys emphasis semantically, not by colour alone.`,
+        ),
+      vi: () =>
+        stage(
+          "BACKLINKS",
+          `<section class="backlinks" style="inline-size:100%;max-inline-size:min(460px,100%)">
+             <h4 class="backlinks-head"><nes-icon name="gitBranch"></nes-icon> 3 tham chiếu ngược</h4>
+             <a class="backlink" href="#"><span class="backlink-title">Daily · 2025-07-20</span><span class="backlink-ctx">…hôm nay bắt đầu xây <mark>second brain</mark> bằng note nguyên tử…</span></a>
+             <a class="backlink" href="#"><span class="backlink-title">Map of content · PKM</span><span class="backlink-ctx">…ý tưởng <mark>second brain</mark> ánh xạ gọn vào một đồ thị…</span></a>
+             <a class="backlink" href="#"><span class="backlink-title">Công cụ tôi dùng</span><span class="backlink-ctx">…Obsidian là <mark>second brain</mark> tôi chọn hiện tại…</span></a>
+           </section>`,
+          "col",
+        ) +
+        cb(
+          `<section class="backlinks">
+  <h4 class="backlinks-head"><nes-icon name="gitBranch"></nes-icon> 3 tham chiếu ngược</h4>
+  <a class="backlink" href="…">
+    <span class="backlink-title">Daily · 2025-07-20</span>
+    <span class="backlink-ctx">…xây <mark>second brain</mark> bằng note nguyên tử…</span>
+  </a>
+</section>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>section.backlinks</code>", "khối panel"],
+            ["<code>.backlinks-head</code>", "tiêu đề đếm"],
+            ["<code>a.backlink</code>", "một note tham chiếu (là link)"],
+            ["<code>.backlink-title</code>", "note nguồn"],
+            ["<code>.backlink-ctx</code>", "câu văn — <code>&lt;mark&gt;</code> phần khớp"],
+          ],
+        ) +
+        note(
+          `Đi cặp với <a href="#/graph">Graph</a>: đồ thị cho thấy hình dạng liên kết, backlinks cho thấy đúng câu văn phía sau.`,
+        ) +
+        a11y(
+          `Mỗi backlink là link thật; <code>&lt;mark&gt;</code> truyền tải nhấn mạnh theo ngữ nghĩa, không chỉ bằng màu.`,
+        ),
+    },
+  },
+  {
+    id: "wikilink",
+    cat: "Second Brain",
+    name: "Wiki-link & Tag",
+    desc: {
+      en: "The inline glue of a vault: [[wiki-links]] between notes (dim when the target doesn't exist yet) and #tag pills to filter by.",
+      vi: "Chất keo inline của vault: [[wiki-link]] giữa các note (mờ khi note đích chưa tồn tại) và pill #tag để lọc.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "WIKILINK",
+          `<div style="max-inline-size:min(520px,100%)">
+             <p style="color:var(--text);margin:0 0 var(--sp-3)">A <a class="wikilink" href="#">[[second brain]]</a> is built from <a class="wikilink" href="#">[[atomic notes]]</a> joined by links. A <a class="wikilink new" href="#">[[spaced repetition]]</a> note doesn't exist yet.</p>
+             <div class="note-tags"><span class="tag">#pkm</span><span class="tag">#zettelkasten</span><span class="tag">#evergreen</span></div>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<p>A <a class="wikilink" href="…">[[second brain]]</a> is built from
+   <a class="wikilink" href="…">[[atomic notes]]</a>.
+   <a class="wikilink new" href="…">[[spaced repetition]]</a> doesn't exist yet.</p>
+
+<span class="tag">#pkm</span> <span class="tag">#zettelkasten</span>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>a.wikilink</code>", "an internal <code>[[link]]</code> — dashed underline"],
+            ["<code>a.wikilink.new</code>", "unresolved — the target note doesn't exist yet (dim)"],
+            ["<code>.tag</code>", "a <code>#tag</code> pill — tap to filter"],
+          ],
+        ) +
+        note(
+          `Keep the <code>[[ ]]</code> brackets in the visible text — it's the vault convention readers recognise. <code>.tag</code> is also what <a href="#/note">Note</a> cards use.`,
+        ) +
+        a11y(
+          `Both are real links / controls with focus states. <code>.new</code> is dimmer, so also mark it (title / <code>aria-label</code> "create note") rather than relying on colour alone.`,
+        ),
+      vi: () =>
+        stage(
+          "WIKILINK",
+          `<div style="max-inline-size:min(520px,100%)">
+             <p style="color:var(--text);margin:0 0 var(--sp-3)">Một <a class="wikilink" href="#">[[second brain]]</a> được xây từ các <a class="wikilink" href="#">[[atomic notes]]</a> nối bằng link. Note <a class="wikilink new" href="#">[[spaced repetition]]</a> thì chưa tồn tại.</p>
+             <div class="note-tags"><span class="tag">#pkm</span><span class="tag">#zettelkasten</span><span class="tag">#evergreen</span></div>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<p>Một <a class="wikilink" href="…">[[second brain]]</a> xây từ
+   <a class="wikilink" href="…">[[atomic notes]]</a>.
+   <a class="wikilink new" href="…">[[spaced repetition]]</a> chưa tồn tại.</p>
+
+<span class="tag">#pkm</span> <span class="tag">#zettelkasten</span>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>a.wikilink</code>", "một <code>[[link]]</code> nội bộ — gạch chân nét đứt"],
+            ["<code>a.wikilink.new</code>", "chưa resolve — note đích chưa tồn tại (mờ)"],
+            ["<code>.tag</code>", "pill <code>#tag</code> — bấm để lọc"],
+          ],
+        ) +
+        note(
+          `Giữ ngoặc <code>[[ ]]</code> trong chữ hiển thị — đó là quy ước vault người đọc nhận ra. <code>.tag</code> cũng là thứ <a href="#/note">Note</a> card dùng.`,
+        ) +
+        a11y(
+          `Cả hai đều là link / control thật có trạng thái focus. <code>.new</code> mờ hơn, nên cũng đánh dấu (title / <code>aria-label</code> "tạo note") thay vì chỉ dựa vào màu.`,
+        ),
     },
   },
 ];

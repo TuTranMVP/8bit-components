@@ -131,6 +131,12 @@ Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";
 - [Compare](https://tutranmvp.github.io/8bit-components/docs.html#/compare) — `<nes-compare>`: A before/after slider: two layers, a draggable divider. Compare two architectures, designs, or states side-by-side.
 - [Legend](https://tutranmvp.github.io/8bit-components/docs.html#/legend) — `.legend`: A compact color / shape key for a diagram. Pure CSS — one swatch per meaning, recolored with data-accent.
 
+## Second Brain
+- [Graph](https://tutranmvp.github.io/8bit-components/docs.html#/graph) — `<nes-graph>`: A knowledge graph — nodes (notes / concepts) + edges, force-laid-out deterministically as crisp SVG. Click a node to light its neighbourhood. Zero deps; wrap in <nes-zoom> to pan/zoom.
+- [Note card](https://tutranmvp.github.io/8bit-components/docs.html#/note) — `.note`: One note in a vault or search result: title + timestamp, a 2-line excerpt, tag pills and a link / backlink readout. data-accent classifies it by folder or domain.
+- [Backlinks](https://tutranmvp.github.io/8bit-components/docs.html#/backlinks) — `.backlinks`: Linked references — the notes that point at this one, each with the sentence it was mentioned in. <mark> highlights the match.
+- [Wiki-link & Tag](https://tutranmvp.github.io/8bit-components/docs.html#/wikilink) — `.wikilink`: The inline glue of a vault: [[wiki-links]] between notes (dim when the target doesn't exist yet) and #tag pills to filter by.
+
 ## Optional
 - [Full flat-text reference for RAG](https://tutranmvp.github.io/8bit-components/llms-full.txt)
 - [Structured JSON manifest](https://tutranmvp.github.io/8bit-components/components.json)
