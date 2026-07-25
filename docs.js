@@ -6710,6 +6710,709 @@ for await (const chunk of agentStream())
         ),
     },
   },
+  {
+    id: "props",
+    cat: "Second Brain",
+    name: "Properties",
+    desc: {
+      en: "Frontmatter / metadata as a clean key→value grid (Obsidian Properties). Values can hold tags, wiki-links or plain text.",
+      vi: "Frontmatter / metadata thành lưới key→value sạch (Obsidian Properties). Giá trị có thể chứa tag, wiki-link hoặc chữ thường.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "PROPS",
+          `<dl class="props" style="max-inline-size:min(460px,100%)"><dt>Status</dt><dd><span class="maturity evergreen">evergreen</span></dd><dt>Tags</dt><dd><span class="tag">#pkm</span><span class="tag">#method</span></dd><dt>Related</dt><dd><a class="wikilink" href="#">[[atomic notes]]</a></dd><dt>Created</dt><dd>2025-07-14</dd></dl>`,
+          "col",
+        ) +
+        cb(
+          `<dl class="props">
+  <dt>Status</dt>  <dd><span class="maturity evergreen">evergreen</span></dd>
+  <dt>Tags</dt>    <dd><span class="tag">#pkm</span> <span class="tag">#method</span></dd>
+  <dt>Related</dt> <dd><a class="wikilink" href="…">[[atomic notes]]</a></dd>
+  <dt>Created</dt> <dd>2025-07-14</dd>
+</dl>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class / element", "Role"],
+          [
+            ["<code>dl.props</code>", "the key→value grid"],
+            ["<code>dt</code>", "the property name (mono, dim)"],
+            ["<code>dd</code>", "the value — wraps tags / links / text"],
+          ],
+        ) +
+        note(`A real <code>&lt;dl&gt;</code>, so the key/value pairing is semantic. Values are free HTML — drop in <a href="#/wikilink">Tag</a>s, wiki-links or a <a href="#/maturity">Maturity</a> badge.`) +
+        a11y(`The <code>&lt;dl&gt;/&lt;dt&gt;/&lt;dd&gt;</code> structure conveys the key→value relationship to screen readers without extra ARIA.`),
+      vi: () =>
+        stage(
+          "PROPS",
+          `<dl class="props" style="max-inline-size:min(460px,100%)"><dt>Status</dt><dd><span class="maturity evergreen">evergreen</span></dd><dt>Tags</dt><dd><span class="tag">#pkm</span><span class="tag">#method</span></dd><dt>Related</dt><dd><a class="wikilink" href="#">[[atomic notes]]</a></dd><dt>Created</dt><dd>2025-07-14</dd></dl>`,
+          "col",
+        ) +
+        cb(
+          `<dl class="props">
+  <dt>Status</dt>  <dd><span class="maturity evergreen">evergreen</span></dd>
+  <dt>Tags</dt>    <dd><span class="tag">#pkm</span> <span class="tag">#method</span></dd>
+  <dt>Related</dt> <dd><a class="wikilink" href="…">[[atomic notes]]</a></dd>
+  <dt>Created</dt> <dd>2025-07-14</dd>
+</dl>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class / element", "Vai trò"],
+          [
+            ["<code>dl.props</code>", "lưới key→value"],
+            ["<code>dt</code>", "tên thuộc tính (mono, mờ)"],
+            ["<code>dd</code>", "giá trị — bọc tag / link / chữ"],
+          ],
+        ) +
+        note(`<code>&lt;dl&gt;</code> thật nên cặp key/value có ngữ nghĩa. Giá trị là HTML tự do — bỏ <a href="#/wikilink">Tag</a>, wiki-link hay badge <a href="#/maturity">Maturity</a> vào.`) +
+        a11y(`Cấu trúc <code>&lt;dl&gt;/&lt;dt&gt;/&lt;dd&gt;</code> truyền quan hệ key→value cho screen reader mà không cần ARIA thêm.`),
+    },
+  },
+  {
+    id: "outline",
+    cat: "Second Brain",
+    name: "Outline",
+    desc: {
+      en: "The heading tree of the current note — jump around a long document. Indent by level, light the active heading on scroll.",
+      vi: "Cây heading của note hiện tại — nhảy quanh tài liệu dài. Thụt theo cấp, sáng heading đang xem khi cuộn.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "OUTLINE",
+          `<nav class="outline" style="max-inline-size:min(320px,100%)"><a href="#">Overview</a><a class="lvl-2 active" href="#">Why a second brain</a><a class="lvl-2" href="#">Capture</a><a class="lvl-3" href="#">Inbox</a><a class="lvl-3" href="#">Daily notes</a><a href="#">Linking</a><a class="lvl-2" href="#">Backlinks</a></nav>`,
+          "col",
+        ) +
+        cb(
+          `<nav class="outline">
+  <a href="#h1">Overview</a>
+  <a class="lvl-2 active" href="#h2">Why a second brain</a>
+  <a class="lvl-2" href="#h3">Capture</a>
+  <a class="lvl-3" href="#h4">Inbox</a>
+  <a href="#h5">Linking</a>
+</nav>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>nav.outline</code>", "the list"],
+            ["<code>a</code>", "one heading link"],
+            ["<code>.lvl-2</code> / <code>.lvl-3</code>", "indent for H2 / H3"],
+            ["<code>.active</code>", "the heading currently in view"],
+          ],
+        ) +
+        note(`Toggle <code>.active</code> with an <code>IntersectionObserver</code> scroll-spy (the docs "On this page" rail does exactly this).`) +
+        a11y(`Wrap it in <code>&lt;nav aria-label="Outline"&gt;</code>; the links are real anchors, keyboard-navigable by default.`),
+      vi: () =>
+        stage(
+          "OUTLINE",
+          `<nav class="outline" style="max-inline-size:min(320px,100%)"><a href="#">Tổng quan</a><a class="lvl-2 active" href="#">Vì sao cần second brain</a><a class="lvl-2" href="#">Thu thập</a><a class="lvl-3" href="#">Inbox</a><a class="lvl-3" href="#">Daily notes</a><a href="#">Liên kết</a><a class="lvl-2" href="#">Backlinks</a></nav>`,
+          "col",
+        ) +
+        cb(
+          `<nav class="outline">
+  <a href="#h1">Tổng quan</a>
+  <a class="lvl-2 active" href="#h2">Vì sao cần second brain</a>
+  <a class="lvl-2" href="#h3">Thu thập</a>
+  <a class="lvl-3" href="#h4">Inbox</a>
+  <a href="#h5">Liên kết</a>
+</nav>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>nav.outline</code>", "danh sách"],
+            ["<code>a</code>", "một link heading"],
+            ["<code>.lvl-2</code> / <code>.lvl-3</code>", "thụt cho H2 / H3"],
+            ["<code>.active</code>", "heading đang xem"],
+          ],
+        ) +
+        note(`Bật <code>.active</code> bằng scroll-spy <code>IntersectionObserver</code> (thanh "On this page" của docs làm đúng vậy).`) +
+        a11y(`Bọc trong <code>&lt;nav aria-label="Outline"&gt;</code>; link là anchor thật, đi bàn phím sẵn.`),
+    },
+  },
+  {
+    id: "heatmap",
+    cat: "Second Brain",
+    name: "Activity heatmap",
+    desc: {
+      en: "A contribution grid — how many notes you touched each day. 7 rows of weekdays, columns of weeks, ink by level.",
+      vi: "Lưới hoạt động — mỗi ngày chạm bao nhiêu note. 7 hàng thứ trong tuần, cột là tuần, đậm theo level.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "HEATMAP",
+          `<div style="overflow-x:auto;max-inline-size:100%"><div class="heatmap">${Array.from({ length: 63 }, (_, i) => `<i data-level="${[0, 1, 0, 2, 3, 1, 0, 4, 2, 1, 0, 3, 2, 0, 1, 4, 0, 2, 1, 3, 0][i % 21]}"></i>`).join("")}</div></div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="heatmap">
+  <i data-level="0"></i><i data-level="2"></i><i data-level="4"></i>
+  <!-- one <i> per day: level 0 (none) … 4 (busiest) -->
+</div>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class / attr", "Role"],
+          [
+            ["<code>.heatmap</code>", "the grid — 7 weekday rows, columns flow as weeks"],
+            ["<code>i[data-level]</code>", "one day — <code>0</code>–<code>4</code> sets the ink"],
+            ["<code>data-accent</code>", "recolour the ramp (default green)"],
+          ],
+        ) +
+        note(`Wrap it in an <code>overflow-x:auto</code> div so a year of columns scrolls on mobile instead of squishing.`) +
+        a11y(`Colour-only on its own — add a <code>title</code> per cell ("3 notes · Jul 14") and an off-screen summary of the total.`),
+      vi: () =>
+        stage(
+          "HEATMAP",
+          `<div style="overflow-x:auto;max-inline-size:100%"><div class="heatmap">${Array.from({ length: 63 }, (_, i) => `<i data-level="${[0, 1, 0, 2, 3, 1, 0, 4, 2, 1, 0, 3, 2, 0, 1, 4, 0, 2, 1, 3, 0][i % 21]}"></i>`).join("")}</div></div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="heatmap">
+  <i data-level="0"></i><i data-level="2"></i><i data-level="4"></i>
+  <!-- mỗi ngày một <i>: level 0 (không) … 4 (bận nhất) -->
+</div>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class / attr", "Vai trò"],
+          [
+            ["<code>.heatmap</code>", "lưới — 7 hàng thứ, cột chảy theo tuần"],
+            ["<code>i[data-level]</code>", "một ngày — <code>0</code>–<code>4</code> đặt độ đậm"],
+            ["<code>data-accent</code>", "đổi màu thang (mặc định green)"],
+          ],
+        ) +
+        note(`Bọc trong div <code>overflow-x:auto</code> để cả năm cột cuộn ngang trên mobile thay vì bị bóp.`) +
+        a11y(`Chỉ dùng màu nên yếu — thêm <code>title</code> mỗi ô ("3 note · 14/07") và một tóm tắt tổng ẩn cho screen reader.`),
+    },
+  },
+  {
+    id: "board",
+    cat: "Second Brain",
+    name: "Board",
+    desc: {
+      en: "A Kanban board — horizontally-scrolling columns of note cards. Give each column a data-accent for its top bar.",
+      vi: "Bảng Kanban — các cột thẻ note cuộn ngang. Cho mỗi cột một data-accent cho thanh trên.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "BOARD",
+          `<div class="board" style="max-inline-size:100%"><div class="board-col" data-accent="steel"><div class="board-head">Inbox <span class="count">2</span></div><div class="board-card">Clip: force-layout papers</div><div class="board-card">Idea: 8-bit graph view</div></div><div class="board-col" data-accent="gold"><div class="board-head">Growing <span class="count">1</span></div><div class="board-card">Zettelkasten method</div></div><div class="board-col" data-accent="good"><div class="board-head">Evergreen <span class="count">1</span></div><div class="board-card">Atomic notes</div></div></div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="board">
+  <div class="board-col" data-accent="steel">
+    <div class="board-head">Inbox <span class="count">2</span></div>
+    <div class="board-card">Clip: force-layout papers</div>
+    <div class="board-card">Idea: 8-bit graph view</div>
+  </div>
+  <div class="board-col" data-accent="good">
+    <div class="board-head">Evergreen <span class="count">1</span></div>
+    <div class="board-card">Atomic notes</div>
+  </div>
+</div>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.board</code>", "the row of columns (scrolls x)"],
+            ["<code>.board-col</code>", "one column — <code>data-accent</code> tints its top bar"],
+            ["<code>.board-head</code>", "column title + <code>.count</code>"],
+            ["<code>.board-card</code>", "one card (looks draggable — wire DnD in JS)"],
+          ],
+        ) +
+        note(`Cards are plain divs; for real drag-and-drop between columns, wire the HTML Drag-and-Drop or pointer events in JS.`) +
+        a11y(`Make each card a real control (button / link) and expose column moves via a keyboard menu — drag alone isn't accessible.`),
+      vi: () =>
+        stage(
+          "BOARD",
+          `<div class="board" style="max-inline-size:100%"><div class="board-col" data-accent="steel"><div class="board-head">Inbox <span class="count">2</span></div><div class="board-card">Clip: paper về force-layout</div><div class="board-card">Ý tưởng: graph 8-bit</div></div><div class="board-col" data-accent="gold"><div class="board-head">Đang lớn <span class="count">1</span></div><div class="board-card">Phương pháp Zettelkasten</div></div><div class="board-col" data-accent="good"><div class="board-head">Evergreen <span class="count">1</span></div><div class="board-card">Note nguyên tử</div></div></div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="board">
+  <div class="board-col" data-accent="steel">
+    <div class="board-head">Inbox <span class="count">2</span></div>
+    <div class="board-card">Clip: paper về force-layout</div>
+    <div class="board-card">Ý tưởng: graph 8-bit</div>
+  </div>
+  <div class="board-col" data-accent="good">
+    <div class="board-head">Evergreen <span class="count">1</span></div>
+    <div class="board-card">Note nguyên tử</div>
+  </div>
+</div>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.board</code>", "hàng các cột (cuộn x)"],
+            ["<code>.board-col</code>", "một cột — <code>data-accent</code> tô thanh trên"],
+            ["<code>.board-head</code>", "tiêu đề cột + <code>.count</code>"],
+            ["<code>.board-card</code>", "một thẻ (trông kéo được — wire DnD bằng JS)"],
+          ],
+        ) +
+        note(`Thẻ là div thường; muốn kéo-thả thật giữa các cột thì wire HTML Drag-and-Drop hoặc pointer event bằng JS.`) +
+        a11y(`Cho mỗi thẻ là control thật (button / link) và cho phép chuyển cột qua menu bàn phím — chỉ kéo-thả thì không tiếp cận được.`),
+    },
+  },
+  {
+    id: "palette",
+    cat: "Second Brain",
+    name: "Command palette",
+    desc: {
+      en: "A quick-switcher / command palette (Cmd-K): a search box over a result list. Drop it in a modal; wire filtering in JS.",
+      vi: "Quick-switcher / command palette (Cmd-K): ô tìm trên danh sách kết quả. Bỏ vào modal; wire lọc bằng JS.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "PALETTE",
+          `<div class="palette" style="inline-size:100%;max-inline-size:min(460px,100%)"><div class="palette-input"><nes-icon name="search"></nes-icon><input placeholder="Search notes or run a command…" value="atom"></div><div class="palette-list"><a class="result active"><nes-icon name="file" class="result-icon"></nes-icon><span class="result-body"><span class="result-title"><mark>Atom</mark>ic notes</span><span class="result-path">pkm / methods</span></span><kbd class="kbd result-hint">↵</kbd></a><a class="result"><nes-icon name="file" class="result-icon"></nes-icon><span class="result-body"><span class="result-title">Zettelkasten method</span><span class="result-path">pkm</span></span></a><a class="result"><nes-icon name="bolt" class="result-icon"></nes-icon><span class="result-body"><span class="result-title">Command: New daily note</span><span class="result-path">action</span></span></a></div></div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="palette">
+  <div class="palette-input">
+    <nes-icon name="search"></nes-icon>
+    <input placeholder="Search notes or run a command…">
+  </div>
+  <div class="palette-list">
+    <a class="result active"> … </a>
+    <a class="result"> … </a>
+  </div>
+</div>
+
+<!-- for Cmd-K, put it in a <dialog class="modal"> -->`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.palette</code>", "the floating panel"],
+            ["<code>.palette-input</code>", "search row (icon + input)"],
+            ["<code>.palette-list</code>", "scrollable results — holds <a href=\"#/result\">Result</a> rows"],
+            ["<code>.palette-empty</code>", "the \"no matches\" state"],
+          ],
+        ) +
+        note(`This is the shell — filter the rows and move <code>.active</code> with ↑/↓ in JS. Open it inside a <a href="#/modal">Modal</a> for a real Cmd-K overlay.`) +
+        a11y(`Use <code>role="listbox"</code> + <code>aria-activedescendant</code> on the input so arrow-key selection is announced; Enter activates the active row, Esc closes.`),
+      vi: () =>
+        stage(
+          "PALETTE",
+          `<div class="palette" style="inline-size:100%;max-inline-size:min(460px,100%)"><div class="palette-input"><nes-icon name="search"></nes-icon><input placeholder="Tìm note hoặc chạy lệnh…" value="atom"></div><div class="palette-list"><a class="result active"><nes-icon name="file" class="result-icon"></nes-icon><span class="result-body"><span class="result-title"><mark>Atom</mark>ic notes</span><span class="result-path">pkm / methods</span></span><kbd class="kbd result-hint">↵</kbd></a><a class="result"><nes-icon name="file" class="result-icon"></nes-icon><span class="result-body"><span class="result-title">Phương pháp Zettelkasten</span><span class="result-path">pkm</span></span></a><a class="result"><nes-icon name="bolt" class="result-icon"></nes-icon><span class="result-body"><span class="result-title">Lệnh: Tạo daily note</span><span class="result-path">action</span></span></a></div></div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="palette">
+  <div class="palette-input">
+    <nes-icon name="search"></nes-icon>
+    <input placeholder="Tìm note hoặc chạy lệnh…">
+  </div>
+  <div class="palette-list">
+    <a class="result active"> … </a>
+    <a class="result"> … </a>
+  </div>
+</div>
+
+<!-- cho Cmd-K, bỏ vào <dialog class="modal"> -->`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.palette</code>", "panel nổi"],
+            ["<code>.palette-input</code>", "hàng tìm (icon + input)"],
+            ["<code>.palette-list</code>", "kết quả cuộn — chứa hàng <a href=\"#/result\">Result</a>"],
+            ["<code>.palette-empty</code>", "trạng thái \"không khớp\""],
+          ],
+        ) +
+        note(`Đây là phần vỏ — lọc hàng và di chuyển <code>.active</code> bằng ↑/↓ trong JS. Mở trong <a href="#/modal">Modal</a> để có overlay Cmd-K thật.`) +
+        a11y(`Dùng <code>role="listbox"</code> + <code>aria-activedescendant</code> trên input để chọn bằng phím mũi tên được đọc; Enter kích hoạt hàng active, Esc đóng.`),
+    },
+  },
+  {
+    id: "result",
+    cat: "Second Brain",
+    name: "Search result",
+    desc: {
+      en: "One search hit or palette row: an icon, a title with the matched text <mark>ed, a dim path, and an optional key hint.",
+      vi: "Một kết quả tìm hoặc hàng palette: icon, tiêu đề có <mark> phần khớp, đường dẫn mờ, và gợi ý phím tuỳ chọn.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "RESULT",
+          `<div style="display:flex;flex-direction:column;gap:2px;inline-size:100%;max-inline-size:min(460px,100%)"><a class="result active"><nes-icon name="file" class="result-icon"></nes-icon><span class="result-body"><span class="result-title"><mark>Atom</mark>ic notes</span><span class="result-path">pkm / methods / atomic-notes.md</span></span><kbd class="kbd result-hint">↵</kbd></a><a class="result"><nes-icon name="tag" class="result-icon"></nes-icon><span class="result-body"><span class="result-title">#<mark>atom</mark>ic</span><span class="result-path">12 notes</span></span></a></div>`,
+          "col",
+        ) +
+        cb(
+          `<a class="result active">
+  <nes-icon name="file" class="result-icon"></nes-icon>
+  <span class="result-body">
+    <span class="result-title"><mark>Atom</mark>ic notes</span>
+    <span class="result-path">pkm / methods / atomic-notes.md</span>
+  </span>
+  <kbd class="kbd result-hint">↵</kbd>
+</a>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.result</code>", "one row (a link or button)"],
+            ["<code>.result-icon</code>", "leading kind icon"],
+            ["<code>.result-title</code>", "the hit — <code>&lt;mark&gt;</code> the match; ellipsizes"],
+            ["<code>.result-path</code>", "the note path / meta"],
+            ["<code>.result-hint</code>", "trailing key hint (a <a href=\"#/kbd\">Kbd</a>)"],
+            ["<code>.active</code>", "keyboard-selected row"],
+          ],
+        ) +
+        note(`The row of a <a href="#/palette">Command palette</a>, but also stands alone for a full search page. Only one row is <code>.active</code> at a time.`) +
+        a11y(`If it's a list, use <code>role="option"</code> in a <code>role="listbox"</code>; <code>&lt;mark&gt;</code> carries emphasis semantically.`),
+      vi: () =>
+        stage(
+          "RESULT",
+          `<div style="display:flex;flex-direction:column;gap:2px;inline-size:100%;max-inline-size:min(460px,100%)"><a class="result active"><nes-icon name="file" class="result-icon"></nes-icon><span class="result-body"><span class="result-title"><mark>Atom</mark>ic notes</span><span class="result-path">pkm / methods / atomic-notes.md</span></span><kbd class="kbd result-hint">↵</kbd></a><a class="result"><nes-icon name="tag" class="result-icon"></nes-icon><span class="result-body"><span class="result-title">#<mark>atom</mark>ic</span><span class="result-path">12 note</span></span></a></div>`,
+          "col",
+        ) +
+        cb(
+          `<a class="result active">
+  <nes-icon name="file" class="result-icon"></nes-icon>
+  <span class="result-body">
+    <span class="result-title"><mark>Atom</mark>ic notes</span>
+    <span class="result-path">pkm / methods / atomic-notes.md</span>
+  </span>
+  <kbd class="kbd result-hint">↵</kbd>
+</a>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.result</code>", "một hàng (link hoặc button)"],
+            ["<code>.result-icon</code>", "icon loại ở đầu"],
+            ["<code>.result-title</code>", "kết quả — <code>&lt;mark&gt;</code> phần khớp; rút gọn"],
+            ["<code>.result-path</code>", "đường dẫn / meta của note"],
+            ["<code>.result-hint</code>", "gợi ý phím ở cuối (một <a href=\"#/kbd\">Kbd</a>)"],
+            ["<code>.active</code>", "hàng đang chọn bằng phím"],
+          ],
+        ) +
+        note(`Là hàng của <a href="#/palette">Command palette</a>, nhưng cũng đứng riêng cho trang tìm kiếm. Chỉ một hàng <code>.active</code> tại một thời điểm.`) +
+        a11y(`Nếu là danh sách, dùng <code>role="option"</code> trong <code>role="listbox"</code>; <code>&lt;mark&gt;</code> tải nhấn mạnh theo ngữ nghĩa.`),
+    },
+  },
+  {
+    id: "embed",
+    cat: "Second Brain",
+    name: "Note embed",
+    desc: {
+      en: "A transcluded note (Obsidian ![[note]]): another note's content quoted inline, with a link back to the source.",
+      vi: "Note nhúng (Obsidian ![[note]]): nội dung một note khác trích inline, kèm link về nguồn.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "EMBED",
+          `<div class="embed" data-accent="purple" style="max-inline-size:min(520px,100%)"><div class="embed-head"><nes-icon name="file"></nes-icon><a href="#">[[Atomic notes]]</a></div><p style="margin:0;color:var(--muted)">A note should hold exactly one idea, titled as a claim, so it can be linked and reused anywhere.</p></div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="embed" data-accent="purple">
+  <div class="embed-head">
+    <nes-icon name="file"></nes-icon>
+    <a href="…">[[Atomic notes]]</a>
+  </div>
+  <p>A note should hold exactly one idea…</p>
+</div>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.embed</code>", "the transclusion block — <code>data-accent</code> tints the bar"],
+            ["<code>.embed-head</code>", "source label (icon + wiki-link back)"],
+            ["<code>*</code>", "the embedded content (any HTML)"],
+          ],
+        ) +
+        note(`For the whole card to be one click-through to the source note, keep the <code>.embed-head</code> link and don't nest other links inside the body.`) +
+        a11y(`Mark it as a quote of another document — a <code>&lt;figure&gt;</code> with a <code>&lt;figcaption&gt;</code> header reads well here.`),
+      vi: () =>
+        stage(
+          "EMBED",
+          `<div class="embed" data-accent="purple" style="max-inline-size:min(520px,100%)"><div class="embed-head"><nes-icon name="file"></nes-icon><a href="#">[[Atomic notes]]</a></div><p style="margin:0;color:var(--muted)">Một note chỉ nên chứa đúng một ý, đặt tên như một luận điểm, để link và tái dùng ở bất cứ đâu.</p></div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="embed" data-accent="purple">
+  <div class="embed-head">
+    <nes-icon name="file"></nes-icon>
+    <a href="…">[[Atomic notes]]</a>
+  </div>
+  <p>Một note chỉ nên chứa đúng một ý…</p>
+</div>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.embed</code>", "khối nhúng — <code>data-accent</code> tô thanh"],
+            ["<code>.embed-head</code>", "nhãn nguồn (icon + wiki-link về)"],
+            ["<code>*</code>", "nội dung nhúng (HTML bất kỳ)"],
+          ],
+        ) +
+        note(`Để cả thẻ là một cú click về note nguồn, giữ link <code>.embed-head</code> và đừng lồng link khác trong thân.`) +
+        a11y(`Đánh dấu là trích một tài liệu khác — <code>&lt;figure&gt;</code> với header <code>&lt;figcaption&gt;</code> đọc tốt ở đây.`),
+    },
+  },
+  {
+    id: "maturity",
+    cat: "Second Brain",
+    name: "Maturity",
+    desc: {
+      en: "A digital-garden growth stage: 🌱 seedling · 🌿 budding · 🌳 evergreen — how ripe a note is, at a glance.",
+      vi: "Giai đoạn phát triển kiểu digital garden: 🌱 seedling · 🌿 budding · 🌳 evergreen — note chín tới đâu, nhìn là biết.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "MATURITY",
+          `<span class="maturity">seedling</span> <span class="maturity budding">budding</span> <span class="maturity evergreen">evergreen</span>`,
+        ) +
+        cb(
+          `<span class="maturity">seedling</span>
+<span class="maturity budding">budding</span>
+<span class="maturity evergreen">evergreen</span>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Stage"],
+          [
+            ["<code>.maturity</code>", "🌱 seedling — a raw capture / stub"],
+            ["<code>.maturity.budding</code>", "🌿 budding — developing, half-formed"],
+            ["<code>.maturity.evergreen</code>", "🌳 evergreen — polished, maintained"],
+          ],
+        ) +
+        note(`A common digital-garden convention — surface it on a <a href="#/note">Note</a> card or in <a href="#/props">Properties</a> so readers know how much to trust a note.`) +
+        a11y(`The word ("evergreen") carries the meaning; the emoji is decorative (it's a CSS <code>::before</code>, so it won't be read out).`),
+      vi: () =>
+        stage(
+          "MATURITY",
+          `<span class="maturity">seedling</span> <span class="maturity budding">budding</span> <span class="maturity evergreen">evergreen</span>`,
+        ) +
+        cb(
+          `<span class="maturity">seedling</span>
+<span class="maturity budding">budding</span>
+<span class="maturity evergreen">evergreen</span>`,
+        ) +
+        h2("Giai đoạn") +
+        api(
+          ["Class", "Giai đoạn"],
+          [
+            ["<code>.maturity</code>", "🌱 seedling — mới ghi / phôi thai"],
+            ["<code>.maturity.budding</code>", "🌿 budding — đang phát triển, chưa xong"],
+            ["<code>.maturity.evergreen</code>", "🌳 evergreen — trau chuốt, được duy trì"],
+          ],
+        ) +
+        note(`Quy ước quen thuộc của digital garden — hiện nó trên thẻ <a href="#/note">Note</a> hoặc trong <a href="#/props">Properties</a> để người đọc biết tin note tới đâu.`) +
+        a11y(`Chữ ("evergreen") tải nghĩa; emoji chỉ trang trí (là <code>::before</code> nên không bị đọc lên).`),
+    },
+  },
+  {
+    id: "tagcloud",
+    cat: "Second Brain",
+    name: "Tag cloud",
+    desc: {
+      en: "A weighted panel of tags with counts — the hottest topics grow bigger and greener. Tap one to filter the vault.",
+      vi: "Bảng tag có trọng số kèm số đếm — chủ đề nóng nhất to và xanh hơn. Bấm một tag để lọc vault.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "TAGCLOUD",
+          `<div class="tag-cloud" style="max-inline-size:min(460px,100%)"><span class="tag" data-weight="3">#pkm<span class="tag-n">42</span></span><span class="tag" data-weight="2">#zettelkasten<span class="tag-n">18</span></span><span class="tag">#evergreen<span class="tag-n">9</span></span><span class="tag" data-weight="2">#method<span class="tag-n">15</span></span><span class="tag">#daily<span class="tag-n">6</span></span><span class="tag">#idea<span class="tag-n">4</span></span></div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="tag-cloud">
+  <span class="tag" data-weight="3">#pkm <span class="tag-n">42</span></span>
+  <span class="tag" data-weight="2">#method <span class="tag-n">15</span></span>
+  <span class="tag">#daily <span class="tag-n">6</span></span>
+</div>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class / attr", "Role"],
+          [
+            ["<code>.tag-cloud</code>", "the wrap panel"],
+            ["<code>.tag</code>", "one tag pill (see <a href=\"#/wikilink\">Tag</a>)"],
+            ["<code>data-weight</code>", "<code>2</code> or <code>3</code> grow the hottest tags"],
+            ["<code>.tag-n</code>", "the note count"],
+          ],
+        ) +
+        note(`Bucket your counts into weights (e.g. top 10% → <code>3</code>, next 30% → <code>2</code>) so the cloud reads at a glance.`) +
+        a11y(`Size is decorative — the count text carries the weight. Make each tag a real link/button to its filtered view.`),
+      vi: () =>
+        stage(
+          "TAGCLOUD",
+          `<div class="tag-cloud" style="max-inline-size:min(460px,100%)"><span class="tag" data-weight="3">#pkm<span class="tag-n">42</span></span><span class="tag" data-weight="2">#zettelkasten<span class="tag-n">18</span></span><span class="tag">#evergreen<span class="tag-n">9</span></span><span class="tag" data-weight="2">#method<span class="tag-n">15</span></span><span class="tag">#daily<span class="tag-n">6</span></span><span class="tag">#idea<span class="tag-n">4</span></span></div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="tag-cloud">
+  <span class="tag" data-weight="3">#pkm <span class="tag-n">42</span></span>
+  <span class="tag" data-weight="2">#method <span class="tag-n">15</span></span>
+  <span class="tag">#daily <span class="tag-n">6</span></span>
+</div>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class / attr", "Vai trò"],
+          [
+            ["<code>.tag-cloud</code>", "bảng wrap"],
+            ["<code>.tag</code>", "một pill tag (xem <a href=\"#/wikilink\">Tag</a>)"],
+            ["<code>data-weight</code>", "<code>2</code> hoặc <code>3</code> phóng to tag nóng"],
+            ["<code>.tag-n</code>", "số note"],
+          ],
+        ) +
+        note(`Gom số đếm thành trọng số (vd top 10% → <code>3</code>, 30% kế → <code>2</code>) để cloud đọc được ngay.`) +
+        a11y(`Cỡ chữ chỉ trang trí — số đếm mới tải trọng số. Cho mỗi tag là link/button thật tới view đã lọc.`),
+    },
+  },
+  {
+    id: "concept",
+    cat: "Second Brain",
+    name: "Concept card",
+    desc: {
+      en: "A glossary / concept card: a term, its definition, and \"see also\" links — the atom of a knowledge base.",
+      vi: "Thẻ khái niệm / glossary: một thuật ngữ, định nghĩa, và link \"xem thêm\" — nguyên tử của một knowledge base.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CONCEPT",
+          `<article class="concept" style="max-inline-size:min(520px,100%)"><dfn class="concept-term">Zettelkasten</dfn><p class="concept-def">A note-taking method: many small, atomic notes, each one idea, densely cross-linked so structure emerges from the connections rather than folders.</p><div class="concept-see"><nes-icon name="link"></nes-icon> <a class="wikilink" href="#">[[atomic notes]]</a> <a class="wikilink" href="#">[[backlinks]]</a></div></article>`,
+          "col",
+        ) +
+        cb(
+          `<article class="concept">
+  <dfn class="concept-term">Zettelkasten</dfn>
+  <p class="concept-def">A note-taking method: many small, atomic notes…</p>
+  <div class="concept-see">
+    <nes-icon name="link"></nes-icon>
+    <a class="wikilink" href="…">[[atomic notes]]</a>
+  </div>
+</article>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class / element", "Role"],
+          [
+            ["<code>article.concept</code>", "the card — <code>data-accent</code> tints the bar (cyan default)"],
+            ["<code>dfn.concept-term</code>", "the term being defined"],
+            ["<code>.concept-def</code>", "the definition"],
+            ["<code>.concept-see</code>", "\"see also\" wiki-links"],
+          ],
+        ) +
+        note(`Great as the node behind a <a href="#/graph">Graph</a> node or the target of a <a href="#/wikilink">wiki-link</a> — one concept, one card, richly linked.`) +
+        a11y(`<code>&lt;dfn&gt;</code> marks the defining instance of the term semantically; the "see also" links are real anchors.`),
+      vi: () =>
+        stage(
+          "CONCEPT",
+          `<article class="concept" style="max-inline-size:min(520px,100%)"><dfn class="concept-term">Zettelkasten</dfn><p class="concept-def">Một phương pháp ghi chú: nhiều note nhỏ, nguyên tử, mỗi note một ý, liên kết chéo dày để cấu trúc nổi lên từ kết nối thay vì thư mục.</p><div class="concept-see"><nes-icon name="link"></nes-icon> <a class="wikilink" href="#">[[atomic notes]]</a> <a class="wikilink" href="#">[[backlinks]]</a></div></article>`,
+          "col",
+        ) +
+        cb(
+          `<article class="concept">
+  <dfn class="concept-term">Zettelkasten</dfn>
+  <p class="concept-def">Một phương pháp ghi chú: nhiều note nhỏ, nguyên tử…</p>
+  <div class="concept-see">
+    <nes-icon name="link"></nes-icon>
+    <a class="wikilink" href="…">[[atomic notes]]</a>
+  </div>
+</article>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class / element", "Vai trò"],
+          [
+            ["<code>article.concept</code>", "thẻ — <code>data-accent</code> tô thanh (mặc định cyan)"],
+            ["<code>dfn.concept-term</code>", "thuật ngữ được định nghĩa"],
+            ["<code>.concept-def</code>", "định nghĩa"],
+            ["<code>.concept-see</code>", "wiki-link \"xem thêm\""],
+          ],
+        ) +
+        note(`Rất hợp làm node phía sau một node <a href="#/graph">Graph</a> hoặc đích của một <a href="#/wikilink">wiki-link</a> — một khái niệm, một thẻ, liên kết dày.`) +
+        a11y(`<code>&lt;dfn&gt;</code> đánh dấu lần định nghĩa của thuật ngữ theo ngữ nghĩa; link "xem thêm" là anchor thật.`),
+    },
+  },
+  {
+    id: "notestats",
+    cat: "Second Brain",
+    name: "Note stats",
+    desc: {
+      en: "A compact meta bar for a note — word count, read time, and created / modified dates.",
+      vi: "Thanh meta gọn cho một note — số từ, thời gian đọc, và ngày tạo / sửa.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "NOTESTATS",
+          `<div class="note-stats" style="max-inline-size:min(520px,100%)"><span><nes-icon name="file"></nes-icon> 620 words</span><span><nes-icon name="clock"></nes-icon> 3 min read</span><span><nes-icon name="calendar"></nes-icon> created 2025-07-14</span><span><nes-icon name="edit"></nes-icon> edited 2d ago</span></div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="note-stats">
+  <span><nes-icon name="file"></nes-icon> 620 words</span>
+  <span><nes-icon name="clock"></nes-icon> 3 min read</span>
+  <span><nes-icon name="edit"></nes-icon> edited 2d ago</span>
+</div>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.note-stats</code>", "the meta bar (wraps on narrow screens)"],
+            ["<code>span</code>", "one stat — an icon + its value"],
+          ],
+        ) +
+        note(`Pairs under a note title or in <a href="#/props">Properties</a>. Compute the read time from the word count (~200 wpm) so it stays honest.`) +
+        a11y(`Each icon is decorative; the text ("620 words") is the accessible value. Use a real <code>&lt;time&gt;</code> element for the dates.`),
+      vi: () =>
+        stage(
+          "NOTESTATS",
+          `<div class="note-stats" style="max-inline-size:min(520px,100%)"><span><nes-icon name="file"></nes-icon> 620 từ</span><span><nes-icon name="clock"></nes-icon> đọc 3 phút</span><span><nes-icon name="calendar"></nes-icon> tạo 2025-07-14</span><span><nes-icon name="edit"></nes-icon> sửa 2 ngày trước</span></div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="note-stats">
+  <span><nes-icon name="file"></nes-icon> 620 từ</span>
+  <span><nes-icon name="clock"></nes-icon> đọc 3 phút</span>
+  <span><nes-icon name="edit"></nes-icon> sửa 2 ngày trước</span>
+</div>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.note-stats</code>", "thanh meta (wrap trên màn hẹp)"],
+            ["<code>span</code>", "một chỉ số — icon + giá trị"],
+          ],
+        ) +
+        note(`Đặt dưới tiêu đề note hoặc trong <a href="#/props">Properties</a>. Tính thời gian đọc từ số từ (~200 từ/phút) để trung thực.`) +
+        a11y(`Mỗi icon chỉ trang trí; chữ ("620 từ") là giá trị tiếp cận. Dùng <code>&lt;time&gt;</code> thật cho ngày tháng.`),
+    },
+  },
 ];
 
 /* --------------------------------------- shared, language-neutral demos */

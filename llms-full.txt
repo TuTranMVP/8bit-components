@@ -129,7 +129,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Theming: https://tutranmvp.github.io/8bit-components/docs.html#/theming
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
-## Component reference (103 components)
+## Component reference (114 components)
 
 ## Element
 
@@ -669,6 +669,61 @@ toast("<b>Saved.</b>", { accent: "good" });
 - selector: `.wikilink` (class) · category: Second Brain
 - The inline glue of a vault: [[wiki-links]] between notes (dim when the target doesn't exist yet) and #tag pills to filter by.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/wikilink
+
+### Properties
+- selector: `.props` (class) · category: Second Brain
+- Frontmatter / metadata as a clean key→value grid (Obsidian Properties). Values can hold tags, wiki-links or plain text.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/props
+
+### Outline
+- selector: `.outline` (class) · category: Second Brain
+- The heading tree of the current note — jump around a long document. Indent by level, light the active heading on scroll.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/outline
+
+### Activity heatmap
+- selector: `.heatmap` (class) · category: Second Brain
+- A contribution grid — how many notes you touched each day. 7 rows of weekdays, columns of weeks, ink by level.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/heatmap
+
+### Board
+- selector: `.board` (class) · category: Second Brain
+- A Kanban board — horizontally-scrolling columns of note cards. Give each column a data-accent for its top bar.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/board
+
+### Command palette
+- selector: `.palette` (class) · category: Second Brain
+- A quick-switcher / command palette (Cmd-K): a search box over a result list. Drop it in a modal; wire filtering in JS.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/palette
+
+### Search result
+- selector: `.result` (class) · category: Second Brain
+- One search hit or palette row: an icon, a title with the matched text <mark>ed, a dim path, and an optional key hint.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/result
+
+### Note embed
+- selector: `.embed` (class) · category: Second Brain
+- A transcluded note (Obsidian ![[note]]): another note's content quoted inline, with a link back to the source.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/embed
+
+### Maturity
+- selector: `.maturity` (class) · category: Second Brain
+- A digital-garden growth stage: 🌱 seedling · 🌿 budding · 🌳 evergreen — how ripe a note is, at a glance.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/maturity
+
+### Tag cloud
+- selector: `.tag-cloud` (class) · category: Second Brain
+- A weighted panel of tags with counts — the hottest topics grow bigger and greener. Tap one to filter the vault.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/tagcloud
+
+### Concept card
+- selector: `.concept` (class) · category: Second Brain
+- A glossary / concept card: a term, its definition, and "see also" links — the atom of a knowledge base.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/concept
+
+### Note stats
+- selector: `.note-stats` (class) · category: Second Brain
+- A compact meta bar for a note — word count, read time, and created / modified dates.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/notestats
 
 ---
 Generated from docs.js by scripts/gen-llms.mjs. Do not edit by hand — run `pnpm gen:llms`.

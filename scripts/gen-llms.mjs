@@ -127,6 +127,17 @@ const SELECTOR = {
   note: ".note",
   backlinks: ".backlinks",
   wikilink: ".wikilink",
+  props: ".props",
+  outline: ".outline",
+  heatmap: ".heatmap",
+  board: ".board",
+  palette: ".palette",
+  result: ".result",
+  embed: ".embed",
+  maturity: ".maturity",
+  tagcloud: ".tag-cloud",
+  concept: ".concept",
+  notestats: ".note-stats",
 };
 const kindOf = (sel) =>
   !sel

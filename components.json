@@ -1007,10 +1007,109 @@
       "kind": "class",
       "description": "The inline glue of a vault: [[wiki-links]] between notes (dim when the target doesn't exist yet) and #tag pills to filter by.",
       "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/wikilink"
+    },
+    {
+      "id": "props",
+      "name": "Properties",
+      "category": "Second Brain",
+      "selector": ".props",
+      "kind": "class",
+      "description": "Frontmatter / metadata as a clean key→value grid (Obsidian Properties). Values can hold tags, wiki-links or plain text.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/props"
+    },
+    {
+      "id": "outline",
+      "name": "Outline",
+      "category": "Second Brain",
+      "selector": ".outline",
+      "kind": "class",
+      "description": "The heading tree of the current note — jump around a long document. Indent by level, light the active heading on scroll.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/outline"
+    },
+    {
+      "id": "heatmap",
+      "name": "Activity heatmap",
+      "category": "Second Brain",
+      "selector": ".heatmap",
+      "kind": "class",
+      "description": "A contribution grid — how many notes you touched each day. 7 rows of weekdays, columns of weeks, ink by level.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/heatmap"
+    },
+    {
+      "id": "board",
+      "name": "Board",
+      "category": "Second Brain",
+      "selector": ".board",
+      "kind": "class",
+      "description": "A Kanban board — horizontally-scrolling columns of note cards. Give each column a data-accent for its top bar.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/board"
+    },
+    {
+      "id": "palette",
+      "name": "Command palette",
+      "category": "Second Brain",
+      "selector": ".palette",
+      "kind": "class",
+      "description": "A quick-switcher / command palette (Cmd-K): a search box over a result list. Drop it in a modal; wire filtering in JS.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/palette"
+    },
+    {
+      "id": "result",
+      "name": "Search result",
+      "category": "Second Brain",
+      "selector": ".result",
+      "kind": "class",
+      "description": "One search hit or palette row: an icon, a title with the matched text <mark>ed, a dim path, and an optional key hint.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/result"
+    },
+    {
+      "id": "embed",
+      "name": "Note embed",
+      "category": "Second Brain",
+      "selector": ".embed",
+      "kind": "class",
+      "description": "A transcluded note (Obsidian ![[note]]): another note's content quoted inline, with a link back to the source.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/embed"
+    },
+    {
+      "id": "maturity",
+      "name": "Maturity",
+      "category": "Second Brain",
+      "selector": ".maturity",
+      "kind": "class",
+      "description": "A digital-garden growth stage: 🌱 seedling · 🌿 budding · 🌳 evergreen — how ripe a note is, at a glance.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/maturity"
+    },
+    {
+      "id": "tagcloud",
+      "name": "Tag cloud",
+      "category": "Second Brain",
+      "selector": ".tag-cloud",
+      "kind": "class",
+      "description": "A weighted panel of tags with counts — the hottest topics grow bigger and greener. Tap one to filter the vault.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/tagcloud"
+    },
+    {
+      "id": "concept",
+      "name": "Concept card",
+      "category": "Second Brain",
+      "selector": ".concept",
+      "kind": "class",
+      "description": "A glossary / concept card: a term, its definition, and \"see also\" links — the atom of a knowledge base.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/concept"
+    },
+    {
+      "id": "notestats",
+      "name": "Note stats",
+      "category": "Second Brain",
+      "selector": ".note-stats",
+      "kind": "class",
+      "description": "A compact meta bar for a note — word count, read time, and created / modified dates.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/notestats"
     }
   ],
   "counts": {
     "concepts": 4,
-    "components": 103
+    "components": 114
   }
 }

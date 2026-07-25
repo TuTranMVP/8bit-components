@@ -4454,6 +4454,440 @@
     }
   }
 
+  /* ------------------------------------------------------- PROPERTIES
+     Frontmatter / metadata as a key→value grid (Obsidian Properties). Values
+     can hold .tag / .wikilink / plain text. Use a <dl> for real semantics. */
+  .props {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--sp-1) var(--sp-4);
+    font-size: var(--fs-body);
+
+    &>dt {
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--dim);
+      align-self: center;
+    }
+
+    &>dd {
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--sp-2);
+      color: var(--text);
+    }
+  }
+
+  /* ---------------------------------------------------------- OUTLINE
+     The heading tree of the current note; indent by .lvl-N, light .active. */
+  .outline {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+
+    &>a {
+      display: block;
+      padding: var(--sp-1) var(--sp-2);
+      color: var(--muted);
+      border-inline-start: var(--bw-2) solid var(--line-hi);
+      transition: color var(--dur-fast), border-color var(--dur-fast);
+    }
+
+    &>a:hover {
+      color: var(--ink);
+      border-inline-start-color: var(--primary);
+    }
+
+    &>a.active {
+      color: var(--primary);
+      border-inline-start-color: var(--primary);
+    }
+
+    &>a.lvl-2 {
+      padding-inline-start: var(--sp-4);
+    }
+
+    &>a.lvl-3 {
+      padding-inline-start: var(--sp-6);
+      color: var(--dim);
+    }
+  }
+
+  /* -------------------------------------------------------- HEATMAP
+     Activity / contribution grid (notes per day). 7 rows = weekdays, columns
+     flow as weeks; <i data-level="0–4"> sets the ink. Recolour via data-accent.
+     Wrap in an overflow-x:auto div when there are many weeks. */
+  .heatmap {
+    --accent: var(--primary);
+    --accent-d: var(--primary-d);
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(7, 1fr);
+    gap: 3px;
+    inline-size: max-content;
+
+    &>i {
+      inline-size: 12px;
+      block-size: 12px;
+      background: var(--slot);
+      border: 1px solid var(--line-hi);
+    }
+
+    &>i[data-level="1"] {
+      background: color-mix(in srgb, var(--accent) 30%, var(--slot));
+    }
+
+    &>i[data-level="2"] {
+      background: color-mix(in srgb, var(--accent) 55%, var(--slot));
+    }
+
+    &>i[data-level="3"] {
+      background: color-mix(in srgb, var(--accent) 78%, var(--slot));
+    }
+
+    &>i[data-level="4"] {
+      background: var(--accent);
+      border-color: var(--accent-d);
+    }
+  }
+
+  /* ----------------------------------------------------------- BOARD
+     A Kanban board: horizontally-scrolling columns of cards. Give each column
+     a data-accent for its top bar. Cards are draggable-looking (wire DnD in JS). */
+  .board {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    overflow-x: auto;
+    padding-block-end: var(--sp-2);
+  }
+
+  .board-col {
+    flex: 0 0 min(260px, 78vw);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    border-block-start: var(--accent-bar) solid var(--accent, var(--line-hi));
+    padding: var(--sp-2);
+
+    &>.board-head {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: var(--sp-1) var(--sp-2);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--muted);
+
+      & .count {
+        margin-inline-start: auto;
+        color: var(--dim);
+      }
+    }
+  }
+
+  .board-card {
+    background: var(--panel);
+    border: var(--bw-2) solid var(--line-hi);
+    box-shadow: var(--sh-2);
+    padding: var(--sp-3);
+    font-size: var(--fs-body);
+    color: var(--text);
+    cursor: grab;
+    transition: border-color var(--dur-fast), transform var(--dur-fast) var(--ease);
+
+    &:hover {
+      border-color: var(--primary);
+    }
+
+    &:active {
+      cursor: grabbing;
+      transform: translate(1px, 1px);
+      box-shadow: var(--sh-1);
+    }
+  }
+
+  /* --------------------------------------------------------- PALETTE
+     Command palette / quick-switcher: a search box over a .result list. Drop it
+     in a <dialog class="modal"> for Cmd-K; wire the filtering in JS. */
+  .palette {
+    display: flex;
+    flex-direction: column;
+    background: var(--panel);
+    border: var(--bw) solid var(--line-hi);
+    box-shadow: var(--sh-5);
+
+    & .palette-input {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: var(--sp-3);
+      border-block-end: var(--bw-2) solid var(--line-hi);
+      color: var(--dim);
+
+      & input {
+        flex: 1;
+        border: 0;
+        outline: none;
+        background: none;
+        color: var(--ink);
+        font-family: var(--font-body);
+        font-size: var(--fs-h3);
+
+        &::placeholder {
+          color: var(--dim);
+        }
+      }
+    }
+
+    & .palette-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      max-block-size: min(50vh, 340px);
+      overflow-y: auto;
+      padding: var(--sp-2);
+    }
+
+    & .palette-empty {
+      padding: var(--sp-4);
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      color: var(--dim);
+    }
+  }
+
+  /* --------------------------------------------------------- RESULT
+     One search hit / palette row: icon + title (with <mark>) over a dim path,
+     an optional trailing hint. .active is the keyboard-selected row. */
+  .result {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-2) var(--sp-3);
+    background: none;
+    border: var(--bw-2) solid transparent;
+    text-align: start;
+    text-decoration: none;
+    color: var(--text);
+    cursor: pointer;
+
+    &:hover,
+    &.active {
+      background: var(--slot);
+      border-color: var(--line-hi);
+    }
+
+    &.active {
+      border-color: var(--primary);
+    }
+
+    & .result-icon {
+      flex: none;
+      color: var(--dim);
+    }
+
+    & .result-body {
+      min-inline-size: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    & .result-title {
+      color: var(--ink);
+      font-size: var(--fs-body);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      & mark {
+        color: var(--ink);
+        background: color-mix(in srgb, var(--gold) 32%, transparent);
+      }
+    }
+
+    & .result-path {
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      color: var(--dim);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    & .result-hint {
+      margin-inline-start: auto;
+      flex: none;
+    }
+  }
+
+  /* ---------------------------------------------------------- EMBED
+     A transcluded note (Obsidian ![[note]]): a titled, accent-barred quote of
+     another note's content inside this one. */
+  .embed {
+    --accent: var(--primary);
+    background: color-mix(in srgb, var(--panel) 55%, transparent);
+    border: var(--bw-2) solid var(--line-hi);
+    border-inline-start: var(--accent-bar) solid var(--accent);
+    padding: var(--sp-3) var(--sp-4);
+
+    &>.embed-head {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      margin-block-end: var(--sp-2);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--dim);
+
+      & a {
+        color: var(--indigo);
+        text-decoration: none;
+      }
+    }
+
+    &>:last-child {
+      margin-block-end: 0;
+    }
+  }
+
+  /* -------------------------------------------------------- MATURITY
+     Digital-garden growth stage: 🌱 seedling · 🌿 budding · 🌳 evergreen. */
+  .maturity {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-chrome);
+    color: var(--muted);
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    padding: .15rem .5rem;
+
+    &::before {
+      content: "🌱";
+    }
+
+    &.budding {
+      color: var(--lime);
+      border-color: var(--lime-d);
+
+      &::before {
+        content: "🌿";
+      }
+    }
+
+    &.evergreen {
+      color: var(--good);
+      border-color: var(--good-d);
+
+      &::before {
+        content: "🌳";
+      }
+    }
+  }
+
+  /* ------------------------------------------------------- TAG CLOUD
+     A weighted panel of .tag pills; data-weight scales the hottest tags up. */
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2);
+
+    & .tag .tag-n {
+      margin-inline-start: var(--sp-1);
+      color: var(--dim);
+    }
+
+    & .tag[data-weight="2"] {
+      font-size: var(--fs-chip);
+      color: var(--muted);
+    }
+
+    & .tag[data-weight="3"] {
+      font-size: var(--fs-body);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+  }
+
+  /* --------------------------------------------------------- CONCEPT
+     A glossary / concept card: term + definition + "see also" links. Cyan bar
+     by convention (a reference), recolour with data-accent. */
+  .concept {
+    --accent: var(--cyan);
+    background: var(--panel);
+    border: var(--bw-2) solid var(--line-hi);
+    border-inline-start: var(--accent-bar) solid var(--accent);
+    box-shadow: var(--sh-3);
+    padding: var(--sp-3) var(--sp-4);
+
+    &>.concept-term {
+      margin: 0 0 var(--sp-2);
+      font-family: var(--font-mono);
+      font-size: var(--fs-h3);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--ink);
+      font-style: normal;
+    }
+
+    &>.concept-def {
+      margin: 0;
+      color: var(--muted);
+      font-size: var(--fs-body);
+    }
+
+    &>.concept-see {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--sp-2);
+      margin-block-start: var(--sp-2);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      color: var(--dim);
+    }
+  }
+
+  /* ------------------------------------------------------ NOTE STATS
+     A meta bar for a note: words · read time · created · modified. */
+  .note-stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-3);
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    color: var(--dim);
+
+    &>span {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-1);
+    }
+
+    & nes-icon {
+      color: var(--muted);
+    }
+  }
+
   /* ---- touch targets: on coarse pointers, controls grow to a ~44px tap zone
      (WCAG 2.5.8). Sizes only bump up, so nothing shifts on desktop. ---- */
   @media (pointer: coarse) {
@@ -4471,7 +4905,9 @@
     .pg,
     .segment>button,
     .stepper>button,
-    .suggest-item {
+    .suggest-item,
+    .result,
+    .outline>a {
       min-block-size: 2.5rem;
     }
 
