@@ -90,6 +90,9 @@ Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";
 - [ChatTool](https://tutranmvp.github.io/8bit-components/docs.html#/chattool) — `.tool`: Shows a tool/function call: name + status badge in the summary, args/result in the body. Native <details>; status via a .badge.
 - [ChatShimmer](https://tutranmvp.github.io/8bit-components/docs.html#/chatshimmer) — `.shimmer`: Streaming placeholder — a few shimmering lines shown while the assistant's first tokens are still on the way. Pure CSS.
 - [ChatPalette](https://tutranmvp.github.io/8bit-components/docs.html#/chatpalette) — `.chat-palette`: A framed chat panel for a modal or side-panel assistant: bordered surface with the messages area above and the prompt flush on the bottom edge.
+- [Composer](https://tutranmvp.github.io/8bit-components/docs.html#/composer) — `.composer`: The full prompt box — ChatGPT / Claude-Code style: attachment chips on top, a growing textarea, and a toolbar footer with icon actions, a model picker, a char hint and send.
+- [Suggestions](https://tutranmvp.github.io/8bit-components/docs.html#/suggestions) — `.suggest`: Prompt starters on an empty chat, or follow-up chips after an answer — a wrap of tap-to-send pills that guide the next turn.
+- [Citations](https://tutranmvp.github.io/8bit-components/docs.html#/citations) — `.cite`: Grounded answers: an inline [n] marker in the prose that links down to a numbered sources list under the message. Zero JS — the marker jumps to a matching id.
 
 ## Agents
 - [Agent](https://tutranmvp.github.io/8bit-components/docs.html#/agent) — `.agent`: One agent in a multi-agent crew: a status light, name + model, and its current task. Drive the light with data-state — thinking / running blink live.

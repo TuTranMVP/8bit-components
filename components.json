@@ -685,6 +685,33 @@
       "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/chatpalette"
     },
     {
+      "id": "composer",
+      "name": "Composer",
+      "category": "Chat",
+      "selector": ".composer",
+      "kind": "class",
+      "description": "The full prompt box — ChatGPT / Claude-Code style: attachment chips on top, a growing textarea, and a toolbar footer with icon actions, a model picker, a char hint and send.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/composer"
+    },
+    {
+      "id": "suggestions",
+      "name": "Suggestions",
+      "category": "Chat",
+      "selector": ".suggest",
+      "kind": "class",
+      "description": "Prompt starters on an empty chat, or follow-up chips after an answer — a wrap of tap-to-send pills that guide the next turn.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/suggestions"
+    },
+    {
+      "id": "citations",
+      "name": "Citations",
+      "category": "Chat",
+      "selector": ".cite",
+      "kind": "class",
+      "description": "Grounded answers: an inline [n] marker in the prose that links down to a numbered sources list under the message. Zero JS — the marker jumps to a matching id.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/citations"
+    },
+    {
       "id": "agent",
       "name": "Agent",
       "category": "Agents",
@@ -948,6 +975,6 @@
   ],
   "counts": {
     "concepts": 4,
-    "components": 96
+    "components": 99
   }
 }

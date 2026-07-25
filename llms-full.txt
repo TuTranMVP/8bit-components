@@ -129,7 +129,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Theming: https://tutranmvp.github.io/8bit-components/docs.html#/theming
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
-## Component reference (96 components)
+## Component reference (99 components)
 
 ## Element
 
@@ -479,6 +479,21 @@ toast("<b>Saved.</b>", { accent: "good" });
 - selector: `.chat-palette` (class) · category: Chat
 - A framed chat panel for a modal or side-panel assistant: bordered surface with the messages area above and the prompt flush on the bottom edge.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/chatpalette
+
+### Composer
+- selector: `.composer` (class) · category: Chat
+- The full prompt box — ChatGPT / Claude-Code style: attachment chips on top, a growing textarea, and a toolbar footer with icon actions, a model picker, a char hint and send.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/composer
+
+### Suggestions
+- selector: `.suggest` (class) · category: Chat
+- Prompt starters on an empty chat, or follow-up chips after an answer — a wrap of tap-to-send pills that guide the next turn.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/suggestions
+
+### Citations
+- selector: `.cite` (class) · category: Chat
+- Grounded answers: an inline [n] marker in the prose that links down to a numbered sources list under the message. Zero JS — the marker jumps to a matching id.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/citations
 
 ## Agents
 
