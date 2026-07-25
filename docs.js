@@ -589,26 +589,30 @@ const COMPONENTS = [
         h2("Icon · toggle · loading") +
         stage(
           "STATE",
-          `<button class="btn"><span aria-hidden="true">↻</span> Regenerate</button>
-           <button class="btn soft">Export <span aria-hidden="true">▾</span></button>
-           <button class="btn icon" aria-label="Play">▶</button>
-           <button class="btn ghost" aria-pressed="true"><span aria-hidden="true">★</span> Starred</button>
+          `<button class="btn"><nes-icon name="refresh"></nes-icon> Regenerate</button>
+           <button class="btn soft">Export <nes-icon name="chevronDown"></nes-icon></button>
+           <button class="btn icon" aria-label="Play"><nes-icon name="play"></nes-icon></button>
+           <button class="btn ghost" aria-pressed="true"><nes-icon name="star"></nes-icon> Starred</button>
            <button class="btn" aria-busy="true">Saving</button>
            <button class="btn" disabled>Locked</button>`,
         ) +
         cb(
-          `<!-- leading / trailing icon: place a glyph beside the label -->
-<button class="btn"><span aria-hidden="true">↻</span> Regenerate</button>
-<button class="btn soft">Export <span aria-hidden="true">▾</span></button>
+          `<!-- leading / trailing icon: drop a <nes-icon> beside the label -->
+<button class="btn"><nes-icon name="refresh"></nes-icon> Regenerate</button>
+<button class="btn soft">Export <nes-icon name="chevronDown"></nes-icon></button>
 
-<!-- icon-only needs an aria-label -->
-<button class="btn icon" aria-label="Play">▶</button>
+<!-- icon-only needs an aria-label (the icon stays decorative) -->
+<button class="btn icon" aria-label="Play"><nes-icon name="play"></nes-icon></button>
 
 <!-- toggle: flip aria-pressed -->
-<button class="btn ghost" aria-pressed="true">★ Starred</button>
+<button class="btn ghost" aria-pressed="true"><nes-icon name="star"></nes-icon> Starred</button>
 
 <!-- loading: set aria-busy, clicks are blocked -->
 <button class="btn" aria-busy="true">Saving…</button>`,
+        ) +
+        callout(
+          "tip",
+          `Icons are the built-in 8-BIT set — <code>&lt;nes-icon name="refresh"&gt;</code> (zero-build) or <code>import { refresh } from "8bit-nes/icons"</code> (tree-shaken). They inherit the button's color and 1em size automatically. Browse all on the <a href="#/icon">Icon</a> page.`,
         ) +
         h2("Button group") +
         p(
@@ -617,27 +621,27 @@ const COMPONENTS = [
         stage(
           "GROUP",
           `<div class="btn-group">
-             <button class="btn ghost xs"><span aria-hidden="true">↻</span> Regenerate</button>
-             <button class="btn ghost xs"><span aria-hidden="true">⧉</span> Copy</button>
-             <button class="btn ghost xs"><span aria-hidden="true">↗</span> Share</button>
+             <button class="btn ghost xs"><nes-icon name="refresh"></nes-icon> Regenerate</button>
+             <button class="btn ghost xs"><nes-icon name="copy"></nes-icon> Copy</button>
+             <button class="btn ghost xs"><nes-icon name="share"></nes-icon> Share</button>
            </div>
            <div class="btn-group">
              <button class="btn">Publish</button>
-             <button class="btn icon" aria-label="More options">▾</button>
+             <button class="btn icon" aria-label="More options"><nes-icon name="chevronDown"></nes-icon></button>
            </div>`,
         ) +
         cb(
           `<!-- action toolbar (dense, xs) -->
 <div class="btn-group">
-  <button class="btn ghost xs">↻ Regenerate</button>
-  <button class="btn ghost xs">⧉ Copy</button>
-  <button class="btn ghost xs">↗ Share</button>
+  <button class="btn ghost xs"><nes-icon name="refresh"></nes-icon> Regenerate</button>
+  <button class="btn ghost xs"><nes-icon name="copy"></nes-icon> Copy</button>
+  <button class="btn ghost xs"><nes-icon name="share"></nes-icon> Share</button>
 </div>
 
 <!-- split button = main action + caret -->
 <div class="btn-group">
   <button class="btn">Publish</button>
-  <button class="btn icon" aria-label="More options">▾</button>
+  <button class="btn icon" aria-label="More options"><nes-icon name="chevronDown"></nes-icon></button>
 </div>
 
 <!-- full-width bar / vertical stack -->
@@ -703,26 +707,30 @@ const COMPONENTS = [
         h2("Icon · toggle · loading") +
         stage(
           "STATE",
-          `<button class="btn"><span aria-hidden="true">↻</span> Tạo lại</button>
-           <button class="btn soft">Xuất <span aria-hidden="true">▾</span></button>
-           <button class="btn icon" aria-label="Chơi">▶</button>
-           <button class="btn ghost" aria-pressed="true"><span aria-hidden="true">★</span> Đã lưu</button>
+          `<button class="btn"><nes-icon name="refresh"></nes-icon> Tạo lại</button>
+           <button class="btn soft">Xuất <nes-icon name="chevronDown"></nes-icon></button>
+           <button class="btn icon" aria-label="Chơi"><nes-icon name="play"></nes-icon></button>
+           <button class="btn ghost" aria-pressed="true"><nes-icon name="star"></nes-icon> Đã lưu</button>
            <button class="btn" aria-busy="true">Đang lưu</button>
            <button class="btn" disabled>Khoá</button>`,
         ) +
         cb(
-          `<!-- icon trước / sau: đặt glyph cạnh chữ -->
-<button class="btn"><span aria-hidden="true">↻</span> Tạo lại</button>
-<button class="btn soft">Xuất <span aria-hidden="true">▾</span></button>
+          `<!-- icon trước / sau: đặt <nes-icon> cạnh chữ -->
+<button class="btn"><nes-icon name="refresh"></nes-icon> Tạo lại</button>
+<button class="btn soft">Xuất <nes-icon name="chevronDown"></nes-icon></button>
 
-<!-- chỉ-icon thì cần aria-label -->
-<button class="btn icon" aria-label="Chơi">▶</button>
+<!-- chỉ-icon thì cần aria-label (icon là trang trí) -->
+<button class="btn icon" aria-label="Chơi"><nes-icon name="play"></nes-icon></button>
 
 <!-- toggle: lật aria-pressed -->
-<button class="btn ghost" aria-pressed="true">★ Đã lưu</button>
+<button class="btn ghost" aria-pressed="true"><nes-icon name="star"></nes-icon> Đã lưu</button>
 
 <!-- loading: đặt aria-busy, click bị chặn -->
 <button class="btn" aria-busy="true">Đang lưu…</button>`,
+        ) +
+        callout(
+          "tip",
+          `Icon lấy từ bộ 8-BIT có sẵn — <code>&lt;nes-icon name="refresh"&gt;</code> (zero-build) hoặc <code>import { refresh } from "8bit-nes/icons"</code> (tree-shake). Chúng tự thừa hưởng màu và cỡ 1em của nút. Xem toàn bộ ở trang <a href="#/icon">Icon</a>.`,
         ) +
         h2("Nhóm nút") +
         p(
@@ -731,27 +739,27 @@ const COMPONENTS = [
         stage(
           "GROUP",
           `<div class="btn-group">
-             <button class="btn ghost xs"><span aria-hidden="true">↻</span> Tạo lại</button>
-             <button class="btn ghost xs"><span aria-hidden="true">⧉</span> Chép</button>
-             <button class="btn ghost xs"><span aria-hidden="true">↗</span> Chia sẻ</button>
+             <button class="btn ghost xs"><nes-icon name="refresh"></nes-icon> Tạo lại</button>
+             <button class="btn ghost xs"><nes-icon name="copy"></nes-icon> Chép</button>
+             <button class="btn ghost xs"><nes-icon name="share"></nes-icon> Chia sẻ</button>
            </div>
            <div class="btn-group">
              <button class="btn">Đăng</button>
-             <button class="btn icon" aria-label="Thêm tuỳ chọn">▾</button>
+             <button class="btn icon" aria-label="Thêm tuỳ chọn"><nes-icon name="chevronDown"></nes-icon></button>
            </div>`,
         ) +
         cb(
           `<!-- thanh action (gọn, xs) -->
 <div class="btn-group">
-  <button class="btn ghost xs">↻ Tạo lại</button>
-  <button class="btn ghost xs">⧉ Chép</button>
-  <button class="btn ghost xs">↗ Chia sẻ</button>
+  <button class="btn ghost xs"><nes-icon name="refresh"></nes-icon> Tạo lại</button>
+  <button class="btn ghost xs"><nes-icon name="copy"></nes-icon> Chép</button>
+  <button class="btn ghost xs"><nes-icon name="share"></nes-icon> Chia sẻ</button>
 </div>
 
 <!-- nút split = hành động chính + caret -->
 <div class="btn-group">
   <button class="btn">Đăng</button>
-  <button class="btn icon" aria-label="Thêm tuỳ chọn">▾</button>
+  <button class="btn icon" aria-label="Thêm tuỳ chọn"><nes-icon name="chevronDown"></nes-icon></button>
 </div>
 
 <!-- rộng hết dòng / xếp dọc -->
