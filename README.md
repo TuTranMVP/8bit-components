@@ -7,11 +7,11 @@ NES arcade CRT, dark-only, modern-crisp. Cross-framework by design.
 Reusable across every project in the studio — install it into any repo, no build step.
 
 ```bash
-# from npm — latest is 0.5.1
+# from npm — latest is 0.6.0
 pnpm add 8bit-nes
 
 # or straight from GitHub (a tag is a valid spec too)
-pnpm add github:TuTranMVP/8bit-components#v0.5.1
+pnpm add github:TuTranMVP/8bit-components#v0.6.0
 ```
 
 ```js
@@ -40,22 +40,22 @@ visit (copy it verbatim — every line earns its place):
 <!-- 2. fonts, at the exact URLs all.min.css resolves url() to → fetched once, in parallel
         with the stylesheet instead of after it -->
 <link rel="preload" as="font" type="font/woff2" crossorigin
-  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.1/fonts/nes-sans-var.woff2">
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.6.0/fonts/nes-sans-var.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin
-  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.1/fonts/nes-mono-400.woff2">
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.6.0/fonts/nes-mono-400.woff2">
 
 <!-- 3. the system: pinned version + byte-pinned integrity -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.1/all.min.css"
-  integrity="sha384-gaKYTYfJYHTbs3bY8aTHgBvRLvW6/YeFtdoRHAwpkXMR1hmzRWPjhei+loN6QOJn"
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.6.0/all.min.css"
+  integrity="sha384-aTnZWC0jOq8WLZj4mdOmGBlQILMwr/3yKJznNsJWtULdUcP5J5JejIBZ3SwtkD66"
   crossorigin="anonymous">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.1/elements.min.js"
-  integrity="sha384-R8iVNERudea0ShszwfLSyCOlY0Erja6/RkdJneCVwyOjk4pSnGE+pXkzLJWDU1PS"
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.6.0/elements.min.js"
+  integrity="sha384-KNpjQHaGKthTfnm+plrxxO4/o9tAqoJ+8LC8b2GlXY6QUtcbSYDpo5sKdXIx7++S"
   crossorigin="anonymous"></script>
 ```
 
 Why it's shaped like that:
 
-- **Pin the version.** `@0.5.1` is immutable — jsDelivr serves it `max-age=31536000, immutable`,
+- **Pin the version.** `@0.6.0` is immutable — jsDelivr serves it `max-age=31536000, immutable`,
   so a repeat visit costs zero requests. A bare `/npm/8bit-nes/all.min.css` is a *mutable* alias:
   it revalidates every 7 days and costs a redirect hop on the first hit. Bump the number to
   upgrade; nothing silently changes underneath a shipped page. A `@0.5` range is the middle
@@ -75,7 +75,7 @@ Why it's shaped like that:
   sri.files["all.min.css"]; // "sha384-…"  · sri.cdn is the matching pinned base URL
   ```
 
-  The hashes above are for **0.5.1**. They change with every version — regenerate (`pnpm gen:sri`)
+  The hashes above are for **0.6.0**. They change with every version — regenerate (`pnpm gen:sri`)
   or re-fetch `sri.json` when you bump, or the browser will (correctly) refuse the file.
 - **Fonts don't need a separate request budget.** The whole system is 4 files: 75 kB CSS +
   79 kB ESM + 2 woff2 (both subset with `unicode-range`), all Brotli'd by the CDN.
@@ -88,7 +88,7 @@ Copy-paste starter, already wired exactly like the above:
 [`examples/cdn-starter.html`](examples/cdn-starter.html) — also live on the docs site at
 `/examples/cdn-starter.html`.
 
-> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.5.1/all.min.css`) and the same
+> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.6.0/all.min.css`) and the same
 > SRI digests — it's the identical npm tarball. Pick *one* origin per page, though: two CDNs
 > means two handshakes for no benefit.
 
@@ -165,6 +165,7 @@ import manifest from "8bit-nes/components.json" with { type: "json" };
 | Typography (MDC) | CodePreview (`.code-preview`) · CodeGroup (`<nes-tabs class="code-group">`) · CodeCollapse (`<details class="code-collapse">`) · CodeTree (`<nes-code-tree>`) · CardGroup (`.card-group`) · FieldGroup (`.field-group`) · Prompt (`.prompt`) · Terminal (`.terminal`) · Diff (`.diff`) · Tasklist (`.tasklist`) · code filename header (`<nes-code file>`) — render an AI agent's streamed Markdown/MDC output as on-brand HTML (the render target, not a parser) |
 | Visualize | Mermaid (`<nes-mermaid>`) · Walkthrough (`<nes-walkthrough>`, `autoplay`) · Lens (`<nes-tabs class="lens">`) · Zoom (`<nes-zoom>`) · Annotate (`<nes-annotate>`) · Compare (`<nes-compare>`) · Legend (`.legend`) — render an AI agent's Mermaid diagrams on-brand + teach a concept step-by-step, then explore (pan/zoom), point at parts (hotspots), and compare A/B. Mermaid never bundled (BYO / lazy via `enableMermaid`); everything else is zero-dep pointer + CSS |
 | Second Brain | **Graph** (`<nes-graph>` — knowledge graph: force-laid-out nodes + edges, click a node to light its neighbourhood; wrap in `<nes-zoom>` to pan/zoom) · Note card (`.note`) · Backlinks (`.backlinks`) · Wiki-link (`.wikilink`, `.new` = unresolved) · Tag (`.tag`) · Properties (`.props`) · Outline (`.outline`) · Activity heatmap (`.heatmap`) · Board (`.board` — Kanban) · Command palette (`.palette`) · Search result (`.result`) · Note embed (`.embed` — transclusion) · Maturity (`.maturity` — 🌱🌿🌳) · Tag cloud (`.tag-cloud`) · Concept card (`.concept`) · Note stats (`.note-stats`) — Obsidian-style note/knowledge UI: vault cards, `[[links]]`, `#tags`, backlinks, frontmatter, kanban, quick-switcher, transclusion, digital-garden maturity, and a deterministic 0-dep knowledge graph. All stateless recipes bar the graph — an agent can emit them as HTML |
+| OpenCode (vibe coding) | **Workbench** (`.workbench` — 3-pane cloud-IDE shell: rail / main / side, stacks on mobile) · Repo bar (`.repobar`) · File tabs (`.filetabs`) · Status line (`.statusline`) · Sandbox (`.sandbox` — cloud dev container) · **Plan** (`.plan` — the agent's todo with live per-step state) · **Permission** (`.perm` — allow-once / always / deny gate, command shown verbatim) · Diff stat (`.diffstat`) · File change (`.filechange` — A/M/D/R) · Hunk (`.hunk` — reviewable slice, zero-JS `<details>`) · **DiffView** (`<nes-diff>` — unified diff → on-brand markup + `nes:diff` totals) · Checks (`.checks`) · Run bar (`.runbar`) · **Logs** (`<nes-logs>` — tail-following, ring-buffered, level-filtered stream) · **App preview** (`<nes-preview>` — framed iframe, URL bar, 375/768/full) · Stack trace (`.stacktrace` — your frames lit, vendor dimmed) · Checkpoints (`.ckpt` — rewind timeline) · Deploy (`.deploy`) — the WebUI shell around an agent that writes code, for Vibe-Coding tools on web/cloud. Each recipe owns one responsibility and composes with `.diff` / `.terminal` / `.tree` / `.trace` / `.btn` / `.input` / `.segment` instead of re-implementing them; three pieces hold state, the rest is HTML an agent can emit |
 
 Run the docs site locally with `pnpm demo`, then open `/docs.html`.
 

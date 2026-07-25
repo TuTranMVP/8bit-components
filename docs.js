@@ -145,8 +145,9 @@ const CAT_ACCENT = {
   Typography: "pink",
   Visualize: "lime",
   "Second Brain": "purple",
+  OpenCode: "teal",
 };
-const CAT_ORDER = ["Element", "Form", "Feedback", "Navigation", "Overlay", "Data", "Chat", "Agents", "Editor", "Typography", "Visualize", "Second Brain"];
+const CAT_ORDER = ["Element", "Form", "Feedback", "Navigation", "Overlay", "Data", "Chat", "Agents", "Editor", "Typography", "Visualize", "Second Brain", "OpenCode"];
 
 /* ===================================================================== */
 /*  GETTING STARTED                                                       */
@@ -7556,6 +7557,1243 @@ for await (const chunk of agentStream())
         a11y(`Mỗi icon chỉ trang trí; chữ ("620 từ") là giá trị tiếp cận. Dùng <code>&lt;time&gt;</code> thật cho ngày tháng.`),
     },
   },
+  /* ===================================================================== */
+  /*  OPENCODE MODULE — the vibe-coding workspace (cloud IDE / agent WebUI)  */
+  /* ===================================================================== */
+  {
+    id: "workbench",
+    cat: "OpenCode",
+    name: "Workbench",
+    desc: {
+      en: "The 3-pane workspace shell: rail (files) · main (chat/editor) · side (preview/logs). Layout only — it styles no content, so any module drops in. Panes stack on mobile.",
+      vi: "Khung workspace 3 pane: rail (file) · main (chat/editor) · side (preview/log). Chỉ là layout — không style nội dung, nên module nào cũng lắp vào được. Trên mobile các pane xếp dọc.",
+    },
+    body: {
+      en: () =>
+        ocWorkbenchStage() +
+        cb(`<div class="workbench">
+  <aside class="wb-rail"><nes-tree>…</nes-tree></aside>
+  <main class="wb-main">
+    <div class="filetabs">…</div>
+    <nes-chat-messages>…</nes-chat-messages>
+    <div class="statusline" data-state="running">…</div>
+  </main>
+  <aside class="wb-side"><nes-preview src="http://localhost:5173"></nes-preview></aside>
+</div>
+
+<!-- resize with tokens, not new classes -->
+<div class="workbench" style="--wb-rail:18rem;--wb-side:26rem;--wb-h:40rem">…</div>`) +
+        h2("Parts") +
+        api(
+          ["Class / token", "Role"],
+          [
+            ["<code>.workbench</code>", "the shell — a grid + one hard frame"],
+            ["<code>.wb-rail</code>", "left pane (file tree / outline). Optional"],
+            ["<code>.wb-main</code>", "centre pane — a flex column, so a tab strip + scroller + status line stack"],
+            ["<code>.wb-side</code>", "right pane (preview / logs / diff). Optional"],
+            ["<code>--wb-rail</code> / <code>--wb-side</code>", "pane widths (<code>14rem</code> / <code>22rem</code>)"],
+            ["<code>--wb-h</code>", "shell height on wide screens (<code>30rem</code>)"],
+          ],
+        ) +
+        note(`Drop <code>.wb-rail</code> or <code>.wb-side</code> and the grid re-flows on its own — no extra class. Mobile-first: below 56rem the panes stack and the side panes cap their height, so nothing scrolls sideways.`) +
+        a11y(`Use real landmarks — <code>&lt;aside&gt;</code> / <code>&lt;main&gt;</code> as shown — and give each pane an <code>aria-label</code>. Each pane is its own scroll container, so keyboard scrolling stays inside the region the user is in.`),
+      vi: () =>
+        ocWorkbenchStage() +
+        cb(`<div class="workbench">
+  <aside class="wb-rail"><nes-tree>…</nes-tree></aside>
+  <main class="wb-main">
+    <div class="filetabs">…</div>
+    <nes-chat-messages>…</nes-chat-messages>
+    <div class="statusline" data-state="running">…</div>
+  </main>
+  <aside class="wb-side"><nes-preview src="http://localhost:5173"></nes-preview></aside>
+</div>
+
+<!-- đổi kích thước bằng token, không cần class mới -->
+<div class="workbench" style="--wb-rail:18rem;--wb-side:26rem;--wb-h:40rem">…</div>`) +
+        h2("Thành phần") +
+        api(
+          ["Class / token", "Vai trò"],
+          [
+            ["<code>.workbench</code>", "khung — một grid + một viền cứng"],
+            ["<code>.wb-rail</code>", "pane trái (cây file / outline). Tùy chọn"],
+            ["<code>.wb-main</code>", "pane giữa — flex column, để tab strip + vùng cuộn + status line xếp dọc"],
+            ["<code>.wb-side</code>", "pane phải (preview / log / diff). Tùy chọn"],
+            ["<code>--wb-rail</code> / <code>--wb-side</code>", "chiều rộng pane (<code>14rem</code> / <code>22rem</code>)"],
+            ["<code>--wb-h</code>", "chiều cao khung trên màn rộng (<code>30rem</code>)"],
+          ],
+        ) +
+        note(`Bỏ <code>.wb-rail</code> hoặc <code>.wb-side</code> thì grid tự chia lại — không cần class thêm. Mobile-first: dưới 56rem các pane xếp dọc và pane bên bị giới hạn chiều cao, nên không bao giờ tràn ngang.`) +
+        a11y(`Dùng landmark thật — <code>&lt;aside&gt;</code> / <code>&lt;main&gt;</code> như ví dụ — và cho mỗi pane một <code>aria-label</code>. Mỗi pane là một vùng cuộn riêng nên cuộn bằng bàn phím vẫn nằm trong vùng người dùng đang ở.`),
+    },
+  },
+  {
+    id: "repobar",
+    cat: "OpenCode",
+    name: "Repo bar",
+    desc: {
+      en: "Which code am I looking at: repo · branch · dirty count, plus an actions slot. Identity only — live run telemetry belongs in the Status line.",
+      vi: "Tôi đang xem code nào: repo · branch · số file thay đổi, cộng một slot cho action. Chỉ là danh tính — telemetry lúc chạy thuộc về Status line.",
+    },
+    body: {
+      en: () =>
+        ocRepobarStage() +
+        cb(`<div class="repobar">
+  <span class="repo-name"><nes-icon name="folder"></nes-icon>acme/web</span>
+  <span class="repo-branch"><nes-icon name="gitBranch"></nes-icon>feat/refresh-token</span>
+  <span class="repo-dirty">3 CHANGED</span>
+  <span class="repo-actions">
+    <button class="btn xs ghost">PULL</button>
+    <button class="btn xs">COMMIT</button>
+  </span>
+</div>`) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.repobar</code>", "the bar (wraps on narrow screens)"],
+            ["<code>.repo-name</code>", "owner/repo — the brightest thing in the row"],
+            ["<code>.repo-branch</code>", "current branch, in the accent colour"],
+            ["<code>.repo-dirty</code>", "uncommitted work — gold, the shared “pending state” language"],
+            ["<code>.repo-actions</code>", "trailing actions; pushed right automatically"],
+          ],
+        ) +
+        note(`Swap the branch text for a <a href="#/selectmenu">SelectMenu</a> to make it a switcher — the bar is chrome, the picker is a control, and they stay separate pieces.`) +
+        a11y(`Icons are decorative; the text carries the meaning. If the dirty count is the only signal that work is unsaved, keep the number in the text (“3 changed”), never colour alone.`),
+      vi: () =>
+        ocRepobarStage() +
+        cb(`<div class="repobar">
+  <span class="repo-name"><nes-icon name="folder"></nes-icon>acme/web</span>
+  <span class="repo-branch"><nes-icon name="gitBranch"></nes-icon>feat/refresh-token</span>
+  <span class="repo-dirty">3 CHANGED</span>
+  <span class="repo-actions">
+    <button class="btn xs ghost">PULL</button>
+    <button class="btn xs">COMMIT</button>
+  </span>
+</div>`) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.repobar</code>", "thanh bar (wrap trên màn hẹp)"],
+            ["<code>.repo-name</code>", "owner/repo — sáng nhất trong hàng"],
+            ["<code>.repo-branch</code>", "branch hiện tại, màu accent"],
+            ["<code>.repo-dirty</code>", "công việc chưa commit — màu gold, cùng “ngôn ngữ” trạng thái chờ"],
+            ["<code>.repo-actions</code>", "action ở cuối; tự đẩy sang phải"],
+          ],
+        ) +
+        note(`Thay chữ branch bằng <a href="#/selectmenu">SelectMenu</a> là thành bộ chuyển branch — bar là chrome, picker là control, hai thứ vẫn tách rời.`) +
+        a11y(`Icon chỉ trang trí; chữ mới mang nghĩa. Nếu số file thay đổi là tín hiệu duy nhất cho “chưa lưu”, hãy để con số trong chữ (“3 changed”), đừng chỉ dựa vào màu.`),
+    },
+  },
+  {
+    id: "filetabs",
+    cat: "OpenCode",
+    name: "File tabs",
+    desc: {
+      en: "The open-buffer strip: which files are open, which is focused, which is unsaved. Scrolls sideways when the list grows.",
+      vi: "Dải file đang mở: file nào mở, file nào đang focus, file nào chưa lưu. Cuộn ngang khi danh sách dài.",
+    },
+    body: {
+      en: () =>
+        ocFiletabsStage("unsaved", "Close") +
+        cb(`<div class="filetabs">
+  <span class="filetab active">
+    <button type="button" class="ft-name">session.ts</button>
+    <span class="ft-dirty" role="img" aria-label="unsaved"></span>
+    <button type="button" class="ft-close" aria-label="Close session.ts">×</button>
+  </span>
+  <span class="filetab">
+    <button type="button" class="ft-name">refresh.ts</button>
+    <button type="button" class="ft-close" aria-label="Close refresh.ts">×</button>
+  </span>
+</div>`) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.filetabs</code>", "the strip — scrolls sideways, never wraps"],
+            ["<code>.filetab</code>", "one open document; add <code>.active</code> for the focused one"],
+            ["<code>.ft-name</code>", "the switch button (a real <code>&lt;button&gt;</code>)"],
+            ["<code>.ft-dirty</code>", "unsaved marker — gold, same language as <code>.repo-dirty</code>"],
+            ["<code>.ft-close</code>", "the close button; grows to a 28px tap target on touch"],
+          ],
+        ) +
+        note(`Different job from <a href="#/tabs">Tabs</a>: <code>&lt;nes-tabs&gt;</code> swaps panels of content, <code>.filetabs</code> swaps the document inside <em>one</em> pane. Two names because they are two behaviours — don't stack them.`) +
+        a11y(`Name and close are separate buttons on purpose: a close × nested inside the switch button would be unreachable by keyboard. Label each close with the filename so a screen reader announces “Close session.ts”, not “×”.`),
+      vi: () =>
+        ocFiletabsStage("chưa lưu", "Đóng") +
+        cb(`<div class="filetabs">
+  <span class="filetab active">
+    <button type="button" class="ft-name">session.ts</button>
+    <span class="ft-dirty" role="img" aria-label="chưa lưu"></span>
+    <button type="button" class="ft-close" aria-label="Đóng session.ts">×</button>
+  </span>
+  <span class="filetab">
+    <button type="button" class="ft-name">refresh.ts</button>
+    <button type="button" class="ft-close" aria-label="Đóng refresh.ts">×</button>
+  </span>
+</div>`) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.filetabs</code>", "dải tab — cuộn ngang, không wrap"],
+            ["<code>.filetab</code>", "một document đang mở; thêm <code>.active</code> cho cái đang focus"],
+            ["<code>.ft-name</code>", "nút chuyển file (<code>&lt;button&gt;</code> thật)"],
+            ["<code>.ft-dirty</code>", "dấu chưa lưu — gold, cùng ngôn ngữ với <code>.repo-dirty</code>"],
+            ["<code>.ft-close</code>", "nút đóng; nở thành vùng chạm 28px trên touch"],
+          ],
+        ) +
+        note(`Khác việc với <a href="#/tabs">Tabs</a>: <code>&lt;nes-tabs&gt;</code> đổi panel nội dung, <code>.filetabs</code> đổi document trong <em>một</em> pane. Hai tên vì là hai hành vi — đừng lồng vào nhau.`) +
+        a11y(`Tên và nút đóng là hai button riêng có lý do: dấu × lồng trong nút chuyển sẽ không tới được bằng bàn phím. Đặt aria-label kèm tên file để trình đọc đọc “Đóng session.ts”, không phải “×”.`),
+    },
+  },
+  {
+    id: "statusline",
+    cat: "OpenCode",
+    name: "Status line",
+    desc: {
+      en: "The ambient bottom strip: run-state light + model · context · elapsed. Reads at a glance without stealing focus; data-state uses the shared run-state vocabulary.",
+      vi: "Dải dưới cùng: đèn trạng thái + model · context · thời gian. Đọc một cái là hiểu mà không giành focus; data-state dùng bộ từ vựng trạng thái chung.",
+    },
+    body: {
+      en: () =>
+        ocStatuslineStage() +
+        cb(`<div class="statusline" data-state="running">
+  <span class="sl-state">RUNNING</span>
+  <span class="sl-item"><nes-icon name="bot"></nes-icon>opus-4.8</span>
+  <span class="sl-item"><nes-icon name="layers"></nes-icon>12.4k / 200k</span>
+  <span class="sl-end">
+    <span class="sl-item"><nes-icon name="clock"></nes-icon>0:42</span>
+    <span class="sl-item"><nes-icon name="gitBranch"></nes-icon>main</span>
+  </span>
+</div>`) +
+        h2("Parts") +
+        api(
+          ["Class / attribute", "Role"],
+          [
+            ["<code>.statusline</code>", "the strip; sits last inside <code>.wb-main</code>"],
+            ["<code>data-state</code>", "<code>queued · thinking · running · done · error</code> — colours the light; thinking/running blink"],
+            ["<code>.sl-state</code>", "the state word + its light"],
+            ["<code>.sl-item</code>", "one readout (never wraps mid-value)"],
+            ["<code>.sl-end</code>", "trailing group, pushed right"],
+          ],
+        ) +
+        note(`Same vocabulary as <a href="#/agent">Agent</a>, <a href="#/trace">Trace</a>, <a href="#/plan">Plan</a>, <a href="#/checks">Checks</a> and <a href="#/deploy">Deploy</a> — one word, one colour, everywhere. Pair with <a href="#/usage">Context usage</a> when the token budget deserves a real bar rather than a number.`) +
+        a11y(`Tiny type is fine for ambient chrome, but never put a state <em>only</em> in the light — the word (“RUNNING”) is the accessible value. If the state changes on its own, wrap the strip in a polite live region so it is announced once, not continuously.`),
+      vi: () =>
+        ocStatuslineStage() +
+        cb(`<div class="statusline" data-state="running">
+  <span class="sl-state">RUNNING</span>
+  <span class="sl-item"><nes-icon name="bot"></nes-icon>opus-4.8</span>
+  <span class="sl-item"><nes-icon name="layers"></nes-icon>12.4k / 200k</span>
+  <span class="sl-end">
+    <span class="sl-item"><nes-icon name="clock"></nes-icon>0:42</span>
+    <span class="sl-item"><nes-icon name="gitBranch"></nes-icon>main</span>
+  </span>
+</div>`) +
+        h2("Thành phần") +
+        api(
+          ["Class / thuộc tính", "Vai trò"],
+          [
+            ["<code>.statusline</code>", "dải strip; nằm cuối trong <code>.wb-main</code>"],
+            ["<code>data-state</code>", "<code>queued · thinking · running · done · error</code> — tô màu đèn; thinking/running nháy"],
+            ["<code>.sl-state</code>", "từ trạng thái + đèn của nó"],
+            ["<code>.sl-item</code>", "một chỉ số (không xuống dòng giữa giá trị)"],
+            ["<code>.sl-end</code>", "nhóm cuối, đẩy sang phải"],
+          ],
+        ) +
+        note(`Cùng bộ từ vựng với <a href="#/agent">Agent</a>, <a href="#/trace">Trace</a>, <a href="#/plan">Plan</a>, <a href="#/checks">Checks</a> và <a href="#/deploy">Deploy</a> — một từ, một màu, ở mọi nơi. Ghép với <a href="#/usage">Context usage</a> khi token budget cần một thanh thật thay vì một con số.`) +
+        a11y(`Chữ nhỏ là ổn cho chrome nền, nhưng đừng để trạng thái <em>chỉ</em> nằm ở đèn — từ (“RUNNING”) mới là giá trị tiếp cận. Nếu trạng thái tự đổi, bọc dải này trong live region polite để được đọc một lần, không đọc liên tục.`),
+    },
+  },
+  {
+    id: "sandbox",
+    cat: "OpenCode",
+    name: "Sandbox",
+    desc: {
+      en: "The cloud dev container: is my machine alive, and what is it? A state light, a spec readout, and an actions slot.",
+      vi: "Container dev trên cloud: máy của tôi còn sống không, và nó là gì? Đèn trạng thái, thông số, và slot action.",
+    },
+    body: {
+      en: () =>
+        ocSandboxStage() +
+        cb(`<div class="sandbox" data-state="running">
+  <div class="sb-head">
+    <span class="sb-name">node-20 · sfo</span>
+    <span class="badge clear">LIVE</span>
+    <span class="sb-actions"><button class="btn xs ghost">RESTART</button></span>
+  </div>
+  <div class="sb-specs">
+    <span>CPU <b>2 vCPU</b></span>
+    <span>RAM <b>4 GB</b></span>
+    <span>UP <b>12m</b></span>
+  </div>
+</div>`) +
+        h2("Parts") +
+        api(
+          ["Class / attribute", "Role"],
+          [
+            ["<code>.sandbox</code>", "the card — state light + accent bar in the state colour"],
+            ["<code>data-state</code>", "<code>thinking</code> = booting · <code>running</code> = live · <code>queued</code> = stopped · <code>error</code> = crashed"],
+            ["<code>.sb-head</code>", "name + badge + actions (actions push right)"],
+            ["<code>.sb-specs</code>", "the spec row; <code>&lt;b&gt;</code> marks each value"],
+          ],
+        ) +
+        note(`It reuses the run-state vocabulary rather than inventing a container-only one, so “starting up” blinks gold here exactly like a thinking agent. One vocabulary is the whole point.`) +
+        a11y(`Keep the human state in text (the <code>.badge</code>) as well as the light. Restart/stop are destructive-ish — put the environment name in the button's <code>aria-label</code> so it can't be hit blind.`),
+      vi: () =>
+        ocSandboxStage() +
+        cb(`<div class="sandbox" data-state="running">
+  <div class="sb-head">
+    <span class="sb-name">node-20 · sfo</span>
+    <span class="badge clear">LIVE</span>
+    <span class="sb-actions"><button class="btn xs ghost">RESTART</button></span>
+  </div>
+  <div class="sb-specs">
+    <span>CPU <b>2 vCPU</b></span>
+    <span>RAM <b>4 GB</b></span>
+    <span>UP <b>12m</b></span>
+  </div>
+</div>`) +
+        h2("Thành phần") +
+        api(
+          ["Class / thuộc tính", "Vai trò"],
+          [
+            ["<code>.sandbox</code>", "card — đèn trạng thái + thanh accent theo màu trạng thái"],
+            ["<code>data-state</code>", "<code>thinking</code> = đang boot · <code>running</code> = live · <code>queued</code> = đã dừng · <code>error</code> = crash"],
+            ["<code>.sb-head</code>", "tên + badge + action (action đẩy sang phải)"],
+            ["<code>.sb-specs</code>", "hàng thông số; <code>&lt;b&gt;</code> đánh dấu từng giá trị"],
+          ],
+        ) +
+        note(`Dùng lại bộ từ vựng trạng thái chung chứ không tự tạo bộ riêng cho container, nên “đang khởi động” nháy gold y như một agent đang thinking. Một bộ từ vựng duy nhất — đó chính là điểm cốt lõi.`) +
+        a11y(`Giữ trạng thái ở dạng chữ (<code>.badge</code>) song song với đèn. Restart/stop hơi mang tính phá hủy — đưa tên môi trường vào <code>aria-label</code> của nút để không bấm mù.`),
+    },
+  },
+  {
+    id: "plan",
+    cat: "OpenCode",
+    name: "Plan",
+    desc: {
+      en: "What the agent intends to do, with live state per step — the todo list you watch tick over. Numbered marks share the run-state colours.",
+      vi: "Agent dự định làm gì, kèm trạng thái sống cho từng bước — danh sách todo bạn xem nó tick dần. Số bước dùng chung màu trạng thái.",
+    },
+    body: {
+      en: () =>
+        ocPlanStage() +
+        cb(`<ol class="plan">
+  <li class="plan-step" data-state="done">Read src/auth/session.ts</li>
+  <li class="plan-step" data-state="running">Wire rotation into /refresh
+    <span class="plan-note">editing src/routes/refresh.ts</span>
+  </li>
+  <li class="plan-step" data-state="queued">Add a regression test</li>
+</ol>`) +
+        h2("Parts") +
+        api(
+          ["Class / attribute", "Role"],
+          [
+            ["<code>.plan</code>", "the list (<code>&lt;ol&gt;</code> — order is meaning here)"],
+            ["<code>.plan-step</code>", "one step; its number comes from a CSS counter, so re-ordering never desyncs"],
+            ["<code>data-state</code>", "<code>queued · thinking · running · done · error</code>; done recedes, running blinks"],
+            ["<code>.plan-note</code>", "the sub-line — what it's doing right now, or why it failed"],
+          ],
+        ) +
+        note(`Three lists, three jobs: <a href="#/tasklist">Tasklist</a> is a static done/open checklist, <a href="#/trace">Trace</a> is what already happened (with tool I/O), <code>.plan</code> is the forward-looking queue. Pick by tense, not by looks.`) +
+        a11y(`An <code>&lt;ol&gt;</code> gives the count and position for free. The state is a colour + a blink, so repeat it in text where it matters — put “failed: schema.yaml not found” in <code>.plan-note</code> rather than relying on the red mark.`),
+      vi: () =>
+        ocPlanStage() +
+        cb(`<ol class="plan">
+  <li class="plan-step" data-state="done">Đọc src/auth/session.ts</li>
+  <li class="plan-step" data-state="running">Nối rotation vào /refresh
+    <span class="plan-note">đang sửa src/routes/refresh.ts</span>
+  </li>
+  <li class="plan-step" data-state="queued">Thêm test regression</li>
+</ol>`) +
+        h2("Thành phần") +
+        api(
+          ["Class / thuộc tính", "Vai trò"],
+          [
+            ["<code>.plan</code>", "danh sách (<code>&lt;ol&gt;</code> — thứ tự ở đây là ý nghĩa)"],
+            ["<code>.plan-step</code>", "một bước; số lấy từ CSS counter nên đổi thứ tự không bao giờ lệch"],
+            ["<code>data-state</code>", "<code>queued · thinking · running · done · error</code>; done mờ đi, running nháy"],
+            ["<code>.plan-note</code>", "dòng phụ — đang làm gì, hoặc vì sao lỗi"],
+          ],
+        ) +
+        note(`Ba danh sách, ba việc: <a href="#/tasklist">Tasklist</a> là checklist tĩnh done/open, <a href="#/trace">Trace</a> là chuyện đã xảy ra (kèm tool I/O), <code>.plan</code> là hàng đợi phía trước. Chọn theo “thời” của câu, không theo hình thức.`) +
+        a11y(`<code>&lt;ol&gt;</code> cho sẵn số lượng và vị trí. Trạng thái là màu + nháy, nên hãy nhắc lại bằng chữ ở nơi quan trọng — viết “lỗi: không thấy schema.yaml” trong <code>.plan-note</code> thay vì chỉ dựa vào dấu đỏ.`),
+    },
+  },
+  {
+    id: "perm",
+    cat: "OpenCode",
+    name: "Permission",
+    desc: {
+      en: "The gate: “the agent wants to run this — allow?” One request, one decision, the exact command shown verbatim. Warn accent because it blocks the loop.",
+      vi: "Cửa chặn: “agent muốn chạy cái này — cho phép?” Một yêu cầu, một quyết định, lệnh hiện nguyên văn. Accent warn vì nó chặn vòng lặp.",
+    },
+    body: {
+      en: () =>
+        ocPermStage(
+          "BASH",
+          "rm -rf node_modules &amp;&amp; pnpm install",
+          "Dependencies drifted from the lockfile — a clean reinstall fixes the failing build.",
+          `<button class="btn sm">ALLOW ONCE</button><button class="btn sm outline">ALWAYS ALLOW</button><button class="btn sm outline" data-accent="crit">DENY</button>`,
+        ) +
+        cb(`<div class="perm">
+  <span class="perm-kind">BASH</span>
+  <code class="perm-target">rm -rf node_modules && pnpm install</code>
+  <p class="perm-why">Dependencies drifted from the lockfile.</p>
+  <div class="perm-actions">
+    <button class="btn sm">ALLOW ONCE</button>
+    <button class="btn sm outline">ALWAYS ALLOW</button>
+    <button class="btn sm outline" data-accent="crit">DENY</button>
+  </div>
+</div>
+
+<!-- after the answer: keep the record, drop the affordance -->
+<div class="perm decided">…</div>`) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.perm</code>", "the request card; <code>data-accent</code> re-tints it (warn by default)"],
+            ["<code>.perm-kind</code>", "what kind of capability — BASH / WRITE / FETCH / MCP"],
+            ["<code>.perm-target</code>", "the exact thing that will run — monospaced, scrollable, never truncated"],
+            ["<code>.perm-why</code>", "the agent's justification in plain language"],
+            ["<code>.perm-actions</code>", "the decision buttons"],
+            ["<code>.decided</code>", "answered: dims the card and hides the actions"],
+          ],
+        ) +
+        crit(`Never truncate <code>.perm-target</code> with an ellipsis. A user approving a command they cannot fully read is the whole failure mode this component exists to prevent — it scrolls instead, on purpose.`) +
+        a11y(`Order the buttons least-destructive first and let the safest one take focus. Deny is <code>data-accent="crit"</code> <em>and</em> says “DENY” — never colour alone. If the request appears while the user is elsewhere, announce it in a polite live region rather than moving focus out from under them.`),
+      vi: () =>
+        ocPermStage(
+          "BASH",
+          "rm -rf node_modules &amp;&amp; pnpm install",
+          "Dependency lệch với lockfile — cài lại sạch sẽ sửa được build đang lỗi.",
+          `<button class="btn sm">CHO PHÉP 1 LẦN</button><button class="btn sm outline">LUÔN CHO PHÉP</button><button class="btn sm outline" data-accent="crit">TỪ CHỐI</button>`,
+        ) +
+        cb(`<div class="perm">
+  <span class="perm-kind">BASH</span>
+  <code class="perm-target">rm -rf node_modules && pnpm install</code>
+  <p class="perm-why">Dependency lệch với lockfile.</p>
+  <div class="perm-actions">
+    <button class="btn sm">CHO PHÉP 1 LẦN</button>
+    <button class="btn sm outline">LUÔN CHO PHÉP</button>
+    <button class="btn sm outline" data-accent="crit">TỪ CHỐI</button>
+  </div>
+</div>
+
+<!-- sau khi trả lời: giữ lại dấu vết, bỏ nút bấm -->
+<div class="perm decided">…</div>`) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.perm</code>", "card yêu cầu; <code>data-accent</code> đổi màu (mặc định warn)"],
+            ["<code>.perm-kind</code>", "loại quyền — BASH / WRITE / FETCH / MCP"],
+            ["<code>.perm-target</code>", "đúng thứ sẽ chạy — mono, cuộn được, không bao giờ bị cắt"],
+            ["<code>.perm-why</code>", "lý do của agent, bằng lời thường"],
+            ["<code>.perm-actions</code>", "các nút quyết định"],
+            ["<code>.decided</code>", "đã trả lời: làm mờ card và ẩn nút"],
+          ],
+        ) +
+        crit(`Đừng bao giờ cắt <code>.perm-target</code> bằng dấu “…”. Người dùng đồng ý một lệnh mà họ không đọc hết chính là kiểu lỗi mà component này ra đời để ngăn — nên nó cuộn, có chủ đích.`) +
+        a11y(`Xếp nút từ ít phá hủy nhất trước và để nút an toàn nhất nhận focus. Từ chối vừa <code>data-accent="crit"</code> vừa ghi rõ “TỪ CHỐI” — không bao giờ chỉ dựa vào màu. Nếu yêu cầu xuất hiện lúc người dùng đang làm việc khác, thông báo qua live region polite chứ đừng giật focus của họ.`),
+    },
+  },
+  {
+    id: "diffstat",
+    cat: "OpenCode",
+    name: "Diff stat",
+    desc: {
+      en: "The aggregate of a change set: N files, +added / -removed, and a proportional bar. The one-line answer to “how big is this?”.",
+      vi: "Tổng quan một change set: N file, +thêm / -bớt, và một thanh tỉ lệ. Câu trả lời một dòng cho “cái này lớn cỡ nào?”.",
+    },
+    body: {
+      en: () =>
+        ocDiffstatStage() +
+        cb(`<div class="diffstat">
+  <span class="ds-files">7 FILES</span>
+  <span class="ds-add">+184</span>
+  <span class="ds-del">-52</span>
+  <span class="ds-bar">
+    <i class="add" style="--seg:78%"></i>
+    <i class="del" style="--seg:22%"></i>
+  </span>
+</div>`) +
+        h2("Parts") +
+        api(
+          ["Class / token", "Role"],
+          [
+            ["<code>.diffstat</code>", "the row (wraps on narrow screens)"],
+            ["<code>.ds-files</code>", "file count — the headline number"],
+            ["<code>.ds-add</code> / <code>.ds-del</code>", "line totals, green / red"],
+            ["<code>.ds-bar</code>", "the proportion bar; each <code>&lt;i&gt;</code> is a slice"],
+            ["<code>--seg</code>", "a slice's share of the bar, in % — same contract as <a href='#/usage'>.usage-bar</a>"],
+          ],
+        ) +
+        note(`<code>&lt;nes-diff&gt;</code> emits <code>nes:diff {files,added,removed}</code> after every render, so a stat bar can follow a live patch with three assignments and no parsing of your own.`) +
+        a11y(`Colour distinguishes added from removed, so keep the <code>+</code> and <code>-</code> signs in the text. The bar is decoration on top of numbers already present — mark it <code>aria-hidden="true"</code> rather than inventing a label for it.`),
+      vi: () =>
+        ocDiffstatStage() +
+        cb(`<div class="diffstat">
+  <span class="ds-files">7 FILES</span>
+  <span class="ds-add">+184</span>
+  <span class="ds-del">-52</span>
+  <span class="ds-bar">
+    <i class="add" style="--seg:78%"></i>
+    <i class="del" style="--seg:22%"></i>
+  </span>
+</div>`) +
+        h2("Thành phần") +
+        api(
+          ["Class / token", "Vai trò"],
+          [
+            ["<code>.diffstat</code>", "hàng (wrap trên màn hẹp)"],
+            ["<code>.ds-files</code>", "số file — con số tiêu đề"],
+            ["<code>.ds-add</code> / <code>.ds-del</code>", "tổng số dòng, xanh / đỏ"],
+            ["<code>.ds-bar</code>", "thanh tỉ lệ; mỗi <code>&lt;i&gt;</code> là một phần"],
+            ["<code>--seg</code>", "phần trăm của một slice — cùng hợp đồng với <a href='#/usage'>.usage-bar</a>"],
+          ],
+        ) +
+        note(`<code>&lt;nes-diff&gt;</code> bắn <code>nes:diff {files,added,removed}</code> sau mỗi lần render, nên thanh stat có thể đi theo patch đang chạy chỉ với ba phép gán, không cần tự parse.`) +
+        a11y(`Màu phân biệt thêm/bớt, nên hãy giữ dấu <code>+</code> và <code>-</code> trong chữ. Thanh bar chỉ là trang trí trên các con số đã có — đặt <code>aria-hidden="true"</code> thay vì bịa ra nhãn cho nó.`),
+    },
+  },
+  {
+    id: "filechange",
+    cat: "OpenCode",
+    name: "File change",
+    desc: {
+      en: "One changed file: status mark (A/M/D/R) · path · ± counts. Render it as a link or button so it jumps to that file's diff.",
+      vi: "Một file thay đổi: dấu trạng thái (A/M/D/R) · đường dẫn · số ±. Render dạng link hoặc button để nhảy tới diff của file đó.",
+    },
+    body: {
+      en: () =>
+        ocFilechangeStage() +
+        cb(`<a class="filechange" data-change="M" href="#session-ts">
+  <span class="fc-mark">M</span>
+  <span class="fc-path"><span class="fc-dir">src/auth/</span>session.ts</span>
+  <span class="fc-count"><b class="add">+42</b><b class="del">-8</b></span>
+</a>`) +
+        h2("Parts") +
+        api(
+          ["Class / attribute", "Role"],
+          [
+            ["<code>.filechange</code>", "the row; use <code>&lt;a&gt;</code> or <code>&lt;button&gt;</code> so it's focusable"],
+            ["<code>data-change</code>", "<code>A</code> added (green) · <code>M</code> modified (gold) · <code>D</code> deleted (red) · <code>R</code> renamed (blue)"],
+            ["<code>.fc-mark</code>", "the git status letter, tinted by <code>data-change</code>"],
+            ["<code>.fc-path</code>", "the path; wrap the folder in <code>.fc-dir</code> so the filename pops"],
+            ["<code>.fc-count</code>", "per-file <code>+</code>/<code>-</code> totals"],
+          ],
+        ) +
+        note(`Stack these under a <a href="#/diffstat">Diff stat</a> for the review sidebar, then let each row scroll a <a href="#/hunk">Hunk</a> list into view. Three small pieces beat one “review panel” component you can't take apart.`) +
+        a11y(`The letter is not enough on its own — a screen reader reads “M”. Give the row an <code>aria-label</code> like “Modified src/auth/session.ts, 42 added, 8 removed”, or spell the status out in visually-hidden text.`),
+      vi: () =>
+        ocFilechangeStage() +
+        cb(`<a class="filechange" data-change="M" href="#session-ts">
+  <span class="fc-mark">M</span>
+  <span class="fc-path"><span class="fc-dir">src/auth/</span>session.ts</span>
+  <span class="fc-count"><b class="add">+42</b><b class="del">-8</b></span>
+</a>`) +
+        h2("Thành phần") +
+        api(
+          ["Class / thuộc tính", "Vai trò"],
+          [
+            ["<code>.filechange</code>", "hàng; dùng <code>&lt;a&gt;</code> hoặc <code>&lt;button&gt;</code> để focus được"],
+            ["<code>data-change</code>", "<code>A</code> thêm (xanh) · <code>M</code> sửa (gold) · <code>D</code> xóa (đỏ) · <code>R</code> đổi tên (blue)"],
+            ["<code>.fc-mark</code>", "chữ trạng thái git, tô theo <code>data-change</code>"],
+            ["<code>.fc-path</code>", "đường dẫn; bọc thư mục trong <code>.fc-dir</code> để tên file nổi lên"],
+            ["<code>.fc-count</code>", "tổng <code>+</code>/<code>-</code> của file"],
+          ],
+        ) +
+        note(`Xếp các hàng này dưới một <a href="#/diffstat">Diff stat</a> để làm sidebar review, rồi mỗi hàng cuộn tới danh sách <a href="#/hunk">Hunk</a>. Ba mảnh nhỏ hơn hẳn một component “review panel” không tháo ra được.`) +
+        a11y(`Một chữ cái là không đủ — trình đọc sẽ đọc “M”. Cho hàng một <code>aria-label</code> kiểu “Đã sửa src/auth/session.ts, thêm 42, bớt 8”, hoặc viết rõ trạng thái bằng chữ ẩn thị giác.`),
+    },
+  },
+  {
+    id: "hunk",
+    cat: "OpenCode",
+    name: "Hunk",
+    desc: {
+      en: "A reviewable slice of a diff: range + scope + keep/revert actions, collapsible with native <details>. The body stays a plain .diff.",
+      vi: "Một mảnh diff để review: range + scope + nút keep/revert, thu gọn bằng <details> gốc. Phần thân vẫn là .diff thuần.",
+    },
+    body: {
+      en: () =>
+        ocHunkStage("KEEP", "REVERT") +
+        cb(`<details class="hunk" open>
+  <summary class="hunk-head">
+    <code class="hunk-range">@@ -18,7 +18,9 @@</code>
+    <span class="hunk-scope">async function refresh()</span>
+    <span class="hunk-actions">
+      <button class="btn xs">KEEP</button>
+      <button class="btn xs outline" data-accent="crit">REVERT</button>
+    </span>
+  </summary>
+  <div class="diff">…</div>
+</details>
+
+<!-- always open? use a div head instead of a summary -->
+<div class="hunk">
+  <div class="hunk-head">…</div>
+  <nes-diff>…</nes-diff>
+</div>`) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.hunk</code>", "the frame — works on <code>&lt;details&gt;</code> (collapsible) or <code>&lt;div&gt;</code> (always open)"],
+            ["<code>.hunk-head</code>", "the header row; as a <code>&lt;summary&gt;</code> it becomes the toggle"],
+            ["<code>.hunk-range</code>", "the <code>@@</code> line range"],
+            ["<code>.hunk-scope</code>", "the enclosing function / block, if you know it"],
+            ["<code>.hunk-actions</code>", "keep / revert, pushed right"],
+          ],
+        ) +
+        warn(`A click on a button inside <code>&lt;summary&gt;</code> also toggles the <code>&lt;details&gt;</code> — that is native behaviour, not a bug. Call <code>event.stopPropagation()</code> in your keep/revert handler, or use the <code>&lt;div&gt;</code> form when the hunk should never collapse.`) +
+        note(`It owns only the review chrome: the body is a plain <a href="#/diff">.diff</a>, so hand-written diff HTML and <a href="#/diffview">&lt;nes-diff&gt;</a> both drop in, and the embedded diff sheds its own frame automatically.`) +
+        a11y(`<code>&lt;details&gt;</code> gives you the expanded state, keyboard toggle and focus ring for free. Label the actions with the hunk they affect (“Revert lines 18–26”) — “REVERT” alone is ambiguous in a list of ten.`),
+      vi: () =>
+        ocHunkStage("GIỮ", "HOÀN TÁC") +
+        cb(`<details class="hunk" open>
+  <summary class="hunk-head">
+    <code class="hunk-range">@@ -18,7 +18,9 @@</code>
+    <span class="hunk-scope">async function refresh()</span>
+    <span class="hunk-actions">
+      <button class="btn xs">GIỮ</button>
+      <button class="btn xs outline" data-accent="crit">HOÀN TÁC</button>
+    </span>
+  </summary>
+  <div class="diff">…</div>
+</details>
+
+<!-- luôn mở? dùng div thay cho summary -->
+<div class="hunk">
+  <div class="hunk-head">…</div>
+  <nes-diff>…</nes-diff>
+</div>`) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.hunk</code>", "khung — dùng được trên <code>&lt;details&gt;</code> (thu gọn) hoặc <code>&lt;div&gt;</code> (luôn mở)"],
+            ["<code>.hunk-head</code>", "hàng header; nếu là <code>&lt;summary&gt;</code> thì thành nút toggle"],
+            ["<code>.hunk-range</code>", "dải dòng <code>@@</code>"],
+            ["<code>.hunk-scope</code>", "hàm / block chứa nó, nếu biết"],
+            ["<code>.hunk-actions</code>", "keep / revert, đẩy sang phải"],
+          ],
+        ) +
+        warn(`Bấm một button bên trong <code>&lt;summary&gt;</code> cũng sẽ toggle <code>&lt;details&gt;</code> — đó là hành vi gốc của HTML, không phải bug. Gọi <code>event.stopPropagation()</code> trong handler keep/revert, hoặc dùng dạng <code>&lt;div&gt;</code> khi hunk không cần thu gọn.`) +
+        note(`Nó chỉ sở hữu phần chrome review: thân là <a href="#/diff">.diff</a> thuần, nên diff HTML viết tay và <a href="#/diffview">&lt;nes-diff&gt;</a> đều lắp vào được, và diff bên trong tự bỏ viền riêng.`) +
+        a11y(`<code>&lt;details&gt;</code> cho sẵn trạng thái mở/đóng, toggle bằng bàn phím và focus ring. Đặt nhãn nút theo hunk mà nó tác động (“Hoàn tác dòng 18–26”) — chỉ “HOÀN TÁC” thì mơ hồ khi có mười hunk.`),
+    },
+  },
+  {
+    id: "diffview",
+    cat: "OpenCode",
+    name: "DiffView",
+    desc: {
+      en: "Feed it a unified diff (git or agent output) and it renders on-brand diff markup, then reports the totals. Parsing and rendering only — no frame, no opinions.",
+      vi: "Đưa vào một unified diff (từ git hoặc agent) và nó render ra diff đúng phong cách, rồi báo lại tổng số. Chỉ parse và render — không viền, không áp đặt.",
+    },
+    body: {
+      en: () =>
+        ocDiffViewStage() +
+        cb(`<!-- the patch is the element's text content -->
+<nes-diff>diff --git a/src/auth/session.ts b/src/auth/session.ts
+--- a/src/auth/session.ts
++++ b/src/auth/session.ts
+@@ -18,7 +18,9 @@ export async function refresh(req) {
+   const token = read(req)
+-  return verify(token)
++  const next = await rotate(token)
++  return { token: next }
+ }</nes-diff>
+
+<script type="module">
+  const view = document.querySelector("nes-diff");
+  // streaming a patch in? just assign — it re-renders
+  view.value = await res.text();
+  view.addEventListener("nes:diff", (e) => {
+    const { files, added, removed } = e.detail;   // wire a .diffstat
+  });
+<\/script>`) +
+        apiGroups({
+          prop: [
+            ["<code>.value</code>", "string", "text content", "the raw unified diff; assigning re-renders"],
+            ["<code>.stat</code>", "<code>{files,added,removed}</code>", "—", "totals from the last render (read-only)"],
+          ],
+          method: [["<code>.render()</code>", "<code>() =&gt; void</code>", "—", "re-render from the current value"]],
+          event: [["<code>nes:diff</code>", "<code>{ files, added, removed }</code>", "—", "fired after every render"]],
+          slot: [["text content", "the unified diff, read once on connect (same contract as <a href='#/code'>&lt;nes-code&gt;</a>)"]],
+        }) +
+        h2("What it understands") +
+        api(
+          ["Input line", "Renders as"],
+          [
+            ["<code>diff --git</code>, <code>index</code>, <code>--- a/…</code>, <code>+++ b/…</code>, mode / rename headers", "<code>.file</code> — the file header band"],
+            ["<code>@@ -a,b +c,d @@</code>", "<code>.meta</code> — the hunk range, in cyan"],
+            ["<code>+line</code> / <code>-line</code>", "<code>.add</code> / <code>.del</code>, marker drawn by CSS"],
+            ["anything else", "<code>.ctx</code> — context (a leading space is stripped)"],
+          ],
+        ) +
+        note(`It renders into the plain <a href="#/diff">.diff</a> recipe, so it inherits that styling and nothing more — wrap it in a <a href="#/hunk">.hunk</a> for review actions, or in <a href="#/codegroup">a code group</a> to sit beside the final file. It counts files from <code>diff --git</code> headers, falling back to <code>+++</code> lines.`) +
+        crit(`It renders a diff; it does not apply one. Nothing here touches your files — wire <code>nes:diff</code> and your own apply/revert calls to do that, so the UI can never silently write to disk.`) +
+        a11y(`Every line is a block <code>&lt;span&gt;</code> with the <code>+</code>/<code>-</code> marker drawn in CSS, so a screen reader reads the code, not a wall of punctuation. Since the marker is decorative, keep additions and removals distinguishable in your own summaries by wording, not colour.`),
+      vi: () =>
+        ocDiffViewStage() +
+        cb(`<!-- patch chính là text content của element -->
+<nes-diff>diff --git a/src/auth/session.ts b/src/auth/session.ts
+--- a/src/auth/session.ts
++++ b/src/auth/session.ts
+@@ -18,7 +18,9 @@ export async function refresh(req) {
+   const token = read(req)
+-  return verify(token)
++  const next = await rotate(token)
++  return { token: next }
+ }</nes-diff>
+
+<script type="module">
+  const view = document.querySelector("nes-diff");
+  // đang stream patch về? cứ gán — nó tự render lại
+  view.value = await res.text();
+  view.addEventListener("nes:diff", (e) => {
+    const { files, added, removed } = e.detail;   // nối vào .diffstat
+  });
+<\/script>`) +
+        apiGroups({
+          prop: [
+            ["<code>.value</code>", "string", "text content", "unified diff thô; gán vào là render lại"],
+            ["<code>.stat</code>", "<code>{files,added,removed}</code>", "—", "tổng số của lần render gần nhất (chỉ đọc)"],
+          ],
+          method: [["<code>.render()</code>", "<code>() =&gt; void</code>", "—", "render lại từ value hiện tại"]],
+          event: [["<code>nes:diff</code>", "<code>{ files, added, removed }</code>", "—", "bắn sau mỗi lần render"]],
+          slot: [["text content", "unified diff, đọc một lần khi connect (cùng hợp đồng với <a href='#/code'>&lt;nes-code&gt;</a>)"]],
+        }) +
+        h2("Nó hiểu những gì") +
+        api(
+          ["Dòng đầu vào", "Render thành"],
+          [
+            ["<code>diff --git</code>, <code>index</code>, <code>--- a/…</code>, <code>+++ b/…</code>, header mode / rename", "<code>.file</code> — dải header của file"],
+            ["<code>@@ -a,b +c,d @@</code>", "<code>.meta</code> — dải dòng của hunk, màu cyan"],
+            ["<code>+dòng</code> / <code>-dòng</code>", "<code>.add</code> / <code>.del</code>, dấu do CSS vẽ"],
+            ["còn lại", "<code>.ctx</code> — dòng ngữ cảnh (bỏ một space ở đầu)"],
+          ],
+        ) +
+        note(`Nó render vào recipe <a href="#/diff">.diff</a> thuần nên chỉ thừa hưởng đúng style đó — bọc trong <a href="#/hunk">.hunk</a> để có nút review, hoặc trong <a href="#/codegroup">code group</a> để đặt cạnh file kết quả. Số file đếm từ header <code>diff --git</code>, nếu không có thì đếm dòng <code>+++</code>.`) +
+        crit(`Nó render diff, không apply diff. Không có gì ở đây chạm vào file của bạn — hãy tự nối <code>nes:diff</code> với hàm apply/revert của bạn, để UI không bao giờ âm thầm ghi xuống đĩa.`) +
+        a11y(`Mỗi dòng là một <code>&lt;span&gt;</code> block với dấu <code>+</code>/<code>-</code> do CSS vẽ, nên trình đọc đọc code chứ không đọc một rừng dấu. Vì dấu chỉ là trang trí, hãy phân biệt thêm/bớt trong phần tóm tắt của bạn bằng từ ngữ, không bằng màu.`),
+    },
+  },
+  {
+    id: "checks",
+    cat: "OpenCode",
+    name: "Checks",
+    desc: {
+      en: "Did it actually work: lint / types / unit / build — one row each, with the shared run-state vocabulary and an optional link to the logs.",
+      vi: "Nó có chạy thật không: lint / types / unit / build — mỗi thứ một hàng, dùng bộ từ vựng trạng thái chung và link tới log nếu cần.",
+    },
+    body: {
+      en: () =>
+        ocChecksStage("LOGS") +
+        cb(`<ul class="checks">
+  <li class="check-item" data-state="done">
+    <span class="chk-name">lint</span><span class="chk-meta">1.2s</span>
+  </li>
+  <li class="check-item" data-state="running">
+    <span class="chk-name">unit</span><span class="chk-meta">42 / 96</span>
+  </li>
+  <li class="check-item" data-state="error">
+    <span class="chk-name">e2e</span><span class="chk-meta">3 failing</span>
+    <a class="chk-link" href="#logs">LOGS →</a>
+  </li>
+</ul>`) +
+        h2("Parts") +
+        api(
+          ["Class / attribute", "Role"],
+          [
+            ["<code>.checks</code>", "the list; neighbouring rows share one seam line"],
+            ["<code>.check-item</code>", "one check — its state light comes from <code>data-state</code>"],
+            ["<code>data-state</code>", "<code>queued · thinking · running · done · error</code>; running blinks"],
+            ["<code>.chk-name</code>", "the check's name"],
+            ["<code>.chk-meta</code>", "duration, progress, or the failure count"],
+            ["<code>.chk-link</code>", "link to the logs, pushed right"],
+          ],
+        ) +
+        note(`This is the verification roster; <a href="#/runbar">Run bar</a> is the one process you started, and <a href="#/logs">&lt;nes-logs&gt;</a> is its output. A failing row plus a <a href="#/stacktrace">Stack trace</a> is the whole error-to-fix loop.`) +
+        a11y(`Use a real list so the count is announced. The light is colour-only, so <code>.chk-meta</code> should carry the outcome in words (“3 failing”, “passed in 1.2s”). If rows flip state on their own, make the list a polite live region.`),
+      vi: () =>
+        ocChecksStage("LOG") +
+        cb(`<ul class="checks">
+  <li class="check-item" data-state="done">
+    <span class="chk-name">lint</span><span class="chk-meta">1.2s</span>
+  </li>
+  <li class="check-item" data-state="running">
+    <span class="chk-name">unit</span><span class="chk-meta">42 / 96</span>
+  </li>
+  <li class="check-item" data-state="error">
+    <span class="chk-name">e2e</span><span class="chk-meta">3 lỗi</span>
+    <a class="chk-link" href="#logs">LOG →</a>
+  </li>
+</ul>`) +
+        h2("Thành phần") +
+        api(
+          ["Class / thuộc tính", "Vai trò"],
+          [
+            ["<code>.checks</code>", "danh sách; hai hàng liền nhau dùng chung một đường viền"],
+            ["<code>.check-item</code>", "một check — đèn trạng thái lấy từ <code>data-state</code>"],
+            ["<code>data-state</code>", "<code>queued · thinking · running · done · error</code>; running nháy"],
+            ["<code>.chk-name</code>", "tên check"],
+            ["<code>.chk-meta</code>", "thời gian, tiến độ, hoặc số lỗi"],
+            ["<code>.chk-link</code>", "link tới log, đẩy sang phải"],
+          ],
+        ) +
+        note(`Đây là bảng kiểm chứng; <a href="#/runbar">Run bar</a> là một process bạn vừa chạy, còn <a href="#/logs">&lt;nes-logs&gt;</a> là output của nó. Một hàng lỗi cộng một <a href="#/stacktrace">Stack trace</a> là đủ trọn vòng lỗi-đến-sửa.`) +
+        a11y(`Dùng list thật để số lượng được đọc ra. Đèn chỉ có màu, nên <code>.chk-meta</code> nên mang kết quả bằng chữ (“3 lỗi”, “xong trong 1.2s”). Nếu các hàng tự đổi trạng thái, hãy để danh sách làm live region polite.`),
+    },
+  },
+  {
+    id: "runbar",
+    cat: "OpenCode",
+    name: "Run bar",
+    desc: {
+      en: "The process strip: stop/start, the command, the port it bound, and how long it took. One running task per bar.",
+      vi: "Dải process: dừng/chạy, câu lệnh, cổng nó bind, và mất bao lâu. Mỗi bar một task đang chạy.",
+    },
+    body: {
+      en: () =>
+        ocRunbarStage("Stop", "Retry", "ready in 412ms", "exited 1 · 4.2s") +
+        cb(`<div class="runbar" data-state="running">
+  <button class="btn xs icon" aria-label="Stop pnpm dev">
+    <nes-icon name="stop"></nes-icon>
+  </button>
+  <span class="run-cmd">pnpm dev</span>
+  <a class="run-url" href="http://localhost:5173">localhost:5173</a>
+  <span class="run-meta">ready in 412ms</span>
+</div>`) +
+        h2("Parts") +
+        api(
+          ["Class / attribute", "Role"],
+          [
+            ["<code>.runbar</code>", "the strip; its leading light comes from <code>data-state</code>"],
+            ["<code>data-state</code>", "<code>queued · thinking · running · done · error</code>; running blinks"],
+            ["<code>.run-cmd</code>", "the command, verbatim"],
+            ["<code>.run-url</code>", "the address it bound, in the accent colour"],
+            ["<code>.run-meta</code>", "timing or exit code, pushed right"],
+          ],
+        ) +
+        note(`One bar per process. Put the dev server above a <a href="#/preview">&lt;nes-preview&gt;</a> and the test run above <a href="#/logs">&lt;nes-logs&gt;</a> — the bar controls, the pane shows. For many tasks at once, a <a href="#/checks">Checks</a> list reads better than a stack of bars.`) +
+        a11y(`The single stop/start button changes meaning with the state, so label it with the action <em>and</em> the target (“Stop pnpm dev”), and update the label when the state flips. An icon-only button with no label is unusable by screen reader.`),
+      vi: () =>
+        ocRunbarStage("Dừng", "Chạy lại", "sẵn sàng sau 412ms", "thoát 1 · 4.2s") +
+        cb(`<div class="runbar" data-state="running">
+  <button class="btn xs icon" aria-label="Dừng pnpm dev">
+    <nes-icon name="stop"></nes-icon>
+  </button>
+  <span class="run-cmd">pnpm dev</span>
+  <a class="run-url" href="http://localhost:5173">localhost:5173</a>
+  <span class="run-meta">sẵn sàng sau 412ms</span>
+</div>`) +
+        h2("Thành phần") +
+        api(
+          ["Class / thuộc tính", "Vai trò"],
+          [
+            ["<code>.runbar</code>", "dải strip; đèn đầu hàng lấy từ <code>data-state</code>"],
+            ["<code>data-state</code>", "<code>queued · thinking · running · done · error</code>; running nháy"],
+            ["<code>.run-cmd</code>", "câu lệnh, nguyên văn"],
+            ["<code>.run-url</code>", "địa chỉ nó bind, màu accent"],
+            ["<code>.run-meta</code>", "thời gian hoặc exit code, đẩy sang phải"],
+          ],
+        ) +
+        note(`Mỗi process một bar. Đặt dev server phía trên <a href="#/preview">&lt;nes-preview&gt;</a> và lần chạy test phía trên <a href="#/logs">&lt;nes-logs&gt;</a> — bar điều khiển, pane hiển thị. Nếu có nhiều task cùng lúc, danh sách <a href="#/checks">Checks</a> dễ đọc hơn một chồng bar.`) +
+        a11y(`Nút dừng/chạy duy nhất đổi nghĩa theo trạng thái, nên hãy ghi nhãn cả hành động <em>và</em> đối tượng (“Dừng pnpm dev”), và cập nhật nhãn khi trạng thái đổi. Nút chỉ có icon mà không nhãn thì trình đọc không dùng được.`),
+    },
+  },
+  {
+    id: "logs",
+    cat: "OpenCode",
+    name: "Logs",
+    desc: {
+      en: "A streaming log surface: push lines, it follows the tail — unless you scrolled up, then it holds still. Ring-buffered and filterable by level.",
+      vi: "Bề mặt log streaming: push dòng vào, nó tự theo cuối — trừ khi bạn đã cuộn lên, lúc đó nó đứng yên. Có ring buffer và lọc theo level.",
+    },
+    body: {
+      en: () =>
+        ocLogsStage() +
+        cb(`<nes-logs max="500" style="--logs-h:18rem"></nes-logs>
+
+<script type="module">
+  const logs = document.querySelector("nes-logs");
+  for await (const line of stream) logs.push(line, level(line));
+  logs.push("built in 5.91s", "done");
+
+  // the toolbar is yours — one attribute drives the filter
+  logs.setAttribute("level", "error");
+  logs.follow();       // jump back to the tail
+<\/script>`) +
+        apiGroups({
+          attr: [
+            ["<code>max</code>", "number", "<code>500</code>", "ring-buffer cap; older lines drop so a long build can't grow forever"],
+            ["<code>level</code>", "<code>all</code> | level", "<code>all</code>", "show only lines of this level (the others are hidden, not deleted)"],
+            ["<code>--logs-h</code>", "length", "<code>14rem</code>", "max height before it scrolls"],
+          ],
+          prop: [
+            ["<code>.max</code>", "number", "<code>500</code>", "the active cap (read-only)"],
+            ["<code>.pinned</code>", "boolean", "<code>true</code>", "whether the view is stuck to the tail"],
+          ],
+          method: [
+            ["<code>.push(text, level?)</code>", "<code>(string, LogLevel) =&gt; HTMLElement</code>", "<code>\"info\"</code>", "append one line; returns the created <code>.logline</code>"],
+            ["<code>.clear()</code>", "<code>() =&gt; void</code>", "—", "drop every line"],
+            ["<code>.follow()</code>", "<code>() =&gt; void</code>", "—", "jump back to the tail"],
+          ],
+          slot: [["<code>.logline</code> children", "pre-rendered lines (SSR / a saved run) are filtered like pushed ones"]],
+        }) +
+        h2("Levels") +
+        api(
+          ["Level", "Reads as"],
+          [
+            ["<code>info</code>", "the default — muted body text"],
+            ["<code>debug</code>", "dim (noise you keep but don't read)"],
+            ["<code>warn</code>", "gold"],
+            ["<code>error</code>", "red"],
+            ["<code>done</code>", "green — the line you were waiting for"],
+          ],
+        ) +
+        note(`Deliberately no toolbar: filtering and follow are one attribute and one method, so you compose <a href="#/segment">.segment</a> / <a href="#/button">.btn</a> beside it and keep full control of the layout. For a finished transcript, the static <a href="#/terminal">.terminal</a> recipe needs no JS at all.`) +
+        a11y(`The surface is <code>role="log"</code>, which announces additions politely and never interrupts. That's also why <code>push()</code> appends text nodes rather than re-rendering: re-rendering a live region re-announces everything.`),
+      vi: () =>
+        ocLogsStage() +
+        cb(`<nes-logs max="500" style="--logs-h:18rem"></nes-logs>
+
+<script type="module">
+  const logs = document.querySelector("nes-logs");
+  for await (const line of stream) logs.push(line, level(line));
+  logs.push("built in 5.91s", "done");
+
+  // toolbar là của bạn — chỉ một attribute điều khiển filter
+  logs.setAttribute("level", "error");
+  logs.follow();       // nhảy về cuối
+<\/script>`) +
+        apiGroups({
+          attr: [
+            ["<code>max</code>", "number", "<code>500</code>", "giới hạn ring buffer; dòng cũ bị bỏ để build dài không phình mãi"],
+            ["<code>level</code>", "<code>all</code> | level", "<code>all</code>", "chỉ hiện dòng của level này (các dòng khác bị ẩn, không bị xóa)"],
+            ["<code>--logs-h</code>", "length", "<code>14rem</code>", "chiều cao tối đa trước khi cuộn"],
+          ],
+          prop: [
+            ["<code>.max</code>", "number", "<code>500</code>", "giới hạn đang dùng (chỉ đọc)"],
+            ["<code>.pinned</code>", "boolean", "<code>true</code>", "view có đang dính vào cuối không"],
+          ],
+          method: [
+            ["<code>.push(text, level?)</code>", "<code>(string, LogLevel) =&gt; HTMLElement</code>", "<code>\"info\"</code>", "thêm một dòng; trả về <code>.logline</code> vừa tạo"],
+            ["<code>.clear()</code>", "<code>() =&gt; void</code>", "—", "xóa hết dòng"],
+            ["<code>.follow()</code>", "<code>() =&gt; void</code>", "—", "nhảy về cuối"],
+          ],
+          slot: [["các con <code>.logline</code>", "dòng render sẵn (SSR / một lần chạy đã lưu) cũng được lọc như dòng push vào"]],
+        }) +
+        h2("Level") +
+        api(
+          ["Level", "Đọc thành"],
+          [
+            ["<code>info</code>", "mặc định — chữ thân muted"],
+            ["<code>debug</code>", "mờ (nhiễu vẫn giữ nhưng không đọc)"],
+            ["<code>warn</code>", "gold"],
+            ["<code>error</code>", "đỏ"],
+            ["<code>done</code>", "xanh — dòng bạn đang chờ"],
+          ],
+        ) +
+        note(`Cố tình không có toolbar: filter và follow chỉ là một attribute và một method, nên bạn tự ghép <a href="#/segment">.segment</a> / <a href="#/button">.btn</a> bên cạnh và toàn quyền về layout. Với transcript đã xong, recipe tĩnh <a href="#/terminal">.terminal</a> không cần JS.`) +
+        a11y(`Bề mặt này là <code>role="log"</code>, đọc phần thêm mới một cách polite và không cắt ngang. Đó cũng là lý do <code>push()</code> thêm text node thay vì render lại: render lại một live region sẽ đọc lại toàn bộ.`),
+    },
+  },
+  {
+    id: "preview",
+    cat: "OpenCode",
+    name: "App preview",
+    desc: {
+      en: "The running app in a framed viewport — URL bar, reload, and 375 / 768 / full widths. The pane that closes the vibe-coding loop.",
+      vi: "App đang chạy trong một khung viewport — thanh URL, reload, và các bề rộng 375 / 768 / full. Pane khép lại vòng lặp vibe coding.",
+    },
+    body: {
+      en: () =>
+        ocPreviewStage() +
+        cb(`<nes-preview src="http://localhost:5173" view="mobile"
+             aria-label="Storefront preview" style="--av-h:28rem"></nes-preview>
+
+<script type="module">
+  const pv = document.querySelector("nes-preview");
+  pv.url = "http://localhost:5173/checkout";  // navigate
+  pv.view = "desktop";                        // switch viewport
+  pv.reload();                                // after a hot rebuild
+  pv.addEventListener("nes:navigate", (e) => console.log(e.detail.url));
+<\/script>`) +
+        apiGroups({
+          attr: [
+            ["<code>src</code>", "url", "<code>about:blank</code>", "the address in the frame; changing it navigates"],
+            ["<code>view</code>", "<code>mobile</code> | <code>tablet</code> | <code>desktop</code>", "<code>desktop</code>", "viewport preset — 375px / 768px / full width"],
+            ["<code>no-bar</code>", "boolean", "off", "hide the URL bar (embed it under your own controls)"],
+            ["<code>sandbox</code>", "string", "—", "passed through to the iframe verbatim when present"],
+            ["<code>aria-label</code>", "string", '<code>"App preview"</code>', "becomes the iframe's title"],
+            ["<code>--av-h</code> / <code>--av-w</code>", "length", "<code>22rem</code> / preset", "frame height / width override"],
+          ],
+          prop: [
+            ["<code>.url</code>", "string", "—", "get / set the previewed address"],
+            ["<code>.view</code>", "<code>PreviewView</code>", "<code>desktop</code>", "get / set the viewport preset"],
+          ],
+          method: [["<code>.reload()</code>", "<code>() =&gt; void</code>", "—", "reload the frame (or navigate, if the URL field was edited)"]],
+          event: [["<code>nes:navigate</code>", "<code>{ url }</code>", "—", "the frame was pointed somewhere, or reloaded"]],
+        }) +
+        note(`The bar is built from the recipes you already have — <a href="#/input">.input</a>, <a href="#/button">.btn</a>, <a href="#/segment">.segment</a> — so it inherits the size scale and accents with no new styling. The viewport buttons read <code>375</code> / <code>768</code> / <code>FULL</code> because a width is more useful than a device name.`) +
+        warn(`<code>sandbox</code> is passed through exactly as you write it and is <em>not</em> set by default — a dev preview usually needs scripts and same-origin, and silently choosing that trade-off for you would be the wrong call. Decide it explicitly for untrusted content.`) +
+        a11y(`An iframe needs a title: <code>aria-label</code> on the host becomes it. The viewport buttons carry full labels (“Mobile · 375px”) behind their short text, and the URL field is a real labelled input, so the whole bar is keyboard-operable.`),
+      vi: () =>
+        ocPreviewStage() +
+        cb(`<nes-preview src="http://localhost:5173" view="mobile"
+             aria-label="Preview cửa hàng" style="--av-h:28rem"></nes-preview>
+
+<script type="module">
+  const pv = document.querySelector("nes-preview");
+  pv.url = "http://localhost:5173/checkout";  // điều hướng
+  pv.view = "desktop";                        // đổi viewport
+  pv.reload();                                // sau khi rebuild nóng
+  pv.addEventListener("nes:navigate", (e) => console.log(e.detail.url));
+<\/script>`) +
+        apiGroups({
+          attr: [
+            ["<code>src</code>", "url", "<code>about:blank</code>", "địa chỉ trong frame; đổi là điều hướng"],
+            ["<code>view</code>", "<code>mobile</code> | <code>tablet</code> | <code>desktop</code>", "<code>desktop</code>", "preset viewport — 375px / 768px / full width"],
+            ["<code>no-bar</code>", "boolean", "tắt", "ẩn thanh URL (nhúng dưới control của bạn)"],
+            ["<code>sandbox</code>", "string", "—", "truyền nguyên văn xuống iframe khi có mặt"],
+            ["<code>aria-label</code>", "string", '<code>"App preview"</code>', "trở thành title của iframe"],
+            ["<code>--av-h</code> / <code>--av-w</code>", "length", "<code>22rem</code> / preset", "ghi đè chiều cao / rộng khung"],
+          ],
+          prop: [
+            ["<code>.url</code>", "string", "—", "lấy / gán địa chỉ đang preview"],
+            ["<code>.view</code>", "<code>PreviewView</code>", "<code>desktop</code>", "lấy / gán preset viewport"],
+          ],
+          method: [["<code>.reload()</code>", "<code>() =&gt; void</code>", "—", "reload frame (hoặc điều hướng, nếu ô URL vừa được sửa)"]],
+          event: [["<code>nes:navigate</code>", "<code>{ url }</code>", "—", "frame được trỏ tới đâu đó, hoặc vừa reload"]],
+        }) +
+        note(`Thanh bar dựng từ đúng những recipe bạn đã có — <a href="#/input">.input</a>, <a href="#/button">.btn</a>, <a href="#/segment">.segment</a> — nên thừa hưởng thang size và accent mà không cần style mới. Nút viewport ghi <code>375</code> / <code>768</code> / <code>FULL</code> vì một con số bề rộng hữu ích hơn một tên thiết bị.`) +
+        warn(`<code>sandbox</code> được truyền y nguyên như bạn viết và <em>không</em> được đặt sẵn — preview dev thường cần scripts và same-origin, và tự ý chọn đánh đổi đó thay bạn là sai. Hãy quyết định rõ ràng khi nội dung không đáng tin.`) +
+        a11y(`iframe cần title: <code>aria-label</code> trên host sẽ thành title đó. Nút viewport mang nhãn đầy đủ (“Mobile · 375px”) phía sau chữ ngắn, và ô URL là input có nhãn thật, nên cả thanh bar dùng được bằng bàn phím.`),
+    },
+  },
+  {
+    id: "stacktrace",
+    cat: "OpenCode",
+    name: "Stack trace",
+    desc: {
+      en: "The failure, readable: kind + message, then frames with your code lit and vendor frames dimmed, plus the action that starts the next agent loop.",
+      vi: "Lỗi, ở dạng đọc được: loại + thông điệp, rồi các frame với code của bạn được làm nổi và frame vendor mờ đi, cộng nút mở vòng lặp agent tiếp theo.",
+    },
+    body: {
+      en: () =>
+        ocStacktraceStage("FIX WITH AI", "OPEN FILE") +
+        cb(`<div class="stacktrace">
+  <div class="st-head">
+    <span class="st-kind">TypeError</span>
+    <span class="st-msg">Cannot read properties of undefined (reading 'id')</span>
+  </div>
+  <ol class="st-frames">
+    <li class="st-frame app">
+      <code>src/auth/session.ts:42:19</code><span class="st-fn">getSession</span>
+    </li>
+    <li class="st-frame">
+      <code>node_modules/h3/dist/index.mjs:812:14</code><span class="st-fn">toNodeHandle</span>
+    </li>
+  </ol>
+  <div class="st-actions">
+    <button class="btn sm"><nes-icon name="wand"></nes-icon>FIX WITH AI</button>
+    <button class="btn sm ghost">OPEN FILE</button>
+  </div>
+</div>`) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.stacktrace</code>", "the card — crit accent bar, because this is a failure"],
+            ["<code>.st-kind</code>", "the error class (TypeError, ENOENT, …)"],
+            ["<code>.st-msg</code>", "the message, in body type so long text stays readable"],
+            ["<code>.st-frames</code>", "the frame list; scrolls sideways instead of wrapping paths"],
+            ["<code>.st-frame</code>", "one frame; add <code>.app</code> for your own code"],
+            ["<code>.st-fn</code>", "the function name"],
+            ["<code>.st-actions</code>", "what happens next — fix, open, copy"],
+          ],
+        ) +
+        note(`<code>.app</code> is the whole point: marking your frames and dimming <code>node_modules</code> turns a 40-line trace into two lines that matter. Not a <a href="#/alert">callout</a> — a callout is a message, this is evidence you click into.`) +
+        a11y(`An <code>&lt;ol&gt;</code> keeps the frame order meaningful (innermost first). The <code>.app</code> highlight is colour, so keep the path visible in every frame — that's what tells a reader whose code it is. Paths scroll rather than truncate so nothing is silently hidden.`),
+      vi: () =>
+        ocStacktraceStage("SỬA BẰNG AI", "MỞ FILE") +
+        cb(`<div class="stacktrace">
+  <div class="st-head">
+    <span class="st-kind">TypeError</span>
+    <span class="st-msg">Cannot read properties of undefined (reading 'id')</span>
+  </div>
+  <ol class="st-frames">
+    <li class="st-frame app">
+      <code>src/auth/session.ts:42:19</code><span class="st-fn">getSession</span>
+    </li>
+    <li class="st-frame">
+      <code>node_modules/h3/dist/index.mjs:812:14</code><span class="st-fn">toNodeHandle</span>
+    </li>
+  </ol>
+  <div class="st-actions">
+    <button class="btn sm"><nes-icon name="wand"></nes-icon>SỬA BẰNG AI</button>
+    <button class="btn sm ghost">MỞ FILE</button>
+  </div>
+</div>`) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.stacktrace</code>", "card — thanh accent crit, vì đây là lỗi"],
+            ["<code>.st-kind</code>", "lớp lỗi (TypeError, ENOENT, …)"],
+            ["<code>.st-msg</code>", "thông điệp, dùng font thân để chữ dài vẫn dễ đọc"],
+            ["<code>.st-frames</code>", "danh sách frame; cuộn ngang thay vì bẻ dòng đường dẫn"],
+            ["<code>.st-frame</code>", "một frame; thêm <code>.app</code> cho code của bạn"],
+            ["<code>.st-fn</code>", "tên hàm"],
+            ["<code>.st-actions</code>", "bước tiếp theo — sửa, mở, copy"],
+          ],
+        ) +
+        note(`<code>.app</code> chính là điểm cốt lõi: đánh dấu frame của bạn và làm mờ <code>node_modules</code> biến một trace 40 dòng thành hai dòng đáng đọc. Không phải <a href="#/alert">callout</a> — callout là một thông điệp, đây là bằng chứng bạn click vào.`) +
+        a11y(`<code>&lt;ol&gt;</code> giữ thứ tự frame có nghĩa (trong cùng trước). Phần làm nổi <code>.app</code> là màu, nên hãy để đường dẫn hiện ở mọi frame — đó mới là thứ cho người đọc biết code của ai. Đường dẫn cuộn chứ không bị cắt để không có gì bị ẩn âm thầm.`),
+    },
+  },
+  {
+    id: "ckpt",
+    cat: "OpenCode",
+    name: "Checkpoints",
+    desc: {
+      en: "Time travel: every snapshot you can rewind to, with the one you're on marked. The safety net that makes fast, messy iteration safe.",
+      vi: "Du hành thời gian: mọi snapshot bạn có thể quay về, có đánh dấu điểm bạn đang ở. Lưới an toàn giúp việc lặp nhanh và bừa trở nên an toàn.",
+    },
+    body: {
+      en: () =>
+        ocCkptStage("NOW", "RESTORE") +
+        cb(`<ol class="ckpt">
+  <li class="ckpt-item current">
+    <span class="cp-time">14:07</span>
+    <span class="cp-label">Wire rotation into /refresh</span>
+    <span class="cp-actions"><span class="badge clear">NOW</span></span>
+  </li>
+  <li class="ckpt-item">
+    <span class="cp-time">14:02</span>
+    <span class="cp-label">Add rotate() helper</span>
+    <span class="cp-actions"><button class="btn xs ghost">RESTORE</button></span>
+  </li>
+</ol>`) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.ckpt</code>", "the list, newest first (a rail runs down the markers)"],
+            ["<code>.ckpt-item</code>", "one snapshot"],
+            ["<code>.current</code>", "where you are now — a filled marker, brighter text"],
+            ["<code>.cp-time</code>", "when it was taken"],
+            ["<code>.cp-label</code>", "what changed (truncates — the time and action stay visible)"],
+            ["<code>.cp-actions</code>", "restore / diff, pushed right"],
+          ],
+        ) +
+        note(`Close cousin of <a href="#/timeline">Timeline</a>, different job: a timeline narrates history, <code>.ckpt</code> lets you <em>go</em> there. If nothing is restorable, use the timeline — an inert restore button is worse than none.`) +
+        warn(`Restoring throws away work that came after it. Confirm before you do it (a <a href="#/modal">modal</a>), and say what will be lost — a one-click, silent rewind is how people lose an afternoon.`) +
+        a11y(`Label each restore with its checkpoint (“Restore 14:02 — Add rotate() helper”); ten buttons all reading “RESTORE” are unusable by screen reader. Mark the current row with <code>aria-current="true"</code> so it isn't identified by colour alone.`),
+      vi: () =>
+        ocCkptStage("HIỆN TẠI", "PHỤC HỒI") +
+        cb(`<ol class="ckpt">
+  <li class="ckpt-item current">
+    <span class="cp-time">14:07</span>
+    <span class="cp-label">Nối rotation vào /refresh</span>
+    <span class="cp-actions"><span class="badge clear">HIỆN TẠI</span></span>
+  </li>
+  <li class="ckpt-item">
+    <span class="cp-time">14:02</span>
+    <span class="cp-label">Thêm helper rotate()</span>
+    <span class="cp-actions"><button class="btn xs ghost">PHỤC HỒI</button></span>
+  </li>
+</ol>`) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.ckpt</code>", "danh sách, mới nhất trước (một thanh ray chạy dọc các dấu)"],
+            ["<code>.ckpt-item</code>", "một snapshot"],
+            ["<code>.current</code>", "vị trí bạn đang ở — dấu được tô đầy, chữ sáng hơn"],
+            ["<code>.cp-time</code>", "thời điểm chụp"],
+            ["<code>.cp-label</code>", "thay đổi gì (bị cắt bớt — giờ và nút vẫn luôn thấy)"],
+            ["<code>.cp-actions</code>", "phục hồi / xem diff, đẩy sang phải"],
+          ],
+        ) +
+        note(`Họ hàng gần của <a href="#/timeline">Timeline</a> nhưng khác việc: timeline kể lại lịch sử, <code>.ckpt</code> cho bạn <em>đi</em> tới đó. Nếu không có gì phục hồi được thì dùng timeline — một nút phục hồi vô tác dụng còn tệ hơn không có.`) +
+        warn(`Phục hồi sẽ bỏ đi phần việc làm sau điểm đó. Hãy xác nhận trước (một <a href="#/modal">modal</a>) và nói rõ sẽ mất gì — quay về một cú click, im lặng, chính là cách người ta mất cả buổi chiều.`) +
+        a11y(`Đặt nhãn nút phục hồi kèm checkpoint (“Phục hồi 14:02 — Thêm helper rotate()”); mười nút cùng ghi “PHỤC HỒI” thì trình đọc không dùng được. Đánh dấu hàng hiện tại bằng <code>aria-current="true"</code> để không chỉ nhận biết bằng màu.`),
+    },
+  },
+  {
+    id: "deploy",
+    cat: "OpenCode",
+    name: "Deploy",
+    desc: {
+      en: "Where the code actually went: environment · URL · duration and commit. One row per environment — preview, staging, production.",
+      vi: "Code thực sự đã đi đâu: môi trường · URL · thời gian và commit. Mỗi môi trường một hàng — preview, staging, production.",
+    },
+    body: {
+      en: () =>
+        ocDeployStage("VISIT", "deploying…", "build failed") +
+        cb(`<div class="deploy" data-state="done">
+  <span class="dp-env">PRODUCTION</span>
+  <a class="dp-url" href="https://acme-web.pages.dev">acme-web.pages.dev</a>
+  <span class="dp-meta">42s · a1b2c3d</span>
+  <button class="btn xs outline">VISIT</button>
+</div>
+<div class="deploy" data-state="running">
+  <span class="dp-env">PREVIEW</span>
+  <span class="dp-url">deploying…</span>
+  <span class="dp-meta">pr-118</span>
+</div>`) +
+        h2("Parts") +
+        api(
+          ["Class / attribute", "Role"],
+          [
+            ["<code>.deploy</code>", "the row; its accent bar takes the state colour"],
+            ["<code>data-state</code>", "<code>queued</code> waiting · <code>running</code> deploying · <code>done</code> live · <code>error</code> failed"],
+            ["<code>.dp-env</code>", "the environment name"],
+            ["<code>.dp-url</code>", "the live address (truncates before it pushes the row wide)"],
+            ["<code>.dp-meta</code>", "duration + commit, pushed right"],
+          ],
+        ) +
+        note(`The last link in the chain: <a href="#/plan">Plan</a> → <a href="#/diffview">diff</a> → <a href="#/checks">Checks</a> → <a href="#/preview">preview</a> → Deploy. Same five state words the whole way, so “running” never means two different things in one workspace.`) +
+        a11y(`A URL is the label users scan for — keep it in the text even when truncated, and put the full address in the link's <code>href</code> (and <code>title</code> when clipped). Don't rely on the accent bar alone for failure; “build failed” belongs in words.`),
+      vi: () =>
+        ocDeployStage("MỞ", "đang deploy…", "build lỗi") +
+        cb(`<div class="deploy" data-state="done">
+  <span class="dp-env">PRODUCTION</span>
+  <a class="dp-url" href="https://acme-web.pages.dev">acme-web.pages.dev</a>
+  <span class="dp-meta">42s · a1b2c3d</span>
+  <button class="btn xs outline">MỞ</button>
+</div>
+<div class="deploy" data-state="running">
+  <span class="dp-env">PREVIEW</span>
+  <span class="dp-url">đang deploy…</span>
+  <span class="dp-meta">pr-118</span>
+</div>`) +
+        h2("Thành phần") +
+        api(
+          ["Class / thuộc tính", "Vai trò"],
+          [
+            ["<code>.deploy</code>", "hàng; thanh accent lấy màu trạng thái"],
+            ["<code>data-state</code>", "<code>queued</code> đang chờ · <code>running</code> đang deploy · <code>done</code> đã live · <code>error</code> lỗi"],
+            ["<code>.dp-env</code>", "tên môi trường"],
+            ["<code>.dp-url</code>", "địa chỉ live (bị cắt trước khi làm hàng phình ra)"],
+            ["<code>.dp-meta</code>", "thời gian + commit, đẩy sang phải"],
+          ],
+        ) +
+        note(`Mắt cuối của chuỗi: <a href="#/plan">Plan</a> → <a href="#/diffview">diff</a> → <a href="#/checks">Checks</a> → <a href="#/preview">preview</a> → Deploy. Vẫn đúng năm từ trạng thái đó suốt cả chuỗi, nên “running” không bao giờ mang hai nghĩa trong cùng một workspace.`) +
+        a11y(`URL là thứ người dùng quét mắt tìm — giữ nó trong chữ dù đã bị cắt, và đặt địa chỉ đầy đủ vào <code>href</code> (và <code>title</code> khi bị cắt). Đừng chỉ dựa vào thanh accent để báo lỗi; “build lỗi” phải nằm ở chữ.`),
+    },
+  },
 ];
 
 /* --------------------------------------- shared, language-neutral demos */
@@ -7570,6 +8808,251 @@ function swatch(v, hex, use) {
 }
 function swatches(items) {
   return `<div class="grid-cards">${items.map((it) => swatch(it[0], it[1], it[2])).join("")}</div>`;
+}
+
+/* ---- OpenCode demos. Language-neutral on purpose: every label is mono chrome,
+   a file path, a branch or a command — identical in EN and VI — so one demo
+   serves both pages instead of two copies drifting apart. */
+const ocPane = (label) =>
+  `<div style="padding:var(--sp-3);font-family:var(--font-mono);font-size:var(--fs-label);color:var(--dim)">${label}</div>`;
+function ocWorkbenchStage() {
+  return stage(
+    "WORKBENCH",
+    `<div class="workbench" style="--wb-h:15rem;--wb-rail:8rem;--wb-side:9rem">
+       <aside class="wb-rail">${ocPane(".wb-rail<br>files")}</aside>
+       <main class="wb-main">
+         <div class="filetabs"><span class="filetab active"><button type="button" class="ft-name">session.ts</button></span><span class="filetab"><button type="button" class="ft-name">refresh.ts</button></span></div>
+         <div style="flex:1;min-block-size:0;overflow:auto">${ocPane(".wb-main<br>chat / editor")}</div>
+         <div class="statusline" data-state="running"><span class="sl-state">RUNNING</span><span class="sl-item">12.4k / 200k</span></div>
+       </main>
+       <aside class="wb-side">${ocPane(".wb-side<br>preview")}</aside>
+     </div>`,
+    "col",
+  );
+}
+function ocRepobarStage() {
+  return stage(
+    "REPO BAR",
+    `<div class="repobar">
+       <span class="repo-name"><nes-icon name="folder"></nes-icon>acme/web</span>
+       <span class="repo-branch"><nes-icon name="gitBranch"></nes-icon>feat/refresh-token</span>
+       <span class="repo-dirty">3 CHANGED</span>
+       <span class="repo-actions"><button class="btn xs ghost">PULL</button><button class="btn xs">COMMIT</button></span>
+     </div>`,
+    "col",
+  );
+}
+function ocStatuslineStage() {
+  const line = (state, label, extra) =>
+    `<div class="statusline" data-state="${state}">
+       <span class="sl-state">${label}</span>
+       <span class="sl-item"><nes-icon name="bot"></nes-icon>opus-4.8</span>
+       <span class="sl-item"><nes-icon name="layers"></nes-icon>12.4k / 200k</span>
+       <span class="sl-end"><span class="sl-item"><nes-icon name="clock"></nes-icon>${extra}</span><span class="sl-item"><nes-icon name="gitBranch"></nes-icon>main</span></span>
+     </div>`;
+  return stage(
+    "STATUS LINE",
+    line("running", "RUNNING", "0:42") +
+      line("done", "IDLE", "1:07") +
+      line("error", "FAILED", "0:12"),
+    "col",
+  );
+}
+function ocSandboxStage() {
+  return stage(
+    "SANDBOX",
+    `<div class="sandbox" data-state="running">
+       <div class="sb-head"><span class="sb-name">node-20 · sfo</span><span class="badge clear">LIVE</span>
+         <span class="sb-actions"><button class="btn xs ghost">RESTART</button></span></div>
+       <div class="sb-specs"><span>CPU <b>2 vCPU</b></span><span>RAM <b>4 GB</b></span><span>DISK <b>8 GB</b></span><span>UP <b>12m</b></span></div>
+     </div>
+     <div class="sandbox" data-state="thinking">
+       <div class="sb-head"><span class="sb-name">node-20 · fra</span><span class="badge warn">BOOTING</span></div>
+       <div class="sb-specs"><span>pulling image</span><span><b>4.2 GB / 6 GB</b></span></div>
+     </div>`,
+    "col",
+  );
+}
+function ocPlanStage() {
+  return stage(
+    "PLAN",
+    `<ol class="plan">
+       <li class="plan-step" data-state="done">Read src/auth/session.ts</li>
+       <li class="plan-step" data-state="done">Add a rotate() helper</li>
+       <li class="plan-step" data-state="running">Wire it into the /refresh route<span class="plan-note">editing src/routes/refresh.ts</span></li>
+       <li class="plan-step" data-state="queued">Add a regression test</li>
+       <li class="plan-step" data-state="error">Update the OpenAPI schema<span class="plan-note">schema.yaml not found</span></li>
+     </ol>`,
+    "col",
+  );
+}
+function ocPermStage(kind, target, why, actions) {
+  return stage(
+    "PERMISSION",
+    `<div class="perm">
+       <span class="perm-kind">${kind}</span>
+       <code class="perm-target">${target}</code>
+       <p class="perm-why">${why}</p>
+       <div class="perm-actions">${actions}</div>
+     </div>`,
+    "col",
+  );
+}
+function ocDiffstatStage() {
+  return stage(
+    "DIFF STAT",
+    `<div class="diffstat">
+       <span class="ds-files">7 FILES</span>
+       <span class="ds-add">+184</span>
+       <span class="ds-del">-52</span>
+       <span class="ds-bar"><i class="add" style="--seg:78%"></i><i class="del" style="--seg:22%"></i></span>
+     </div>`,
+    "col",
+  );
+}
+function ocFilechangeStage() {
+  const row = (ch, dir, file, add, del) =>
+    `<a class="filechange" data-change="${ch}" href="#/filechange">
+       <span class="fc-mark">${ch}</span>
+       <span class="fc-path"><span class="fc-dir">${dir}</span>${file}</span>
+       <span class="fc-count"><b class="add">+${add}</b><b class="del">-${del}</b></span>
+     </a>`;
+  return stage(
+    "FILE CHANGE",
+    row("M", "src/auth/", "session.ts", 42, 8) +
+      row("A", "src/auth/", "rotate.ts", 61, 0) +
+      row("D", "src/legacy/", "token.ts", 0, 44) +
+      row("R", "src/routes/", "refresh.ts", 3, 3),
+    "col",
+  );
+}
+const OC_DIFF_BODY = `<span class="ctx">  const token = read(req)</span><span class="del">  return verify(token)</span><span class="add">  const next = await rotate(token)</span><span class="add">  return { token: next }</span><span class="ctx">}</span>`;
+function ocHunkStage(keep, revert) {
+  return stage(
+    "HUNK",
+    `<details class="hunk" open>
+       <summary class="hunk-head">
+         <code class="hunk-range">@@ -18,7 +18,9 @@</code><span class="hunk-scope">async function refresh()</span>
+         <span class="hunk-actions"><button class="btn xs">${keep}</button><button class="btn xs outline" data-accent="crit">${revert}</button></span>
+       </summary>
+       <div class="diff">${OC_DIFF_BODY}</div>
+     </details>`,
+    "col",
+  );
+}
+/* the patch <nes-diff> parses in the demo — a real (small) unified diff */
+const OC_PATCH = `diff --git a/src/auth/session.ts b/src/auth/session.ts
+--- a/src/auth/session.ts
++++ b/src/auth/session.ts
+@@ -18,7 +18,9 @@ export async function refresh(req) {
+   const token = read(req)
+-  return verify(token)
++  const next = await rotate(token)
++  return { token: next }
+ }`;
+function ocDiffViewStage() {
+  return stage("&lt;nes-diff&gt;", `<nes-diff>${OC_PATCH}</nes-diff>`, "col");
+}
+function ocChecksStage(logs) {
+  return stage(
+    "CHECKS",
+    `<ul class="checks">
+       <li class="check-item" data-state="done"><span class="chk-name">lint</span><span class="chk-meta">1.2s</span></li>
+       <li class="check-item" data-state="done"><span class="chk-name">typecheck</span><span class="chk-meta">4.8s</span></li>
+       <li class="check-item" data-state="running"><span class="chk-name">unit</span><span class="chk-meta">42 / 96</span></li>
+       <li class="check-item" data-state="error"><span class="chk-name">e2e</span><span class="chk-meta">3 failing</span><a class="chk-link" href="#/logs">${logs} →</a></li>
+       <li class="check-item" data-state="queued"><span class="chk-name">build</span><span class="chk-meta">queued</span></li>
+     </ul>`,
+    "col",
+  );
+}
+function ocRunbarStage(stop, retry, ready, exited) {
+  return stage(
+    "RUN BAR",
+    `<div class="runbar" data-state="running">
+       <button class="btn xs icon" aria-label="${stop}"><nes-icon name="stop"></nes-icon></button>
+       <span class="run-cmd">pnpm dev</span>
+       <a class="run-url" href="#/preview">localhost:5173</a>
+       <span class="run-meta">${ready}</span>
+     </div>
+     <div class="runbar" data-state="error">
+       <button class="btn xs icon" aria-label="${retry}"><nes-icon name="refresh"></nes-icon></button>
+       <span class="run-cmd">pnpm test</span>
+       <span class="run-meta">${exited}</span>
+     </div>`,
+    "col",
+  );
+}
+function ocLogsStage() {
+  return stage(
+    "&lt;nes-logs&gt;",
+    `<nes-logs max="200" style="--logs-h:9rem">
+       <span class="logline" data-level="debug">14:02:03 resolving 412 modules</span>
+       <span class="logline">14:02:04 vite v6.0.1 building for production</span>
+       <span class="logline">14:02:05 transforming src/routes/refresh.ts</span>
+       <span class="logline" data-level="warn">14:02:06 chunk exceeds 500 kB after minification</span>
+       <span class="logline" data-level="error">14:02:07 src/auth/session.ts(42,19): TS2532 object is possibly undefined</span>
+       <span class="logline" data-level="done">14:02:09 built in 5.91s</span>
+     </nes-logs>`,
+    "col",
+  );
+}
+function ocPreviewStage() {
+  // dogfood: the frame points at this site's own demo page (same origin, no
+  // network needed) so the demo shows a real app rather than a placeholder.
+  return stage(
+    "&lt;nes-preview&gt;",
+    `<nes-preview view="mobile" src="./demo.html" aria-label="Demo app preview" style="--av-h:13rem"></nes-preview>`,
+    "col",
+  );
+}
+function ocStacktraceStage(fix, open) {
+  return stage(
+    "STACK TRACE",
+    `<div class="stacktrace">
+       <div class="st-head"><span class="st-kind">TypeError</span><span class="st-msg">Cannot read properties of undefined (reading 'id')</span></div>
+       <ol class="st-frames">
+         <li class="st-frame app"><code>src/auth/session.ts:42:19</code><span class="st-fn">getSession</span></li>
+         <li class="st-frame app"><code>src/routes/refresh.ts:11:5</code><span class="st-fn">handler</span></li>
+         <li class="st-frame"><code>node_modules/h3/dist/index.mjs:812:14</code><span class="st-fn">toNodeHandle</span></li>
+       </ol>
+       <div class="st-actions"><button class="btn sm"><nes-icon name="wand"></nes-icon>${fix}</button><button class="btn sm ghost">${open}</button></div>
+     </div>`,
+    "col",
+  );
+}
+function ocCkptStage(now, restore) {
+  return stage(
+    "CHECKPOINTS",
+    `<ol class="ckpt">
+       <li class="ckpt-item current"><span class="cp-time">14:07</span><span class="cp-label">Wire rotation into /refresh</span><span class="cp-actions"><span class="badge clear">${now}</span></span></li>
+       <li class="ckpt-item"><span class="cp-time">14:02</span><span class="cp-label">Add rotate() helper</span><span class="cp-actions"><button class="btn xs ghost">${restore}</button></span></li>
+       <li class="ckpt-item"><span class="cp-time">13:58</span><span class="cp-label">Scaffold session tests</span><span class="cp-actions"><button class="btn xs ghost">${restore}</button></span></li>
+     </ol>`,
+    "col",
+  );
+}
+function ocDeployStage(visit, deploying, failed) {
+  return stage(
+    "DEPLOY",
+    `<div class="deploy" data-state="done"><span class="dp-env">PRODUCTION</span><a class="dp-url" href="#/deploy">acme-web.pages.dev</a><span class="dp-meta">42s · a1b2c3d</span><button class="btn xs outline">${visit}</button></div>
+     <div class="deploy" data-state="running"><span class="dp-env">PREVIEW</span><span class="dp-url">${deploying}</span><span class="dp-meta">pr-118</span></div>
+     <div class="deploy" data-state="error"><span class="dp-env">STAGING</span><span class="dp-url">${failed}</span><span class="dp-meta">exit 1 · 9e0f1a2</span></div>`,
+    "col",
+  );
+}
+function ocFiletabsStage(unsaved, close) {
+  const tab = (name, active, dirty) =>
+    `<span class="filetab${active ? " active" : ""}">
+       <button type="button" class="ft-name">${name}</button>
+       ${dirty ? `<span class="ft-dirty" role="img" aria-label="${unsaved}"></span>` : ""}
+       <button type="button" class="ft-close" aria-label="${close} ${name}">×</button>
+     </span>`;
+  return stage(
+    "FILE TABS",
+    `<div class="filetabs">${tab("session.ts", true, true)}${tab("refresh.ts", false, false)}${tab("schema.yaml", false, true)}</div>`,
+    "col",
+  );
 }
 
 function accentStage() {

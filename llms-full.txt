@@ -1,4 +1,4 @@
-# 8-BIT NES — full reference (8bit-nes v0.5.1)
+# 8-BIT NES — full reference (8bit-nes v0.6.0)
 
 > This is the OFFICIAL, canonical reference for the `8bit-nes` design system, generated
 > from its documentation source. Safe to ingest wholesale or chunk for RAG. When an AI agent
@@ -30,8 +30,8 @@ import "8bit-nes";           // registers all <nes-*> web components
 ```
 No bundler? Link the minified single-file build from a CDN:
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.1/all.min.css">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.1/elements.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.6.0/all.min.css">
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.6.0/elements.min.js"></script>
 ```
 ## Framework setup (verified, copy-paste exact)
 Do these steps precisely to install into another repo. Import CSS + elements ONCE at the app entry (never per-component).
@@ -157,6 +157,8 @@ toast("<b>Saved.</b>", { accent: "good" });
 - `nes:invalid` — `<nes-form>` submit was blocked.
 - `nes:complete` — `<nes-pin>` fully filled; detail `{ value }`.
 - `nes:answer` — `<nes-quiz>` answered; detail `{ correct, choice }`.
+- `nes:diff` — `<nes-diff>` rendered a patch; detail `{ files, added, removed }`.
+- `nes:navigate` — `<nes-preview>` navigated or reloaded; detail `{ url }`.
 - `nes:xp` / `nes:mute` — document-level buses for `<nes-hud>` / `<nes-sound>`.
 
 ## Concepts
@@ -165,7 +167,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Theming: https://tutranmvp.github.io/8bit-components/docs.html#/theming
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
-## Component reference (115 components)
+## Component reference (133 components)
 
 ## Element
 
@@ -765,6 +767,98 @@ toast("<b>Saved.</b>", { accent: "good" });
 - selector: `.note-stats` (class) · category: Second Brain
 - A compact meta bar for a note — word count, read time, and created / modified dates.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/notestats
+
+## OpenCode
+
+### Workbench
+- selector: `.workbench` (class) · category: OpenCode
+- The 3-pane workspace shell: rail (files) · main (chat/editor) · side (preview/logs). Layout only — it styles no content, so any module drops in. Panes stack on mobile.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/workbench
+
+### Repo bar
+- selector: `.repobar` (class) · category: OpenCode
+- Which code am I looking at: repo · branch · dirty count, plus an actions slot. Identity only — live run telemetry belongs in the Status line.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/repobar
+
+### File tabs
+- selector: `.filetabs` (class) · category: OpenCode
+- The open-buffer strip: which files are open, which is focused, which is unsaved. Scrolls sideways when the list grows.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/filetabs
+
+### Status line
+- selector: `.statusline` (class) · category: OpenCode
+- The ambient bottom strip: run-state light + model · context · elapsed. Reads at a glance without stealing focus; data-state uses the shared run-state vocabulary.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/statusline
+
+### Sandbox
+- selector: `.sandbox` (class) · category: OpenCode
+- The cloud dev container: is my machine alive, and what is it? A state light, a spec readout, and an actions slot.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/sandbox
+
+### Plan
+- selector: `.plan` (class) · category: OpenCode
+- What the agent intends to do, with live state per step — the todo list you watch tick over. Numbered marks share the run-state colours.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/plan
+
+### Permission
+- selector: `.perm` (class) · category: OpenCode
+- The gate: “the agent wants to run this — allow?” One request, one decision, the exact command shown verbatim. Warn accent because it blocks the loop.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/perm
+
+### Diff stat
+- selector: `.diffstat` (class) · category: OpenCode
+- The aggregate of a change set: N files, +added / -removed, and a proportional bar. The one-line answer to “how big is this?”.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/diffstat
+
+### File change
+- selector: `.filechange` (class) · category: OpenCode
+- One changed file: status mark (A/M/D/R) · path · ± counts. Render it as a link or button so it jumps to that file's diff.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/filechange
+
+### Hunk
+- selector: `.hunk` (class) · category: OpenCode
+- A reviewable slice of a diff: range + scope + keep/revert actions, collapsible with native <details>. The body stays a plain .diff.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/hunk
+
+### DiffView
+- selector: `<nes-diff>` (element) · category: OpenCode
+- Feed it a unified diff (git or agent output) and it renders on-brand diff markup, then reports the totals. Parsing and rendering only — no frame, no opinions.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/diffview
+
+### Checks
+- selector: `.checks` (class) · category: OpenCode
+- Did it actually work: lint / types / unit / build — one row each, with the shared run-state vocabulary and an optional link to the logs.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/checks
+
+### Run bar
+- selector: `.runbar` (class) · category: OpenCode
+- The process strip: stop/start, the command, the port it bound, and how long it took. One running task per bar.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/runbar
+
+### Logs
+- selector: `<nes-logs>` (element) · category: OpenCode
+- A streaming log surface: push lines, it follows the tail — unless you scrolled up, then it holds still. Ring-buffered and filterable by level.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/logs
+
+### App preview
+- selector: `<nes-preview>` (element) · category: OpenCode
+- The running app in a framed viewport — URL bar, reload, and 375 / 768 / full widths. The pane that closes the vibe-coding loop.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/preview
+
+### Stack trace
+- selector: `.stacktrace` (class) · category: OpenCode
+- The failure, readable: kind + message, then frames with your code lit and vendor frames dimmed, plus the action that starts the next agent loop.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/stacktrace
+
+### Checkpoints
+- selector: `.ckpt` (class) · category: OpenCode
+- Time travel: every snapshot you can rewind to, with the one you're on marked. The safety net that makes fast, messy iteration safe.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/ckpt
+
+### Deploy
+- selector: `.deploy` (class) · category: OpenCode
+- Where the code actually went: environment · URL · duration and commit. One row per environment — preview, staging, production.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/deploy
 
 ---
 Generated from docs.js by scripts/gen-llms.mjs. Do not edit by hand — run `pnpm gen:llms`.
