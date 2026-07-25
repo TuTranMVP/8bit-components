@@ -283,6 +283,40 @@
     --accent-d: var(--primary-d);
   }
 
+  /* ---- one size for every control. data-size remaps the active rung; any
+     control that reads --ctrl-h / --ctrl-pad / --ctrl-fs (button, input, select,
+     chip, segment, stepper…) resizes together, so a mixed row stays flush. Set
+     it on the control, or on a wrapper to size a whole toolbar at once. ---- */
+  [data-size="xs"] {
+    --ctrl-h: var(--ctrl-h-xs);
+    --ctrl-pad: var(--ctrl-px-xs);
+    --ctrl-fs: var(--ctrl-fs-xs);
+  }
+
+  [data-size="sm"] {
+    --ctrl-h: var(--ctrl-h-sm);
+    --ctrl-pad: var(--ctrl-px-sm);
+    --ctrl-fs: var(--ctrl-fs-sm);
+  }
+
+  [data-size="md"] {
+    --ctrl-h: var(--ctrl-h-md);
+    --ctrl-pad: var(--ctrl-px-md);
+    --ctrl-fs: var(--ctrl-fs-md);
+  }
+
+  [data-size="lg"] {
+    --ctrl-h: var(--ctrl-h-lg);
+    --ctrl-pad: var(--ctrl-px-lg);
+    --ctrl-fs: var(--ctrl-fs-lg);
+  }
+
+  [data-size="xl"] {
+    --ctrl-h: var(--ctrl-h-xl);
+    --ctrl-pad: var(--ctrl-px-xl);
+    --ctrl-fs: var(--ctrl-fs-xl);
+  }
+
   .mono {
     font-family: var(--font-mono);
   }

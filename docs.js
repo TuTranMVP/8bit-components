@@ -585,8 +585,34 @@ const COMPONENTS = [
           "SIZE",
           `<button class="btn xs">XS</button>
            <button class="btn sm">SM</button>
-           <button class="btn">Default</button>
-           <button class="btn lg">LG</button>`,
+           <button class="btn">MD</button>
+           <button class="btn lg">LG</button>
+           <button class="btn xl">XL</button>`,
+        ) +
+        p(
+          `One scale, every control. <code>data-size="xs|sm|md|lg|xl"</code> (or the <code>.xs</code>/<code>.sm</code>/<code>.lg</code>/<code>.xl</code> classes) sets a <b>shared height</b>, so a button lines up pixel-for-pixel with an input or select at the same size. Set it on one control — or on a wrapper to size a whole row at once.`,
+        ) +
+        stage(
+          "ROW",
+          `<div data-size="lg" style="display:flex;gap:var(--sp-2);align-items:center;flex-wrap:wrap">
+             <button class="btn">Save</button>
+             <input class="input" value="filename" style="inline-size:130px" aria-label="name">
+             <select class="select" style="inline-size:110px"><option>Type</option></select>
+             <button class="btn icon" aria-label="Search"><nes-icon name="search"></nes-icon></button>
+           </div>`,
+        ) +
+        cb(
+          `<!-- size one control -->
+<button class="btn" data-size="lg">Save</button>
+<input class="input" data-size="lg">
+
+<!-- …or size a whole toolbar at once: everything inside snaps to lg -->
+<div data-size="lg" style="display:flex;gap:.5rem;align-items:center">
+  <button class="btn">Save</button>
+  <input class="input">
+  <select class="select">…</select>
+  <button class="btn icon" aria-label="Search"><nes-icon name="search"></nes-icon></button>
+</div>`,
         ) +
         h2("Icon · toggle · loading") +
         stage(
@@ -659,7 +685,7 @@ const COMPONENTS = [
             ["<code>.btn.soft</code>", "low-tint accent fill"],
             ["<code>.btn.ghost</code>", "quiet outline on dark"],
             ["<code>.btn.link</code>", "text-only — no bevel or shadow"],
-            ["<code>.xs</code> / <code>.sm</code> / <code>.lg</code>", "extra-small / small / large"],
+            ["<code>.xs</code>…<code>.xl</code> / <code>data-size</code>", "shared size rung (height + pad + font) — lines up with inputs/selects"],
             ["<code>.block</code>", "full-width"],
             ["<code>.icon</code>", "square icon-only (add aria-label)"],
             ["<code>[aria-busy=true]</code>", "loading spinner, clicks blocked"],
@@ -703,8 +729,34 @@ const COMPONENTS = [
           "SIZE",
           `<button class="btn xs">XS</button>
            <button class="btn sm">SM</button>
-           <button class="btn">Mặc định</button>
-           <button class="btn lg">LG</button>`,
+           <button class="btn">MD</button>
+           <button class="btn lg">LG</button>
+           <button class="btn xl">XL</button>`,
+        ) +
+        p(
+          `Một thang, mọi control. <code>data-size="xs|sm|md|lg|xl"</code> (hoặc class <code>.xs</code>/<code>.sm</code>/<code>.lg</code>/<code>.xl</code>) đặt <b>chiều cao dùng chung</b>, nên button khớp pixel-cho-pixel với input hay select cùng size. Đặt trên một control — hoặc trên một wrapper để chỉnh cả hàng cùng lúc.`,
+        ) +
+        stage(
+          "ROW",
+          `<div data-size="lg" style="display:flex;gap:var(--sp-2);align-items:center;flex-wrap:wrap">
+             <button class="btn">Lưu</button>
+             <input class="input" value="filename" style="inline-size:130px" aria-label="name">
+             <select class="select" style="inline-size:110px"><option>Loại</option></select>
+             <button class="btn icon" aria-label="Tìm"><nes-icon name="search"></nes-icon></button>
+           </div>`,
+        ) +
+        cb(
+          `<!-- chỉnh một control -->
+<button class="btn" data-size="lg">Lưu</button>
+<input class="input" data-size="lg">
+
+<!-- …hoặc chỉnh cả thanh: mọi thứ bên trong snap về lg -->
+<div data-size="lg" style="display:flex;gap:.5rem;align-items:center">
+  <button class="btn">Lưu</button>
+  <input class="input">
+  <select class="select">…</select>
+  <button class="btn icon" aria-label="Tìm"><nes-icon name="search"></nes-icon></button>
+</div>`,
         ) +
         h2("Icon · toggle · loading") +
         stage(
@@ -777,7 +829,7 @@ const COMPONENTS = [
             ["<code>.btn.soft</code>", "nền màu nhấn nhạt"],
             ["<code>.btn.ghost</code>", "viền mờ trên nền tối"],
             ["<code>.btn.link</code>", "chỉ chữ — bỏ vát góc & bóng"],
-            ["<code>.xs</code> / <code>.sm</code> / <code>.lg</code>", "cực nhỏ / nhỏ / lớn"],
+            ["<code>.xs</code>…<code>.xl</code> / <code>data-size</code>", "rung size dùng chung (cao + đệm + font) — khớp với input/select"],
             ["<code>.block</code>", "rộng hết dòng"],
             ["<code>.icon</code>", "vuông chỉ-icon (thêm aria-label)"],
             ["<code>[aria-busy=true]</code>", "spinner loading, chặn click"],
@@ -1241,6 +1293,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
           ["Class / attr", "Effect"],
           [
             ["<code>.input</code>", "single-line field"],
+            ["<code>data-size</code>", "<code>xs</code>…<code>xl</code> — shares the height rung with buttons/selects"],
             ["<code>[aria-invalid=true]</code>", "critical border"],
             ["<code>[disabled]</code>", "muted, not editable"],
             ["<code>.field</code> wrapper", "label + hint layout"],
@@ -1276,6 +1329,7 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
           ["Class / thuộc tính", "Tác dụng"],
           [
             ["<code>.input</code>", "ô nhập một dòng"],
+            ["<code>data-size</code>", "<code>xs</code>…<code>xl</code> — chung rung chiều cao với button/select"],
             ["<code>[aria-invalid=true]</code>", "viền crit"],
             ["<code>[disabled]</code>", "mờ, không sửa được"],
             ["<code>.field</code> wrapper", "layout label + hint"],
