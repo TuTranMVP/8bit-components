@@ -13,6 +13,7 @@
       "!*.min.css",
       "!*.min.js",
       "!components.json",
+      "!sri.json",
       "!llms.txt",
       "!llms-full.txt",
       "!examples/**",

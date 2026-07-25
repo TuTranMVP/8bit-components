@@ -7,11 +7,11 @@ NES arcade CRT, dark-only, modern-crisp. Cross-framework by design.
 Reusable across every project in the studio — install it into any repo, no build step.
 
 ```bash
-# from npm (once published)
+# from npm — latest is 0.5.0
 pnpm add 8bit-nes
 
-# or straight from GitHub — no publish needed
-pnpm add github:TuTranMVP/8bit-components
+# or straight from GitHub (a tag is a valid spec too)
+pnpm add github:TuTranMVP/8bit-components#v0.5.0
 ```
 
 ```js
@@ -30,15 +30,67 @@ declared so bundlers keep the CSS and the custom-element registration.
 ## CDN / no build
 
 No bundler? Link the **minified, single-file** build — the three `@import`s are inlined, so
-it's one request instead of four:
+it's one request instead of four. This is the whole recommended `<head>`, tuned for a cold
+visit (copy it verbatim — every line earns its place):
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes/all.min.css">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes/elements.min.js"></script>
+<!-- 1. one origin for every byte → one DNS + TLS handshake, warmed early -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+<!-- 2. fonts, at the exact URLs all.min.css resolves url() to → fetched once, in parallel
+        with the stylesheet instead of after it -->
+<link rel="preload" as="font" type="font/woff2" crossorigin
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.0/fonts/nes-sans-var.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.0/fonts/nes-mono-400.woff2">
+
+<!-- 3. the system: pinned version + byte-pinned integrity -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.0/all.min.css"
+  integrity="sha384-HCXNMGpoqEivRE++SgiAw7C3sCDES+TbYEf4pVJV/dRV/41rXmAIxix0NmKRLKCV"
+  crossorigin="anonymous">
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.0/elements.min.js"
+  integrity="sha384-R8iVNERudea0ShszwfLSyCOlY0Erja6/RkdJneCVwyOjk4pSnGE+pXkzLJWDU1PS"
+  crossorigin="anonymous"></script>
 ```
 
-Copy-paste starter (pinned, works before npm publish): [`examples/cdn-starter.html`](examples/cdn-starter.html)
-— also live on the docs site at `/examples/cdn-starter.html`.
+Why it's shaped like that:
+
+- **Pin the version.** `@0.5.0` is immutable — jsDelivr serves it `max-age=31536000, immutable`,
+  so a repeat visit costs zero requests. A bare `/npm/8bit-nes/all.min.css` is a *mutable* alias:
+  it revalidates every 7 days and costs a redirect hop on the first hit. Bump the number to
+  upgrade; nothing silently changes underneath a shipped page. A `@0.5` range is the middle
+  ground (patches auto-adopt, still cached a week).
+- **Preload only the two fonts above the fold.** `nes-sans-var.woff2` (body) and
+  `nes-mono-400.woff2` (chrome/labels). The 700-weight mono is left to `font-display: swap`.
+  The preload `href` must match the CSS-resolved URL *character for character* — same version,
+  same path — or the browser downloads each font twice.
+- **`integrity` + `crossorigin`.** A pinned URL trusts the CDN not to swap the file; a hash
+  doesn't have to. Digests for every shipped asset (both minified entries, the granular CSS,
+  the fonts, the RAG artifacts) live in [`sri.json`](sri.json), generated from the build by
+  `scripts/gen-sri.mjs` and published at
+  [`/sri.json`](https://tutranmvp.github.io/8bit-components/sri.json) — read it, don't retype it:
+
+  ```js
+  const sri = await (await fetch("https://tutranmvp.github.io/8bit-components/sri.json")).json();
+  sri.files["all.min.css"]; // "sha384-…"  · sri.cdn is the matching pinned base URL
+  ```
+
+  The hashes above are for **0.5.0**. They change with every version — regenerate (`pnpm gen:sri`)
+  or re-fetch `sri.json` when you bump, or the browser will (correctly) refuse the file.
+- **Fonts don't need a separate request budget.** The whole system is 4 files: 75 kB CSS +
+  79 kB ESM + 2 woff2 (both subset with `unicode-range`), all Brotli'd by the CDN.
+
+`<script type="module">` is deferred by definition, so it never blocks the parser — the
+custom elements register on their own and upgrade whatever `<nes-*>` markup is already in the
+DOM. Nothing to call, no wrapper.
+
+Copy-paste starter, already wired exactly like the above:
+[`examples/cdn-starter.html`](examples/cdn-starter.html) — also live on the docs site at
+`/examples/cdn-starter.html`.
+
+> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.5.0/all.min.css`) and the same
+> SRI digests — it's the identical npm tarball. Pick *one* origin per page, though: two CDNs
+> means two handshakes for no benefit.
 
 ## For AI agents (RAG-ready)
 

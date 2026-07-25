@@ -7,17 +7,27 @@
   <title>8-BIT NES · CDN starter</title>
 
   <!-- ═══ 8-BIT NES via jsDelivr CDN ═══════════════════════════════════════
-       Pinned to a published npm version → immutable + cached forever.
-       Bump @0.5.0 to upgrade. Everything (fonts + CSS + JS) ships in the package.
+       Pinned to a published npm version → immutable, cached for a year, and
+       byte-verified by `integrity` (digests: /sri.json, `pnpm gen:sri`).
+       To upgrade: bump @0.5.0 *and* the two hashes — they are version-specific.
+       Everything (fonts + CSS + JS) ships in the one package.
        ════════════════════════════════════════════════════════════════════ -->
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.0/fonts/nes-mono-400.woff2">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+  <!-- same URLs all.min.css resolves url() to → each font is fetched exactly once -->
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.0/fonts/nes-sans-var.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.0/fonts/nes-mono-400.woff2">
+
   <link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.0/all.min.css">
+    href="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.0/all.min.css"
+    integrity="sha384-HCXNMGpoqEivRE++SgiAw7C3sCDES+TbYEf4pVJV/dRV/41rXmAIxix0NmKRLKCV"
+    crossorigin="anonymous">
   <script type="module"
-    src="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.0/elements.min.js"></script>
+    src="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.0/elements.min.js"
+    integrity="sha384-R8iVNERudea0ShszwfLSyCOlY0Erja6/RkdJneCVwyOjk4pSnGE+pXkzLJWDU1PS"
+    crossorigin="anonymous"></script>
 </head>
 
 <body
@@ -57,6 +67,13 @@
       <input type="number" value="2" min="1" max="8" aria-label="Players">
       <button type="button" aria-label="Increase">+</button>
     </div>
+    <!-- new in 0.5.0 — ◀/▶ option cycler; options come from a child JSON script -->
+    <label class="field" style="margin-block-start:var(--sp-3)">
+      <span class="label">Difficulty</span>
+      <nes-switcher name="difficulty" value="Normal" data-accent="cyan" aria-label="Difficulty">
+        <script type="application/json">["Easy", "Normal", "Hard", "Nightmare"]</script>
+      </nes-switcher>
+    </label>
   </div>
 
   <!-- a stateful web component — it registers itself on import, no wrapper -->
@@ -76,6 +93,11 @@
     // toast helper
     document.getElementById("toast-btn")
       .addEventListener("click", () => toast("<b>Nice.</b> It works.", { accent: "good" }));
+
+    // <nes-switcher> reports every change (bubbles, so one listener covers the page)
+    document.addEventListener("nes:change", (e) => {
+      if (e.target.matches("nes-switcher")) toast(`Difficulty → <b>${e.detail.value}</b>`, { accent: "cyan" });
+    });
 
     // wire the number stepper's −/+ buttons
     for (const s of document.querySelectorAll(".stepper")) {

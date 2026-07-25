@@ -2,6 +2,30 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## Unreleased
+
+CDN delivery hardening — no change to any token, class or element.
+
+### Added
+
+- **`sri.json`** — Subresource-Integrity digests (`sha384`) for all 15
+  CDN-servable assets: both minified entries, the granular CSS, the two ES
+  modules, the fonts and the RAG artifacts. Generated from the build by
+  `scripts/gen-sri.mjs` (`pnpm gen:sri`, deterministic, CI-diffed like the other
+  build artifacts), shipped inside the package and published to the docs site at
+  `/sri.json`, so a consuming page can byte-pin what it loads instead of only
+  version-pinning it.
+
+### Changed
+
+- README's CDN section is now the full recommended `<head>`: `preconnect`,
+  version-pinned (`@0.5.0` → `immutable`, a year of cache) rather than the
+  mutable bare alias, font `preload` at the exact URLs `all.min.css` resolves
+  `url()` to, and `integrity` + `crossorigin` on both entries — with the reason
+  for each line and the pinned-vs-range caching trade-off spelled out.
+- `examples/cdn-starter.html` is wired to that same recipe (and now demos
+  `<nes-switcher>`), so the copy-paste starter *is* the optimised setup.
+
 ## 0.5.0
 
 ### Added
