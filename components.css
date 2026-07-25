@@ -1914,6 +1914,73 @@
     }
   }
 
+  /* -------------------------------------------------------- OPTION SWITCHER */
+  /* <nes-switcher>: cycle a small option set with ◀ / ▶ (arcade settings row).
+     Arrow buttons flank a centered label; honours the --ctrl-h size scale and
+     one accent (gold by default — the "choice / highlight" cue).               */
+  .switcher {
+    --accent: var(--gold);
+    --accent-d: var(--gold-d);
+    display: inline-flex;
+    align-items: stretch;
+    min-block-size: var(--ctrl-h);
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    box-shadow: var(--sh-2);
+    font-family: var(--font-mono);
+
+    &>button {
+      flex: none;
+      inline-size: var(--ctrl-h);
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      background: var(--panel-2);
+      border: 0;
+      font-size: var(--ctrl-fs);
+      line-height: 1;
+      cursor: pointer;
+      transition: color var(--dur-fast), background var(--dur-fast),
+        transform var(--dur-fast) var(--ease);
+    }
+
+    &>button:first-child {
+      border-inline-end: var(--bw-2) solid var(--line-hi);
+    }
+
+    &>button:last-child {
+      border-inline-start: var(--bw-2) solid var(--line-hi);
+    }
+
+    &>button:hover {
+      color: var(--ink);
+      background: color-mix(in srgb, var(--accent) 22%, var(--panel-2));
+    }
+
+    &>button:active {
+      transform: translate(1px, 1px);
+    }
+
+    &>button:disabled {
+      color: var(--line-hi);
+      background: var(--panel-2);
+      cursor: not-allowed;
+    }
+
+    &>.switcher-label {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      min-inline-size: 6rem;
+      padding-inline: var(--ctrl-pad);
+      color: var(--ink);
+      font-size: var(--ctrl-fs);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      white-space: nowrap;
+    }
+  }
+
   /* ------------------------------------------------------------------ BANNER */
   /* full-width page-level notice (distinct from the inline .callout box).       */
   .banner {

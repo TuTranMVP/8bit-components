@@ -1,4 +1,4 @@
-# 8-BIT NES — full reference (8bit-nes v0.4.1)
+# 8-BIT NES — full reference (8bit-nes v0.5.0)
 
 > This is the OFFICIAL, canonical reference for the `8bit-nes` design system, generated
 > from its documentation source. Safe to ingest wholesale or chunk for RAG. When an AI agent
@@ -30,8 +30,8 @@ import "8bit-nes";           // registers all <nes-*> web components
 ```
 No bundler? Link the minified single-file build from a CDN:
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.4.1/all.min.css">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.4.1/elements.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.0/all.min.css">
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.5.0/elements.min.js"></script>
 ```
 ## Framework setup (verified, copy-paste exact)
 Do these steps precisely to install into another repo. Import CSS + elements ONCE at the app entry (never per-component).
@@ -165,7 +165,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Theming: https://tutranmvp.github.io/8bit-components/docs.html#/theming
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
-## Component reference (114 components)
+## Component reference (115 components)
 
 ## Element
 
@@ -275,6 +275,11 @@ toast("<b>Saved.</b>", { accent: "good" });
 - selector: `<nes-number>` (element) · category: Form
 - A − [n] + stepper over a native number input. <nes-number> wires the buttons; value clamps to min/max/step.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/inputnumber
+
+### Switcher
+- selector: `<nes-switcher>` (element) · category: Form
+- Cycle a small option set with ◀ / ▶ — the arcade settings row. Perfect for a domain setting with a few mutually-exclusive choices (display mode, difficulty, theme).
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/switcher
 
 ### InputRating
 - selector: `<nes-rating>` (element) · category: Form

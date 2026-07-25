@@ -1,6 +1,6 @@
 {
   "name": "8bit-nes",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "title": "8-BIT NES",
   "description": "Cross-framework NES-arcade design system: CSS design tokens + class recipes + light-DOM web components. Zero build, dark-only, square 90° corners, hard shadow.",
   "official": true,
@@ -15,8 +15,8 @@
       "import \"8bit-nes/all.css\";",
       "import \"8bit-nes\";"
     ],
-    "cdnCss": "https://cdn.jsdelivr.net/npm/8bit-nes@0.4.1/all.min.css",
-    "cdnJs": "https://cdn.jsdelivr.net/npm/8bit-nes@0.4.1/elements.min.js"
+    "cdnCss": "https://cdn.jsdelivr.net/npm/8bit-nes@0.5.0/all.min.css",
+    "cdnJs": "https://cdn.jsdelivr.net/npm/8bit-nes@0.5.0/elements.min.js"
   },
   "conventions": {
     "prefix": "nes-",
@@ -269,6 +269,15 @@
       "kind": "element",
       "description": "A − [n] + stepper over a native number input. <nes-number> wires the buttons; value clamps to min/max/step.",
       "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/inputnumber"
+    },
+    {
+      "id": "switcher",
+      "name": "Switcher",
+      "category": "Form",
+      "selector": "<nes-switcher>",
+      "kind": "element",
+      "description": "Cycle a small option set with ◀ / ▶ — the arcade settings row. Perfect for a domain setting with a few mutually-exclusive choices (display mode, difficulty, theme).",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/switcher"
     },
     {
       "id": "inputrating",
@@ -1110,6 +1119,6 @@
   ],
   "counts": {
     "concepts": 4,
-    "components": 114
+    "components": 115
   }
 }

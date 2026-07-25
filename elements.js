@@ -602,6 +602,107 @@ class NesNumber extends HTMLElement {
 }
 
 /* ========================================================================== */
+/*  <nes-switcher>  —  cycle options with ◀ / ▶ (arcade settings row). Great    */
+/*  for a domain setting with a small, mutually-exclusive option set.           */
+/*  <nes-switcher name="mode" value="Fullscreen" aria-label="Display mode">      */
+/*    <script type="application/json">["Windowed","Borderless","Fullscreen"]</script>*/
+/*  </nes-switcher>  ·  emits nes:change {value,index}. no-wrap stops at ends.    */
+/* ========================================================================== */
+class NesSwitcher extends HTMLElement {
+  static get observedAttributes() {
+    return ["value", "disabled"];
+  }
+  connectedCallback() {
+    if (this._done) return;
+    this._done = true;
+    this.opts = readOptions(this);
+    const scr = this.querySelector('script[type="application/json"]');
+    if (scr) scr.remove();
+    this.nowrap = this.hasAttribute("no-wrap");
+    const name = this.getAttribute("name");
+    const aria = this.getAttribute("aria-label") || "Option";
+    const v = this.getAttribute("value");
+    this.i = this.opts.findIndex((o) => o.value === v);
+    if (this.i < 0) this.i = 0;
+
+    this.box = el("div", { class: "switcher", role: "group", "aria-label": aria });
+    // .switcher sets --accent locally, so a data-accent on the host wouldn't
+    // reach the arrows via inheritance — forward it onto the box.
+    const accent = this.getAttribute("data-accent");
+    if (accent) this.box.setAttribute("data-accent", accent);
+    this.prevBtn = el("button", { type: "button", "aria-label": "Previous" });
+    this.prevBtn.textContent = "◀";
+    this.lbl = el("span", { class: "switcher-label", "aria-live": "polite" });
+    this.nextBtn = el("button", { type: "button", "aria-label": "Next" });
+    this.nextBtn.textContent = "▶";
+    this.box.append(this.prevBtn, this.lbl, this.nextBtn);
+    this.appendChild(this.box);
+    if (name) {
+      this.input = el("input", { type: "hidden", name });
+      this.appendChild(this.input);
+    }
+
+    this.prevBtn.addEventListener("click", () => this.step(-1));
+    this.nextBtn.addEventListener("click", () => this.step(1));
+    this.box.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        this.step(-1);
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        this.step(1);
+      }
+    });
+    this._render();
+  }
+  attributeChangedCallback(name, _old, val) {
+    if (!this._done) return;
+    if (name === "value") {
+      const i = this.opts.findIndex((o) => o.value === val);
+      if (i >= 0 && i !== this.i) {
+        this.i = i;
+        this._render();
+      }
+    } else if (name === "disabled") {
+      this._render();
+    }
+  }
+  step(dir) {
+    if (!this.opts.length || this.hasAttribute("disabled")) return;
+    let i = this.i + dir;
+    i = this.nowrap
+      ? Math.min(this.opts.length - 1, Math.max(0, i))
+      : (i + this.opts.length) % this.opts.length;
+    if (i === this.i) return;
+    this.i = i;
+    this._render();
+    const o = this.opts[this.i];
+    this.dispatchEvent(
+      new CustomEvent("nes:change", { bubbles: true, detail: { value: o.value, index: this.i } }),
+    );
+  }
+  _render() {
+    const o = this.opts[this.i] || { value: "", label: "" };
+    this.lbl.textContent = o.label;
+    if (this.input) this.input.value = o.value;
+    if (this.getAttribute("value") !== o.value) this.setAttribute("value", o.value);
+    const dis = this.hasAttribute("disabled");
+    this.prevBtn.disabled = dis || (this.nowrap && this.i === 0);
+    this.nextBtn.disabled = dis || (this.nowrap && this.i === this.opts.length - 1);
+  }
+  get value() {
+    return this.opts?.[this.i]?.value;
+  }
+  set value(v) {
+    const i = this.opts.findIndex((o) => o.value === String(v));
+    if (i >= 0) {
+      this.i = i;
+      this._render();
+    }
+  }
+}
+
+/* ========================================================================== */
 /*  <nes-rating>  —  InputRating: click / arrow-key star picker (read-only opt) */
 /*  <nes-rating name="score" max="5" value="3"></nes-rating>                    */
 /* ========================================================================== */
@@ -3122,6 +3223,7 @@ const defs = {
   "nes-code": NesCode,
   "nes-form": NesForm,
   "nes-number": NesNumber,
+  "nes-switcher": NesSwitcher,
   "nes-rating": NesRating,
   "nes-tags": NesTags,
   "nes-pin": NesPin,
