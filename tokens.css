@@ -178,11 +178,33 @@
     --ease-fill: cubic-bezier(.22, 1, .36, 1);
     /* progress glides, no stutter */
 
-    /* ---- form controls: one height, everything aligns to it ---- */
-    --ctrl-h: 2.25rem;
-    /* input / select / button-in-a-row height */
-    --ctrl-pad: var(--sp-3);
-    /* control inline padding */
+    /* ---- form controls: ONE shared size scale so a button, input, select,
+       chip… at the same size line up pixel-for-pixel in a row. Pick a rung with
+       data-size="xs|sm|md|lg|xl" (or the .xs/.sm/.lg/.xl button classes); md is
+       the default. Each rung fixes height + inline-padding + chrome font. ---- */
+    --ctrl-h-xs: 1.75rem;   /* 28px */
+    --ctrl-h-sm: 2rem;      /* 32px */
+    --ctrl-h-md: 2.25rem;   /* 36px · default */
+    --ctrl-h-lg: 2.75rem;   /* 44px · WCAG 2.5.5 touch */
+    --ctrl-h-xl: 3.25rem;   /* 52px */
+
+    --ctrl-px-xs: var(--sp-2);
+    --ctrl-px-sm: var(--sp-3);
+    --ctrl-px-md: var(--sp-3);
+    --ctrl-px-lg: var(--sp-4);
+    --ctrl-px-xl: var(--sp-5);
+
+    /* chrome (mono, uppercase) font per rung — for buttons/chips/etc. */
+    --ctrl-fs-xs: var(--fs-label);
+    --ctrl-fs-sm: var(--fs-label);
+    --ctrl-fs-md: var(--fs-chip);
+    --ctrl-fs-lg: var(--fs-h3);
+    --ctrl-fs-xl: var(--fs-h2);
+
+    /* the active rung (md); data-size / the size classes remap these three */
+    --ctrl-h: var(--ctrl-h-md);
+    --ctrl-pad: var(--ctrl-px-md);
+    --ctrl-fs: var(--ctrl-fs-md);
 
     /* ---- stacking: overlays sit above chrome, below scanlines (9999) ---- */
     --z-overlay: 100;

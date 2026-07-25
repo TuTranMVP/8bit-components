@@ -2,6 +2,28 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.4.0
+
+Unified control-size system — one scale so every control lines up.
+
+### Added
+
+- **`data-size="xs|sm|md|lg|xl"`** — a single size mechanism shared by buttons,
+  inputs, selects (and any control reading `--ctrl-h`). Set it on one control,
+  or on a wrapper to size a whole toolbar at once; a button now lines up
+  pixel-for-pixel with an input/select at the same size.
+- Size **tokens** in `tokens.css`: `--ctrl-h-{xs..xl}` (28/32/36/44/52px),
+  `--ctrl-px-{xs..xl}`, `--ctrl-fs-{xs..xl}`; `--ctrl-h`/`--ctrl-pad`/`--ctrl-fs`
+  are the active rung (md default).
+- **`.btn.xl`** (hero CTA); the button size classes (`.xs`/`.sm`/`.lg`/`.xl`)
+  are now thin aliases of the shared rung.
+
+### Changed
+
+- `.btn` is **height-anchored** to `--ctrl-h` (was padding-based), so buttons
+  align with form controls in a row. `.btn.icon` is now a perfect square at
+  every rung (via `aspect-ratio`); `.btn.link` opts out of the row height.
+
 ## 0.3.0
 
 The ecosystem release — AI-agent, chat-box, and knowledge-management surfaces,

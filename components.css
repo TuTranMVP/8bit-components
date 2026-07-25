@@ -18,9 +18,10 @@
     --accent-d: var(--primary-d);
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: var(--sp-2);
     font-family: var(--font-mono);
-    font-size: var(--fs-chip);
+    font-size: var(--ctrl-fs);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: var(--ls-chrome);
@@ -28,7 +29,11 @@
     background: var(--accent);
     border: var(--bw) solid var(--accent-d);
     box-shadow: var(--sh-3);
-    padding: var(--sp-3) var(--sp-4);
+    /* height-anchored to the shared --ctrl-h so a button lines up with an input
+       / select at the same size; inline padding + font scale with the rung. */
+    min-block-size: var(--ctrl-h);
+    padding-block: 0;
+    padding-inline: var(--ctrl-pad);
     cursor: pointer;
     /* square 90° corners — hard shadow + press-in do the work, no bevel */
     transition: transform var(--dur-fast) var(--ease),
@@ -110,6 +115,8 @@
       border-color: transparent;
       box-shadow: none;
       padding-inline: 0;
+      min-block-size: 0;
+      /* text-only: no control-row height */
 
       &:hover {
         filter: none;
@@ -123,23 +130,33 @@
       }
     }
 
-    /* ---- sizes (default height sits in a --ctrl-h row) ---- */
-    /* xs: dense toolbar button — smallest legible rung, tightest padding.
-       Built for AI action bars (Regenerate · Copy · Retry) where space is scarce. */
+    /* ---- sizes: remap the shared rung, so a .btn.sm == an input[data-size=sm]
+       in height. Same effect as data-size="…", kept as classes for ergonomics
+       (and back-compat). xs → dense AI toolbars; xl → hero CTAs. ---- */
     &.xs {
-      font-size: var(--fs-label);
-      padding: var(--sp-1) var(--sp-2);
+      --ctrl-h: var(--ctrl-h-xs);
+      --ctrl-pad: var(--ctrl-px-xs);
+      --ctrl-fs: var(--ctrl-fs-xs);
       gap: var(--sp-1);
     }
 
     &.sm {
-      font-size: var(--fs-label);
-      padding: var(--sp-2) var(--sp-3);
+      --ctrl-h: var(--ctrl-h-sm);
+      --ctrl-pad: var(--ctrl-px-sm);
+      --ctrl-fs: var(--ctrl-fs-sm);
     }
 
     &.lg {
-      font-size: var(--fs-h3);
-      padding: var(--sp-4) var(--sp-5);
+      --ctrl-h: var(--ctrl-h-lg);
+      --ctrl-pad: var(--ctrl-px-lg);
+      --ctrl-fs: var(--ctrl-fs-lg);
+      box-shadow: var(--sh-4);
+    }
+
+    &.xl {
+      --ctrl-h: var(--ctrl-h-xl);
+      --ctrl-pad: var(--ctrl-px-xl);
+      --ctrl-fs: var(--ctrl-fs-xl);
       box-shadow: var(--sh-4);
     }
 
@@ -147,23 +164,13 @@
     &.block {
       display: flex;
       inline-size: 100%;
-      justify-content: center;
     }
 
-    /* icon-only: square tap target, equal padding — pair with aria-label */
+    /* icon-only: a perfect square at the current rung — pair with aria-label.
+       Width tracks --ctrl-h via aspect-ratio, so it matches every size. */
     &.icon {
-      padding: var(--sp-3);
+      padding-inline: 0;
       aspect-ratio: 1;
-      justify-content: center;
-    }
-
-    /* keep icon-only square but honour the size ladder (dense toolbars) */
-    &.icon.sm {
-      padding: var(--sp-2);
-    }
-
-    &.icon.xs {
-      padding: var(--sp-1);
     }
 
     /* ---- loading: spinner ticks in, clicks blocked. Toggle aria-busy. ---- */
