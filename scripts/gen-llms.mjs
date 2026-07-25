@@ -116,6 +116,10 @@ const SELECTOR = {
   annotate: "<nes-annotate>",
   compare: "<nes-compare>",
   legend: ".legend",
+  agent: ".agent",
+  usage: ".usage",
+  trace: ".trace",
+  feedback: ".feedback",
 };
 const kindOf = (sel) =>
   !sel
@@ -169,6 +173,7 @@ const CAT_ORDER = [
   "Overlay",
   "Data",
   "Chat",
+  "Agents",
   "Editor",
   "Typography",
   "Visualize",

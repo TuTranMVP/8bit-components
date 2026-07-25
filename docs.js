@@ -140,11 +140,12 @@ const CAT_ACCENT = {
   Overlay: "purple",
   Data: "warn",
   Chat: "teal",
+  Agents: "steel",
   Editor: "indigo",
   Typography: "pink",
   Visualize: "lime",
 };
-const CAT_ORDER = ["Element", "Form", "Feedback", "Navigation", "Overlay", "Data", "Chat", "Editor", "Typography", "Visualize"];
+const CAT_ORDER = ["Element", "Form", "Feedback", "Navigation", "Overlay", "Data", "Chat", "Agents", "Editor", "Typography", "Visualize"];
 
 /* ===================================================================== */
 /*  GETTING STARTED                                                       */
@@ -4160,6 +4161,446 @@ h2("API") +
           ],
         ) +
         a11y("Đặt trong <code>&lt;dialog class=\"modal\"&gt;</code> để làm assistant kiểu command-palette; dialog lo focus trap + Esc."),
+    },
+  },
+
+  /* -------------------------------------------------------- AGENTS */
+  {
+    id: "agent",
+    cat: "Agents",
+    name: "Agent",
+    desc: {
+      en: "One agent in a multi-agent crew: a status light, name + model, and its current task. Drive the light with data-state — thinking / running blink live.",
+      vi: "Một agent trong đội multi-agent: đèn trạng thái, tên + model, và việc đang làm. Điều khiển đèn bằng data-state — thinking / running nhấp nháy trực tiếp.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "AGENTS",
+          `<div style="display:flex;flex-direction:column;gap:var(--sp-3);inline-size:100%;max-inline-size:min(460px,100%)">
+             <article class="agent" data-state="running"><div class="agent-head"><b class="agent-name">Researcher</b><span class="agent-role">gpt-4o · tools</span></div><p class="agent-task">Searching the web for Q3 pricing data…</p></article>
+             <article class="agent" data-state="thinking"><div class="agent-head"><b class="agent-name">Planner</b><span class="agent-role">o1 · reasoning</span></div><p class="agent-task">Breaking the goal into subtasks…</p></article>
+             <article class="agent" data-state="done"><div class="agent-head"><b class="agent-name">Writer</b><span class="agent-role">claude · draft</span></div><p class="agent-task">Draft ready — 620 words.</p></article>
+             <article class="agent" data-state="error"><div class="agent-head"><b class="agent-name">Deployer</b><span class="agent-role">shell</span></div><p class="agent-task">Build failed: exit code 1.</p></article>
+             <article class="agent" data-state="queued"><div class="agent-head"><b class="agent-name">Reviewer</b><span class="agent-role">idle</span></div><p class="agent-task">Waiting for the draft…</p></article>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<article class="agent" data-state="running">
+  <div class="agent-head">
+    <b class="agent-name">Researcher</b>
+    <span class="agent-role">gpt-4o · tools</span>
+  </div>
+  <p class="agent-task">Searching the web for Q3 pricing data…</p>
+</article>`,
+        ) +
+        h2("States") +
+        api(
+          ["<code>data-state</code>", "Light"],
+          [
+            ["<code>queued</code>", "steel — waiting to start"],
+            ["<code>thinking</code>", "gold, blinking — reasoning"],
+            ["<code>running</code>", "green, blinking — executing / tool call"],
+            ["<code>done</code>", "green — finished"],
+            ["<code>error</code>", "red — failed / blocked"],
+            ["<code>(none)</code>", "dim — idle"],
+          ],
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>article.agent</code>", "the card — <code>data-state</code> sets the light + left bar"],
+            ["<code>.agent-head</code>", "name + model on one line"],
+            ["<code>.agent-name</code>", "agent name (mono, uppercase)"],
+            ["<code>.agent-role</code>", "model / role / mode hint"],
+            ["<code>.agent-task</code>", "what it's doing right now"],
+          ],
+        ) +
+        note(
+          `Stack agents in a <code>.grid-cards</code> or a plain column for the whole crew. The state vocabulary is shared with <a href="#/trace">Trace</a>, so "running" reads the same across the UI.`,
+        ) +
+        a11y(
+          `The light is colour + motion, so keep the state in text too (the <code>.agent-task</code> or an <code>aria-label</code>). For a live roster, wrap it in <code>aria-live="polite"</code> so status changes are announced.`,
+        ),
+      vi: () =>
+        stage(
+          "AGENTS",
+          `<div style="display:flex;flex-direction:column;gap:var(--sp-3);inline-size:100%;max-inline-size:min(460px,100%)">
+             <article class="agent" data-state="running"><div class="agent-head"><b class="agent-name">Researcher</b><span class="agent-role">gpt-4o · tools</span></div><p class="agent-task">Đang tìm dữ liệu giá Q3 trên web…</p></article>
+             <article class="agent" data-state="thinking"><div class="agent-head"><b class="agent-name">Planner</b><span class="agent-role">o1 · reasoning</span></div><p class="agent-task">Đang chia mục tiêu thành các subtask…</p></article>
+             <article class="agent" data-state="done"><div class="agent-head"><b class="agent-name">Writer</b><span class="agent-role">claude · draft</span></div><p class="agent-task">Bản nháp xong — 620 từ.</p></article>
+             <article class="agent" data-state="error"><div class="agent-head"><b class="agent-name">Deployer</b><span class="agent-role">shell</span></div><p class="agent-task">Build lỗi: exit code 1.</p></article>
+             <article class="agent" data-state="queued"><div class="agent-head"><b class="agent-name">Reviewer</b><span class="agent-role">idle</span></div><p class="agent-task">Đang chờ bản nháp…</p></article>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<article class="agent" data-state="running">
+  <div class="agent-head">
+    <b class="agent-name">Researcher</b>
+    <span class="agent-role">gpt-4o · tools</span>
+  </div>
+  <p class="agent-task">Đang tìm dữ liệu giá Q3 trên web…</p>
+</article>`,
+        ) +
+        h2("Trạng thái") +
+        api(
+          ["<code>data-state</code>", "Đèn"],
+          [
+            ["<code>queued</code>", "steel — chờ bắt đầu"],
+            ["<code>thinking</code>", "gold, nhấp nháy — đang suy luận"],
+            ["<code>running</code>", "green, nhấp nháy — đang chạy / gọi tool"],
+            ["<code>done</code>", "green — xong"],
+            ["<code>error</code>", "red — lỗi / bị chặn"],
+            ["<code>(không có)</code>", "dim — nhàn rỗi"],
+          ],
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>article.agent</code>", "thẻ — <code>data-state</code> đặt đèn + thanh trái"],
+            ["<code>.agent-head</code>", "tên + model trên một dòng"],
+            ["<code>.agent-name</code>", "tên agent (mono, hoa)"],
+            ["<code>.agent-role</code>", "gợi ý model / vai trò / chế độ"],
+            ["<code>.agent-task</code>", "việc đang làm ngay lúc này"],
+          ],
+        ) +
+        note(
+          `Xếp agent vào <code>.grid-cards</code> hoặc một cột thường để hiện cả đội. Bộ trạng thái dùng chung với <a href="#/trace">Trace</a>, nên "running" đọc giống nhau khắp UI.`,
+        ) +
+        a11y(
+          `Đèn là màu + chuyển động, nên giữ trạng thái trong chữ nữa (<code>.agent-task</code> hoặc <code>aria-label</code>). Với roster trực tiếp, bọc <code>aria-live="polite"</code> để thông báo thay đổi.`,
+        ),
+    },
+  },
+  {
+    id: "usage",
+    cat: "Agents",
+    name: "Context usage",
+    desc: {
+      en: "A stacked token-budget bar — see how the context window is spent across system, history, tools and response, and how much is still free.",
+      vi: "Thanh ngân sách token xếp lớp — thấy context window đang dùng cho system, history, tools, response bao nhiêu, và còn trống bao nhiêu.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CONTEXT",
+          `<div class="usage" style="inline-size:100%;max-inline-size:min(460px,100%)">
+             <div class="usage-bar">
+               <span data-accent="cyan" style="--seg:30%"></span>
+               <span data-accent="blue" style="--seg:22%"></span>
+               <span data-accent="gold" style="--seg:10%"></span>
+               <span data-accent="good" style="--seg:7%"></span>
+             </div>
+             <div class="usage-meta"><span>84.5k / 128k tokens</span><span>66%</span></div>
+             <div class="legend">
+               <span class="legend-item" data-accent="cyan">System</span>
+               <span class="legend-item" data-accent="blue">History</span>
+               <span class="legend-item" data-accent="gold">Tools</span>
+               <span class="legend-item" data-accent="good">Response</span>
+             </div>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="usage">
+  <div class="usage-bar">
+    <span data-accent="cyan" style="--seg:30%"></span>  <!-- system -->
+    <span data-accent="blue" style="--seg:22%"></span>  <!-- history -->
+    <span data-accent="gold" style="--seg:10%"></span>  <!-- tools -->
+    <span data-accent="good" style="--seg:7%"></span>   <!-- response -->
+  </div>
+  <div class="usage-meta"><span>84.5k / 128k tokens</span><span>66%</span></div>
+</div>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.usage</code>", "wrapper (bar + meta + legend, stacked)"],
+            ["<code>.usage-bar</code>", "the track — leftover space = free window"],
+            ["<code>.usage-bar &gt; span</code>", "one slice: <code>--seg</code> width, <code>data-accent</code> colour"],
+            ["<code>.usage-meta</code>", "readout row (used / total, percent)"],
+          ],
+        ) +
+        note(
+          `Widths are yours to compute — set each slice with <code>style="--seg:30%"</code> (percent of the whole window). Label the slices with the shared <a href="#/legend">Legend</a>.`,
+        ) +
+        a11y(
+          `The bar is decorative; the <code>.usage-meta</code> numbers carry the value. For richer support add <code>role="img"</code> + an <code>aria-label</code> like "66% of context used".`,
+        ),
+      vi: () =>
+        stage(
+          "CONTEXT",
+          `<div class="usage" style="inline-size:100%;max-inline-size:min(460px,100%)">
+             <div class="usage-bar">
+               <span data-accent="cyan" style="--seg:30%"></span>
+               <span data-accent="blue" style="--seg:22%"></span>
+               <span data-accent="gold" style="--seg:10%"></span>
+               <span data-accent="good" style="--seg:7%"></span>
+             </div>
+             <div class="usage-meta"><span>84.5k / 128k tokens</span><span>66%</span></div>
+             <div class="legend">
+               <span class="legend-item" data-accent="cyan">System</span>
+               <span class="legend-item" data-accent="blue">History</span>
+               <span class="legend-item" data-accent="gold">Tools</span>
+               <span class="legend-item" data-accent="good">Response</span>
+             </div>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="usage">
+  <div class="usage-bar">
+    <span data-accent="cyan" style="--seg:30%"></span>  <!-- system -->
+    <span data-accent="blue" style="--seg:22%"></span>  <!-- history -->
+    <span data-accent="gold" style="--seg:10%"></span>  <!-- tools -->
+    <span data-accent="good" style="--seg:7%"></span>   <!-- response -->
+  </div>
+  <div class="usage-meta"><span>84.5k / 128k tokens</span><span>66%</span></div>
+</div>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.usage</code>", "bọc ngoài (bar + meta + legend, xếp dọc)"],
+            ["<code>.usage-bar</code>", "thanh — phần trống còn lại = cửa sổ trống"],
+            ["<code>.usage-bar &gt; span</code>", "một lát: rộng <code>--seg</code>, màu <code>data-accent</code>"],
+            ["<code>.usage-meta</code>", "dòng số (đã dùng / tổng, phần trăm)"],
+          ],
+        ) +
+        note(
+          `Chiều rộng do bạn tính — đặt mỗi lát bằng <code>style="--seg:30%"</code> (phần trăm của cả cửa sổ). Gắn nhãn các lát bằng <a href="#/legend">Legend</a> dùng chung.`,
+        ) +
+        a11y(
+          `Thanh chỉ trang trí; số ở <code>.usage-meta</code> mới tải giá trị. Muốn hỗ trợ kỹ hơn, thêm <code>role="img"</code> + <code>aria-label</code> như "đã dùng 66% context".`,
+        ),
+    },
+  },
+  {
+    id: "trace",
+    cat: "Agents",
+    name: "Trace",
+    desc: {
+      en: "A vertical run trace — what the agent planned, which tools it called, and the result. Marks share the run-state colours; wrap any step in <details> for zero-JS expand of the tool I/O.",
+      vi: "Trace chạy dọc — agent lên kế hoạch gì, gọi tool nào, kết quả ra sao. Marker dùng chung màu run-state; bọc bước bất kỳ trong <details> để mở rộng I/O của tool không cần JS.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "TRACE",
+          `<ol class="trace" style="inline-size:100%;max-inline-size:min(520px,100%)">
+             <li class="trace-step" data-state="done"><span class="trace-label">Plan</span><span class="trace-meta">·0.4s</span><div class="trace-detail">Split into: search → summarise → cite.</div></li>
+             <li class="trace-step" data-state="done"><details><summary><nes-icon name="chevronRight" class="trace-caret"></nes-icon><span class="trace-label">web.search</span><span class="trace-meta">·1.2s · 3 hits</span></summary><div class="trace-detail">query: "Q3 2025 API pricing" → 3 results from 2 domains</div></details></li>
+             <li class="trace-step" data-state="running"><span class="trace-label">summarise</span><span class="trace-meta">·running</span></li>
+             <li class="trace-step" data-state="queued"><span class="trace-label">cite sources</span><span class="trace-meta">·queued</span></li>
+           </ol>`,
+          "col",
+        ) +
+        cb(
+          `<ol class="trace">
+  <li class="trace-step" data-state="done">
+    <span class="trace-label">Plan</span> <span class="trace-meta">·0.4s</span>
+    <div class="trace-detail">Split into: search → summarise → cite.</div>
+  </li>
+
+  <!-- collapsible step: native <details>, zero JS -->
+  <li class="trace-step" data-state="done">
+    <details>
+      <summary>
+        <nes-icon name="chevronRight" class="trace-caret"></nes-icon>
+        <span class="trace-label">web.search</span>
+        <span class="trace-meta">·1.2s · 3 hits</span>
+      </summary>
+      <div class="trace-detail">query: "Q3 2025 API pricing" → 3 results</div>
+    </details>
+  </li>
+
+  <li class="trace-step" data-state="running">
+    <span class="trace-label">summarise</span> <span class="trace-meta">·running</span>
+  </li>
+</ol>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>ol.trace</code>", "the run — a vertical connector line"],
+            ["<code>li.trace-step</code>", "one step — <code>data-state</code> colours the mark"],
+            ["<code>.trace-label</code>", "step / tool name"],
+            ["<code>.trace-meta</code>", "duration, tokens, status hint"],
+            ["<code>.trace-detail</code>", "the body — args, output, thought"],
+            ["<code>details</code> + <code>.trace-caret</code>", "wrap a step to expand it (no JS); the caret rotates"],
+          ],
+        ) +
+        note(
+          `<code>data-state</code> uses the same vocabulary as <a href="#/agent">Agent</a> — queued / thinking / running / done / error. Collapse is native <code>&lt;details&gt;</code>, so it works with zero JavaScript.`,
+        ) +
+        a11y(
+          `An <code>&lt;ol&gt;</code> conveys order; <code>&lt;details&gt;</code> is keyboard-toggleable for free. The mark is decorative — keep the state in <code>.trace-meta</code> text.`,
+        ),
+      vi: () =>
+        stage(
+          "TRACE",
+          `<ol class="trace" style="inline-size:100%;max-inline-size:min(520px,100%)">
+             <li class="trace-step" data-state="done"><span class="trace-label">Plan</span><span class="trace-meta">·0.4s</span><div class="trace-detail">Chia thành: search → summarise → cite.</div></li>
+             <li class="trace-step" data-state="done"><details><summary><nes-icon name="chevronRight" class="trace-caret"></nes-icon><span class="trace-label">web.search</span><span class="trace-meta">·1.2s · 3 hits</span></summary><div class="trace-detail">query: "Q3 2025 API pricing" → 3 kết quả từ 2 domain</div></details></li>
+             <li class="trace-step" data-state="running"><span class="trace-label">summarise</span><span class="trace-meta">·running</span></li>
+             <li class="trace-step" data-state="queued"><span class="trace-label">cite sources</span><span class="trace-meta">·queued</span></li>
+           </ol>`,
+          "col",
+        ) +
+        cb(
+          `<ol class="trace">
+  <li class="trace-step" data-state="done">
+    <span class="trace-label">Plan</span> <span class="trace-meta">·0.4s</span>
+    <div class="trace-detail">Chia thành: search → summarise → cite.</div>
+  </li>
+
+  <!-- bước gập được: <details> gốc, không JS -->
+  <li class="trace-step" data-state="done">
+    <details>
+      <summary>
+        <nes-icon name="chevronRight" class="trace-caret"></nes-icon>
+        <span class="trace-label">web.search</span>
+        <span class="trace-meta">·1.2s · 3 hits</span>
+      </summary>
+      <div class="trace-detail">query: "Q3 2025 API pricing" → 3 kết quả</div>
+    </details>
+  </li>
+
+  <li class="trace-step" data-state="running">
+    <span class="trace-label">summarise</span> <span class="trace-meta">·running</span>
+  </li>
+</ol>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>ol.trace</code>", "lượt chạy — đường nối dọc"],
+            ["<code>li.trace-step</code>", "một bước — <code>data-state</code> tô marker"],
+            ["<code>.trace-label</code>", "tên bước / tool"],
+            ["<code>.trace-meta</code>", "thời lượng, token, gợi ý trạng thái"],
+            ["<code>.trace-detail</code>", "phần thân — args, output, suy nghĩ"],
+            ["<code>details</code> + <code>.trace-caret</code>", "bọc để mở rộng (không JS); caret xoay"],
+          ],
+        ) +
+        note(
+          `<code>data-state</code> dùng chung bộ từ với <a href="#/agent">Agent</a> — queued / thinking / running / done / error. Gập bằng <code>&lt;details&gt;</code> gốc nên không cần JavaScript.`,
+        ) +
+        a11y(
+          `<code>&lt;ol&gt;</code> truyền tải thứ tự; <code>&lt;details&gt;</code> gập được bằng bàn phím sẵn. Marker chỉ trang trí — giữ trạng thái trong chữ <code>.trace-meta</code>.`,
+        ),
+    },
+  },
+  {
+    id: "feedback",
+    cat: "Agents",
+    name: "Feedback bar",
+    desc: {
+      en: "The bar under an AI response: rate / copy / regenerate on the left, run metrics (model · tokens · latency) on the right. Closes the human-in-the-loop.",
+      vi: "Thanh dưới câu trả lời AI: đánh giá / chép / tạo lại bên trái, chỉ số run (model · token · độ trễ) bên phải. Đóng vòng human-in-the-loop.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "FEEDBACK",
+          `<div style="inline-size:100%;max-inline-size:min(560px,100%)">
+             <p style="color:var(--muted);margin:0">Here's a summary of the three pricing tiers and which fits a solo studio…</p>
+             <div class="feedback">
+               <div class="feedback-actions">
+                 <button class="btn ghost xs icon" aria-label="Good" aria-pressed="true"><nes-icon name="thumbsUp"></nes-icon></button>
+                 <button class="btn ghost xs icon" aria-label="Bad"><nes-icon name="thumbsDown"></nes-icon></button>
+                 <button class="btn ghost xs icon" aria-label="Copy"><nes-icon name="copy"></nes-icon></button>
+                 <button class="btn ghost xs"><nes-icon name="refresh"></nes-icon> Regenerate</button>
+               </div>
+               <div class="feedback-meta"><span class="chip">gpt-4o</span><span>1,240 tok</span><span>·2.1s</span></div>
+             </div>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="feedback">
+  <div class="feedback-actions">
+    <button class="btn ghost xs icon" aria-label="Good" aria-pressed="true">
+      <nes-icon name="thumbsUp"></nes-icon>
+    </button>
+    <button class="btn ghost xs icon" aria-label="Bad"><nes-icon name="thumbsDown"></nes-icon></button>
+    <button class="btn ghost xs icon" aria-label="Copy"><nes-icon name="copy"></nes-icon></button>
+    <button class="btn ghost xs"><nes-icon name="refresh"></nes-icon> Regenerate</button>
+  </div>
+  <div class="feedback-meta">
+    <span class="chip">gpt-4o</span><span>1,240 tok</span><span>·2.1s</span>
+  </div>
+</div>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.feedback</code>", "the bar — top divider, actions + meta"],
+            ["<code>.feedback-actions</code>", "buttons — plain <code>.btn.ghost.xs</code>"],
+            ["<code>.feedback-meta</code>", "right-aligned run metrics"],
+          ],
+        ) +
+        note(
+          `Lock a rating in with <code>aria-pressed="true"</code> on the chosen thumb — it fills with the accent. The actions are ordinary buttons, so a <a href="#/button">button group</a> fuses them into one bar too.`,
+        ) +
+        a11y(
+          `Every control is a real <code>&lt;button&gt;</code> with an <code>aria-label</code>; the icons are decorative. Use <code>aria-pressed</code> on the thumbs so the rating state is exposed to assistive tech.`,
+        ),
+      vi: () =>
+        stage(
+          "FEEDBACK",
+          `<div style="inline-size:100%;max-inline-size:min(560px,100%)">
+             <p style="color:var(--muted);margin:0">Đây là tóm tắt ba gói giá và gói nào hợp cho studio một người…</p>
+             <div class="feedback">
+               <div class="feedback-actions">
+                 <button class="btn ghost xs icon" aria-label="Tốt" aria-pressed="true"><nes-icon name="thumbsUp"></nes-icon></button>
+                 <button class="btn ghost xs icon" aria-label="Chưa tốt"><nes-icon name="thumbsDown"></nes-icon></button>
+                 <button class="btn ghost xs icon" aria-label="Chép"><nes-icon name="copy"></nes-icon></button>
+                 <button class="btn ghost xs"><nes-icon name="refresh"></nes-icon> Tạo lại</button>
+               </div>
+               <div class="feedback-meta"><span class="chip">gpt-4o</span><span>1,240 tok</span><span>·2.1s</span></div>
+             </div>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="feedback">
+  <div class="feedback-actions">
+    <button class="btn ghost xs icon" aria-label="Tốt" aria-pressed="true">
+      <nes-icon name="thumbsUp"></nes-icon>
+    </button>
+    <button class="btn ghost xs icon" aria-label="Chưa tốt"><nes-icon name="thumbsDown"></nes-icon></button>
+    <button class="btn ghost xs icon" aria-label="Chép"><nes-icon name="copy"></nes-icon></button>
+    <button class="btn ghost xs"><nes-icon name="refresh"></nes-icon> Tạo lại</button>
+  </div>
+  <div class="feedback-meta">
+    <span class="chip">gpt-4o</span><span>1,240 tok</span><span>·2.1s</span>
+  </div>
+</div>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.feedback</code>", "thanh — gạch phân cách trên, actions + meta"],
+            ["<code>.feedback-actions</code>", "nút — <code>.btn.ghost.xs</code> thường"],
+            ["<code>.feedback-meta</code>", "chỉ số run căn phải"],
+          ],
+        ) +
+        note(
+          `Khoá đánh giá bằng <code>aria-pressed="true"</code> trên ngón tay được chọn — nó tô đầy màu nhấn. Actions là nút thường, nên <a href="#/button">nhóm nút</a> cũng gộp chúng thành một thanh được.`,
+        ) +
+        a11y(
+          `Mọi nút là <code>&lt;button&gt;</code> gốc có <code>aria-label</code>; icon chỉ trang trí. Dùng <code>aria-pressed</code> trên ngón tay để trạng thái đánh giá lộ ra cho trợ năng.`,
+        ),
     },
   },
 

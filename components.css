@@ -157,6 +157,15 @@
       justify-content: center;
     }
 
+    /* keep icon-only square but honour the size ladder (dense toolbars) */
+    &.icon.sm {
+      padding: var(--sp-2);
+    }
+
+    &.icon.xs {
+      padding: var(--sp-1);
+    }
+
     /* ---- loading: spinner ticks in, clicks blocked. Toggle aria-busy. ---- */
     &[aria-busy="true"] {
       cursor: progress;
@@ -3741,6 +3750,247 @@
       flex: none;
       background: var(--accent, var(--primary));
       border: var(--bw) solid var(--line-hi);
+    }
+  }
+
+  /* ======================================================================
+     AGENTS · AI-First WebUI primitives — stateless recipes (0 JS, 0 dep).
+     Built to render straight from an LLM/agent's HTML output: a live agent
+     roster, a context-budget bar, an orchestration/reasoning trace, and a
+     response feedback bar. Every state is a data-attr an agent can emit;
+     colours flow from the shared run-state vocabulary below.
+     ====================================================================== */
+
+  /* one run-state vocabulary → one colour, everywhere. Drives the status
+     light on .agent and the step mark on .trace-step, so "running" looks the
+     same whether it's an agent or a trace step. Unknown/unset → dim (idle). */
+  :is(.agent, .trace-step)[data-state="queued"] {
+    --state: var(--steel);
+  }
+
+  :is(.agent, .trace-step)[data-state="thinking"] {
+    --state: var(--gold);
+  }
+
+  :is(.agent, .trace-step)[data-state="running"] {
+    --state: var(--primary);
+  }
+
+  :is(.agent, .trace-step)[data-state="done"] {
+    --state: var(--good);
+  }
+
+  :is(.agent, .trace-step)[data-state="error"] {
+    --state: var(--crit);
+  }
+
+  /* -------------------------------------------------------------- AGENT
+     One agent in a multi-agent roster: status light + name/model + current
+     task. Stack several (grid-cards or a plain column) for the whole crew.
+     data-state colours the left bar + light; thinking/running blink live. */
+  .agent {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: var(--sp-3);
+    align-items: start;
+    background: var(--panel);
+    border: var(--bw-2) solid var(--line-hi);
+    border-inline-start: var(--accent-bar) solid var(--state, var(--line-hi));
+    box-shadow: var(--sh-3);
+    padding: var(--sp-3) var(--sp-4);
+
+    /* the status light: steady dot, blinks while the agent is working */
+    &::before {
+      content: "";
+      grid-row: 1 / span 2;
+      align-self: start;
+      margin-block-start: .3rem;
+      inline-size: .6rem;
+      block-size: .6rem;
+      background: var(--state, var(--dim));
+      border: 1px solid var(--line);
+      box-shadow: var(--sh-1);
+    }
+
+    &[data-state="thinking"]::before,
+    &[data-state="running"]::before {
+      animation: blink 1.1s steps(2) infinite;
+    }
+
+    & .agent-head {
+      grid-column: 2;
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: var(--sp-2);
+    }
+
+    & .agent-name {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: var(--fs-chip);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--ink);
+    }
+
+    & .agent-role {
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      color: var(--dim);
+    }
+
+    & .agent-task {
+      grid-column: 2;
+      min-inline-size: 0;
+      margin-block-start: var(--sp-1);
+      font-size: var(--fs-body);
+      color: var(--muted);
+    }
+  }
+
+  /* ----------------------------------------------------- CONTEXT / USAGE
+     A stacked token-budget bar: each <span> is one slice (system / history /
+     tools / response) sized by --seg and tinted by data-accent; the gap left
+     over is the free window. Pair with .legend for labels + .usage-meta for
+     the readout. Answers "how full is my context window" at a glance. */
+  .usage {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .usage-bar {
+    display: flex;
+    block-size: 1.1rem;
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    box-shadow: var(--sh-2);
+    overflow: hidden;
+
+    &>span {
+      flex: 0 0 var(--seg, 0%);
+      background: var(--accent, var(--primary));
+      border-inline-end: var(--bw-2) solid var(--line);
+    }
+  }
+
+  .usage-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    color: var(--muted);
+  }
+
+  /* --------------------------------------------------- TRACE / REASONING
+     A vertical run trace: what the agent planned, called, and concluded.
+     Marks share the run-state colours; a step can be a static row OR wrap a
+     native <details> for zero-JS expand of the tool I/O — no script at all. */
+  .trace {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-mono);
+
+    &>.trace-step {
+      position: relative;
+      margin-inline-start: .3rem;
+      padding-inline-start: var(--sp-5);
+      padding-block-end: var(--sp-4);
+      border-inline-start: var(--bw-2) solid var(--line-hi);
+    }
+
+    &>.trace-step:last-child {
+      border-inline-start-color: transparent;
+      padding-block-end: 0;
+    }
+
+    /* the step mark — square, coloured by data-state, blinks while active */
+    &>.trace-step::before {
+      content: "";
+      position: absolute;
+      inset-block-start: .15rem;
+      inset-inline-start: calc(-.3rem - var(--bw-2));
+      inline-size: .7rem;
+      block-size: .7rem;
+      background: var(--state, var(--dim));
+      border: var(--bw-2) solid var(--line);
+      box-shadow: var(--sh-1);
+    }
+
+    &>.trace-step[data-state="thinking"]::before,
+    &>.trace-step[data-state="running"]::before {
+      animation: blink 1.1s steps(2) infinite;
+    }
+  }
+
+  .trace-label {
+    color: var(--ink);
+    font-weight: 700;
+    font-size: var(--fs-chip);
+  }
+
+  .trace-meta {
+    color: var(--dim);
+    font-size: var(--fs-label);
+    margin-inline-start: var(--sp-2);
+  }
+
+  .trace-detail {
+    margin-block-start: var(--sp-2);
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    color: var(--muted);
+  }
+
+  /* collapsible step: <details> whose <summary> is the label row. Kill the UA
+     triangle; a .trace-caret icon (optional) rotates open. */
+  .trace-step details>summary {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-2);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .trace-step details>summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .trace-caret {
+    transition: transform var(--dur-fast) var(--ease);
+  }
+
+  .trace-step details[open]>summary .trace-caret {
+    transform: rotate(90deg);
+  }
+
+  /* ---------------------------------------------------- FEEDBACK / HITL
+     The bar under an AI response: rate / copy / regenerate on the left, run
+     metrics (model · tokens · latency) on the right. Actions are plain .btn —
+     use aria-pressed on the chosen thumb to lock the rating in. */
+  .feedback {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    margin-block-start: var(--sp-3);
+    padding-block-start: var(--sp-3);
+    border-block-start: var(--bw-2) solid var(--line);
+
+    & .feedback-actions {
+      display: flex;
+      gap: var(--sp-2);
+    }
+
+    & .feedback-meta {
+      margin-inline-start: auto;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      color: var(--dim);
     }
   }
 
