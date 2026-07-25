@@ -418,7 +418,7 @@
       inline-size: .5rem;
       block-size: .5rem;
       background: var(--accent);
-      border: 1px solid var(--accent-d);
+      border: var(--bw-1) solid var(--accent-d);
     }
 
     &:active {
@@ -968,7 +968,7 @@
       inset-inline-start: 1px;
       inline-size: 1.05rem;
       background: var(--line-hi);
-      border: 1px solid var(--line);
+      border: var(--bw-1) solid var(--line);
       transition: transform var(--dur-fast) var(--ease), background var(--dur-fast);
     }
 
@@ -2896,7 +2896,7 @@
     line-height: 1.4;
     color: var(--cyan);
     background: var(--slot);
-    border: 1px solid var(--cyan-d);
+    border: var(--bw-1) solid var(--cyan-d);
     text-decoration: none;
     cursor: pointer;
 
@@ -2930,7 +2930,7 @@
       font-weight: 700;
       color: var(--cyan);
       background: var(--slot);
-      border: 1px solid var(--cyan-d);
+      border: var(--bw-1) solid var(--cyan-d);
     }
 
     & .source-title {
@@ -3209,20 +3209,7 @@
     border: var(--bw) solid var(--line-hi);
     box-shadow: var(--sh-4);
 
-    & .menuitem {
-      display: flex;
-      align-items: center;
-      gap: var(--sp-2);
-      text-align: start;
-      font-family: var(--font-body);
-      font-size: var(--fs-body);
-      color: var(--text);
-      background: none;
-      border: 0;
-      padding: var(--sp-2) var(--sp-3);
-      cursor: pointer;
-    }
-
+    /* items reuse the base .menuitem (Dropdown) — only the editor extras here */
     & .menuitem .k {
       flex: none;
       inline-size: 1.4em;
@@ -3237,7 +3224,7 @@
       font-size: var(--fs-label);
     }
 
-    & .menuitem:hover,
+    /* keyboard-selected row (base already styles :hover) */
     & .menuitem.active {
       background: var(--panel-2);
       color: var(--ink);
@@ -4030,7 +4017,7 @@
       inline-size: .6rem;
       block-size: .6rem;
       background: var(--state, var(--dim));
-      border: 1px solid var(--line);
+      border: var(--bw-1) solid var(--line);
       box-shadow: var(--sh-1);
     }
 
@@ -4305,7 +4292,7 @@
     font-size: var(--fs-label);
     color: var(--dim);
     background: var(--slot);
-    border: 1px solid var(--line-hi);
+    border: var(--bw-1) solid var(--line-hi);
     padding: .1rem .4rem;
     cursor: pointer;
     transition: color var(--dur-fast), border-color var(--dur-fast);
@@ -4321,7 +4308,7 @@
   .wikilink {
     color: var(--indigo);
     text-decoration: none;
-    border-block-end: 1px dashed color-mix(in srgb, var(--indigo) 60%, transparent);
+    border-block-end: var(--bw-1) dashed color-mix(in srgb, var(--indigo) 60%, transparent);
     transition: color var(--dur-fast), background var(--dur-fast);
 
     &:hover {
@@ -4541,7 +4528,7 @@
       inline-size: 12px;
       block-size: 12px;
       background: var(--slot);
-      border: 1px solid var(--line-hi);
+      border: var(--bw-1) solid var(--line-hi);
     }
 
     &>i[data-level="1"] {

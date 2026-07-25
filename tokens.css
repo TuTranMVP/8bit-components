@@ -149,6 +149,8 @@
     /* standard "pixel box" border */
     --bw-2: 2px;
     /* small elements */
+    --bw-1: 1px;
+    /* hairline: dots, tag pills, tiny markers */
     --accent-bar: 6px;
     /* left classifier bar */
     /* No radius token by design — the whole system is square, no exceptions. */
