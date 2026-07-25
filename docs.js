@@ -4590,9 +4590,9 @@ h2("API") +
           `<div class="usage" style="inline-size:100%;max-inline-size:min(460px,100%)">
              <div class="usage-bar">
                <span data-accent="cyan" style="--seg:30%"></span>
-               <span data-accent="blue" style="--seg:22%"></span>
+               <span data-accent="blue" style="--seg:20%"></span>
                <span data-accent="gold" style="--seg:10%"></span>
-               <span data-accent="good" style="--seg:7%"></span>
+               <span data-accent="good" style="--seg:6%"></span>
              </div>
              <div class="usage-meta"><span>84.5k / 128k tokens</span><span>66%</span></div>
              <div class="legend">
@@ -4608,9 +4608,9 @@ h2("API") +
           `<div class="usage">
   <div class="usage-bar">
     <span data-accent="cyan" style="--seg:30%"></span>  <!-- system -->
-    <span data-accent="blue" style="--seg:22%"></span>  <!-- history -->
+    <span data-accent="blue" style="--seg:20%"></span>  <!-- history -->
     <span data-accent="gold" style="--seg:10%"></span>  <!-- tools -->
-    <span data-accent="good" style="--seg:7%"></span>   <!-- response -->
+    <span data-accent="good" style="--seg:6%"></span>   <!-- response -->
   </div>
   <div class="usage-meta"><span>84.5k / 128k tokens</span><span>66%</span></div>
 </div>`,
@@ -4637,9 +4637,9 @@ h2("API") +
           `<div class="usage" style="inline-size:100%;max-inline-size:min(460px,100%)">
              <div class="usage-bar">
                <span data-accent="cyan" style="--seg:30%"></span>
-               <span data-accent="blue" style="--seg:22%"></span>
+               <span data-accent="blue" style="--seg:20%"></span>
                <span data-accent="gold" style="--seg:10%"></span>
-               <span data-accent="good" style="--seg:7%"></span>
+               <span data-accent="good" style="--seg:6%"></span>
              </div>
              <div class="usage-meta"><span>84.5k / 128k tokens</span><span>66%</span></div>
              <div class="legend">
@@ -4655,9 +4655,9 @@ h2("API") +
           `<div class="usage">
   <div class="usage-bar">
     <span data-accent="cyan" style="--seg:30%"></span>  <!-- system -->
-    <span data-accent="blue" style="--seg:22%"></span>  <!-- history -->
+    <span data-accent="blue" style="--seg:20%"></span>  <!-- history -->
     <span data-accent="gold" style="--seg:10%"></span>  <!-- tools -->
-    <span data-accent="good" style="--seg:7%"></span>   <!-- response -->
+    <span data-accent="good" style="--seg:6%"></span>   <!-- response -->
   </div>
   <div class="usage-meta"><span>84.5k / 128k tokens</span><span>66%</span></div>
 </div>`,

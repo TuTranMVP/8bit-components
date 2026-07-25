@@ -2,6 +2,54 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.3.0
+
+The ecosystem release — AI-agent, chat-box, and knowledge-management surfaces,
+plus packaging hardening so other repos can integrate cleanly. Still zero-build,
+zero-dependency, dark-only, square-cornered. **114 components.**
+
+### Added
+
+- **Button**: `.btn-group` (fuse actions into one bar; `.block` / `.stack`),
+  extra-small `.btn.xs`, and a compact `.btn.icon.sm` / `.btn.icon.xs` ladder for
+  dense AI toolbars. Split button composes as `.btn-group` + a caret `.btn.icon`.
+- **Agents module** (AI-First): `.agent` (multi-agent status roster), `.usage`
+  (context/token-budget bar), `.trace` (orchestration/reasoning trace with
+  zero-JS `<details>`), `.feedback` (human-in-the-loop bar). One shared
+  `data-state` vocabulary (queued/thinking/running/done/error) across agent+trace.
+- **Chat**: `.composer` (+ `.attach`) — a ChatGPT/Claude-Code prompt box with an
+  attachment row, toolbar, model picker and send; `.suggest` (prompt starters /
+  follow-ups); `.cite` + `.sources` (grounded answers, zero-JS anchor).
+- **Second Brain module** (Obsidian-style): `<nes-graph>` — a deterministic,
+  0-dep force-laid-out knowledge graph (click a node to light its neighbourhood;
+  wrap in `<nes-zoom>` to pan/zoom) — plus `.note`, `.backlinks`, `.wikilink`
+  (+ `.new`), `.tag`, `.props`, `.outline`, `.heatmap`, `.board` (Kanban),
+  `.palette` (command palette), `.result`, `.embed` (transclusion), `.maturity`
+  (🌱🌿🌳), `.tag-cloud`, `.concept`, `.note-stats`.
+- Button demos across the docs now use the built-in 8-bit `<nes-icon>` set.
+
+### Changed
+
+- **Packaging for downstream integration**: added `main` / `module` / `unpkg`
+  fallbacks for `exports`-unaware tooling; `./icons*` subpaths now carry an
+  explicit `types` condition; `./elements.min.js` added to `sideEffects`.
+- **Types**: the ~27 `Nes*Element` declarations are now `interface`s (were
+  `declare class`), so `import { NesXElement }` is a correct compile error
+  instead of a runtime "no such export" — the `HTMLElementTagNameMap` typing and
+  documented instance methods are unchanged.
+
+### Fixed
+
+- **`.tag` collision**: the InputTags (`<nes-tags>`) chip is now `.token`, so the
+  Second-Brain `#tag` pill (`.tag`) no longer overrides its accent-fill styling.
+- `.card:hover` no longer greys out its own accent bar (physical `border-left` →
+  logical `border-inline-start`; hover now lifts the three non-accent edges).
+- `<summary>` disclosure triggers now get the system gold focus ring.
+- `<nes-graph>`: keyboard focus is preserved across re-renders, and malformed
+  `data` (e.g. `"null"`) no longer throws.
+- Minor: `.opt.bad .key` uses `--ink-on-accent`; deduped the spinner keyframe;
+  logical borders on `.modal` / `.toast`; tokenised a hardcoded line-height.
+
 ## 0.2.0
 
 The AI-agent release — six new modules that render, edit, and visualize what an

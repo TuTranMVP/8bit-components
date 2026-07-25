@@ -755,9 +755,9 @@ class NesTags extends HTMLElement {
     return [...this.tags];
   }
   render() {
-    for (const n of [...this.box.querySelectorAll(".tag")]) n.remove();
+    for (const n of [...this.box.querySelectorAll(".token")]) n.remove();
     this.tags.forEach((t, i) => {
-      const chip = el("span", { class: "tag" });
+      const chip = el("span", { class: "token" });
       chip.innerHTML = `<span>${_e(t)}</span><button type="button" class="x" aria-label="Remove ${_e(t)}">×</button>`;
       chip.querySelector(".x").addEventListener("click", (e) => {
         e.stopPropagation();
@@ -2979,8 +2979,11 @@ class NesGraph extends HTMLElement {
   }
   _layout() {
     const g = this._read();
-    const nodes = (g.nodes || []).map((n) => ({ ...n }));
-    const edges = (g.edges || []).filter((e) => e && e.source != null && e.target != null);
+    // tolerate malformed data (data="null" / "5" / non-object) without throwing
+    const nodes = (Array.isArray(g?.nodes) ? g.nodes : []).map((n) => ({ ...n }));
+    const edges = (Array.isArray(g?.edges) ? g.edges : []).filter(
+      (e) => e && e.source != null && e.target != null,
+    );
     const W = 800;
     const H = 500;
     const n = nodes.length;
@@ -3071,8 +3074,13 @@ class NesGraph extends HTMLElement {
         return `<g class="graph-node${dim}${foc}"${acc} data-id="${gEsc(nd.id)}" tabindex="0" role="button" aria-label="${label}" transform="translate(${nd.x.toFixed(1)},${nd.y.toFixed(1)})"><rect class="graph-dot" x="-7" y="-7" width="14" height="14"/><text class="graph-label" y="26">${label}</text></g>`;
       })
       .join("");
+    // keep keyboard focus on the same node across the rebuild (Enter re-renders)
+    const active =
+      this.contains(document.activeElement) &&
+      document.activeElement.closest?.(".graph-node")?.dataset.id;
     this.innerHTML = `<svg class="graph-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${gEsc(this.getAttribute("aria-label") || "Knowledge graph")}" shape-rendering="geometricPrecision">${lines}${dots}</svg>`;
     const svg = this.firstChild;
+    if (active) svg.querySelector(`.graph-node[data-id="${CSS.escape(active)}"]`)?.focus();
     svg.addEventListener("click", (ev) => {
       const node = ev.target.closest(".graph-node");
       if (node) {

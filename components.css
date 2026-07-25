@@ -250,13 +250,16 @@
     container-type: inline-size;
     background: var(--panel);
     border: var(--bw) solid var(--line-hi);
-    border-left: var(--accent-bar) solid var(--accent);
+    border-inline-start: var(--accent-bar) solid var(--accent);
     box-shadow: var(--sh-4);
     padding: var(--sp-4);
     transition: border-color var(--dur-fast);
 
+    /* hover lifts the three non-accent edges to the accent — never touch the
+       inline-start accent bar (that's the signature classifier). */
     &:hover {
-      border-inline-color: var(--line-hi);
+      border-block-color: var(--accent);
+      border-inline-end-color: var(--accent);
     }
 
     &.lg {
@@ -474,13 +477,8 @@
   .i-spin>svg,
   nes-icon.i-spin>svg {
     transform-origin: center;
-    animation: nes-spin 1s linear infinite;
-  }
-
-  @keyframes nes-spin {
-    to {
-      transform: rotate(360deg);
-    }
+    animation: spinner 1s linear infinite;
+    /* shares the single @keyframes spinner (see BUTTON loading) */
   }
 
   /* square icon tile: soft accent by default, .solid fills, .lg enlarges */
@@ -524,7 +522,7 @@
       overflow-x: auto;
       font-family: var(--font-mono);
       font-size: var(--fs-chip);
-      line-height: 1.65;
+      line-height: var(--lh-body);
       color: var(--text);
     }
 
@@ -681,7 +679,7 @@
       & .key {
         background: var(--crit);
         border-color: var(--crit-d);
-        color: var(--ink);
+        color: var(--ink-on-accent);
       }
     }
 
@@ -1225,7 +1223,7 @@
     color: var(--text);
     background: var(--panel);
     border: var(--bw) solid var(--line-hi);
-    border-left: var(--accent-bar) solid var(--accent);
+    border-inline-start: var(--accent-bar) solid var(--accent);
     box-shadow: var(--sh-5);
     padding: var(--sp-5);
 
@@ -1323,7 +1321,7 @@
     color: var(--text);
     background: var(--panel);
     border: var(--bw-2) solid var(--line-hi);
-    border-left: var(--accent-bar) solid var(--accent);
+    border-inline-start: var(--accent-bar) solid var(--accent);
     box-shadow: var(--sh-4);
     padding: var(--sp-3) var(--sp-4);
     animation: toast-in var(--dur-mid) var(--ease);
@@ -2215,7 +2213,8 @@
   }
 
   /* ------------------------------------------------------------------ TAGS */
-  /* InputTags: <nes-tags> renders a .tags box of .tag chips + an inline input.  */
+  /* InputTags: <nes-tags> renders a .tags box of .token chips + an inline input.
+     (Named .token, not .tag — .tag is the Second-Brain #tag pill.)              */
   .tags {
     --accent: var(--primary);
     display: flex;
@@ -2250,7 +2249,7 @@
     }
   }
 
-  .tag {
+  .token {
     display: inline-flex;
     align-items: center;
     gap: var(--sp-1);
