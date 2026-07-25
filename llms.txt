@@ -136,6 +136,17 @@ Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";
 - [Note card](https://tutranmvp.github.io/8bit-components/docs.html#/note) — `.note`: One note in a vault or search result: title + timestamp, a 2-line excerpt, tag pills and a link / backlink readout. data-accent classifies it by folder or domain.
 - [Backlinks](https://tutranmvp.github.io/8bit-components/docs.html#/backlinks) — `.backlinks`: Linked references — the notes that point at this one, each with the sentence it was mentioned in. <mark> highlights the match.
 - [Wiki-link & Tag](https://tutranmvp.github.io/8bit-components/docs.html#/wikilink) — `.wikilink`: The inline glue of a vault: [[wiki-links]] between notes (dim when the target doesn't exist yet) and #tag pills to filter by.
+- [Properties](https://tutranmvp.github.io/8bit-components/docs.html#/props) — `.props`: Frontmatter / metadata as a clean key→value grid (Obsidian Properties). Values can hold tags, wiki-links or plain text.
+- [Outline](https://tutranmvp.github.io/8bit-components/docs.html#/outline) — `.outline`: The heading tree of the current note — jump around a long document. Indent by level, light the active heading on scroll.
+- [Activity heatmap](https://tutranmvp.github.io/8bit-components/docs.html#/heatmap) — `.heatmap`: A contribution grid — how many notes you touched each day. 7 rows of weekdays, columns of weeks, ink by level.
+- [Board](https://tutranmvp.github.io/8bit-components/docs.html#/board) — `.board`: A Kanban board — horizontally-scrolling columns of note cards. Give each column a data-accent for its top bar.
+- [Command palette](https://tutranmvp.github.io/8bit-components/docs.html#/palette) — `.palette`: A quick-switcher / command palette (Cmd-K): a search box over a result list. Drop it in a modal; wire filtering in JS.
+- [Search result](https://tutranmvp.github.io/8bit-components/docs.html#/result) — `.result`: One search hit or palette row: an icon, a title with the matched text <mark>ed, a dim path, and an optional key hint.
+- [Note embed](https://tutranmvp.github.io/8bit-components/docs.html#/embed) — `.embed`: A transcluded note (Obsidian ![[note]]): another note's content quoted inline, with a link back to the source.
+- [Maturity](https://tutranmvp.github.io/8bit-components/docs.html#/maturity) — `.maturity`: A digital-garden growth stage: 🌱 seedling · 🌿 budding · 🌳 evergreen — how ripe a note is, at a glance.
+- [Tag cloud](https://tutranmvp.github.io/8bit-components/docs.html#/tagcloud) — `.tag-cloud`: A weighted panel of tags with counts — the hottest topics grow bigger and greener. Tap one to filter the vault.
+- [Concept card](https://tutranmvp.github.io/8bit-components/docs.html#/concept) — `.concept`: A glossary / concept card: a term, its definition, and "see also" links — the atom of a knowledge base.
+- [Note stats](https://tutranmvp.github.io/8bit-components/docs.html#/notestats) — `.note-stats`: A compact meta bar for a note — word count, read time, and created / modified dates.
 
 ## Optional
 - [Full flat-text reference for RAG](https://tutranmvp.github.io/8bit-components/llms-full.txt)
