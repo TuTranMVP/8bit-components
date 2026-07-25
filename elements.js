@@ -486,6 +486,35 @@ const _fmtSize = (b) =>
     : b < 1048576
       ? `${(b / 1024).toFixed(1)} KB`
       : `${(b / 1048576).toFixed(1)} MB`;
+/** Pin a scroll container to the newest content while it streams, but never
+ *  yank the view if the reader has scrolled up. One behaviour, one place —
+ *  shared by <nes-chat-messages> and <nes-logs>. */
+function tailScroll(host, slack = 80) {
+  let pin = true;
+  const onScroll = () => {
+    pin = host.scrollHeight - host.scrollTop - host.clientHeight < slack;
+  };
+  const toBottom = () => {
+    host.scrollTop = host.scrollHeight;
+    pin = true;
+  };
+  host.addEventListener("scroll", onScroll);
+  const obs = new MutationObserver(() => {
+    if (pin) toBottom();
+  });
+  obs.observe(host, { childList: true, subtree: true, characterData: true });
+  requestAnimationFrame(toBottom);
+  return {
+    toBottom,
+    get pinned() {
+      return pin;
+    },
+    stop() {
+      obs.disconnect();
+      host.removeEventListener("scroll", onScroll);
+    },
+  };
+}
 
 /* ========================================================================== */
 /*  <nes-form>  —  native constraint validation + inline errors + nes:submit   */
@@ -1705,22 +1734,13 @@ class NesChatMessages extends HTMLElement {
     if (this._done) return;
     this._done = true;
     this.classList.add("chat-messages");
-    this._pin = true;
-    this.addEventListener("scroll", () => {
-      this._pin = this.scrollHeight - this.scrollTop - this.clientHeight < 80;
-    });
-    this._obs = new MutationObserver(() => {
-      if (this._pin) this.scrollToBottom();
-    });
-    this._obs.observe(this, { childList: true, subtree: true, characterData: true });
-    requestAnimationFrame(() => this.scrollToBottom());
+    this._tail = tailScroll(this);
   }
   disconnectedCallback() {
-    this._obs?.disconnect();
+    this._tail?.stop();
   }
   scrollToBottom() {
-    this.scrollTop = this.scrollHeight;
-    this._pin = true;
+    this._tail?.toBottom();
   }
 }
 
@@ -3213,6 +3233,257 @@ class NesGraph extends HTMLElement {
   }
 }
 
+/* ========================================================================== */
+/*  OPENCODE MODULE  —  the three pieces of a vibe-coding workspace that hold  */
+/*  state. Everything else in the module is a stateless CSS recipe.            */
+/*  <nes-diff>    unified diff text  → on-brand .diff markup + a stat event    */
+/*  <nes-logs>    push log lines     → tail-following, level-filtered surface  */
+/*  <nes-preview> src + viewport     → the running app in a framed iframe      */
+/* ========================================================================== */
+
+/* ========================================================================== */
+/*  <nes-diff>  —  render a unified diff (git / agent output) on-brand.         */
+/*  <nes-diff>@@ -1,3 +1,4 @@ …</nes-diff>   or   el.value = patchString         */
+/*  Parses and renders ONLY — wrap it in .hunk for review chrome. After each    */
+/*  render it emits nes:diff {files,added,removed} so a .diffstat can follow.   */
+/* ========================================================================== */
+class NesDiff extends HTMLElement {
+  connectedCallback() {
+    if (this._done) return;
+    this._done = true;
+    // the patch arrives as text (same contract as <nes-code>); keep it so a
+    // re-render never has to read back from the DOM it just replaced.
+    this._src = this.textContent || "";
+    this.render();
+  }
+  get value() {
+    return this._src;
+  }
+  set value(v) {
+    this._src = String(v ?? "");
+    if (this._done) this.render();
+  }
+  render() {
+    const lines = this._src.replace(/\r\n?/g, "\n").split("\n");
+    if (lines.length && lines.at(-1) === "") lines.pop(); // trailing newline
+    let added = 0;
+    let removed = 0;
+    let heads = 0;
+    let plus = 0;
+    let out = "";
+    for (const raw of lines) {
+      // order matters: the ---/+++ file pair must be tested before -/+ lines
+      if (
+        raw.startsWith("diff --git ") ||
+        raw.startsWith("index ") ||
+        raw.startsWith("new file mode") ||
+        raw.startsWith("deleted file mode") ||
+        raw.startsWith("similarity index") ||
+        raw.startsWith("rename from") ||
+        raw.startsWith("rename to") ||
+        raw.startsWith("--- ") ||
+        raw.startsWith("+++ ")
+      ) {
+        if (raw.startsWith("diff --git ")) heads++;
+        if (raw.startsWith("+++ ")) plus++;
+        out += `<span class="file">${_e(raw)}</span>`;
+      } else if (raw.startsWith("@@")) {
+        out += `<span class="meta">${_e(raw)}</span>`;
+      } else if (raw.startsWith("+")) {
+        added++;
+        out += `<span class="add">${_e(raw.slice(1))}</span>`;
+      } else if (raw.startsWith("-")) {
+        removed++;
+        out += `<span class="del">${_e(raw.slice(1))}</span>`;
+      } else if (raw.startsWith("\\")) {
+        out += `<span class="meta">${_e(raw)}</span>`;
+      } else {
+        // context: unified diffs prefix it with one space — the marker column
+        // is drawn by CSS (.ctx::before), so strip it from the content.
+        out += `<span class="ctx">${_e(raw.startsWith(" ") ? raw.slice(1) : raw)}</span>`;
+      }
+    }
+    this.innerHTML = `<div class="diff">${out}</div>`;
+    this.stat = { files: heads || plus, added, removed };
+    this.dispatchEvent(new CustomEvent("nes:diff", { bubbles: true, detail: this.stat }));
+  }
+}
+
+/* ========================================================================== */
+/*  <nes-logs>  —  a streaming log surface: push lines, it follows the tail.    */
+/*  <nes-logs max="500" level="all"></nes-logs>                                 */
+/*  el.push("vite ready in 412ms", "done")  ·  el.clear()  ·  el.follow()       */
+/*  The toolbar is NOT its job — compose .btn / .segment beside it.             */
+/* ========================================================================== */
+class NesLogs extends HTMLElement {
+  static get observedAttributes() {
+    return ["level"];
+  }
+  connectedCallback() {
+    if (this._done) return;
+    this._done = true;
+    this.classList.add("logs");
+    // role="log" already implies a polite live region with additions-only
+    this.setAttribute("role", "log");
+    this._tail = tailScroll(this);
+    this._filter();
+  }
+  disconnectedCallback() {
+    this._tail?.stop();
+  }
+  attributeChangedCallback(name) {
+    if (this._done && name === "level") this._filter();
+  }
+  /** ring-buffer cap: oldest lines drop so a long build can't grow forever */
+  get max() {
+    return Math.max(1, +(this.getAttribute("max") || 500) || 500);
+  }
+  get pinned() {
+    return !!this._tail?.pinned;
+  }
+  /** append one line; level tints it (info|debug|warn|error|done). */
+  push(text, level = "info") {
+    const line = el("span", { class: "logline", "data-level": level });
+    line.textContent = String(text);
+    this.appendChild(line);
+    while (this.children.length > this.max) this.firstElementChild.remove();
+    this._show(line);
+    return line;
+  }
+  clear() {
+    this.replaceChildren();
+  }
+  /** jump back to the tail (after the reader scrolled up) */
+  follow() {
+    this._tail?.toBottom();
+  }
+  _filter() {
+    for (const n of this.children) this._show(n);
+  }
+  _show(n) {
+    const want = this.getAttribute("level") || "all";
+    n.hidden = want !== "all" && (n.dataset?.level || "info") !== want;
+  }
+}
+
+/* ========================================================================== */
+/*  <nes-preview>  —  the running app in a framed viewport (the preview pane).  */
+/*  <nes-preview src="http://localhost:5173" view="mobile"></nes-preview>       */
+/*  URL bar + reload + 375/768/full widths. Emits nes:navigate {url}.           */
+/*  The bar is built from the shipped recipes (.input/.btn/.segment) — this     */
+/*  element only frames, sizes, and navigates.                                  */
+/* ========================================================================== */
+const PREVIEW_VIEWS = [
+  ["mobile", "375", "Mobile · 375px"],
+  ["tablet", "768", "Tablet · 768px"],
+  ["desktop", "FULL", "Desktop · full width"],
+];
+class NesPreview extends HTMLElement {
+  static get observedAttributes() {
+    return ["src", "view"];
+  }
+  connectedCallback() {
+    if (this._done) return;
+    this._done = true;
+    const view = this.getAttribute("view") || "desktop";
+    this.box = el("div", { class: "appview", "data-view": view });
+    // .appview sets --accent locally, so a host data-accent can't inherit in
+    const accent = this.getAttribute("data-accent");
+    if (accent) this.box.setAttribute("data-accent", accent);
+
+    if (!this.hasAttribute("no-bar")) {
+      const bar = el("div", { class: "av-bar" });
+      this.field = el("input", {
+        class: "input av-url",
+        "data-size": "xs",
+        type: "text",
+        spellcheck: "false",
+        "aria-label": "Preview URL",
+      });
+      this.field.value = this.getAttribute("src") || "";
+      const reload = el("button", { type: "button", class: "btn xs icon", "aria-label": "Reload" });
+      reload.innerHTML = icon("refresh");
+      this.seg = el("div", { class: "segment", role: "group", "aria-label": "Viewport width" });
+      for (const [v, label, aria] of PREVIEW_VIEWS) {
+        const b = el("button", {
+          type: "button",
+          "data-view": v,
+          "aria-label": aria,
+          "aria-pressed": String(v === view),
+        });
+        b.textContent = label;
+        b.addEventListener("click", () => this.setAttribute("view", v));
+        this.seg.appendChild(b);
+      }
+      bar.append(this.field, reload, this.seg);
+      this.box.appendChild(bar);
+
+      reload.addEventListener("click", () => this.reload());
+      this.field.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          this.url = this.field.value;
+        }
+      });
+    }
+
+    const stage = el("div", { class: "av-stage" });
+    this.frame = el("iframe", {
+      title: this.getAttribute("aria-label") || "App preview",
+      src: this.getAttribute("src") || "about:blank",
+      loading: "lazy",
+    });
+    // sandbox is passed through verbatim when set — we never silently weaken
+    // or tighten the author's isolation choice for a dev preview.
+    const sandbox = this.getAttribute("sandbox");
+    if (sandbox !== null) this.frame.setAttribute("sandbox", sandbox);
+    stage.appendChild(this.frame);
+    this.box.appendChild(stage);
+    this.appendChild(this.box);
+  }
+  attributeChangedCallback(name, _old, val) {
+    if (!this._done) return;
+    if (name === "src") {
+      if (this.field) this.field.value = val || "";
+      this.frame.src = val || "about:blank";
+      this._emit(val || "");
+    } else if (name === "view") {
+      this.box.setAttribute("data-view", val || "desktop");
+      for (const b of this.seg?.children || [])
+        b.setAttribute("aria-pressed", String(b.dataset.view === val));
+    }
+  }
+  get url() {
+    return this.getAttribute("src") || "";
+  }
+  set url(v) {
+    this.setAttribute("src", String(v ?? ""));
+  }
+  get view() {
+    return this.getAttribute("view") || "desktop";
+  }
+  set view(v) {
+    this.setAttribute("view", String(v ?? "desktop"));
+  }
+  reload() {
+    const u = this.field ? this.field.value : this.url;
+    if (u !== this.url) {
+      this.url = u; // an edited address navigates instead of reloading
+      return;
+    }
+    try {
+      // same-origin: a real reload keeps the address bar honest
+      this.frame.contentWindow.location.reload();
+    } catch {
+      this.frame.src = u || "about:blank"; // cross-origin: re-navigate
+    }
+    this._emit(u);
+  }
+  _emit(url) {
+    this.dispatchEvent(new CustomEvent("nes:navigate", { bubbles: true, detail: { url } }));
+  }
+}
+
 /* ------------------------------------------------------------- self-register */
 const defs = {
   "nes-sound": NesSound,
@@ -3243,6 +3514,9 @@ const defs = {
   "nes-annotate": NesAnnotate,
   "nes-compare": NesCompare,
   "nes-graph": NesGraph,
+  "nes-diff": NesDiff,
+  "nes-logs": NesLogs,
+  "nes-preview": NesPreview,
 };
 for (const [tag, cls] of Object.entries(defs)) {
   if (!customElements.get(tag)) customElements.define(tag, cls);

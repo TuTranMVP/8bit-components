@@ -2,6 +2,57 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.6.0
+
+The **OpenCode** release — an 18-component module for Vibe-Coding tools on the
+web/cloud: the WebUI shell around an agent that writes code. Still zero-build,
+zero-dependency, dark-only, square-cornered. **133 components.**
+
+### Added
+
+- **OpenCode module**, one recipe per responsibility, following the loop a
+  coding agent actually runs:
+  - *Where am I* — `.workbench` (3-pane rail/main/side shell; panes stack on
+    mobile, sizes are tokens, drop a pane and the grid re-flows), `.repobar`,
+    `.filetabs` (open buffers + unsaved marker), `.statusline`.
+  - *Is my machine alive* — `.sandbox` (cloud dev container: state light,
+    specs, actions).
+  - *What will it do, may it* — `.plan` (the agent's todo with live per-step
+    state), `.perm` (allow-once / always / deny; the command is shown verbatim
+    and scrolls — never truncated).
+  - *What changed* — `.diffstat`, `.filechange` (A/M/D/R), `.hunk` (a
+    reviewable slice with keep/revert, collapsible via native `<details>`),
+    and **`<nes-diff>`** — parses a unified diff into on-brand `.diff` markup
+    and emits `nes:diff {files,added,removed}`.
+  - *Does it work* — `.checks`, `.runbar`, **`<nes-logs>`** (tail-following,
+    ring-buffered, level-filtered log stream), `.stacktrace` (your frames lit,
+    `node_modules` dimmed), **`<nes-preview>`** (the running app in a framed
+    iframe: URL bar, reload, 375/768/full viewports; emits `nes:navigate`).
+  - *Can I undo / ship it* — `.ckpt` (rewind timeline), `.deploy`.
+- Types: `NesDiffElement`, `NesLogsElement`, `NesPreviewElement`, plus
+  `DiffStat` / `LogLevel` / `PreviewView` and the two new event maps.
+
+### Changed
+
+- The shared **run-state vocabulary** (`queued · thinking · running · done ·
+  error`) now also drives `.plan-step`, `.statusline`, `.sandbox`,
+  `.check-item`, `.runbar` and `.deploy` — one word, one colour, whether it's
+  an agent, a CI check or a deploy. No second vocabulary was introduced.
+- `.diff` gained two sub-classes (`.file`, `.meta`) for the file/hunk headers
+  `<nes-diff>` emits; they live beside `.diff`, not in a second place.
+- `<nes-chat-messages>` and `<nes-logs>` now share one `tailScroll` helper
+  (the stick-to-newest behaviour was extracted rather than copied). No API or
+  behaviour change to the chat scroller.
+
+### Notes
+
+- The module deliberately **reuses** `.diff`, `.terminal`, `.tasklist`,
+  `.tree`, `.trace`, `.msg`, `.btn`, `.input` and `.segment` instead of
+  re-implementing them — `<nes-preview>`'s toolbar is literally `.input` +
+  `.btn` + `.segment`.
+- `<nes-preview>` sets no `sandbox` by default and passes a supplied one
+  through verbatim; `<nes-diff>` renders a patch and never applies one.
+
 ## 0.5.0
 
 ### Added

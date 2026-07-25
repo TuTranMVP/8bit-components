@@ -289,6 +289,66 @@ export interface NesGraphElement extends HTMLElement {
   focusNode(id?: string | null): void;
 }
 
+/* ---- OpenCode module (vibe-coding workspace) ---- */
+
+/** Line counts from the last {@link NesDiffElement} render (also the `nes:diff` detail). */
+export interface DiffStat {
+  /** files touched (from `diff --git` / `+++` headers). */
+  files: number;
+  added: number;
+  removed: number;
+}
+
+/**
+ * <nes-diff>: renders a unified diff (git / agent output) as on-brand `.diff`
+ * markup and emits `nes:diff` with the totals. Parsing + rendering only — wrap
+ * it in `.hunk` for review chrome. Feed it as text content or via `.value`.
+ */
+export interface NesDiffElement extends HTMLElement {
+  /** the raw unified-diff text; assigning re-renders. */
+  value: string;
+  /** totals from the last render. */
+  readonly stat: DiffStat;
+  render(): void;
+}
+
+/** Tint applied to a log line pushed into {@link NesLogsElement}. */
+export type LogLevel = "info" | "debug" | "warn" | "error" | "done";
+
+/**
+ * <nes-logs>: a streaming log surface that follows the tail unless the reader
+ * scrolls up. Ring-buffered (`max`) and filterable (`level`). The toolbar is
+ * deliberately not its job — compose `.btn` / `.segment` beside it.
+ */
+export interface NesLogsElement extends HTMLElement {
+  /** ring-buffer cap (the `max` attribute; default 500). */
+  readonly max: number;
+  /** whether the view is currently stuck to the tail. */
+  readonly pinned: boolean;
+  /** append one line; returns the created `.logline`. */
+  push(text: string, level?: LogLevel): HTMLElement;
+  clear(): void;
+  /** jump back to the tail. */
+  follow(): void;
+}
+
+/** Viewport preset for {@link NesPreviewElement} (375px / 768px / full). */
+export type PreviewView = "mobile" | "tablet" | "desktop";
+
+/**
+ * <nes-preview>: the running app in a framed viewport — URL bar, reload and
+ * 375/768/full widths. Emits `nes:navigate` on reload/navigation. A `sandbox`
+ * attribute is passed through to the iframe verbatim.
+ */
+export interface NesPreviewElement extends HTMLElement {
+  /** the previewed address (reflects the `src` attribute). */
+  url: string;
+  /** the active viewport preset (reflects the `view` attribute). */
+  view: PreviewView;
+  /** reload the frame (or navigate, if the URL field was edited). */
+  reload(): void;
+}
+
 /** How a ghost suggestion should be produced. */
 export type EditorSuggestMode =
   /** continue the text in the same language */
@@ -403,6 +463,9 @@ declare global {
     "nes-annotate": NesAnnotateElement;
     "nes-compare": NesCompareElement;
     "nes-graph": NesGraphElement;
+    "nes-diff": NesDiffElement;
+    "nes-logs": NesLogsElement;
+    "nes-preview": NesPreviewElement;
   }
   interface DocumentEventMap {
     "nes:xp": CustomEvent<{ amount: number }>;
@@ -424,5 +487,7 @@ declare global {
     "nes:node": CustomEvent<{ label: string; id: string; group?: string }>;
     "nes:step": CustomEvent<{ index: number; step: WalkthroughStep }>;
     "nes:annotate": CustomEvent<{ index: number }>;
+    "nes:diff": CustomEvent<DiffStat>;
+    "nes:navigate": CustomEvent<{ url: string }>;
   }
 }
