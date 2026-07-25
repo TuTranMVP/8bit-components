@@ -1887,6 +1887,95 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
     },
   },
   {
+    id: "switcher",
+    cat: "Form",
+    name: "Switcher",
+    desc: {
+      en: "Cycle a small option set with ◀ / ▶ — the arcade settings row. Perfect for a domain setting with a few mutually-exclusive choices (display mode, difficulty, theme).",
+      vi: "Cuộn qua một tập lựa chọn nhỏ bằng ◀ / ▶ — hàng cài đặt kiểu arcade. Hợp cho setting domain với vài lựa chọn loại trừ nhau (chế độ hiển thị, độ khó, theme).",
+    },
+    body: {
+      en: () =>
+        stage(
+          "SWITCHER",
+          `<div style="display:flex;flex-direction:column;gap:var(--sp-3);align-items:flex-start">
+             <nes-switcher name="display" value="Fullscreen" aria-label="Display mode"><script type="application/json">["Windowed","Borderless","Fullscreen"]</script></nes-switcher>
+             <nes-switcher name="difficulty" value="Normal" data-accent="cyan" aria-label="Difficulty"><script type="application/json">["Easy","Normal","Hard","Nightmare"]</script></nes-switcher>
+             <nes-switcher name="fps" value="60" data-size="lg" aria-label="FPS cap"><script type="application/json">["30","60","120","Unlimited"]</script></nes-switcher>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<nes-switcher name="display" value="Fullscreen" aria-label="Display mode">
+  <script type="application/json">["Windowed", "Borderless", "Fullscreen"]<\/script>
+</nes-switcher>
+
+<!-- options can be {value,label}; no-wrap stops at the ends; data-size scales -->
+<nes-switcher name="fps" value="60" data-size="lg" no-wrap aria-label="FPS cap">
+  <script type="application/json">["30", "60", "120", "Unlimited"]<\/script>
+</nes-switcher>`,
+        ) +
+        apiGroups({
+          attr: [
+            ["<code>value</code>", "string", "first option", "the selected option value"],
+            ["<code>name</code>", "string", "—", "form key (hidden input submits the value)"],
+            ["<code>no-wrap</code>", "boolean", "off", "stop at the ends (arrows disable) instead of cycling"],
+            ["<code>disabled</code>", "boolean", "off", "freeze both arrows"],
+            ["<code>data-size</code>", "xs…xl", "md", "shared height rung (lines up with buttons/inputs)"],
+            ["<code>data-accent</code>", "accent", "gold", "arrow colour"],
+          ],
+          prop: [["<code>.value</code>", "string", "—", "get / set the current option"]],
+          event: [["<code>nes:change</code>", "<code>{ value, index }</code>", "—", "the option changed"]],
+          slot: [["<code>script[type=application/json]</code>", "the options — an array of strings or <code>{value,label}</code>"]],
+        }) +
+        note(
+          `Different from <a href="#/inputnumber">InputNumber</a> (a numeric − [n] + stepper) and <a href="#/segment">Segmented control</a> (all options visible at once). Use Switcher when options are few, named, and space is tight.`,
+        ) +
+        a11y(
+          `A <code>role="group"</code> with two real <code>&lt;button&gt;</code>s (Previous / Next) and an <code>aria-live="polite"</code> label; ← / → cycle from the keyboard. The value rides a hidden <code>&lt;input name&gt;</code> so it submits in any form.`,
+        ),
+      vi: () =>
+        stage(
+          "SWITCHER",
+          `<div style="display:flex;flex-direction:column;gap:var(--sp-3);align-items:flex-start">
+             <nes-switcher name="display" value="Fullscreen" aria-label="Chế độ hiển thị"><script type="application/json">["Windowed","Borderless","Fullscreen"]</script></nes-switcher>
+             <nes-switcher name="difficulty" value="Normal" data-accent="cyan" aria-label="Độ khó"><script type="application/json">["Easy","Normal","Hard","Nightmare"]</script></nes-switcher>
+             <nes-switcher name="fps" value="60" data-size="lg" aria-label="Giới hạn FPS"><script type="application/json">["30","60","120","Unlimited"]</script></nes-switcher>
+           </div>`,
+          "col",
+        ) +
+        cb(
+          `<nes-switcher name="display" value="Fullscreen" aria-label="Chế độ hiển thị">
+  <script type="application/json">["Windowed", "Borderless", "Fullscreen"]<\/script>
+</nes-switcher>
+
+<!-- option có thể là {value,label}; no-wrap dừng ở hai đầu; data-size scale -->
+<nes-switcher name="fps" value="60" data-size="lg" no-wrap aria-label="Giới hạn FPS">
+  <script type="application/json">["30", "60", "120", "Unlimited"]<\/script>
+</nes-switcher>`,
+        ) +
+        apiGroups({
+          attr: [
+            ["<code>value</code>", "string", "option đầu", "giá trị lựa chọn đang chọn"],
+            ["<code>name</code>", "string", "—", "khóa form (hidden input submit giá trị)"],
+            ["<code>no-wrap</code>", "boolean", "tắt", "dừng ở hai đầu (mũi tên mờ) thay vì cuộn vòng"],
+            ["<code>disabled</code>", "boolean", "tắt", "khóa cả hai mũi tên"],
+            ["<code>data-size</code>", "xs…xl", "md", "rung chiều cao dùng chung (khớp button/input)"],
+            ["<code>data-accent</code>", "accent", "gold", "màu mũi tên"],
+          ],
+          prop: [["<code>.value</code>", "string", "—", "lấy / gán lựa chọn hiện tại"]],
+          event: [["<code>nes:change</code>", "<code>{ value, index }</code>", "—", "lựa chọn thay đổi"]],
+          slot: [["<code>script[type=application/json]</code>", "danh sách lựa chọn — mảng string hoặc <code>{value,label}</code>"]],
+        }) +
+        note(
+          `Khác <a href="#/inputnumber">InputNumber</a> (stepper số − [n] +) và <a href="#/segment">Segmented control</a> (hiện hết lựa chọn cùng lúc). Dùng Switcher khi lựa chọn ít, có tên, và chỗ hẹp.`,
+        ) +
+        a11y(
+          `Một <code>role="group"</code> với hai <code>&lt;button&gt;</code> thật (Previous / Next) và nhãn <code>aria-live="polite"</code>; ← / → cuộn bằng bàn phím. Giá trị nằm trong hidden <code>&lt;input name&gt;</code> nên submit trong mọi form.`,
+        ),
+    },
+  },
+  {
     id: "inputrating",
     cat: "Form",
     name: "InputRating",

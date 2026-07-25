@@ -102,7 +102,7 @@ import manifest from "8bit-nes/components.json" with { type: "json" };
 | Category   | Components                                                                     |
 |------------|--------------------------------------------------------------------------------|
 | Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator · Icon (`<nes-icon>` / `8bit-nes/icons`) |
-| Form       | Input · Textarea · Select · Checkbox · CheckboxGroup · Radio · RadioGroup · Switch · Field · **Form** (`<nes-form>`) · Slider (`.range`) · Segmented control · InputNumber (`<nes-number>`) · InputRating (`<nes-rating>`) · InputTags (`<nes-tags>`) · PinInput (`<nes-pin>`) · ColorPicker · InputDate · InputTime · FileUpload (`<nes-file>`) · Listbox (`<nes-listbox>`) · InputMenu (`<nes-input-menu>`) · SelectMenu (`<nes-select-menu>`) |
+| Form       | Input · Textarea · Select · Checkbox · CheckboxGroup · Radio · RadioGroup · Switch · Field · **Form** (`<nes-form>`) · Slider (`.range`) · Segmented control · Switcher (`<nes-switcher>` — ◀/▶ option cycler) · InputNumber (`<nes-number>`) · InputRating (`<nes-rating>`) · InputTags (`<nes-tags>`) · PinInput (`<nes-pin>`) · ColorPicker · InputDate · InputTime · FileUpload (`<nes-file>`) · Listbox (`<nes-listbox>`) · InputMenu (`<nes-input-menu>`) · SelectMenu (`<nes-select-menu>`) |
 | Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast · Spinner · Meter · Empty state · Banner |
 | Navigation | Tabs (`<nes-tabs>`) · Breadcrumb · Pagination · Steps · Nav list                          |
 | Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) |

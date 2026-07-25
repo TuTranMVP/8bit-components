@@ -83,6 +83,16 @@ export interface NesFormElement extends HTMLElement {
 export interface NesNumberElement extends HTMLElement {
   value: string;
 }
+/**
+ * <nes-switcher>: cycle a small option set with ◀ / ▶ (arcade settings row).
+ * Options come from a child `<script type="application/json">` (strings or
+ * `{value,label}`). Wraps around unless `no-wrap` is set; emits `nes:change`
+ * with `{value,index}`. Keeps a hidden `<input name>` for form submit.
+ */
+export interface NesSwitcherElement extends HTMLElement {
+  /** the currently-selected option value. */
+  value: string;
+}
 /** <nes-rating>: click / arrow-key star picker (add `readonly` for display only). */
 export interface NesRatingElement extends HTMLElement {
   value: number;
@@ -373,6 +383,7 @@ declare global {
     "nes-code": NesCodeElement;
     "nes-form": NesFormElement;
     "nes-number": NesNumberElement;
+    "nes-switcher": NesSwitcherElement;
     "nes-rating": NesRatingElement;
     "nes-tags": NesTagsElement;
     "nes-pin": NesPinElement;

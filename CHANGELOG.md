@@ -2,6 +2,17 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.5.0
+
+### Added
+
+- **Switcher** (`<nes-switcher>`) — cycle a small option set with ◀ / ▶ (the
+  arcade settings row) for domain settings like display mode / difficulty /
+  theme. Options via a child JSON script (strings or `{value,label}`); wraps
+  around unless `no-wrap`; emits `nes:change {value,index}`; keeps a hidden
+  `<input name>` for form submit; honours the shared `data-size` scale and
+  `data-accent` (gold by default). Keyboard ← / →.
+
 ## 0.4.1
 
 Housekeeping — no visual or API change.

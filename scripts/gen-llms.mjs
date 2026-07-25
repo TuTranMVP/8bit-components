@@ -45,6 +45,7 @@ const SELECTOR = {
   checkboxgroup: ".control-group",
   radiogroup: ".control-group",
   inputnumber: "<nes-number>",
+  switcher: "<nes-switcher>",
   inputrating: "<nes-rating>",
   pininput: "<nes-pin>",
   inputtags: "<nes-tags>",
