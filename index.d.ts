@@ -60,77 +60,77 @@ export declare function highlightCode(code: string): string;
 
 /* ---- custom elements ---- */
 
-export declare class NesSoundElement extends HTMLElement {}
-export declare class NesCollapsibleElement extends HTMLElement {}
-export declare class NesHudElement extends HTMLElement {
+export interface NesSoundElement extends HTMLElement {}
+export interface NesCollapsibleElement extends HTMLElement {}
+export interface NesHudElement extends HTMLElement {
   /** Add XP directly (also persisted under `${ns}_xp`). */
   add(amount: number): void;
 }
-export declare class NesQuizElement extends HTMLElement {}
-export declare class NesTabsElement extends HTMLElement {}
-export declare class NesCodeElement extends HTMLElement {}
+export interface NesQuizElement extends HTMLElement {}
+export interface NesTabsElement extends HTMLElement {}
+export interface NesCodeElement extends HTMLElement {}
 
 /* ---- Form module ---- */
 
 /** <nes-form>: native constraint validation → inline errors → `nes:submit`. */
-export declare class NesFormElement extends HTMLElement {
+export interface NesFormElement extends HTMLElement {
   /** The wrapping <form> (created on connect). */
   form: HTMLFormElement;
   /** Validate every control; on success dispatch `nes:submit`, else focus the first bad field. */
   submit(): void;
 }
 /** <nes-number>: auto-wired − [n] + stepper over a native number input. */
-export declare class NesNumberElement extends HTMLElement {
+export interface NesNumberElement extends HTMLElement {
   value: string;
 }
 /** <nes-rating>: click / arrow-key star picker (add `readonly` for display only). */
-export declare class NesRatingElement extends HTMLElement {
+export interface NesRatingElement extends HTMLElement {
   value: number;
 }
 /** <nes-tags>: chip input; value is the ordered tag list. */
-export declare class NesTagsElement extends HTMLElement {
+export interface NesTagsElement extends HTMLElement {
   readonly value: string[];
 }
 /** <nes-pin>: N single-char cells; fires `nes:complete` when full. */
-export declare class NesPinElement extends HTMLElement {
+export interface NesPinElement extends HTMLElement {
   readonly value: string;
 }
 /** <nes-file>: click-or-drop upload zone with a removable file list. */
-export declare class NesFileElement extends HTMLElement {
+export interface NesFileElement extends HTMLElement {
   readonly files: File[];
 }
 /** <nes-listbox>: roving-focus option list; `value` is a string (or string[] when `multiple`). */
-export declare class NesListboxElement extends HTMLElement {
+export interface NesListboxElement extends HTMLElement {
   readonly value: string | string[] | null;
 }
 /** <nes-input-menu>: free-text combobox (autocomplete; value = typed text). */
-export declare class NesInputMenuElement extends HTMLElement {
+export interface NesInputMenuElement extends HTMLElement {
   value: string;
 }
 /** <nes-select-menu>: strict searchable single-select (value ∈ options). */
-export declare class NesSelectMenuElement extends HTMLElement {
+export interface NesSelectMenuElement extends HTMLElement {
   value: string;
 }
 /** <nes-tree>: hierarchical folder/file tree; `value` is a string (or string[] when `multiple`). */
-export declare class NesTreeElement extends HTMLElement {
+export interface NesTreeElement extends HTMLElement {
   readonly value: string | string[] | null;
 }
 
 /* ---- AI Chat module ---- */
 
 /** <nes-chat-prompt>: auto-growing prompt + send/stop button. Fires `nes:submit`/`nes:stop`. */
-export declare class NesChatPromptElement extends HTMLElement {
+export interface NesChatPromptElement extends HTMLElement {
   value: string;
   /** Streaming flag: mirror of the `busy` attribute — flips Send → Stop. */
   setBusy(busy: boolean): void;
   focus(): void;
 }
 /** <nes-chat-messages>: scroll container that auto-sticks to the newest message. */
-export declare class NesChatMessagesElement extends HTMLElement {
+export interface NesChatMessagesElement extends HTMLElement {
   scrollToBottom(): void;
 }
 /** <nes-icon name="…">: renders a pixel icon by name (see `8bit-nes/icons`). */
-export declare class NesIconElement extends HTMLElement {}
+export interface NesIconElement extends HTMLElement {}
 
 /* ---- Typography / MDC module ---- */
 
@@ -150,7 +150,7 @@ export interface CodeTreeNode {
  * Reads a `<script type="application/json">` child of {@link CodeTreeNode}[].
  * Ideal for rendering repo/snippet layouts from AI-generated MDC output.
  */
-export declare class NesCodeTreeElement extends HTMLElement {}
+export interface NesCodeTreeElement extends HTMLElement {}
 
 /* ---- Visualize module ---- */
 
@@ -171,15 +171,13 @@ export declare function enableMermaid(url: string): void;
  * `securityLevel:"strict"` since AI output is untrusted. Emits `nes:render` and
  * `nes:node` (on node click).
  */
-export declare class NesMermaidElement extends HTMLElement {
+export interface NesMermaidElement extends HTMLElement {
   /** current diagram source; set it to (re-)render (debounced). */
   code: string;
   /** force a (debounced) re-render. */
   render(): void;
   /** spotlight nodes whose label matches (string or array); dims the rest. */
   highlight(focus: string | string[]): void;
-  /** default lazy-load URL for all instances (see {@link enableMermaid}). */
-  static src: string;
 }
 
 /** One step of a {@link NesWalkthroughElement}. */
@@ -197,7 +195,7 @@ export interface WalkthroughStep {
  * NesMermaidElement} (or anything exposing `highlight()`), each step spotlights
  * its `focus` labels — a principle unfolds one piece at a time. Emits `nes:step`.
  */
-export declare class NesWalkthroughElement extends HTMLElement {
+export interface NesWalkthroughElement extends HTMLElement {
   /** current step index (0-based). */
   readonly index: number;
   go(n: number): void;
@@ -212,7 +210,7 @@ export declare class NesWalkthroughElement extends HTMLElement {
  * screenshots). Wheel / drag / buttons / keyboard (`+` `-` `0`). Zero-dep CSS
  * transform — wrap an <nes-mermaid> to make a large diagram explorable.
  */
-export declare class NesZoomElement extends HTMLElement {
+export interface NesZoomElement extends HTMLElement {
   zoomBy(factor: number): void;
   zoomTo(scale: number): void;
   reset(): void;
@@ -234,7 +232,7 @@ export interface AnnotatePoint {
  * of {@link AnnotatePoint}[]. Emits `nes:annotate`. Great for spatial "how it
  * works" explanations.
  */
-export declare class NesAnnotateElement extends HTMLElement {
+export interface NesAnnotateElement extends HTMLElement {
   open(index: number): void;
   close(): void;
 }
@@ -244,7 +242,7 @@ export declare class NesAnnotateElement extends HTMLElement {
  * (A over B) and reveals A with a draggable divider. Pointer + keyboard (←/→).
  * Set the initial split with the `value` attribute (0–100).
  */
-export declare class NesCompareElement extends HTMLElement {
+export interface NesCompareElement extends HTMLElement {
   /** move the divider to `pos` percent (0–100). */
   set(pos: number): void;
 }
@@ -274,7 +272,7 @@ export interface GraphEdge {
  * `<script type="application/json">`, the `data` attribute, or the `.data` property.
  * Wrap in {@link NesZoomElement} for pan/zoom.
  */
-export declare class NesGraphElement extends HTMLElement {
+export interface NesGraphElement extends HTMLElement {
   /** the graph data; assigning re-runs the layout. */
   data: { nodes: GraphNode[]; edges: GraphEdge[] };
   /** focus a node by id (dims the rest); pass `null`/omit to clear. */
@@ -334,7 +332,7 @@ export interface EditorAIDetail {
  * language, Tab out the other (blog + language practice). Emits
  * `nes:input`/`nes:submit`/`nes:mention`/`nes:ai`/`nes:suggest`.
  */
-export declare class NesEditorElement extends HTMLElement {
+export interface NesEditorElement extends HTMLElement {
   /** current HTML content (ghost suggestion excluded). */
   value: string;
   /** current plain text. */
