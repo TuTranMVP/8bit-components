@@ -139,6 +139,24 @@ const SELECTOR = {
   tagcloud: ".tag-cloud",
   concept: ".concept",
   notestats: ".note-stats",
+  workbench: ".workbench",
+  repobar: ".repobar",
+  filetabs: ".filetabs",
+  statusline: ".statusline",
+  sandbox: ".sandbox",
+  plan: ".plan",
+  perm: ".perm",
+  diffstat: ".diffstat",
+  filechange: ".filechange",
+  hunk: ".hunk",
+  diffview: "<nes-diff>",
+  checks: ".checks",
+  runbar: ".runbar",
+  logs: "<nes-logs>",
+  preview: "<nes-preview>",
+  stacktrace: ".stacktrace",
+  ckpt: ".ckpt",
+  deploy: ".deploy",
 };
 const kindOf = (sel) =>
   !sel
@@ -197,6 +215,7 @@ const CAT_ORDER = [
   "Typography",
   "Visualize",
   "Second Brain",
+  "OpenCode",
 ];
 const byCat = (cat) => components.filter((c) => c.category === cat);
 const missing = components.filter((c) => !c.selector).map((c) => c.id);
@@ -245,6 +264,8 @@ const manifest = {
       "nes:invalid",
       "nes:complete",
       "nes:answer",
+      "nes:diff",
+      "nes:navigate",
       "nes:xp",
       "nes:mute",
     ],
@@ -447,6 +468,8 @@ toast("<b>Saved.</b>", { accent: "good" });
 - \`nes:invalid\` — \`<nes-form>\` submit was blocked.
 - \`nes:complete\` — \`<nes-pin>\` fully filled; detail \`{ value }\`.
 - \`nes:answer\` — \`<nes-quiz>\` answered; detail \`{ correct, choice }\`.
+- \`nes:diff\` — \`<nes-diff>\` rendered a patch; detail \`{ files, added, removed }\`.
+- \`nes:navigate\` — \`<nes-preview>\` navigated or reloaded; detail \`{ url }\`.
 - \`nes:xp\` / \`nes:mute\` — document-level buses for \`<nes-hud>\` / \`<nes-sound>\`.
 
 ## Concepts
@@ -459,6 +482,15 @@ Generated from docs.js by scripts/gen-llms.mjs. Do not edit by hand — run \`pn
 `;
 writeFileSync(join(ROOT, "llms-full.txt"), full);
 
+/* ---- keep the docs header badge on the published version. It used to be a
+   hand-typed literal and drifted three releases behind; deriving it here means
+   `pnpm build` can never ship a docs site that lies about its version. ---- */
+const DOCS_HTML = join(ROOT, "docs.html");
+const html = readFileSync(DOCS_HTML, "utf8");
+const badge = html.replace(/(<span class="badge">v)[0-9][^<]*(<\/span>)/, `$1${pkg.version}$2`);
+if (badge !== html) writeFileSync(DOCS_HTML, badge);
+
 console.log(
-  `gen-llms: wrote llms.txt, llms-full.txt, components.json — ${components.length} components, ${concepts.length} concepts.`,
+  `gen-llms: wrote llms.txt, llms-full.txt, components.json — ${components.length} components, ${concepts.length} concepts.` +
+    (badge !== html ? ` docs badge → v${pkg.version}.` : ""),
 );

@@ -3573,6 +3573,25 @@
       content: "-";
       color: var(--crit);
     }
+
+    /* diff chrome, emitted by <nes-diff> when it parses a unified diff:
+       .file = the ---/+++ pair, .meta = an @@ hunk range. Unmarked lines. */
+    & .file,
+    & .meta {
+      display: block;
+      padding-inline: var(--sp-6) var(--sp-3);
+      color: var(--dim);
+    }
+
+    & .file {
+      background: var(--panel-2);
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    & .meta {
+      color: var(--cyan);
+    }
   }
 
   /* Tasklist — a GitHub-style checklist (AI plans / todos): done + open items. */
@@ -4037,26 +4056,65 @@
      colours flow from the shared run-state vocabulary below.
      ====================================================================== */
 
-  /* one run-state vocabulary → one colour, everywhere. Drives the status
-     light on .agent and the step mark on .trace-step, so "running" looks the
-     same whether it's an agent or a trace step. Unknown/unset → dim (idle). */
-  :is(.agent, .trace-step)[data-state="queued"] {
+  /* ONE run-state vocabulary → one colour, everywhere. Drives the status light
+     on .agent, the step mark on .trace-step / .plan-step, and every OpenCode
+     surface that reports progress (.statusline .sandbox .check-item .runbar
+     .deploy). "running" therefore looks the same whether it's an agent, a
+     trace step, a CI check or a deploy. Unknown/unset → dim (idle).
+     Five names, deliberately: queued (waiting) · thinking (starting up /
+     reasoning) · running (live) · done (finished ok) · error (failed). */
+  :is(.agent,
+    .trace-step,
+    .plan-step,
+    .statusline,
+    .sandbox,
+    .check-item,
+    .runbar,
+    .deploy)[data-state="queued"] {
     --state: var(--steel);
   }
 
-  :is(.agent, .trace-step)[data-state="thinking"] {
+  :is(.agent,
+    .trace-step,
+    .plan-step,
+    .statusline,
+    .sandbox,
+    .check-item,
+    .runbar,
+    .deploy)[data-state="thinking"] {
     --state: var(--gold);
   }
 
-  :is(.agent, .trace-step)[data-state="running"] {
+  :is(.agent,
+    .trace-step,
+    .plan-step,
+    .statusline,
+    .sandbox,
+    .check-item,
+    .runbar,
+    .deploy)[data-state="running"] {
     --state: var(--primary);
   }
 
-  :is(.agent, .trace-step)[data-state="done"] {
+  :is(.agent,
+    .trace-step,
+    .plan-step,
+    .statusline,
+    .sandbox,
+    .check-item,
+    .runbar,
+    .deploy)[data-state="done"] {
     --state: var(--good);
   }
 
-  :is(.agent, .trace-step)[data-state="error"] {
+  :is(.agent,
+    .trace-step,
+    .plan-step,
+    .statusline,
+    .sandbox,
+    .check-item,
+    .runbar,
+    .deploy)[data-state="error"] {
     --state: var(--crit);
   }
 
@@ -4948,6 +5006,1052 @@
     }
   }
 
+  /* ======================================================================
+     OPENCODE · the vibe-coding workspace (cloud IDE / coding-agent WebUI).
+     The shell around an agent that writes code: where am I (workbench,
+     repobar, filetabs) · is my machine alive (sandbox, statusline) · what
+     will it do (plan) · may it (perm) · what changed (diffstat, filechange,
+     hunk, <nes-diff>) · does it work (checks, runbar, <nes-logs>,
+     stacktrace, <nes-preview>) · can I undo / ship it (ckpt, deploy).
+     Lego rule: each recipe owns ONE responsibility and composes with what
+     already exists — .diff, .terminal, .tasklist, .tree, .trace, .msg,
+     .btn, .input, .segment — instead of re-implementing it. Three pieces
+     hold state (<nes-diff>, <nes-logs>, <nes-preview>); the rest is CSS an
+     agent can emit straight as HTML.
+     ====================================================================== */
+
+  /* --------------------------------------------------------------- WORKBENCH
+     The 3-pane workspace shell: rail (files) · main (chat/editor) · side
+     (preview/logs). Layout ONLY — it styles no content, so any module drops
+     in. Mobile-first: panes stack and cap their height; from 56rem they sit
+     side by side. Drop .wb-rail or .wb-side and the grid re-flows itself. */
+  .workbench {
+    --wb-rail: 14rem;
+    --wb-side: 22rem;
+    --wb-h: 30rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    inline-size: 100%;
+    background: var(--screen);
+    border: var(--bw-2) solid var(--line-hi);
+    box-shadow: var(--sh-4);
+    overflow: hidden;
+
+    &>* {
+      min-inline-size: 0;
+      overflow: auto;
+    }
+
+    &>.wb-rail,
+    &>.wb-side {
+      max-block-size: 12rem;
+      background: var(--slot);
+      border-block-end: var(--bw-2) solid var(--line-hi);
+    }
+
+    &>.wb-main {
+      display: flex;
+      flex-direction: column;
+      min-block-size: 0;
+    }
+
+    @media (min-width: 56rem) {
+      grid-template-columns: var(--wb-rail) minmax(0, 1fr) var(--wb-side);
+      block-size: var(--wb-h);
+
+      &:not(:has(>.wb-side)) {
+        grid-template-columns: var(--wb-rail) minmax(0, 1fr);
+      }
+
+      &:not(:has(>.wb-rail)) {
+        grid-template-columns: minmax(0, 1fr) var(--wb-side);
+      }
+
+      &:not(:has(>.wb-rail)):not(:has(>.wb-side)) {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      &>.wb-rail,
+      &>.wb-side {
+        max-block-size: none;
+        border-block-end: 0;
+      }
+
+      &>.wb-rail {
+        border-inline-end: var(--bw-2) solid var(--line-hi);
+      }
+
+      &>.wb-side {
+        border-inline-start: var(--bw-2) solid var(--line-hi);
+      }
+    }
+  }
+
+  /* ---------------------------------------------------------------- REPO BAR
+     "Which code am I looking at": repo · branch · dirty count + an actions
+     slot. Identity only — live run telemetry belongs in .statusline. */
+  .repobar {
+    --accent: var(--primary);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2) var(--sp-3);
+    inline-size: 100%;
+    min-block-size: var(--ctrl-h);
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--panel-2);
+    border: var(--bw-2) solid var(--line-hi);
+    font-family: var(--font-mono);
+    font-size: var(--fs-chip);
+    color: var(--muted);
+
+    & .repo-name {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    & .repo-branch {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      min-inline-size: 0;
+      color: var(--accent);
+    }
+
+    /* uncommitted work — gold because it's a "you have unsaved state" nudge */
+    & .repo-dirty {
+      padding-inline: var(--sp-2);
+      background: color-mix(in srgb, var(--gold) 18%, transparent);
+      border: var(--bw-1) solid var(--gold);
+      font-size: var(--fs-label);
+      letter-spacing: var(--ls-chrome);
+      color: var(--gold);
+    }
+
+    & .repo-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      margin-inline-start: auto;
+    }
+  }
+
+  /* ------------------------------------------------------------- STATUS LINE
+     The ambient bottom strip: run-state light + model · tokens · elapsed.
+     Reads at a glance without stealing focus. data-state uses the shared
+     run-state vocabulary; .sl-end pushes the trailing items right. */
+  .statusline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2) var(--sp-4);
+    inline-size: 100%;
+    min-block-size: var(--ctrl-h-xs);
+    padding: var(--sp-1) var(--sp-3);
+    background: var(--panel);
+    border-block-start: var(--bw-2) solid var(--line-hi);
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-chrome);
+    color: var(--dim);
+
+    & .sl-state {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-weight: 700;
+      color: var(--ink);
+
+      &::before {
+        content: "";
+        inline-size: .5rem;
+        block-size: .5rem;
+        background: var(--state, var(--dim));
+        border: var(--bw-1) solid var(--line);
+      }
+    }
+
+    &[data-state="thinking"] .sl-state::before,
+    &[data-state="running"] .sl-state::before {
+      animation: blink 1.1s steps(2) infinite;
+    }
+
+    & .sl-item {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-1);
+      white-space: nowrap;
+    }
+
+    & .sl-end {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-4);
+      margin-inline-start: auto;
+    }
+  }
+
+  /* ----------------------------------------------------------------- SANDBOX
+     The cloud dev container: is my machine alive, and what is it? State light
+     + spec readout + an actions slot. Vocabulary mapping: thinking = booting,
+     running = live, queued = stopped/idle, error = crashed. */
+  .sandbox {
+    --accent: var(--primary);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: var(--sp-3);
+    align-items: start;
+    inline-size: 100%;
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--panel);
+    border: var(--bw-2) solid var(--line-hi);
+    border-inline-start: var(--accent-bar) solid var(--state, var(--line-hi));
+    box-shadow: var(--sh-3);
+
+    &::before {
+      content: "";
+      grid-row: 1 / span 2;
+      margin-block-start: .3rem;
+      inline-size: .6rem;
+      block-size: .6rem;
+      background: var(--state, var(--dim));
+      border: var(--bw-1) solid var(--line);
+      box-shadow: var(--sh-1);
+    }
+
+    &[data-state="thinking"]::before,
+    &[data-state="running"]::before {
+      animation: blink 1.1s steps(2) infinite;
+    }
+
+    & .sb-head {
+      grid-column: 2;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: var(--sp-2) var(--sp-3);
+      font-family: var(--font-mono);
+    }
+
+    & .sb-name {
+      font-size: var(--fs-chip);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--ink);
+    }
+
+    & .sb-actions {
+      display: flex;
+      gap: var(--sp-2);
+      margin-inline-start: auto;
+    }
+
+    & .sb-specs {
+      grid-column: 2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-1) var(--sp-4);
+      margin-block-start: var(--sp-2);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      color: var(--dim);
+
+      &>span {
+        display: inline-flex;
+        gap: var(--sp-1);
+      }
+
+      & b {
+        font-weight: 400;
+        color: var(--muted);
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------------- PLAN
+     What the agent INTENDS to do, with live state per step — the todo list
+     you watch tick over. Different jobs, on purpose: .tasklist is a static
+     done/open checklist, .trace is what already happened (with tool I/O),
+     .plan is the forward-looking queue. Marks share the run-state colours. */
+  .plan {
+    counter-reset: plan;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    inline-size: 100%;
+    font-family: var(--font-mono);
+
+    &>.plan-step {
+      counter-increment: plan;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: var(--sp-3);
+      align-items: start;
+      padding-block: var(--sp-2);
+      font-size: var(--fs-chip);
+      color: var(--text);
+    }
+
+    &>.plan-step+.plan-step {
+      border-block-start: var(--bw-1) solid var(--line-hi);
+    }
+
+    /* the step mark: its number in a square tinted + ringed by the run state.
+       A soft mix (not a solid fill) keeps the numeral legible at every state. */
+    &>.plan-step::before {
+      content: counter(plan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 1.25rem;
+      block-size: 1.25rem;
+      background: color-mix(in srgb, var(--state, var(--panel-2)) 26%, var(--slot));
+      border: var(--bw-2) solid var(--state, var(--line-hi));
+      box-shadow: var(--sh-1);
+      font-size: var(--fs-label);
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    &>.plan-step[data-state="thinking"]::before,
+    &>.plan-step[data-state="running"]::before {
+      animation: blink 1.1s steps(2) infinite;
+    }
+
+    /* a finished step recedes — the eye should land on what's live */
+    &>.plan-step[data-state="done"] {
+      color: var(--muted);
+    }
+
+    & .plan-note {
+      grid-column: 2;
+      margin-block-start: var(--sp-1);
+      font-size: var(--fs-label);
+      color: var(--dim);
+    }
+  }
+
+  /* -------------------------------------------------------------- PERMISSION
+     The gate: "the agent wants to run this — allow?" One request, one
+     decision. Warn accent by default because it blocks the loop. Add
+     .decided after the user answers: the record stays, the buttons go. */
+  .perm {
+    --accent: var(--warn);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    inline-size: 100%;
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--panel);
+    border: var(--bw-2) solid var(--line-hi);
+    border-inline-start: var(--accent-bar) solid var(--accent);
+    box-shadow: var(--sh-3);
+
+    & .perm-kind {
+      align-self: flex-start;
+      padding-inline: var(--sp-2);
+      background: var(--accent);
+      border: var(--bw-1) solid var(--line);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--ink-on-accent);
+    }
+
+    /* exactly what will run — verbatim, monospaced, never truncated */
+    & .perm-target {
+      display: block;
+      overflow-x: auto;
+      padding: var(--sp-2) var(--sp-3);
+      background: var(--slot);
+      border: var(--bw-1) solid var(--line-hi);
+      font-family: var(--font-mono);
+      font-size: var(--fs-body);
+      white-space: pre;
+      color: var(--ink);
+    }
+
+    & .perm-why {
+      margin: 0;
+      font-size: var(--fs-body);
+      color: var(--muted);
+    }
+
+    & .perm-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-2);
+      margin-block-start: var(--sp-1);
+    }
+
+    &.decided {
+      opacity: .6;
+
+      & .perm-actions {
+        display: none;
+      }
+    }
+  }
+
+  /* --------------------------------------------------------------- DIFF STAT
+     The aggregate of a change set: N files, +added / −removed, and a
+     proportional bar. Pair with .filechange rows for the per-file list.
+     Bar slices size from --seg, same contract as .usage-bar. */
+  .diffstat {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2) var(--sp-3);
+    font-family: var(--font-mono);
+    font-size: var(--fs-chip);
+    color: var(--muted);
+
+    & .ds-files {
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    & .ds-add {
+      color: var(--good);
+    }
+
+    & .ds-del {
+      color: var(--crit);
+    }
+
+    & .ds-bar {
+      display: flex;
+      inline-size: 5rem;
+      block-size: .6rem;
+      background: var(--slot);
+      border: var(--bw-1) solid var(--line-hi);
+
+      &>i {
+        flex: 0 0 var(--seg, 0%);
+      }
+
+      &>i.add {
+        background: var(--good);
+      }
+
+      &>i.del {
+        background: var(--crit);
+      }
+    }
+  }
+
+  /* ------------------------------------------------------------- FILE CHANGE
+     One changed file: status mark (A/M/D/R) · path · ± counts. Render it as
+     an <a> or <button> so it's focusable and jumps to that file's diff. */
+  .filechange {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--sp-3);
+    inline-size: 100%;
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--panel);
+    border: var(--bw-1) solid var(--line-hi);
+    font-family: var(--font-mono);
+    font-size: var(--fs-chip);
+    text-align: start;
+    text-decoration: none;
+    color: var(--text);
+    transition: background var(--dur-fast) var(--ease);
+
+    &:hover {
+      background: var(--panel-2);
+    }
+
+    & .fc-mark {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 1.1rem;
+      block-size: 1.1rem;
+      background: color-mix(in srgb, var(--mark, var(--steel)) 26%, var(--slot));
+      border: var(--bw-1) solid var(--mark, var(--steel));
+      font-size: var(--fs-label);
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    & .fc-path {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--ink);
+    }
+
+    /* the directory recedes so the filename — the thing you scan for — pops */
+    & .fc-dir {
+      color: var(--dim);
+    }
+
+    & .fc-count {
+      display: inline-flex;
+      gap: var(--sp-2);
+      font-size: var(--fs-label);
+
+      & .add {
+        color: var(--good);
+      }
+
+      & .del {
+        color: var(--crit);
+      }
+    }
+  }
+
+  /* git status letter → colour. Added is good, modified is a nudge, deleted
+     is destructive, renamed/moved is neutral-informational. */
+  .filechange[data-change="A"] {
+    --mark: var(--good);
+  }
+
+  .filechange[data-change="M"] {
+    --mark: var(--gold);
+  }
+
+  .filechange[data-change="D"] {
+    --mark: var(--crit);
+  }
+
+  .filechange[data-change="R"] {
+    --mark: var(--blue);
+  }
+
+  /* -------------------------------------------------------------------- HUNK
+     A reviewable slice of a diff: range + scope + keep/revert actions.
+     Works as a plain <div> (always open) or a <details> (collapsible, zero
+     JS). The body stays a plain .diff — this recipe owns only the review
+     chrome around it, so <nes-diff> or hand-written diff HTML both fit. */
+  .hunk {
+    inline-size: 100%;
+    background: var(--panel);
+    border: var(--bw-2) solid var(--line-hi);
+    box-shadow: var(--sh-2);
+
+    &>.hunk-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--sp-2) var(--sp-3);
+      padding: var(--sp-2) var(--sp-3);
+      background: var(--panel-2);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      list-style: none;
+    }
+
+    /* only a <summary> head is clickable; a <div> head must not look it */
+    &>summary.hunk-head {
+      cursor: pointer;
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+    }
+
+    & .hunk-range {
+      color: var(--cyan);
+    }
+
+    & .hunk-scope {
+      color: var(--dim);
+    }
+
+    & .hunk-actions {
+      display: flex;
+      gap: var(--sp-2);
+      margin-inline-start: auto;
+    }
+
+    /* the embedded diff sheds its own frame — the hunk is the frame */
+    &>.diff,
+    &>nes-diff .diff {
+      border: 0;
+      border-block-start: var(--bw-2) solid var(--line-hi);
+    }
+  }
+
+  /* ------------------------------------------------------------------ CHECKS
+     Did it actually work: lint / types / unit / build — one row each, with
+     the shared run-state vocabulary and an optional link to the logs. */
+  .checks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    inline-size: 100%;
+    font-family: var(--font-mono);
+
+    &>.check-item {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--sp-2) var(--sp-3);
+      padding: var(--sp-2) var(--sp-3);
+      background: var(--panel);
+      border: var(--bw-1) solid var(--line-hi);
+      font-size: var(--fs-chip);
+      color: var(--text);
+
+      &::before {
+        content: "";
+        flex: none;
+        inline-size: .7rem;
+        block-size: .7rem;
+        background: var(--state, var(--dim));
+        border: var(--bw-1) solid var(--line);
+        box-shadow: var(--sh-1);
+      }
+    }
+
+    /* collapse the seam between neighbours into one line */
+    &>.check-item+.check-item {
+      border-block-start: 0;
+    }
+
+    &>.check-item[data-state="thinking"]::before,
+    &>.check-item[data-state="running"]::before {
+      animation: blink 1.1s steps(2) infinite;
+    }
+
+    & .chk-name {
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    & .chk-meta {
+      font-size: var(--fs-label);
+      color: var(--dim);
+    }
+
+    & .chk-link {
+      margin-inline-start: auto;
+      font-size: var(--fs-label);
+      color: var(--cyan);
+    }
+  }
+
+  /* ----------------------------------------------------------------- RUN BAR
+     The process strip: stop/start, the command, the port it bound, and how
+     long it took. One running task per bar. */
+  .runbar {
+    --accent: var(--primary);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2) var(--sp-3);
+    inline-size: 100%;
+    min-block-size: var(--ctrl-h);
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    font-family: var(--font-mono);
+    font-size: var(--fs-chip);
+    color: var(--muted);
+
+    &::before {
+      content: "";
+      flex: none;
+      inline-size: .6rem;
+      block-size: .6rem;
+      background: var(--state, var(--dim));
+      border: var(--bw-1) solid var(--line);
+    }
+
+    &[data-state="thinking"]::before,
+    &[data-state="running"]::before {
+      animation: blink 1.1s steps(2) infinite;
+    }
+
+    & .run-cmd {
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    & .run-url {
+      color: var(--accent);
+    }
+
+    & .run-meta {
+      margin-inline-start: auto;
+      font-size: var(--fs-label);
+      color: var(--dim);
+    }
+  }
+
+  /* -------------------------------------------------------------------- LOGS
+     A streaming log surface (<nes-logs> puts .logs on itself): one .logline
+     per line, tinted by data-level. Sticks to the tail while it streams
+     unless you scroll up. For a finished transcript reuse .terminal. */
+  .logs {
+    display: block;
+    inline-size: 100%;
+    max-block-size: var(--logs-h, 14rem);
+    overflow: auto;
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    font-family: var(--font-mono);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--muted);
+  }
+
+  .logline {
+    display: block;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+
+    /* an author `display: block` outranks the UA's [hidden] rule, so the level
+       filter would silently do nothing without this. Keep them together. */
+    &[hidden] {
+      display: none;
+    }
+
+    &[data-level="debug"] {
+      color: var(--dim);
+    }
+
+    &[data-level="warn"] {
+      color: var(--warn);
+    }
+
+    &[data-level="error"] {
+      color: var(--crit);
+    }
+
+    &[data-level="done"] {
+      color: var(--good);
+    }
+
+    & .log-time {
+      color: var(--dim);
+    }
+  }
+
+  /* ------------------------------------------------------------ STACK TRACE
+     The failure, readable: kind + message, then frames with YOUR code lit
+     and vendor frames dimmed, plus the action slot that starts the next
+     agent loop ("fix this"). Not a .callout — a callout is a message, this
+     is structured evidence you click into. */
+  .stacktrace {
+    --accent: var(--crit);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    inline-size: 100%;
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--panel);
+    border: var(--bw-2) solid var(--line-hi);
+    border-inline-start: var(--accent-bar) solid var(--accent);
+    box-shadow: var(--sh-3);
+
+    & .st-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: var(--sp-2) var(--sp-3);
+      font-family: var(--font-mono);
+    }
+
+    & .st-kind {
+      font-size: var(--fs-chip);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--accent);
+    }
+
+    & .st-msg {
+      font-family: var(--font-body);
+      font-size: var(--fs-body);
+      color: var(--ink);
+    }
+
+    & .st-frames {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      overflow-x: auto;
+      background: var(--slot);
+      border: var(--bw-1) solid var(--line-hi);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+    }
+
+    & .st-frame {
+      display: flex;
+      gap: var(--sp-3);
+      padding: var(--sp-1) var(--sp-2);
+      white-space: nowrap;
+      color: var(--dim);
+    }
+
+    /* your code vs node_modules — the whole point of reading a trace */
+    & .st-frame.app {
+      background: color-mix(in srgb, var(--crit) 10%, transparent);
+      color: var(--text);
+    }
+
+    & .st-fn {
+      color: var(--muted);
+    }
+
+    & .st-frame.app .st-fn {
+      color: var(--ink);
+    }
+
+    & .st-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-2);
+    }
+  }
+
+  /* ------------------------------------------------------------ CHECKPOINTS
+     Time travel: every snapshot you can rewind to. .timeline narrates
+     history; .ckpt lets you GO there — each row owns a restore action, and
+     .current marks where you are now. */
+  .ckpt {
+    --accent: var(--primary);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    inline-size: 100%;
+    font-family: var(--font-mono);
+
+    &>.ckpt-item {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--sp-2) var(--sp-3);
+      padding-block: var(--sp-2);
+      padding-inline: var(--sp-5) var(--sp-3);
+      border-inline-start: var(--bw-2) solid var(--line-hi);
+      font-size: var(--fs-chip);
+      color: var(--muted);
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset-block-start: 50%;
+        inset-inline-start: calc(-.35rem - var(--bw-1));
+        translate: 0 -50%;
+        inline-size: .7rem;
+        block-size: .7rem;
+        background: var(--slot);
+        border: var(--bw-2) solid var(--line-hi);
+      }
+    }
+
+    /* the last rail segment stops at its own marker instead of dangling */
+    &>.ckpt-item:last-child {
+      border-inline-start-color: transparent;
+    }
+
+    &>.ckpt-item.current {
+      color: var(--ink);
+
+      &::before {
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+    }
+
+    & .cp-time {
+      flex: none;
+      font-size: var(--fs-label);
+      color: var(--dim);
+    }
+
+    & .cp-label {
+      min-inline-size: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    & .cp-actions {
+      margin-inline-start: auto;
+    }
+  }
+
+  /* ------------------------------------------------------------------ DEPLOY
+     Where the code actually went: environment · URL · duration + commit.
+     One row per environment (preview / staging / production). */
+  .deploy {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2) var(--sp-3);
+    inline-size: 100%;
+    min-block-size: var(--ctrl-h);
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--panel);
+    border: var(--bw-2) solid var(--line-hi);
+    border-inline-start: var(--accent-bar) solid var(--state, var(--line-hi));
+    box-shadow: var(--sh-2);
+    font-family: var(--font-mono);
+    font-size: var(--fs-chip);
+    color: var(--muted);
+
+    & .dp-env {
+      font-size: var(--fs-label);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--ink);
+    }
+
+    & .dp-url {
+      min-inline-size: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--cyan);
+    }
+
+    & .dp-meta {
+      margin-inline-start: auto;
+      font-size: var(--fs-label);
+      color: var(--dim);
+    }
+  }
+
+  /* --------------------------------------------------------------- FILE TABS
+     The open-buffer strip: which files are open, which is focused, which is
+     unsaved. <nes-tabs> switches panels of content; .filetabs switches the
+     document inside ONE pane — different job, so a different recipe. */
+  .filetabs {
+    --accent: var(--primary);
+    display: flex;
+    inline-size: 100%;
+    overflow-x: auto;
+    background: var(--panel-2);
+    border-block-end: var(--bw-2) solid var(--line-hi);
+    scrollbar-width: thin;
+
+    & .filetab {
+      display: inline-flex;
+      flex: none;
+      align-items: center;
+      gap: var(--sp-2);
+      min-block-size: var(--ctrl-h-sm);
+      padding-inline: var(--sp-3);
+      background: var(--slot);
+      border-inline-end: var(--bw-1) solid var(--line-hi);
+      border-block-end: var(--bw-2) solid transparent;
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      color: var(--dim);
+    }
+
+    & .filetab.active {
+      background: var(--screen);
+      border-block-end-color: var(--accent);
+      color: var(--ink);
+    }
+
+    /* the name and the close × are real buttons, stripped to inherit the tab */
+    & .ft-name,
+    & .ft-close {
+      padding: 0;
+      background: none;
+      border: 0;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    & .ft-close {
+      line-height: 1;
+      color: var(--dim);
+
+      &:hover {
+        color: var(--crit);
+      }
+    }
+
+    /* unsaved marker — gold, same "you have pending state" language as
+       .repo-dirty, so one glance reads the same across the workspace */
+    & .ft-dirty {
+      flex: none;
+      inline-size: .4rem;
+      block-size: .4rem;
+      background: var(--gold);
+    }
+  }
+
+  /* ----------------------------------------------------------- APP PREVIEW
+     <nes-preview>: the running app in a framed viewport — URL bar, reload,
+     and mobile/tablet/desktop widths. Named .appview (not .preview) to stay
+     clear of .code-preview's demo pane. The bar composes existing recipes
+     (.input, .btn, .segment) — this only frames and lays out. */
+  .appview {
+    --accent: var(--primary);
+    display: flex;
+    flex-direction: column;
+    inline-size: 100%;
+    background: var(--screen);
+    border: var(--bw-2) solid var(--line-hi);
+    box-shadow: var(--sh-4);
+
+    & .av-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: var(--sp-2);
+      background: var(--panel-2);
+      border-block-end: var(--bw-2) solid var(--line-hi);
+    }
+
+    & .av-url {
+      flex: 1 1 8rem;
+      min-inline-size: 0;
+    }
+
+    & .av-stage {
+      display: flex;
+      justify-content: center;
+      overflow: auto;
+      padding: var(--sp-3);
+      background: var(--bg);
+    }
+
+    & iframe {
+      inline-size: var(--av-w, 100%);
+      max-inline-size: 100%;
+      block-size: var(--av-h, 22rem);
+      background: var(--screen);
+      border: var(--bw-2) solid var(--line);
+      box-shadow: var(--sh-3);
+    }
+  }
+
+  /* viewport presets — real device widths, so a mobile bug reproduces */
+  .appview[data-view="mobile"] {
+    --av-w: 375px;
+  }
+
+  .appview[data-view="tablet"] {
+    --av-w: 768px;
+  }
+
+  .appview[data-view="desktop"] {
+    --av-w: 100%;
+  }
+
   /* ---- touch targets: on coarse pointers, controls grow to a ~44px tap zone
      (WCAG 2.5.8). Sizes only bump up, so nothing shifts on desktop. ---- */
   @media (pointer: coarse) {
@@ -4967,8 +6071,16 @@
     .stepper>button,
     .suggest-item,
     .result,
-    .outline>a {
+    .outline>a,
+    .filetabs .filetab,
+    .filechange {
       min-block-size: 2.5rem;
+    }
+
+    /* the tab's × is a 10px glyph — give it a real box to hit */
+    .filetabs .ft-close {
+      min-inline-size: 1.75rem;
+      min-block-size: 1.75rem;
     }
 
     .pin input {
