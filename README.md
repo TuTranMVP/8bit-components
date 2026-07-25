@@ -153,16 +153,53 @@ Zero-FOUT: preload 2 file critical — snippet trong comment đầu `tokens.css`
 <script type="module" src="elements.js"></script>
 ```
 
-### Vue 3 / Nuxt
-Import the CSS once (e.g. in `main.ts` / `nuxt.config`), import `elements.js` once, then tell the
-compiler `nes-*` are custom elements:
+### Vue 3.3+ / 3.5 (Vite) — verified
+
+**1.** Install: `pnpm add 8bit-nes`
+
+**2.** Tell the Vue compiler that `<nes-*>` are custom elements (required, or Vue errors "failed to resolve component"):
 ```ts
-// vite / vue
-compilerOptions: { isCustomElement: (t) => t.startsWith('nes-') }
-// nuxt.config
-vue: { compilerOptions: { isCustomElement: (t) => t.startsWith('nes-') } }
+// vite.config.ts
+import vue from '@vitejs/plugin-vue'
+export default {
+  plugins: [vue({ template: { compilerOptions: { isCustomElement: (t) => t.startsWith('nes-') } } })],
+}
 ```
-Then use `<nes-quiz>`, `<button class="btn">`, etc. directly in `.vue` files.
+
+**3.** Import the CSS + register the elements **once** at the app entry:
+```ts
+// src/main.ts
+import '8bit-nes/all.css'   // tokens + base + components
+import '8bit-nes'           // registers every <nes-*> (side-effect)
+```
+> Vite auto-bundles the three woff2 fonts (the CSS references them with relative `url()`) — no font config.
+
+**4.** Use classes + `<nes-*>` in any `.vue`. Custom events bubble as `CustomEvent` — read `event.detail`:
+```vue
+<template>
+  <div data-size="lg" style="display:flex;gap:.5rem;align-items:center">
+    <button class="btn" data-accent="cyan">Save</button>
+    <input class="input" />
+    <button class="btn icon" aria-label="Go"><nes-icon name="rocket" /></button>
+  </div>
+  <nes-form @nes:submit="e => console.log(e.detail)">    <!-- {data, form} -->
+    <label class="field"><span class="label">Name</span><input class="input" name="name" required /></label>
+    <button class="btn" type="submit">Submit</button>
+  </nes-form>
+</template>
+```
+No two-way `v-model` on `<nes-*>`; bind via `@nes:change="v = $event.detail.value"`. Inside `<nes-form>` the controls keep a hidden `<input name>` and submit with zero wiring.
+
+**Nuxt 3** — `customElements` needs the browser, so register in a **client** plugin:
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+  css: ['8bit-nes/all.css'],
+  vue: { compilerOptions: { isCustomElement: (t) => t.startsWith('nes-') } },
+})
+// plugins/8bit.client.ts
+import '8bit-nes'
+```
 
 ### React 19
 No wrapper needed — React 19 passes props and listens to custom-element events natively.
