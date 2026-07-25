@@ -971,10 +971,46 @@
       "kind": "class",
       "description": "A compact color / shape key for a diagram. Pure CSS — one swatch per meaning, recolored with data-accent.",
       "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/legend"
+    },
+    {
+      "id": "graph",
+      "name": "Graph",
+      "category": "Second Brain",
+      "selector": "<nes-graph>",
+      "kind": "element",
+      "description": "A knowledge graph — nodes (notes / concepts) + edges, force-laid-out deterministically as crisp SVG. Click a node to light its neighbourhood. Zero deps; wrap in <nes-zoom> to pan/zoom.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/graph"
+    },
+    {
+      "id": "note",
+      "name": "Note card",
+      "category": "Second Brain",
+      "selector": ".note",
+      "kind": "class",
+      "description": "One note in a vault or search result: title + timestamp, a 2-line excerpt, tag pills and a link / backlink readout. data-accent classifies it by folder or domain.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/note"
+    },
+    {
+      "id": "backlinks",
+      "name": "Backlinks",
+      "category": "Second Brain",
+      "selector": ".backlinks",
+      "kind": "class",
+      "description": "Linked references — the notes that point at this one, each with the sentence it was mentioned in. <mark> highlights the match.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/backlinks"
+    },
+    {
+      "id": "wikilink",
+      "name": "Wiki-link & Tag",
+      "category": "Second Brain",
+      "selector": ".wikilink",
+      "kind": "class",
+      "description": "The inline glue of a vault: [[wiki-links]] between notes (dim when the target doesn't exist yet) and #tag pills to filter by.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/wikilink"
     }
   ],
   "counts": {
     "concepts": 4,
-    "components": 99
+    "components": 103
   }
 }

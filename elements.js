@@ -2918,6 +2918,192 @@ class NesCompare extends HTMLElement {
   }
 }
 
+/* ========================================================================== */
+/*  SECOND BRAIN  —  <nes-graph>: a knowledge graph. Nodes + edges, force-laid  */
+/*  out deterministically (no deps, no randomness), rendered as crisp SVG.      */
+/*  Click a node to focus its neighbours (dims the rest) + emit nes:node.       */
+/*  Data via a child <script type="application/json">, the `data` attribute, or */
+/*  the `.data` property. Wrap in <nes-zoom> for pan/zoom.                       */
+/*    node: { id, label?, group?, x?, y? }   ·   edge: { source, target }       */
+/*  x/y (0–100) pin a node; omit them to let the layout place it.               */
+/* ========================================================================== */
+const gEsc = (s) =>
+  String(s).replace(
+    /[<>&"]/g,
+    (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" })[c],
+  );
+
+class NesGraph extends HTMLElement {
+  static get observedAttributes() {
+    return ["data", "focus"];
+  }
+  connectedCallback() {
+    this._paintOnly = false;
+    this.render();
+  }
+  attributeChangedCallback(name) {
+    if (!this.isConnected) return;
+    this._paintOnly = name === "focus"; // focus repaints; data re-lays-out
+    this.render();
+  }
+  set data(v) {
+    this._data = v;
+    this._laid = null;
+    if (this.isConnected) {
+      this._paintOnly = false;
+      this.render();
+    }
+  }
+  get data() {
+    return this._data || this._read();
+  }
+  _read() {
+    if (this._data) return this._data;
+    const attr = this.getAttribute("data");
+    if (attr) {
+      try {
+        return JSON.parse(attr);
+      } catch {}
+    }
+    // cache the child-script data: render() replaces innerHTML (wiping the
+    // script), so a later re-layout must still find the parsed graph.
+    if (this._fromScript) return this._fromScript;
+    const s = this.querySelector('script[type="application/json"]');
+    if (s) {
+      try {
+        this._fromScript = JSON.parse(s.textContent || "{}");
+        return this._fromScript;
+      } catch {}
+    }
+    return { nodes: [], edges: [] };
+  }
+  _layout() {
+    const g = this._read();
+    const nodes = (g.nodes || []).map((n) => ({ ...n }));
+    const edges = (g.edges || []).filter((e) => e && e.source != null && e.target != null);
+    const W = 800;
+    const H = 500;
+    const n = nodes.length;
+    const idx = {};
+    nodes.forEach((nd, i) => {
+      idx[nd.id] = i;
+      if (nd.x == null || nd.y == null) {
+        const a = (i / Math.max(n, 1)) * 2 * Math.PI; // deterministic ring seed
+        nd.x = W / 2 + Math.cos(a) * W * 0.28;
+        nd.y = H / 2 + Math.sin(a) * H * 0.32;
+      } else {
+        nd.x = (nd.x / 100) * W; // author-pinned, given as 0–100
+        nd.y = (nd.y / 100) * H;
+      }
+    });
+    // Fruchterman-Reingold-ish: repulse every pair, pull along edges, re-centre.
+    const k = Math.sqrt((W * H) / Math.max(n, 1)) * 0.55;
+    const iters = n > 1 ? 140 : 0;
+    for (let it = 0; it < iters; it++) {
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const d = Math.hypot(dx, dy) || 0.01;
+          const f = (k * k) / d / 100;
+          nodes[i].x += (dx / d) * f;
+          nodes[i].y += (dy / d) * f;
+          nodes[j].x -= (dx / d) * f;
+          nodes[j].y -= (dy / d) * f;
+        }
+      }
+      for (const e of edges) {
+        const a = nodes[idx[e.source]];
+        const b = nodes[idx[e.target]];
+        if (!a || !b) continue;
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const d = Math.hypot(dx, dy) || 0.01;
+        const f = (d * d) / k / 900;
+        a.x -= (dx / d) * f;
+        a.y -= (dy / d) * f;
+        b.x += (dx / d) * f;
+        b.y += (dy / d) * f;
+      }
+      for (const nd of nodes) {
+        nd.x += (W / 2 - nd.x) * 0.012;
+        nd.y += (H / 2 - nd.y) * 0.012;
+      }
+    }
+    const pad = 44;
+    for (const nd of nodes) {
+      nd.x = Math.min(W - pad, Math.max(pad, nd.x));
+      nd.y = Math.min(H - pad, Math.max(pad, nd.y));
+    }
+    this._laid = { nodes, edges, idx, W, H };
+  }
+  render() {
+    if (!this._laid || !this._paintOnly) this._layout();
+    const { nodes, edges, idx, W, H } = this._laid;
+    if (!nodes.length) {
+      this.innerHTML = "";
+      return;
+    }
+    const focus = this.getAttribute("focus");
+    const nb = new Set();
+    if (focus != null) {
+      nb.add(focus);
+      for (const e of edges) {
+        if (String(e.source) === focus) nb.add(String(e.target));
+        if (String(e.target) === focus) nb.add(String(e.source));
+      }
+    }
+    const lines = edges
+      .map((e) => {
+        const a = nodes[idx[e.source]];
+        const b = nodes[idx[e.target]];
+        if (!a || !b) return "";
+        const hot = focus != null && (String(e.source) === focus || String(e.target) === focus);
+        return `<line class="graph-edge${hot ? " on" : ""}" x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}"/>`;
+      })
+      .join("");
+    const dots = nodes
+      .map((nd) => {
+        const dim = focus != null && !nb.has(String(nd.id)) ? " dim" : "";
+        const foc = focus != null && String(nd.id) === focus ? " focus" : "";
+        const acc = nd.group ? ` data-accent="${gEsc(nd.group)}"` : "";
+        const label = gEsc(nd.label != null ? nd.label : nd.id);
+        return `<g class="graph-node${dim}${foc}"${acc} data-id="${gEsc(nd.id)}" tabindex="0" role="button" aria-label="${label}" transform="translate(${nd.x.toFixed(1)},${nd.y.toFixed(1)})"><rect class="graph-dot" x="-7" y="-7" width="14" height="14"/><text class="graph-label" y="26">${label}</text></g>`;
+      })
+      .join("");
+    this.innerHTML = `<svg class="graph-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${gEsc(this.getAttribute("aria-label") || "Knowledge graph")}" shape-rendering="geometricPrecision">${lines}${dots}</svg>`;
+    const svg = this.firstChild;
+    svg.addEventListener("click", (ev) => {
+      const node = ev.target.closest(".graph-node");
+      if (node) {
+        const id = node.dataset.id;
+        this.setAttribute("focus", id);
+        const data = nodes[idx[id]] || {};
+        this.dispatchEvent(
+          new CustomEvent("nes:node", {
+            bubbles: true,
+            detail: { id, label: data.label != null ? data.label : id, group: data.group },
+          }),
+        );
+      } else {
+        this.removeAttribute("focus");
+      }
+    });
+    svg.addEventListener("keydown", (ev) => {
+      if (ev.key !== "Enter" && ev.key !== " ") return;
+      const node = ev.target.closest(".graph-node");
+      if (node) {
+        ev.preventDefault();
+        node.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      }
+    });
+  }
+  focusNode(id) {
+    if (id == null) this.removeAttribute("focus");
+    else this.setAttribute("focus", String(id));
+  }
+}
+
 /* ------------------------------------------------------------- self-register */
 const defs = {
   "nes-sound": NesSound,
@@ -2946,6 +3132,7 @@ const defs = {
   "nes-zoom": NesZoom,
   "nes-annotate": NesAnnotate,
   "nes-compare": NesCompare,
+  "nes-graph": NesGraph,
 };
 for (const [tag, cls] of Object.entries(defs)) {
   if (!customElements.get(tag)) customElements.define(tag, cls);

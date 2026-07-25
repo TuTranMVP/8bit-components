@@ -437,7 +437,8 @@
   nes-walkthrough,
   nes-zoom,
   nes-annotate,
-  nes-compare {
+  nes-compare,
+  nes-graph {
     display: block;
   }
 
@@ -4206,6 +4207,250 @@
       font-family: var(--font-mono);
       font-size: var(--fs-label);
       color: var(--dim);
+    }
+  }
+
+  /* ======================================================================
+     SECOND BRAIN · note / knowledge management (Obsidian-style) — stateless
+     recipes + the <nes-graph> knowledge graph. Note cards, wiki-links, tags
+     and backlinks are 0-JS; the graph is the one interactive piece.
+     ====================================================================== */
+
+  /* -------------------------------------------------------------- NOTE CARD
+     One note in a vault / list: title + timestamp, a 2-line excerpt, tag pills
+     and a link/backlink readout. data-accent classifies it by folder/domain. */
+  .note {
+    --accent: var(--primary);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    background: var(--panel);
+    border: var(--bw-2) solid var(--line-hi);
+    border-inline-start: var(--accent-bar) solid var(--accent);
+    box-shadow: var(--sh-3);
+    padding: var(--sp-3) var(--sp-4);
+    cursor: pointer;
+    transition: border-color var(--dur-fast), transform var(--dur-fast) var(--ease);
+
+    &:hover {
+      border-inline-end-color: var(--accent);
+      border-block-color: var(--accent);
+    }
+
+    &:active {
+      transform: translate(1px, 1px);
+      box-shadow: var(--sh-1);
+    }
+
+    & .note-head {
+      display: flex;
+      align-items: baseline;
+      gap: var(--sp-3);
+    }
+
+    & .note-title {
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: var(--fs-h3);
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    & .note-time {
+      flex: none;
+      margin-inline-start: auto;
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      color: var(--dim);
+    }
+
+    & .note-excerpt {
+      margin: 0;
+      font-size: var(--fs-body);
+      color: var(--muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    & .note-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-2);
+    }
+
+    & .note-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      color: var(--dim);
+    }
+  }
+
+  /* tag pill — a #tag. Cheap, mono, tap-to-filter. */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    color: var(--dim);
+    background: var(--slot);
+    border: 1px solid var(--line-hi);
+    padding: .1rem .4rem;
+    cursor: pointer;
+    transition: color var(--dur-fast), border-color var(--dur-fast);
+
+    &:hover {
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+  }
+
+  /* wiki-link — an inline [[internal link]]. Dashed underline; .new = a note
+     that doesn't exist yet (dim), like Obsidian's unresolved links. */
+  .wikilink {
+    color: var(--indigo);
+    text-decoration: none;
+    border-block-end: 1px dashed color-mix(in srgb, var(--indigo) 60%, transparent);
+    transition: color var(--dur-fast), background var(--dur-fast);
+
+    &:hover {
+      color: var(--ink);
+      background: color-mix(in srgb, var(--indigo) 14%, transparent);
+      border-block-end-style: solid;
+    }
+
+    &.new {
+      color: var(--dim);
+      border-block-end-color: var(--line-hi);
+    }
+  }
+
+  /* ------------------------------------------------------------- BACKLINKS
+     "Linked references": the notes that point at this one, each with the
+     sentence it was mentioned in. <mark> highlights the match. */
+  .backlinks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .backlinks-head {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-chrome);
+    color: var(--muted);
+  }
+
+  .backlink {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    border-inline-start: var(--accent-bar) solid var(--line-hi);
+    box-shadow: var(--sh-1);
+    text-decoration: none;
+    transition: border-color var(--dur-fast), transform var(--dur-fast) var(--ease);
+
+    &:hover {
+      border-inline-start-color: var(--primary);
+    }
+
+    &:active {
+      transform: translate(1px, 1px);
+    }
+
+    & .backlink-title {
+      font-family: var(--font-mono);
+      font-size: var(--fs-chip);
+      color: var(--ink);
+    }
+
+    & .backlink-ctx {
+      font-size: var(--fs-body);
+      color: var(--dim);
+
+      & mark {
+        color: var(--ink);
+        background: color-mix(in srgb, var(--gold) 32%, transparent);
+      }
+    }
+  }
+
+  /* ---------------------------------------------------------------- GRAPH
+     <nes-graph> renders this SVG: square nodes (group = data-accent), hard
+     edges, and a focus mode that lights the selected node's neighbourhood. */
+  .graph-svg {
+    inline-size: 100%;
+    block-size: auto;
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+    box-shadow: var(--sh-2);
+    touch-action: none;
+  }
+
+  .graph-edge {
+    stroke: var(--line-hi);
+    stroke-width: 2;
+  }
+
+  .graph-edge.on {
+    stroke: var(--primary);
+    stroke-width: 3;
+  }
+
+  .graph-node {
+    cursor: pointer;
+
+    & .graph-dot {
+      fill: var(--accent, var(--primary));
+      stroke: var(--line);
+      stroke-width: 2;
+    }
+
+    & .graph-label {
+      fill: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      text-anchor: middle;
+    }
+
+    &:hover .graph-dot,
+    &:focus-visible .graph-dot {
+      fill: var(--ink);
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
+
+    &:focus-visible .graph-dot {
+      stroke: var(--gold);
+      stroke-width: 3;
+    }
+
+    &.focus .graph-dot {
+      stroke: var(--gold);
+      stroke-width: 3;
+    }
+
+    &.focus .graph-label {
+      fill: var(--ink);
+    }
+
+    &.dim {
+      opacity: .28;
     }
   }
 

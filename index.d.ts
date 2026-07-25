@@ -249,6 +249,38 @@ export declare class NesCompareElement extends HTMLElement {
   set(pos: number): void;
 }
 
+/** A node in a {@link NesGraphElement} knowledge graph. */
+export interface GraphNode {
+  /** unique id, referenced by {@link GraphEdge.source}/`target`. */
+  id: string;
+  /** display label (defaults to `id`). */
+  label?: string;
+  /** accent name (`"purple"`, `"cyan"`, …) that colours the node. */
+  group?: string;
+  /** pin the node at this x (0–100); omit to let the layout place it. */
+  x?: number;
+  /** pin the node at this y (0–100); omit to let the layout place it. */
+  y?: number;
+}
+/** An edge (undirected line) between two {@link GraphNode}s by id. */
+export interface GraphEdge {
+  source: string;
+  target: string;
+}
+/**
+ * <nes-graph>: a knowledge graph. Force-lays-out `{nodes,edges}` deterministically
+ * (no deps, no randomness) as crisp SVG; clicking a node focuses its neighbourhood
+ * (dimming the rest) and emits `nes:node`. Data comes from a child
+ * `<script type="application/json">`, the `data` attribute, or the `.data` property.
+ * Wrap in {@link NesZoomElement} for pan/zoom.
+ */
+export declare class NesGraphElement extends HTMLElement {
+  /** the graph data; assigning re-runs the layout. */
+  data: { nodes: GraphNode[]; edges: GraphEdge[] };
+  /** focus a node by id (dims the rest); pass `null`/omit to clear. */
+  focusNode(id?: string | null): void;
+}
+
 /** How a ghost suggestion should be produced. */
 export type EditorSuggestMode =
   /** continue the text in the same language */
@@ -361,6 +393,7 @@ declare global {
     "nes-zoom": NesZoomElement;
     "nes-annotate": NesAnnotateElement;
     "nes-compare": NesCompareElement;
+    "nes-graph": NesGraphElement;
   }
   interface DocumentEventMap {
     "nes:xp": CustomEvent<{ amount: number }>;
@@ -379,7 +412,7 @@ declare global {
     "nes:ai": CustomEvent<EditorAIDetail>;
     "nes:suggest": CustomEvent<EditorSuggestContext & { accept: (suggestion: string) => void }>;
     "nes:render": CustomEvent<{ ok: boolean }>;
-    "nes:node": CustomEvent<{ label: string; id: string }>;
+    "nes:node": CustomEvent<{ label: string; id: string; group?: string }>;
     "nes:step": CustomEvent<{ index: number; step: WalkthroughStep }>;
     "nes:annotate": CustomEvent<{ index: number }>;
   }

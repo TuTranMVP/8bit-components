@@ -188,6 +188,7 @@ Words are design material — they help someone use the thing.
 | Editor (AI) | Editor (`<nes-editor>`) · EditorToolbar · EditorSuggestionMenu (`/` + AI commands) · EditorMentionMenu (`@`) · EditorEmojiMenu (`:`) · EditorDragHandle — contenteditable, Tab ghost, bilingual mode (`lang`/`target-lang`), word-count, AI hook |
 | Typography (MDC) | CodePreview (`.code-preview`) · CodeGroup (`<nes-tabs class="code-group">`) · CodeCollapse (`<details class="code-collapse">`) · CodeTree (`<nes-code-tree>`) · CardGroup (`.card-group`) · FieldGroup (`.field-group`) · Prompt (`.prompt`) · Terminal (`.terminal`) · Diff (`.diff`) · Tasklist (`.tasklist`) · code filename header (`<nes-code file>`) — the render target for AI-streamed Markdown/MDC output, not a parser |
 | Visualize | Mermaid (`<nes-mermaid>`) · Walkthrough (`<nes-walkthrough>`, `autoplay`) · Lens (`<nes-tabs class="lens">`) · Zoom (`<nes-zoom>`) · Annotate (`<nes-annotate>`) · Compare (`<nes-compare>`) · Legend (`.legend`) — on-brand Mermaid from AI output + step-through learning, pan/zoom exploration, hotspot annotations, A/B compare. Mermaid never bundled (BYO / lazy-load); the rest is zero-dep pointer + CSS |
+| Second Brain | Graph (`<nes-graph>` — force-laid-out knowledge graph, click-to-focus neighbourhood, wrap in `<nes-zoom>`) · Note card (`.note`) · Backlinks (`.backlinks`) · Wiki-link (`.wikilink` + `.new`) · Tag (`.tag`) — Obsidian-style note/knowledge UI: vault cards, `[[links]]`, `#tags`, linked references, deterministic 0-dep graph |
 
 Live docs: `pnpm demo`, then open `/docs.html`.
 
