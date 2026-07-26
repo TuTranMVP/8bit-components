@@ -2,14 +2,46 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.6.1
+
+CDN delivery hardening plus two coarse-pointer touch fixes. No change to any token,
+class or element API — 0.6.0's OpenCode module is untouched.
+
+### Fixed
+
+- **Touch (coarse pointer)**: the 16px iOS focus-zoom floor named `.textarea`, but
+  `.chat-prompt` and `.composer` each wrap a *bare* `<textarea>` — the one field a
+  phone user always taps — so focusing a chat box still zoomed the page. Both are
+  now floored. `.chat-submit` is sized from `--ctrl-h` rather than
+  `min-block-size`, so it also sat below the 44px tap zone every other control
+  gets; its rung is now bumped on coarse pointers.
+
+### Added
+
+- **`sri.json`** — Subresource-Integrity digests (`sha384`) for all 15
+  CDN-servable assets: both minified entries, the granular CSS, the two ES
+  modules, the fonts and the RAG artifacts. Generated from the build by
+  `scripts/gen-sri.mjs` (`pnpm gen:sri`, deterministic, CI-diffed like the other
+  build artifacts), shipped inside the package and published to the docs site at
+  `/sri.json`, so a consuming page can byte-pin what it loads instead of only
+  version-pinning it.
+
+### Changed
+
+- README's CDN section is now the full recommended `<head>`: `preconnect`,
+  version-pinned (`@0.6.1` → `immutable`, a year of cache) rather than the
+  mutable bare alias, font `preload` at the exact URLs `all.min.css` resolves
+  `url()` to, and `integrity` + `crossorigin` on both entries — with the reason
+  for each line and the pinned-vs-range caching trade-off spelled out.
+- `examples/cdn-starter.html` is wired to that same recipe (and demos
+  `<nes-switcher>`), so the copy-paste starter *is* the optimised setup.
+
+
 ## 0.6.0
 
 The **OpenCode** release — an 18-component module for Vibe-Coding tools on the
 web/cloud: the WebUI shell around an agent that writes code. Still zero-build,
 zero-dependency, dark-only, square-cornered. **133 components.**
-
-Also in this release: CDN delivery hardening (`sri.json` + a documented, pinned
-and byte-verified CDN recipe) and two coarse-pointer touch fixes.
 
 ### Added
 
@@ -35,14 +67,6 @@ and byte-verified CDN recipe) and two coarse-pointer touch fixes.
 - Types: `NesDiffElement`, `NesLogsElement`, `NesPreviewElement`, plus
   `DiffStat` / `LogLevel` / `PreviewView` and the two new event maps.
 
-- **`sri.json`** — Subresource-Integrity digests (`sha384`) for all 15
-  CDN-servable assets: both minified entries, the granular CSS, the two ES
-  modules, the fonts and the RAG artifacts. Generated from the build by
-  `scripts/gen-sri.mjs` (`pnpm gen:sri`, deterministic, CI-diffed like the other
-  build artifacts), shipped inside the package and published to the docs site at
-  `/sri.json`, so a consuming page can byte-pin what it loads instead of only
-  version-pinning it.
-
 ### Changed
 
 - The shared **run-state vocabulary** (`queued · thinking · running · done ·
@@ -55,23 +79,6 @@ and byte-verified CDN recipe) and two coarse-pointer touch fixes.
   (the stick-to-newest behaviour was extracted rather than copied). No API or
   behaviour change to the chat scroller.
 
-- README's CDN section is now the full recommended `<head>`: `preconnect`,
-  version-pinned (`@0.6.0` → `immutable`, a year of cache) rather than the
-  mutable bare alias, font `preload` at the exact URLs `all.min.css` resolves
-  `url()` to, and `integrity` + `crossorigin` on both entries — with the reason
-  for each line and the pinned-vs-range caching trade-off spelled out.
-- `examples/cdn-starter.html` is wired to that same recipe (and now demos
-  `<nes-switcher>`), so the copy-paste starter *is* the optimised setup.
-
-### Fixed
-
-- **Touch (coarse pointer)**: the 16px iOS focus-zoom floor named `.textarea`, but
-  `.chat-prompt` and `.composer` each wrap a *bare* `<textarea>` — the one field a
-  phone user always taps — so focusing a chat box still zoomed the page. Both are
-  now floored. `.chat-submit` is sized from `--ctrl-h` rather than
-  `min-block-size`, so it also sat below the 44px tap zone every other control
-  gets; its rung is now bumped on coarse pointers.
-
 ### Notes
 
 - The module deliberately **reuses** `.diff`, `.terminal`, `.tasklist`,
@@ -80,7 +87,6 @@ and byte-verified CDN recipe) and two coarse-pointer touch fixes.
   `.btn` + `.segment`.
 - `<nes-preview>` sets no `sandbox` by default and passes a supplied one
   through verbatim; `<nes-diff>` renders a patch and never applies one.
-
 
 ## 0.5.0
 

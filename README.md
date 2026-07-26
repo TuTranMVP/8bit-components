@@ -7,11 +7,11 @@ NES arcade CRT, dark-only, modern-crisp. Cross-framework by design.
 Reusable across every project in the studio — install it into any repo, no build step.
 
 ```bash
-# from npm — latest is 0.6.0
+# from npm — latest is 0.6.1
 pnpm add 8bit-nes
 
 # or straight from GitHub (a tag is a valid spec too)
-pnpm add github:TuTranMVP/8bit-components#v0.6.0
+pnpm add github:TuTranMVP/8bit-components#v0.6.1
 ```
 
 ```js
@@ -40,25 +40,25 @@ visit (copy it verbatim — every line earns its place):
 <!-- 2. fonts, at the exact URLs all.min.css resolves url() to → fetched once, in parallel
         with the stylesheet instead of after it -->
 <link rel="preload" as="font" type="font/woff2" crossorigin
-  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.6.0/fonts/nes-sans-var.woff2">
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.6.1/fonts/nes-sans-var.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin
-  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.6.0/fonts/nes-mono-400.woff2">
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.6.1/fonts/nes-mono-400.woff2">
 
 <!-- 3. the system: pinned version + byte-pinned integrity -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.6.0/all.min.css"
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.6.1/all.min.css"
   integrity="sha384-aTnZWC0jOq8WLZj4mdOmGBlQILMwr/3yKJznNsJWtULdUcP5J5JejIBZ3SwtkD66"
   crossorigin="anonymous">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.6.0/elements.min.js"
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.6.1/elements.min.js"
   integrity="sha384-KNpjQHaGKthTfnm+plrxxO4/o9tAqoJ+8LC8b2GlXY6QUtcbSYDpo5sKdXIx7++S"
   crossorigin="anonymous"></script>
 ```
 
 Why it's shaped like that:
 
-- **Pin the version.** `@0.6.0` is immutable — jsDelivr serves it `max-age=31536000, immutable`,
+- **Pin the version.** `@0.6.1` is immutable — jsDelivr serves it `max-age=31536000, immutable`,
   so a repeat visit costs zero requests. A bare `/npm/8bit-nes/all.min.css` is a *mutable* alias:
   it revalidates every 7 days and costs a redirect hop on the first hit. Bump the number to
-  upgrade; nothing silently changes underneath a shipped page. A `@0.5` range is the middle
+  upgrade; nothing silently changes underneath a shipped page. A `@0.6` range is the middle
   ground (patches auto-adopt, still cached a week).
 - **Preload only the two fonts above the fold.** `nes-sans-var.woff2` (body) and
   `nes-mono-400.woff2` (chrome/labels). The 700-weight mono is left to `font-display: swap`.
@@ -75,7 +75,7 @@ Why it's shaped like that:
   sri.files["all.min.css"]; // "sha384-…"  · sri.cdn is the matching pinned base URL
   ```
 
-  The hashes above are for **0.6.0**. They change with every version — regenerate (`pnpm gen:sri`)
+  The hashes above are for **0.6.1**. They change with every version — regenerate (`pnpm gen:sri`)
   or re-fetch `sri.json` when you bump, or the browser will (correctly) refuse the file.
 - **Fonts don't need a separate request budget.** The whole system is 4 files: 75 kB CSS +
   79 kB ESM + 2 woff2 (both subset with `unicode-range`), all Brotli'd by the CDN.
@@ -88,7 +88,7 @@ Copy-paste starter, already wired exactly like the above:
 [`examples/cdn-starter.html`](examples/cdn-starter.html) — also live on the docs site at
 `/examples/cdn-starter.html`.
 
-> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.6.0/all.min.css`) and the same
+> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.6.1/all.min.css`) and the same
 > SRI digests — it's the identical npm tarball. Pick *one* origin per page, though: two CDNs
 > means two handshakes for no benefit.
 
