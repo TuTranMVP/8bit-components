@@ -2,6 +2,38 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.7.1
+
+Two accessibility fixes plus a guard for the release process. CSS only —
+`elements.min.js` is byte-identical to 0.7.0, and no token, class or element API
+changed.
+
+### Fixed
+
+- **The documented `<head>` would have been blocked by the browser.** 0.7.0 bumped
+  the CDN URLs in `README.md` and `examples/cdn-starter.html` to `@0.7.0` but left
+  0.6.1's `integrity` digests in place, so anyone copying the recommended snippet
+  hit an SRI mismatch and got no stylesheet at all. Digests corrected, and
+  `scripts/check-doc-pins.mjs` now fails the build when a documented version or
+  digest does not match `package.json` / `sri.json` — wired into `pnpm check`, so
+  CI and `prepublishOnly` both catch it. `sri.json` is generated and diffed; the
+  docs that quote it were only ever hand-edited, which is why nothing noticed.
+- **Links in prose had no style at all**: `base.css` styles headings, `code` and
+  body text but never `a`, so an inline link rendered identically to the text
+  around it — same colour, no underline, nothing marking it clickable. Links in a
+  text flow now get brighter ink *and* an underline, distinguishing them on two
+  channels rather than colour alone (WCAG 1.4.1). Scoped with
+  `:not(.btn, .card, .chip, .tab)`, so links that already carry their own
+  affordance are untouched — verified, including a link nested inside `<b>` and a
+  `.btn` sitting inside a `<p>`.
+- **Walkthrough dots on touch**: `.wt-dot` is a real control — it jumps to that
+  step — but at `0.75rem` it was a 12px tap target, under even the 24px AA floor.
+  Enlarging the dot would wreck the progress row, so on coarse pointers a
+  transparent `::after` takes the tap area to 44px while the dot keeps its size.
+  Verified at iPhone-14 metrics across a five-dot row: each dot owns the hit test
+  at its own centre, a tap 13px below any dot selects that step, and on a fine
+  pointer the same click still does nothing.
+
 ## 0.7.0
 
 **Map of Content** — the docs site's "on this page" rail, promoted into a real
