@@ -2,6 +2,54 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.7.0
+
+**Map of Content** — the docs site's "on this page" rail, promoted into a real
+component and made mobile-first. **134 components.**
+
+### Added
+
+- **`<nes-toc>`** (Navigation) — the live index of a page. Builds itself from the
+  headings in `target` (default `main`/`article`, `levels="h2,h3"`), follows the
+  scroll with an `IntersectionObserver`, and **hides itself** when there are
+  fewer than `min` (2) headings, so a page that needs no index costs the
+  consumer no conditional rendering.
+  - **Mobile-first by construction**: the default shape is a collapsible sticky
+    bar that *names the section you're in* (`.toc-now`) — one tap for the list,
+    capped at `50dvh` so an open index can never bury the content it indexes. It
+    becomes an open sticky rail from `rail-at` (default `74rem`); `mode="bar|rail"`
+    pins one shape.
+  - Renders its list as the existing **`.outline`** recipe, so the `.lvl-*`
+    indent, the `.active` state and the 44px coarse-pointer rows come from a
+    recipe that already shipped — not a second list style. Indent is *relative*,
+    so `levels="h3,h4"` starts flush.
+  - Real in-page anchors (shareable, middle-clickable, work with no JS), missing
+    ids generated from heading text with diacritics stripped (“Cài đặt” →
+    `#cai-dat`), and `scroll-margin-block-start: var(--toc-offset, …)` on each
+    heading so a jump never lands under sticky chrome.
+  - `.headings` / `.active` / `.open`, `.refresh()` for client-side routing, and
+    `nes:section {id,text}`. Types: `NesTocElement`.
+  - Tokens: `--toc-top` (how far below the chrome it sticks), `--toc-offset` (how
+    far a jumped-to heading clears it) — both settable per breakpoint.
+
+### Changed
+
+- **The docs site now uses `<nes-toc>` for its own "on this page"** — the
+  bespoke implementation is gone: **−110 lines of duplicated CSS** in `docs.html`
+  and **−56 lines of JS** in `docs.js` (plus a dead `TOP_H` constant), replaced
+  by one element and four layout rules. The rail/bar switch, the scroll-spy and
+  the collapse-after-tap all moved into the component, and the EN/VI label is
+  passed in, so the docs gained the "current section in the collapsed bar"
+  affordance for free.
+
+### Notes
+
+- The rail vs bar decision rides on a `data-rail` attribute the element sets from
+  `rail-at`, rather than a media query — that keeps **one** rail block in the CSS
+  and lets `mode` pin a shape without a second breakpoint.
+- `<nes-toc>` sets no `inline-size`, so a page can inset it with plain margins
+  without overflowing its column.
+
 ## 0.6.1
 
 CDN delivery hardening plus two coarse-pointer touch fixes. No change to any token,

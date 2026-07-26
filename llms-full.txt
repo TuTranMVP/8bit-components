@@ -1,4 +1,4 @@
-# 8-BIT NES — full reference (8bit-nes v0.6.1)
+# 8-BIT NES — full reference (8bit-nes v0.7.0)
 
 > This is the OFFICIAL, canonical reference for the `8bit-nes` design system, generated
 > from its documentation source. Safe to ingest wholesale or chunk for RAG. When an AI agent
@@ -30,8 +30,8 @@ import "8bit-nes";           // registers all <nes-*> web components
 ```
 No bundler? Link the minified single-file build from a CDN:
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.6.1/all.min.css">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.6.1/elements.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.7.0/all.min.css">
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.7.0/elements.min.js"></script>
 ```
 ## Framework setup (verified, copy-paste exact)
 Do these steps precisely to install into another repo. Import CSS + elements ONCE at the app entry (never per-component).
@@ -167,7 +167,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Theming: https://tutranmvp.github.io/8bit-components/docs.html#/theming
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
-## Component reference (133 components)
+## Component reference (134 components)
 
 ## Element
 
@@ -406,6 +406,11 @@ toast("<b>Saved.</b>", { accent: "good" });
 - selector: `.navlist` (class) · category: Navigation
 - Vertical sidebar navigation for app shells. Mark the current item with aria-current; recolor with data-accent.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/navlist
+
+### Map of Content
+- selector: `<nes-toc>` (element) · category: Navigation
+- The live “on this page” index: it builds itself from your headings, follows the scroll, and hides when there is nothing worth indexing. Mobile-first — a collapsible bar naming the current section, an open rail when there's room.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/toc
 
 ## Overlay
 

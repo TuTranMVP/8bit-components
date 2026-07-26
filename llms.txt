@@ -1,8 +1,8 @@
 # 8-BIT NES
 
-> Cross-framework NES-arcade design system — CSS design tokens + class recipes + light-DOM web components (`<nes-*>`). Zero build step, dark-only, square 90° corners, hard shadow. Official source of truth for the `8bit-nes` package (v0.6.1).
+> Cross-framework NES-arcade design system — CSS design tokens + class recipes + light-DOM web components (`<nes-*>`). Zero build step, dark-only, square 90° corners, hard shadow. Official source of truth for the `8bit-nes` package (v0.7.0).
 
-Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";`. Or CDN: `https://cdn.jsdelivr.net/npm/8bit-nes@0.6.1/all.min.css`. The look is themed entirely from `tokens.css`; recolor any block with `data-accent="blue|gold|cyan|purple|good|warn|crit|…"` (default accent `good` = green). Full machine-readable reference: [llms-full.txt](https://tutranmvp.github.io/8bit-components/llms-full.txt) · [components.json](https://tutranmvp.github.io/8bit-components/components.json).
+Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";`. Or CDN: `https://cdn.jsdelivr.net/npm/8bit-nes@0.7.0/all.min.css`. The look is themed entirely from `tokens.css`; recolor any block with `data-accent="blue|gold|cyan|purple|good|warn|crit|…"` (default accent `good` = green). Full machine-readable reference: [llms-full.txt](https://tutranmvp.github.io/8bit-components/llms-full.txt) · [components.json](https://tutranmvp.github.io/8bit-components/components.json).
 
 ## Getting started
 - [Introduction](https://tutranmvp.github.io/8bit-components/docs.html#/intro): A cross-framework component system with the feel of a 1985 arcade cabinet — square pixel boxes, hard shadows, chiptune, and XP. Modern-crisp, dark-only, zero build.
@@ -63,6 +63,7 @@ Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";
 - [Pagination](https://tutranmvp.github.io/8bit-components/docs.html#/pagination) — `.pagination`: Page through a list. The current page fills with the primary accent; ends disable.
 - [Steps](https://tutranmvp.github.io/8bit-components/docs.html#/steps) — `.steps`: Stage progression. Mark cleared stages .done and the active one aria-current — reads as NES "STAGE 1 · 2 · 3".
 - [Nav list](https://tutranmvp.github.io/8bit-components/docs.html#/navlist) — `.navlist`: Vertical sidebar navigation for app shells. Mark the current item with aria-current; recolor with data-accent.
+- [Map of Content](https://tutranmvp.github.io/8bit-components/docs.html#/toc) — `<nes-toc>`: The live “on this page” index: it builds itself from your headings, follows the scroll, and hides when there is nothing worth indexing. Mobile-first — a collapsible bar naming the current section, an open rail when there's room.
 
 ## Overlay
 - [Modal](https://tutranmvp.github.io/8bit-components/docs.html#/modal) — `<dialog class="modal">`: Focus-trapping dialog on the native <dialog> element. Opens with showModal().

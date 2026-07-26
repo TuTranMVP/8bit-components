@@ -349,6 +349,26 @@ export interface NesPreviewElement extends HTMLElement {
   reload(): void;
 }
 
+/**
+ * <nes-toc>: Map of Content — the live "on this page" index. Builds itself from
+ * the headings in `target`, follows the scroll (marking `.active` +
+ * `aria-current`), and hides itself when there are fewer than `min` headings.
+ * Mobile-first: a collapsible sticky bar naming the current section, becoming an
+ * open sticky rail from `rail-at`. Renders its list as the `.outline` recipe.
+ */
+export interface NesTocElement extends HTMLElement {
+  /** the headings currently indexed, in document order. */
+  readonly headings: HTMLElement[];
+  /** id of the section the reader is in. */
+  readonly active: string;
+  /** px used for the scroll-spy edge and the heading `scroll-margin` fallback. */
+  readonly offset: number;
+  /** collapse/expand the bar (no-op in the rail shape). */
+  open: boolean;
+  /** rebuild from the current DOM — call after a client-side route change. */
+  refresh(): void;
+}
+
 /** How a ghost suggestion should be produced. */
 export type EditorSuggestMode =
   /** continue the text in the same language */
@@ -466,6 +486,7 @@ declare global {
     "nes-diff": NesDiffElement;
     "nes-logs": NesLogsElement;
     "nes-preview": NesPreviewElement;
+    "nes-toc": NesTocElement;
   }
   interface DocumentEventMap {
     "nes:xp": CustomEvent<{ amount: number }>;
@@ -489,5 +510,6 @@ declare global {
     "nes:annotate": CustomEvent<{ index: number }>;
     "nes:diff": CustomEvent<DiffStat>;
     "nes:navigate": CustomEvent<{ url: string }>;
+    "nes:section": CustomEvent<{ id: string; text: string }>;
   }
 }
