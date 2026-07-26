@@ -1,6 +1,6 @@
 {
   "name": "8bit-nes",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "NES 8-bit retro-modern design system. Design tokens + class-based CSS components + light-DOM web components. Cross-framework: HTML, Vue 3, Nuxt, React.",
   "license": "MIT",
   "type": "module",
@@ -37,6 +37,7 @@
     "./base.css": "./base.css",
     "./components.css": "./components.css",
     "./components.json": "./components.json",
+    "./sri.json": "./sri.json",
     "./llms.txt": "./llms.txt",
     "./llms-full.txt": "./llms-full.txt",
     "./fonts/*": "./fonts/*",
@@ -56,6 +57,7 @@
     "icons.d.ts",
     "index.d.ts",
     "components.json",
+    "sri.json",
     "llms.txt",
     "llms-full.txt",
     "fonts/",
@@ -63,7 +65,8 @@
   ],
   "scripts": {
     "gen:llms": "node scripts/gen-llms.mjs",
-    "build": "node scripts/gen-llms.mjs && esbuild all.css --bundle --minify --external:'*.woff2' --outfile=all.min.css && esbuild elements.js --bundle --minify --format=esm --outfile=elements.min.js && esbuild icons.js --minify --format=esm --outfile=icons.min.js",
+    "gen:sri": "node scripts/gen-sri.mjs",
+    "build": "node scripts/gen-llms.mjs && esbuild all.css --bundle --minify --external:'*.woff2' --outfile=all.min.css && esbuild elements.js --bundle --minify --format=esm --outfile=elements.min.js && esbuild icons.js --minify --format=esm --outfile=icons.min.js && node scripts/gen-sri.mjs",
     "check": "biome ci . && node --check elements.js",
     "format": "biome check --write .",
     "demo": "pnpm dlx serve .",
