@@ -6052,6 +6052,128 @@
     --av-w: 100%;
   }
 
+  /* ======================================================================
+     MAP OF CONTENT · <nes-toc> — the live "on this page" index.
+     Mobile-first by construction: the DEFAULT shape is a collapsible sticky
+     bar that names the section you are in (one tap for the list, never in
+     the way). It becomes an open sticky rail only when there is room —
+     <nes-toc> sets data-rail itself from rail-at (default 74rem), so there
+     is ONE rail block here instead of a media query duplicated per mode.
+     The list body is the existing .outline recipe: indent, active state and
+     44px touch rows already live there, so this adds only the frame, the
+     bar and the sticky behaviour. Offsets come from --toc-top (how far
+     below the page chrome it sticks) and --toc-offset (how far a jumped-to
+     heading clears that chrome).
+     ====================================================================== */
+  nes-toc {
+    --accent: var(--primary);
+    /* a block already fills its container, and no `inline-size: 100%` means a
+       page can inset it with plain margins without overflowing the column */
+    display: block;
+    position: sticky;
+    inset-block-start: var(--toc-top, 0px);
+    z-index: 20;
+    margin-block-end: var(--sp-5);
+    background: var(--panel);
+    border: var(--bw-2) solid var(--line-hi);
+
+    /* fewer headings than `min` → the component hides itself, so a page that
+       doesn't need an index costs the consumer no conditional rendering */
+    &[hidden] {
+      display: none;
+    }
+
+    /* the collapsed bar: label · current section · caret */
+    & .toc-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      inline-size: 100%;
+      min-block-size: var(--ctrl-h-lg);
+      padding-inline: var(--sp-4);
+      background: none;
+      border: 0;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      text-align: start;
+      color: var(--accent);
+    }
+
+    /* which section you are in — the reason a collapsed bar is worth reading */
+    & .toc-now {
+      min-inline-size: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-transform: none;
+      letter-spacing: normal;
+      color: var(--muted);
+    }
+
+    & .toc-caret {
+      margin-inline-start: auto;
+      transition: rotate var(--dur-fast) var(--ease);
+    }
+
+    &[data-open] .toc-caret {
+      rotate: 180deg;
+    }
+
+    /* the rail's heading — hidden while the bar carries the label */
+    & .toc-lab {
+      display: none;
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--accent);
+    }
+
+    /* closed by default: capped at half the viewport so an open index can
+       never bury the content it indexes */
+    & .outline {
+      display: none;
+      max-block-size: 50dvh;
+      overflow-y: auto;
+      padding: 0 var(--sp-3) var(--sp-3);
+      border-block-start: var(--bw-2) solid var(--line-hi);
+    }
+
+    &[data-open] .outline {
+      display: flex;
+    }
+  }
+
+  /* the rail shape — one block, applied when <nes-toc> decides there's room */
+  nes-toc[data-rail] {
+    block-size: calc(100dvh - var(--toc-top, 0px));
+    overflow-y: auto;
+    margin-block-end: 0;
+    padding: var(--sp-5) var(--sp-4) var(--sp-7) 0;
+    background: none;
+    border: 0;
+
+    & .toc-bar {
+      display: none;
+    }
+
+    & .toc-lab {
+      display: block;
+      margin-block-end: var(--sp-3);
+    }
+
+    & .outline {
+      display: flex;
+      max-block-size: none;
+      overflow: visible;
+      padding: 0;
+      border-block-start: 0;
+    }
+  }
+
   /* ---- touch targets: on coarse pointers, controls grow to a ~44px tap zone
      (WCAG 2.5.8). Sizes only bump up, so nothing shifts on desktop. ---- */
   @media (pointer: coarse) {

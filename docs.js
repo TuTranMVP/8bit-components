@@ -41,7 +41,6 @@ const UI = {
 
 /* --------------------------------------------------------------- helpers */
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-const TOP_H = 53; // keep in sync with --top-h in docs.html
 /** URL-safe id from heading text (strips diacritics so VN headings still slug). */
 const slug = (s) =>
   s
@@ -3545,6 +3544,133 @@ h2("Thành phần") +
         a11y(
           "Bọc trong <code>&lt;nav&gt;</code> có <code>aria-label</code>, dùng <code>&lt;a&gt;</code> thật cho link, và đánh dấu mục active bằng <code>aria-current=\"page\"</code> — màu không được screen reader đọc.",
         ),
+    },
+  },
+  {
+    id: "toc",
+    cat: "Navigation",
+    name: "Map of Content",
+    desc: {
+      en: "The live “on this page” index: it builds itself from your headings, follows the scroll, and hides when there is nothing worth indexing. Mobile-first — a collapsible bar naming the current section, an open rail when there's room.",
+      vi: "Mục lục “trên trang này” sống: tự dựng từ heading của bạn, đi theo scroll, và tự ẩn khi không có gì đáng lập mục. Mobile-first — thanh thu gọn có tên mục đang đọc, thành rail mở khi đủ chỗ.",
+    },
+    body: {
+      en: () =>
+        ocTocStage("On this page") +
+        cb(`<!-- zero config: it finds <main>/<article>, indexes h2+h3, and hides
+     itself when there are fewer than 2 headings -->
+<nes-toc></nes-toc>
+
+<!-- or aim it exactly -->
+<nes-toc target=".doc-page" levels="h2,h3" label="On this page"></nes-toc>
+
+<!-- pin one shape (default: bar below rail-at, rail from it) -->
+<nes-toc mode="bar"></nes-toc>
+<nes-toc mode="rail" rail-at="64rem"></nes-toc>
+
+<style>
+  /* how far below the page chrome it sticks, and how far a jumped-to
+     heading has to clear that chrome — set per breakpoint if you like */
+  :root { --toc-top: 53px; --toc-offset: 5rem; }
+<\/style>`) +
+        apiGroups({
+          attr: [
+            ["<code>target</code>", "selector", "<code>main, article</code>", "where the headings live (falls back to the closest, then the first, then <code>body</code>)"],
+            ["<code>levels</code>", "selector list", '<code>"h2,h3"</code>', "what counts as a heading — any selector works, e.g. <code>.doc-h2</code>"],
+            ["<code>label</code>", "string", '<code>"On this page"</code>', "the rail heading, the bar label, and the nav's accessible name"],
+            ["<code>min</code>", "number", "<code>2</code>", "fewer headings than this → the element hides itself"],
+            ["<code>offset</code>", "number (px)", "<code>80</code>", "the scroll-spy's top edge + fallback for the heading <code>scroll-margin</code>"],
+            ["<code>mode</code>", "<code>bar</code> | <code>rail</code>", "auto", "pin one shape instead of switching at <code>rail-at</code>"],
+            ["<code>rail-at</code>", "media width", "<code>74rem</code>", "the width at which the bar becomes a rail"],
+            ["<code>--toc-top</code>", "length", "<code>0px</code>", "how far below the top of the viewport it sticks"],
+            ["<code>--toc-offset</code>", "length", "<code>offset</code>", "how far a jumped-to heading clears your sticky chrome"],
+          ],
+          prop: [
+            ["<code>.headings</code>", "<code>HTMLElement[]</code>", "—", "the headings currently indexed, in document order"],
+            ["<code>.active</code>", "string", '<code>""</code>', "id of the section the reader is in"],
+            ["<code>.open</code>", "boolean", "<code>false</code>", "bar expanded (no-op in the rail shape)"],
+          ],
+          method: [["<code>.refresh()</code>", "<code>() =&gt; void</code>", "—", "rebuild from the current DOM — call it after a client-side route change"]],
+          event: [["<code>nes:section</code>", "<code>{ id, text }</code>", "—", "the reader moved into another section"]],
+        }) +
+        h2("Parts") +
+        api(
+          ["Class", "Role"],
+          [
+            ["<code>.toc-bar</code>", "the collapsed bar — a real <code>&lt;button&gt;</code>, 44px tall from the start"],
+            ["<code>.toc-now</code>", "the section you're in, shown <em>inside</em> the collapsed bar"],
+            ["<code>.toc-caret</code>", "the disclosure caret (rotates when open)"],
+            ["<code>.toc-lab</code>", "the rail's heading (hidden while the bar carries the label)"],
+            ["<code>.outline</code>", "the list itself — the shipped <a href='#/outline'>Outline</a> recipe, not a second list style"],
+          ],
+        ) +
+        note(`It renders its list as <a href="#/outline">.outline</a>, so the indent (<code>.lvl-2</code>/<code>.lvl-3</code>), the <code>.active</code> state and the 44px touch rows all come from a recipe that already existed. Indent is <em>relative</em>: with <code>levels="h3,h4"</code> the h3s sit flush, exactly as h2s would.`) +
+        warn(`The links are real in-page anchors (<code>href="#id"</code>) — shareable, middle-clickable, and they work with no JS. If your app <strong>routes on the hash</strong>, intercept them so the route survives:
+${cb(`document.addEventListener("click", (e) => {
+  const a = e.target.closest("nes-toc a[data-to]");
+  if (!a) return;
+  e.preventDefault();                       // keep #/your-route in the URL
+  document.getElementById(a.dataset.to)?.scrollIntoView({ block: "start" });
+});`)}This very site does exactly that — its “on this page” <em>is</em> this component.`) +
+        a11y(`The bar is a <code>&lt;button&gt;</code> with <code>aria-expanded</code> + <code>aria-controls</code> pointing at the list; the list is a <code>&lt;nav&gt;</code> with an accessible name; the current entry carries <code>aria-current="true"</code> as well as its colour. Headings get <code>scroll-margin-block-start</code> so a jump never lands under your sticky header, and missing ids are generated from the heading text — diacritics stripped, so “Cài đặt” becomes <code>#cai-dat</code> and stays linkable.`),
+      vi: () =>
+        ocTocStage("Trên trang này") +
+        cb(`<!-- zero config: tự tìm <main>/<article>, lập mục h2+h3, và tự ẩn
+     khi có ít hơn 2 heading -->
+<nes-toc></nes-toc>
+
+<!-- hoặc chỉ đích chính xác -->
+<nes-toc target=".doc-page" levels="h2,h3" label="Trên trang này"></nes-toc>
+
+<!-- ghim một hình dạng (mặc định: bar dưới rail-at, rail từ đó lên) -->
+<nes-toc mode="bar"></nes-toc>
+<nes-toc mode="rail" rail-at="64rem"></nes-toc>
+
+<style>
+  /* dính cách đỉnh bao xa, và heading khi nhảy tới phải vượt qua
+     phần chrome dính bao nhiêu — đặt riêng theo breakpoint nếu muốn */
+  :root { --toc-top: 53px; --toc-offset: 5rem; }
+<\/style>`) +
+        apiGroups({
+          attr: [
+            ["<code>target</code>", "selector", "<code>main, article</code>", "nơi chứa heading (fallback: gần nhất → đầu tiên → <code>body</code>)"],
+            ["<code>levels</code>", "danh sách selector", '<code>"h2,h3"</code>', "cái gì được tính là heading — selector nào cũng được, ví dụ <code>.doc-h2</code>"],
+            ["<code>label</code>", "string", '<code>"On this page"</code>', "tiêu đề rail, nhãn bar, và tên tiếp cận của nav"],
+            ["<code>min</code>", "number", "<code>2</code>", "ít heading hơn số này → element tự ẩn"],
+            ["<code>offset</code>", "number (px)", "<code>80</code>", "mép trên của scroll-spy + fallback cho <code>scroll-margin</code> của heading"],
+            ["<code>mode</code>", "<code>bar</code> | <code>rail</code>", "auto", "ghim một hình dạng thay vì đổi tại <code>rail-at</code>"],
+            ["<code>rail-at</code>", "media width", "<code>74rem</code>", "bề rộng mà bar chuyển thành rail"],
+            ["<code>--toc-top</code>", "length", "<code>0px</code>", "dính cách đỉnh viewport bao xa"],
+            ["<code>--toc-offset</code>", "length", "<code>offset</code>", "heading khi nhảy tới vượt qua chrome dính bao nhiêu"],
+          ],
+          prop: [
+            ["<code>.headings</code>", "<code>HTMLElement[]</code>", "—", "các heading đang được lập mục, theo thứ tự tài liệu"],
+            ["<code>.active</code>", "string", '<code>""</code>', "id của mục người đọc đang ở"],
+            ["<code>.open</code>", "boolean", "<code>false</code>", "bar đang mở (không tác dụng ở hình dạng rail)"],
+          ],
+          method: [["<code>.refresh()</code>", "<code>() =&gt; void</code>", "—", "dựng lại từ DOM hiện tại — gọi sau khi đổi route phía client"]],
+          event: [["<code>nes:section</code>", "<code>{ id, text }</code>", "—", "người đọc chuyển sang mục khác"]],
+        }) +
+        h2("Thành phần") +
+        api(
+          ["Class", "Vai trò"],
+          [
+            ["<code>.toc-bar</code>", "thanh thu gọn — <code>&lt;button&gt;</code> thật, cao 44px ngay từ đầu"],
+            ["<code>.toc-now</code>", "mục đang đọc, hiện <em>ngay trong</em> thanh thu gọn"],
+            ["<code>.toc-caret</code>", "mũi caret (quay khi mở)"],
+            ["<code>.toc-lab</code>", "tiêu đề của rail (ẩn khi bar đang mang nhãn)"],
+            ["<code>.outline</code>", "chính danh sách — recipe <a href='#/outline'>Outline</a> có sẵn, không phải style danh sách thứ hai"],
+          ],
+        ) +
+        note(`Nó render danh sách bằng <a href="#/outline">.outline</a>, nên phần thụt lề (<code>.lvl-2</code>/<code>.lvl-3</code>), trạng thái <code>.active</code> và hàng chạm 44px đều đến từ một recipe đã tồn tại. Thụt lề là <em>tương đối</em>: với <code>levels="h3,h4"</code> thì h3 nằm sát lề đúng như h2 vẫn vậy.`) +
+        warn(`Các link là anchor thật trong trang (<code>href="#id"</code>) — chia sẻ được, mở tab mới được, và chạy không cần JS. Nếu app của bạn <strong>route bằng hash</strong>, hãy chặn lại để giữ route:
+${cb(`document.addEventListener("click", (e) => {
+  const a = e.target.closest("nes-toc a[data-to]");
+  if (!a) return;
+  e.preventDefault();                       // giữ #/route trong URL
+  document.getElementById(a.dataset.to)?.scrollIntoView({ block: "start" });
+});`)}Chính site này làm đúng vậy — mục “trên trang này” của nó <em>chính là</em> component này.`) +
+        a11y(`Bar là <code>&lt;button&gt;</code> có <code>aria-expanded</code> + <code>aria-controls</code> trỏ vào danh sách; danh sách là <code>&lt;nav&gt;</code> có tên tiếp cận; mục hiện tại mang <code>aria-current="true"</code> song song với màu. Heading được gán <code>scroll-margin-block-start</code> nên nhảy tới không bao giờ nằm dưới header dính, và heading thiếu id sẽ được sinh id từ chữ — đã bỏ dấu, nên “Cài đặt” thành <code>#cai-dat</code> và vẫn link được.`),
     },
   },
 
@@ -9055,6 +9181,38 @@ function ocFiletabsStage(unsaved, close) {
   );
 }
 
+/* ---- Map of Content demo. Both shapes index the SAME fake article, so the only
+   difference on screen is the shape. min="1" keeps it visible with few headings;
+   mode pins the shape (the real default switches at rail-at). The rail's own
+   full-height scroll is overridden inline — a stage is not a viewport. */
+function ocTocStage(label) {
+  const src = `<div id="toc-demo-src" style="min-inline-size:0;font-size:var(--fs-body);color:var(--muted)">
+       <h2 style="font-size:var(--fs-h3);color:var(--ink);margin:0 0 var(--sp-1)">Boot sequence</h2><p style="margin:0 0 var(--sp-3)">Power on, palette check.</p>
+       <h3 style="font-size:var(--fs-chip);color:var(--muted);margin:0 0 var(--sp-1)">Cartridge slot</h3><p style="margin:0 0 var(--sp-3)">Blow on it. Twice.</p>
+       <h2 style="font-size:var(--fs-h3);color:var(--ink);margin:0 0 var(--sp-1)">Chiptune mixer</h2><p style="margin:0 0 var(--sp-3)">Two pulse, one triangle, one noise.</p>
+       <h2 style="font-size:var(--fs-h3);color:var(--ink);margin:0 0 var(--sp-1)">Save states</h2><p style="margin:0">Battery-backed SRAM.</p>
+     </div>`;
+  return (
+    stage(
+      "MOBILE · BAR",
+      `<div style="display:flex;flex-direction:column;gap:var(--sp-4);max-inline-size:min(420px,100%)">
+         <nes-toc mode="bar" min="1" label="${label}" target="#toc-demo-src"></nes-toc>
+         ${src}
+       </div>`,
+      "col",
+    ) +
+    stage(
+      "WIDE · RAIL",
+      `<div style="display:grid;grid-template-columns:minmax(0,1fr) 12rem;gap:var(--sp-5)">
+         <div style="min-inline-size:0;font-family:var(--font-mono);font-size:var(--fs-label);color:var(--dim)">…your content…</div>
+         <nes-toc mode="rail" min="1" label="${label}" target="#toc-demo-src"
+           style="block-size:auto;padding:0;position:static"></nes-toc>
+       </div>`,
+      "col",
+    )
+  );
+}
+
 function accentStage() {
   const names = [
     "blue",
@@ -9428,62 +9586,6 @@ function renderSidebar() {
 /* ------------------------------------------------------------- router */
 const pageEl = document.getElementById("page");
 
-/* --------------------- "On this page" TOC + scroll-spy --------------------- */
-let tocObs = null;
-function buildToc() {
-  const toc = document.getElementById("toc");
-  const tocm = document.getElementById("tocm");
-  tocObs?.disconnect();
-  const heads = [...pageEl.querySelectorAll(".doc-h2")];
-  if (heads.length < 2) {
-    if (toc) {
-      toc.hidden = true;
-      toc.innerHTML = "";
-    }
-    if (tocm) {
-      tocm.hidden = true;
-      tocm.open = false;
-    }
-    return;
-  }
-  const used = {};
-  const links = heads
-    .map((h) => {
-      let id = slug(h.textContent);
-      if (used[id]) id += `-${used[id]++}`;
-      else used[id] = 1;
-      h.id = id;
-      return `<button class="toc-link" type="button" data-to="${id}">${esc(h.textContent)}</button>`;
-    })
-    .join("");
-  if (toc) {
-    toc.hidden = false;
-    toc.innerHTML = `<span class="toc-lab">${UI[LANG].onpage}</span>${links}`;
-  }
-  if (tocm) {
-    tocm.hidden = false;
-    tocm.open = false;
-    tocm.querySelector(".toc-m-lab").textContent = `${UI[LANG].onpage} · ${heads.length}`;
-    tocm.querySelector(".toc-m-list").innerHTML = links;
-  }
-
-  // scroll-spy over BOTH the desktop rail and the mobile bar
-  const setCurrent = (id) => {
-    for (const a of document.querySelectorAll('.toc-link[aria-current="true"]'))
-      a.removeAttribute("aria-current");
-    for (const a of document.querySelectorAll(`.toc-link[data-to="${id}"]`))
-      a.setAttribute("aria-current", "true");
-  };
-  setCurrent(heads[0].id); // sensible default
-  tocObs = new IntersectionObserver(
-    (entries) => {
-      for (const en of entries) if (en.isIntersecting) setCurrent(en.target.id);
-    },
-    { rootMargin: `-${TOP_H + 8}px 0px -68% 0px`, threshold: 0 },
-  );
-  for (const h of heads) tocObs.observe(h);
-}
-
 function render(id) {
   const pg = BY_ID[id] || BY_ID.intro;
   const body = pg.body[LANG]();
@@ -9506,7 +9608,7 @@ function render(id) {
   for (const a of document.querySelectorAll(".navlink")) {
     a.setAttribute("aria-current", a.dataset.id === pg.id ? "page" : "false");
   }
-  buildToc();
+  document.getElementById("toc")?.refresh();
   document.title = `${tr(pg.name)} · 8-BIT NES`;
   document.body.removeAttribute("data-nav-open");
   pageEl.focus({ preventScroll: true });
@@ -9528,6 +9630,10 @@ function applyChrome() {
   }
   document.querySelector(".menu-btn")?.setAttribute("aria-label", UI[LANG].menu);
   document.getElementById("side")?.setAttribute("aria-label", UI[LANG].side);
+  // <nes-toc> is language-agnostic: it takes the heading text as-is and the
+  // label from us, so switching EN/VI relabels the index (and its nav's
+  // accessible name) with no work inside the component.
+  document.getElementById("toc")?.setAttribute("label", UI[LANG].onpage);
   for (const b of document.querySelectorAll("[data-lang]")) {
     b.setAttribute("aria-pressed", String(b.dataset.lang === LANG));
   }
@@ -9544,10 +9650,16 @@ function setLang(lang) {
 
 /* --------------------------------------------------- delegated behaviour */
 document.addEventListener("click", (e) => {
-  const tl = e.target.closest(".toc-link");
+  // <nes-toc> emits real in-page anchors; this app routes on the hash, so scroll
+  // manually and keep #/<page> in the URL (see the ToC docs page for this exact
+  // caveat). scroll-margin is already set on the heading by the component.
+  const tl = e.target.closest("nes-toc a[data-to]");
   if (tl) {
-    document.getElementById(tl.dataset.to)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    tl.closest(".toc-m")?.removeAttribute("open"); // collapse the mobile bar after a tap
+    e.preventDefault();
+    document.getElementById(tl.dataset.to)?.scrollIntoView({
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      block: "start",
+    });
     return;
   }
   const lb = e.target.closest("[data-lang]");

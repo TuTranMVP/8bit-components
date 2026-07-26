@@ -3484,6 +3484,197 @@ class NesPreview extends HTMLElement {
   }
 }
 
+/* ========================================================================== */
+/*  <nes-toc>  —  Map of Content: the live "on this page" index.                */
+/*  <nes-toc target=".doc-page" levels="h2,h3" label="On this page"></nes-toc>   */
+/*  Builds itself from the headings it finds, follows the scroll, and hides      */
+/*  when there is nothing worth indexing. Mobile-first: a collapsible sticky     */
+/*  bar naming the current section, becoming an open rail from `rail-at`.        */
+/*  Renders its list as the shipped .outline recipe — no second list style.      */
+/* ========================================================================== */
+let _tocSeq = 0;
+/** URL-safe id from heading text. Strips diacritics so Vietnamese headings
+ *  still slug to something addressable ("Cài đặt" → "cai-dat"). */
+function tocSlug(s) {
+  return (
+    String(s)
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "sec"
+  );
+}
+class NesToc extends HTMLElement {
+  static get observedAttributes() {
+    return ["target", "levels", "label", "mode", "rail-at"];
+  }
+  connectedCallback() {
+    if (this._done) return;
+    this._done = true;
+    this._id = `nes-toc-${++_tocSeq}`;
+    this._watchRail();
+    this.refresh();
+  }
+  disconnectedCallback() {
+    this._obs?.disconnect();
+    this._mq?.removeEventListener("change", this._onMq);
+  }
+  attributeChangedCallback(name) {
+    if (!this._done) return;
+    if (name === "mode" || name === "rail-at") this._watchRail();
+    else this.refresh();
+  }
+  /** px used for BOTH the spy's top edge and the heading scroll-margin fallback */
+  get offset() {
+    return Math.max(0, +(this.getAttribute("offset") || 80) || 80);
+  }
+  /** the headings currently indexed (in document order) */
+  get headings() {
+    return this._heads || [];
+  }
+  /** id of the section the reader is in */
+  get active() {
+    return this._active || "";
+  }
+  /** collapse/expand the bar (no-op in rail shape, where the list is always up) */
+  set open(v) {
+    if (v) this.setAttribute("data-open", "");
+    else this.removeAttribute("data-open");
+    this.bar?.setAttribute("aria-expanded", String(!!v));
+  }
+  get open() {
+    return this.hasAttribute("data-open");
+  }
+  /** rail vs bar is a layout decision, so it lives on the element (data-rail)
+      rather than in a media query — that keeps ONE rail block in the CSS and
+      lets mode="bar|rail" pin the shape without a second breakpoint. */
+  _watchRail() {
+    this._mq?.removeEventListener("change", this._onMq);
+    this._mq = null;
+    const mode = this.getAttribute("mode");
+    if (mode === "bar") return this.removeAttribute("data-rail");
+    if (mode === "rail") return this.setAttribute("data-rail", "");
+    this._mq = matchMedia(`(min-width: ${this.getAttribute("rail-at") || "74rem"})`);
+    this._onMq = () => this.toggleAttribute("data-rail", this._mq.matches);
+    this._mq.addEventListener("change", this._onMq);
+    this._onMq();
+  }
+  _root() {
+    const sel = this.getAttribute("target");
+    return (
+      (sel && document.querySelector(sel)) ||
+      this.closest("main, article") ||
+      document.querySelector("main, article") ||
+      document.body
+    );
+  }
+  /** rebuild from the current DOM — call this after a client-side route change */
+  refresh() {
+    this._obs?.disconnect();
+    const root = this._root();
+    const levels = (this.getAttribute("levels") || "h2,h3")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const heads = root === this ? [] : [...root.querySelectorAll(levels.join(","))];
+    const min = Math.max(1, +(this.getAttribute("min") || 2) || 2);
+    if (heads.length < min) {
+      this.hidden = true;
+      this.replaceChildren();
+      this._heads = [];
+      return;
+    }
+    this.hidden = false;
+    this._heads = heads;
+
+    // indent by *relative* depth, so levels="h3,h4" starts flush like h2 would
+    const depth = [...new Set(heads.map((h) => h.tagName))].sort().reduce((m, t, i) => {
+      m[t] = i;
+      return m;
+    }, {});
+    const label = this.getAttribute("label") || "On this page";
+    const used = {};
+
+    const bar = el("button", {
+      type: "button",
+      class: "toc-bar",
+      "aria-expanded": "false",
+      "aria-controls": this._id,
+    });
+    const barLab = el("span");
+    barLab.textContent = label;
+    this.now = el("span", { class: "toc-now" });
+    const caret = el("span", { class: "toc-caret", "aria-hidden": "true" });
+    caret.textContent = "▾";
+    bar.append(barLab, this.now, caret);
+
+    const lab = el("span", { class: "toc-lab" });
+    lab.textContent = label;
+
+    const list = el("nav", { class: "outline", id: this._id, "aria-label": label });
+    for (const h of heads) {
+      if (!h.id) {
+        let id = tocSlug(h.textContent);
+        if (used[id]) id += `-${used[id]++}`;
+        else used[id] = 1;
+        h.id = id;
+      }
+      // the anchor jump must clear the page's sticky chrome; --toc-offset lets
+      // the page tune that per breakpoint without touching this component
+      h.style.scrollMarginBlockStart = `var(--toc-offset, ${this.offset}px)`;
+      const a = el("a", { href: `#${h.id}`, "data-to": h.id });
+      const lvl = depth[h.tagName];
+      if (lvl > 0) a.className = `lvl-${Math.min(lvl + 1, 3)}`;
+      a.textContent = h.textContent;
+      list.appendChild(a);
+    }
+
+    this.replaceChildren(bar, lab, list);
+    this.bar = bar;
+    this.list = list;
+    this.open = false;
+
+    bar.addEventListener("click", () => {
+      this.open = !this.open;
+    });
+    // a tap picked a section — get the sheet out of the way on the way there
+    list.addEventListener("click", (e) => {
+      if (e.target.closest("a")) this.open = false;
+    });
+
+    this._spy(heads);
+  }
+  _spy(heads) {
+    this._mark(heads[0].id);
+    this._obs = new IntersectionObserver(
+      (entries) => {
+        for (const en of entries) if (en.isIntersecting) this._mark(en.target.id);
+      },
+      { rootMargin: `-${this.offset}px 0px -68% 0px`, threshold: 0 },
+    );
+    for (const h of heads) this._obs.observe(h);
+  }
+  _mark(id) {
+    if (id === this._active) return;
+    this._active = id;
+    let text = "";
+    for (const a of this.list.children) {
+      const on = a.dataset.to === id;
+      a.classList.toggle("active", on);
+      if (on) {
+        a.setAttribute("aria-current", "true");
+        text = a.textContent;
+      } else {
+        a.removeAttribute("aria-current");
+      }
+    }
+    if (this.now) this.now.textContent = text;
+    this.dispatchEvent(new CustomEvent("nes:section", { bubbles: true, detail: { id, text } }));
+  }
+}
+
 /* ------------------------------------------------------------- self-register */
 const defs = {
   "nes-sound": NesSound,
@@ -3517,6 +3708,7 @@ const defs = {
   "nes-diff": NesDiff,
   "nes-logs": NesLogs,
   "nes-preview": NesPreview,
+  "nes-toc": NesToc,
 };
 for (const [tag, cls] of Object.entries(defs)) {
   if (!customElements.get(tag)) customElements.define(tag, cls);

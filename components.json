@@ -1,6 +1,6 @@
 {
   "name": "8bit-nes",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "title": "8-BIT NES",
   "description": "Cross-framework NES-arcade design system: CSS design tokens + class recipes + light-DOM web components. Zero build, dark-only, square 90° corners, hard shadow.",
   "official": true,
@@ -15,8 +15,8 @@
       "import \"8bit-nes/all.css\";",
       "import \"8bit-nes\";"
     ],
-    "cdnCss": "https://cdn.jsdelivr.net/npm/8bit-nes@0.6.1/all.min.css",
-    "cdnJs": "https://cdn.jsdelivr.net/npm/8bit-nes@0.6.1/elements.min.js"
+    "cdnCss": "https://cdn.jsdelivr.net/npm/8bit-nes@0.7.0/all.min.css",
+    "cdnJs": "https://cdn.jsdelivr.net/npm/8bit-nes@0.7.0/elements.min.js"
   },
   "conventions": {
     "prefix": "nes-",
@@ -577,6 +577,15 @@
       "kind": "class",
       "description": "Vertical sidebar navigation for app shells. Mark the current item with aria-current; recolor with data-accent.",
       "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/navlist"
+    },
+    {
+      "id": "toc",
+      "name": "Map of Content",
+      "category": "Navigation",
+      "selector": "<nes-toc>",
+      "kind": "element",
+      "description": "The live “on this page” index: it builds itself from your headings, follows the scroll, and hides when there is nothing worth indexing. Mobile-first — a collapsible bar naming the current section, an open rail when there's room.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/toc"
     },
     {
       "id": "datalist",
@@ -1283,6 +1292,6 @@
   ],
   "counts": {
     "concepts": 4,
-    "components": 133
+    "components": 134
   }
 }

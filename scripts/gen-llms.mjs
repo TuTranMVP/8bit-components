@@ -70,6 +70,7 @@ const SELECTOR = {
   pagination: ".pagination",
   steps: ".steps",
   navlist: ".navlist",
+  toc: "<nes-toc>",
   modal: '<dialog class="modal">',
   dropdown: '<details class="dropdown">',
   tooltip: "[data-tip]",

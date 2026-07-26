@@ -49,6 +49,8 @@
       --side-w: 244px;
       --toc-w: 216px;
       --doc-maxw: 820px;
+      /* how far a heading jumped to from <nes-toc> clears the sticky top bar */
+      --toc-offset: calc(var(--top-h) + var(--sp-4));
     }
 
     /* ---- top bar ---- */
@@ -438,120 +440,37 @@
     }
 
     /* ---- "On this page" table of contents (right rail) ---- */
-    .toc {
-      position: sticky;
-      inset-block-start: var(--top-h);
-      align-self: start;
-      block-size: calc(100dvh - var(--top-h));
-      overflow-y: auto;
-      padding: var(--sp-6) var(--sp-4) var(--sp-7) 0;
+    /* ---- "on this page" = <nes-toc>. The component owns its two shapes (rail
+         / sticky bar) and the scroll-spy; the docs only say where it sits and how
+         far below the top bar things must clear. ---- */
+    nes-toc {
+      --toc-top: var(--top-h);
     }
 
-    .toc[hidden] {
-      display: none;
-    }
-
-    .toc-lab {
-      display: block;
-      margin-block-end: var(--sp-3);
-      font-family: var(--font-mono);
-      font-size: var(--fs-label);
-      text-transform: uppercase;
-      letter-spacing: var(--ls-chrome);
-      color: var(--primary);
-    }
-
-    .toc-link {
-      display: block;
-      inline-size: 100%;
-      text-align: start;
-      font-family: var(--font-mono);
-      font-size: var(--fs-label);
-      color: var(--dim);
-      background: none;
-      border: 0;
-      border-inline-start: var(--bw-2) solid var(--line-hi);
-      padding: var(--sp-1) 0 var(--sp-1) var(--sp-3);
-      cursor: pointer;
-      transition: color var(--dur-fast);
-    }
-
-    .toc-link:hover {
-      color: var(--ink);
-    }
-
-    .toc-link[aria-current="true"] {
-      color: var(--primary);
-      border-inline-start-color: var(--primary);
-    }
-
-    /* ---- mobile "On this page": a collapsible sticky bar (the right rail is
-         dropped ≤1180px, so the TOC lives here instead). Clean + one-tap. ---- */
-    .toc-m {
-      display: none;
-      margin-block-end: var(--sp-5);
-      background: var(--panel);
-      border: var(--bw-2) solid var(--line-hi);
-    }
-
-    .toc-m>summary {
-      list-style: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--sp-2);
-      padding: var(--sp-3) var(--sp-4);
-      font-family: var(--font-mono);
-      font-size: var(--fs-label);
-      text-transform: uppercase;
-      letter-spacing: var(--ls-chrome);
-      color: var(--primary);
-    }
-
-    .toc-m>summary::-webkit-details-marker {
-      display: none;
-    }
-
-    .toc-m>summary::after {
-      content: "▾";
-      transition: rotate var(--dur-fast);
-    }
-
-    .toc-m[open]>summary::after {
-      rotate: 180deg;
-    }
-
-    .toc-m-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--sp-1);
-      padding: 0 var(--sp-3) var(--sp-3);
-      max-block-size: 50dvh;
-      overflow-y: auto;
-      border-block-start: var(--bw) solid var(--line-hi);
-    }
-
-    /* ---- drop the TOC rail before it crowds the content ---- */
+    /* ---- drop the rail column before it crowds the content: <nes-toc> switches
+         itself to the sticky-bar shape at the same width (rail-at="74rem"), so
+         here we only move it above the article instead of hiding it. ---- */
     @media (max-width:1180px) {
       .app {
         grid-template-columns: var(--side-w) minmax(0, 1fr);
       }
 
-      .toc {
-        display: none;
+      .app>nes-toc {
+        grid-column: 2;
+        grid-row: 1;
+        margin-inline: clamp(var(--sp-4), 4vw, var(--sp-7));
+        margin-block-start: var(--sp-4);
       }
 
-      .toc-m:not([hidden]) {
-        display: block;
-        position: sticky;
-        inset-block-start: var(--top-h);
-        z-index: 20;
+      .app>.content {
+        grid-column: 2;
+        grid-row: 2;
+        padding-block-start: var(--sp-4);
       }
 
-      /* headings clear the header + the collapsed TOC bar when scrolled to */
-      .doc-h2 {
-        scroll-margin-top: calc(var(--top-h) + 3.4rem);
+      /* a jumped-to heading has to clear the top bar AND the collapsed bar */
+      :root {
+        --toc-offset: calc(var(--top-h) + 3.4rem);
       }
     }
 
@@ -559,6 +478,12 @@
     @media (max-width:860px) {
       .app {
         grid-template-columns: 1fr;
+      }
+
+      /* the drawer leaves the flow, so the single column is column 1 */
+      .app>nes-toc,
+      .app>.content {
+        grid-column: 1;
       }
 
       .side {
@@ -627,7 +552,7 @@
   <header class="topbar">
     <button class="menu-btn btn ghost" aria-label="Bật/tắt điều hướng" data-menu>☰</button>
     <span class="brand" data-home tabindex="0" role="link"><span class="sq">◈</span> 8-BIT NES</span>
-    <span class="badge">v0.6.1</span>
+    <span class="badge">v0.7.0</span>
     <input class="input search" type="search" placeholder="TÌM…" aria-label="Lọc component" data-search>
     <span class="spacer"></span>
     <nav class="top-links">
@@ -645,14 +570,13 @@
     <div class="scrim" data-menu></div>
     <main class="content" id="main">
       <div class="doc-wrap">
-        <details class="toc-m" id="tocm" hidden>
-          <summary><span class="toc-m-lab"></span></summary>
-          <div class="toc-m-list"></div>
-        </details>
         <article id="page" tabindex="-1"></article>
       </div>
     </main>
-    <aside class="toc" id="toc" aria-label="On this page" hidden></aside>
+    <!-- dogfood: the docs' own "on this page" IS the shipped <nes-toc>. It builds
+         itself from the page's .doc-h2 headings, follows the scroll, and turns
+         into a sticky bar on its own once the rail column is dropped. -->
+    <nes-toc id="toc" target=".doc-page" levels=".doc-h2" rail-at="74rem"></nes-toc>
   </div>
 
   <script type="module" src="./docs.js"></script>
