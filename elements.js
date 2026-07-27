@@ -3647,6 +3647,13 @@ class NesToc extends HTMLElement {
     this._spy(heads);
   }
   _spy(heads) {
+    // Forget the previous active id first. refresh() has just replaced the rows and the
+    // "current section" span, so the cached id describes a DOM that no longer exists —
+    // and _mark() skips an id it thinks is already marked, which left the fresh span
+    // blank for good. Seen on a bilingual page that sets `label` and `levels` on a
+    // language toggle: the second rebuild re-seeded the same first heading, the update
+    // was skipped, and the collapsed bar never named a section again.
+    this._active = "";
     this._mark(heads[0].id);
     this._obs = new IntersectionObserver(
       (entries) => {
