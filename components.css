@@ -6243,5 +6243,20 @@
     .chat-submit {
       --ctrl-h: var(--ctrl-h-lg);
     }
+
+    /* A walkthrough dot is a 12px button — a real control (it jumps to that step),
+       and far under the 24px floor on a phone. Growing the dot would wreck the
+       progress row, so grow only what the thumb hits: a transparent ::after takes
+       the tap area to 44px while the dot keeps its size. Each dot still owns the
+       hit test at its own centre, so neighbours do not steal each other's taps. */
+    .wt-dot {
+      position: relative;
+    }
+
+    .wt-dot::after {
+      content: "";
+      position: absolute;
+      inset: -1rem;
+    }
   }
 }
