@@ -41,14 +41,6 @@ const UI = {
 
 /* --------------------------------------------------------------- helpers */
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-/** URL-safe id from heading text (strips diacritics so VN headings still slug). */
-const slug = (s) =>
-  s
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "sec";
 // abstraction: <nes-code> highlights + wires copy itself — docs just hand it code.
 const cb = (code) => `<nes-code>${esc(code)}</nes-code>`;
 const stage = (cap, html, mod = "") => `<div class="stage ${mod}" data-cap="${cap}">${html}</div>`;

@@ -1,6 +1,6 @@
 {
   "name": "8bit-nes",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "NES 8-bit retro-modern design system. Design tokens + class-based CSS components + light-DOM web components. Cross-framework: HTML, Vue 3, Nuxt, React.",
   "license": "MIT",
   "type": "module",

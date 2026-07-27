@@ -5732,10 +5732,6 @@
     &[data-level="done"] {
       color: var(--good);
     }
-
-    & .log-time {
-      color: var(--dim);
-    }
   }
 
   /* ------------------------------------------------------------ STACK TRACE

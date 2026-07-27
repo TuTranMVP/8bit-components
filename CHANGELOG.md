@@ -2,6 +2,22 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.7.2
+
+Housekeeping — a dead-code audit. No token, class or element API changed;
+`elements.min.js` is byte-identical to 0.7.1.
+
+### Removed
+
+- `.log-time` — a hook inside the `.logline` recipe that nothing rendered and no
+  page documented. `<nes-logs>.push()` writes plain text, so it was speculative
+  from the day it landed.
+- The docs app's `slug()` helper, orphaned when the bespoke "on this page" code
+  was replaced by `<nes-toc>` in 0.7.0 (the component slugs its own headings).
+- Two duplicated skill copies: `.claude/skills/{8bit-components,frontend-design}`
+  were byte-identical to `.agents/skills/…`; they are now symlinks, the same
+  convention the newest skill already used. One source of truth per skill.
+
 ## 0.7.1
 
 Two accessibility fixes plus a guard for the release process. CSS only —
