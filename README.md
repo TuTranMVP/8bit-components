@@ -7,11 +7,11 @@ NES arcade CRT, dark-only, modern-crisp. Cross-framework by design.
 Reusable across every project in the studio — install it into any repo, no build step.
 
 ```bash
-# from npm — latest is 0.7.0
+# from npm — always the current release
 pnpm add 8bit-nes
 
 # or straight from GitHub (a tag is a valid spec too)
-pnpm add github:TuTranMVP/8bit-components#v0.7.0
+pnpm add github:TuTranMVP/8bit-components#v0.7.1
 ```
 
 ```js
@@ -55,7 +55,7 @@ visit (copy it verbatim — every line earns its place):
 
 Why it's shaped like that:
 
-- **Pin the version.** `@0.7.0` is immutable — jsDelivr serves it `max-age=31536000, immutable`,
+- **Pin the version.** A pinned `@x.y.z` URL is immutable — jsDelivr serves it `max-age=31536000, immutable`,
   so a repeat visit costs zero requests. A bare `/npm/8bit-nes/all.min.css` is a *mutable* alias:
   it revalidates every 7 days and costs a redirect hop on the first hit. Bump the number to
   upgrade; nothing silently changes underneath a shipped page. A `@0.7` range is the middle
@@ -75,7 +75,7 @@ Why it's shaped like that:
   sri.files["all.min.css"]; // "sha384-…"  · sri.cdn is the matching pinned base URL
   ```
 
-  The hashes above are for **0.7.0**. They change with every version — regenerate (`pnpm gen:sri`)
+  The hashes above belong to the version pinned above. They change with every release — regenerate (`pnpm gen:sri`)
   or re-fetch `sri.json` when you bump, or the browser will (correctly) refuse the file.
 - **Fonts don't need a separate request budget.** The whole system is 4 files: 75 kB CSS +
   79 kB ESM + 2 woff2 (both subset with `unicode-range`), all Brotli'd by the CDN.

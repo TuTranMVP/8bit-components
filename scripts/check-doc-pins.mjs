@@ -31,10 +31,14 @@ const problems = [];
 for (const path of targets) {
   const text = readFileSync(path, "utf8");
 
-  // Every pinned CDN URL must name the version being released.
-  for (const [, spec] of text.matchAll(new RegExp(`${pkg}@([\\d.]+)`, "g"))) {
+  // Every version-pinning token must name the version being released. `@x.y.z`
+  // is matched bare rather than only after the package name, because prose
+  // quotes the pin too; `#vx.y.z` is the GitHub install spec, which the CDN
+  // pattern missed entirely — 0.7.1 shipped with it still reading v0.7.0.
+  // A bare "0.5.0" in prose ("new in 0.5.0") is history, not a pin: left alone.
+  for (const [, sigil, spec] of text.matchAll(/(@|#v)(\d+\.\d+\.\d+)/g)) {
     if (spec !== version) {
-      problems.push(`${path}: pins ${pkg}@${spec}, but package.json says ${version}`);
+      problems.push(`${path}: pins ${sigil}${spec}, but package.json says ${version}`);
     }
   }
 

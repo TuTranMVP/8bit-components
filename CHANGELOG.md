@@ -33,6 +33,12 @@ changed.
   Verified at iPhone-14 metrics across a five-dot row: each dot owns the hit test
   at its own centre, a tap 13px below any dot selects that step, and on a fine
   pointer the same click still does nothing.
+- **The pin guard had a hole of its own**: it matched `8bit-nes@x.y.z` and
+  digests, so a stale `github:…#v0.7.0` install spec and three prose mentions of
+  the old version survived the 0.7.1 fix. The guard now matches any `@x.y.z` or
+  `#vx.y.z` pin (a bare version in prose — "new in 0.5.0" — stays history), and
+  the docs that never needed a literal no longer carry one: fewer places to
+  drift beats more places to police.
 
 ## 0.7.0
 
