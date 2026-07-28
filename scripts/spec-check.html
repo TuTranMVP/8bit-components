@@ -1,0 +1,153 @@
+<!doctype html>
+<!-- Acceptance check for the six items an integrator filed against 0.7.3 (see the 0.8.0
+     CHANGELOG entry). Not shipped: `files` in package.json excludes scripts/. No runner,
+     no framework — serve the repo root and open scripts/spec-check.html; it prints
+     PASS/FAIL per item and the measured value. These are the regressions that would
+     otherwise be silent: a max-inline-size creeping back onto .prose, someone
+     unscoping .zoom-view, the datalist baseline degenerating to `start` again.
+       python3 -m http.server 8000   ->   /scripts/spec-check.html
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>spec check</title>
+<link rel="stylesheet" href="../all.css">
+<script type="module" src="../elements.js"></script>
+<style>
+  #r { font: 12px/1.7 monospace; color: var(--cyan); white-space: pre-wrap; padding: 8px }
+  .fail { color: var(--crit) }
+  /* item 1 acceptance uses an explicit token */
+  #fs12 { --mmd-fs: 12px }
+</style>
+</head>
+<body>
+<div id="r">…</div>
+<div id="fs12" hidden></div>
+
+<!-- 3: datalist with an inline <code> value (the worst case named in the spec) -->
+<dl class="datalist" id="dl">
+  <dt>Model</dt><dd>claude-opus-5</dd>
+  <dt>Selector</dt><dd><code>.btn</code></dd>
+</dl>
+
+<!-- 4: the internals used OUTSIDE their owner must be inert -->
+<div class="zoom-view" id="loose">loose</div>
+<nes-zoom id="z" aria-label="Diagram"><svg width="900" height="400" xmlns="http://www.w3.org/2000/svg"><rect width="900" height="400" fill="#333"/></svg></nes-zoom>
+
+<!-- 6: prose in a wide container, with a table and a paragraph side by side -->
+<div style="inline-size:1200px">
+  <div class="prose" id="pr">
+    <p id="para">A paragraph that should still be capped to the reading measure even though its container is very wide indeed, because a paragraph rewraps and a table does not.</p>
+    <div class="table-wrap" id="tw"><table class="table"><thead><tr><th>Panel</th><th>Role</th></tr></thead><tbody><tr><td>a</td><td>b</td></tr></tbody></table></div>
+    <pre id="pre">wide preformatted</pre>
+  </div>
+</div>
+
+<script type="module">
+import { mermaidTheme } from "../elements.js";
+
+const out = [];
+const ok = (cond, label, extra = "") =>
+  out.push(`${cond ? "PASS" : "FAIL"}  ${label}${extra ? " · " + extra : ""}`);
+await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+/* ---- 1 · mermaidTheme carries a font size, driven by --mmd-fs ---- */
+const base = mermaidTheme();
+ok(typeof base.fontSize === "number" && base.fontSize > 0, "1 · config.fontSize is a number", `= ${base.fontSize}`);
+ok(base.themeVariables.fontSize === `${base.fontSize}px`, "1 · themeVariables.fontSize is a CSS length", base.themeVariables.fontSize);
+const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
+ok(Math.abs(base.fontSize - 0.84375 * rootPx) < 0.6, "1 · default resolves --fs-body rem → px", `${base.fontSize} vs ${0.84375 * rootPx}`);
+const probe = document.getElementById("fs12");
+const twelve = mermaidTheme(probe);
+ok(twelve.fontSize === 12 && twelve.themeVariables.fontSize === "12px", "1 · --mmd-fs:12px wins", JSON.stringify(twelve.themeVariables.fontSize));
+
+/* ---- 2 · nes:theme is a real seam for a BYO mermaid ---- */
+let init = null;
+globalThis.mermaid = {
+  initialize: (c) => { init = c; },
+  parse: async () => true,
+  render: async (id) => ({ svg: `<svg id="${id}"><text>x</text></svg>` }),
+};
+// amend one config value from outside, with nothing private imported
+document.addEventListener("nes:theme", (e) => { e.detail.config.flowchart.curve = "basis"; }, { once: true });
+const m1 = document.createElement("nes-mermaid");
+m1.textContent = "graph TD; A-->B";
+document.body.appendChild(m1);
+await new Promise((r) => setTimeout(r, 250));
+ok(!!init, "2 · nes:theme fired before initialize");
+ok(init && init.flowchart.curve === "basis", "2 · consumer's amendment reached mermaid", init && init.flowchart.curve);
+// and preventDefault keeps the consumer's own config
+init = null;
+NesMermaidResetGuard();
+document.addEventListener("nes:theme", (e) => e.preventDefault(), { once: true });
+const m2 = document.createElement("nes-mermaid");
+m2.textContent = "graph TD; C-->D";
+document.body.appendChild(m2);
+await new Promise((r) => setTimeout(r, 250));
+ok(init === null, "2 · preventDefault skips initialize()");
+function NesMermaidResetGuard() {
+  // the guard is per-class; reach it the only way a page can — a fresh render pass
+  const anyEl = document.querySelector("nes-mermaid");
+  const C = anyEl && anyEl.constructor;
+  if (C) C._themed = false;
+}
+
+/* ---- 3 · datalist shares a baseline, even when dd holds inline <code> ---- */
+const rows = [...document.querySelectorAll("#dl > dt")].map((dt) => {
+  const dd = dt.nextElementSibling;
+  const bl = (el) => {
+    // an inline-block with overflow:hidden takes its baseline from its bottom margin
+    // edge, so a ZERO-height one lands exactly on the line's baseline. Give it content
+    // and the probe reports baseline + that element's descent instead — which differs
+    // between 9px and 13.5px text and fakes a 5-7px gap.
+    const s = document.createElement("span");
+    s.style.cssText = "display:inline-block;width:0;height:0;overflow:hidden";
+    (el.querySelector("code") || el).prepend(s);
+    const y = s.getBoundingClientRect().bottom;
+    s.remove();
+    return y;
+  };
+  return Math.abs(bl(dt) - bl(dd));
+});
+ok(rows.every((d) => d < 1.5), "3 · dt/dd share a baseline (both rows)", rows.map((d) => d.toFixed(2)).join(" / "));
+
+/* ---- 4 · zoom internals inert outside nes-zoom, live inside ---- */
+const loose = getComputedStyle(document.getElementById("loose"));
+const inside = getComputedStyle(document.querySelector("#z .zoom-view"));
+ok(loose.overflow !== "hidden" && loose.cursor !== "grab" && loose.touchAction !== "none",
+  "4 · loose .zoom-view got none of it", `overflow=${loose.overflow} cursor=${loose.cursor} touch=${loose.touchAction}`);
+ok(inside.overflow === "hidden" && inside.cursor === "grab", "4 · inside nes-zoom still applies");
+
+/* ---- 5 · two-finger pinch scales; one finger still pans ---- */
+const z = document.getElementById("z"), view = z.querySelector(".zoom-view");
+view.setPointerCapture = () => {};
+const pe = (type, id, x, y) => view.dispatchEvent(new PointerEvent(type, { pointerId: id, clientX: x, clientY: y, bubbles: true }));
+const s0 = z.s;
+pe("pointerdown", 1, 100, 100); pe("pointerdown", 2, 200, 100);   // 100px apart
+pe("pointermove", 2, 300, 100);                                    // → 200px apart
+const s1 = z.s;
+pe("pointerup", 1, 100, 100); pe("pointerup", 2, 300, 100);
+ok(Math.abs(s1 - s0 * 2) < 0.01, "5 · pinch scaled by the distance ratio", `${s0} → ${s1}`);
+z.reset();
+const t0 = z.tx;
+pe("pointerdown", 3, 100, 100); pe("pointermove", 3, 160, 100); pe("pointerup", 3, 160, 100);
+ok(z.tx - t0 === 60, "5 · one finger still pans", `tx ${t0} → ${z.tx}`);
+z.reset();
+const before = z.s;
+view.dispatchEvent(new WheelEvent("wheel", { deltaY: -1, bubbles: true, cancelable: true }));
+ok(z.s > before, "5 · mouse wheel path unchanged", `${before} → ${z.s}`);
+
+/* ---- 6 · prose measures text, not the container ---- */
+const w = (id) => document.getElementById(id).getBoundingClientRect().width;
+ok(Math.round(w("tw")) === 1200, "6 · .table-wrap keeps the full 1200px", `${w("tw").toFixed(0)}px`);
+ok(w("para") < 900 && w("para") > 200, "6 · <p> still capped at the measure", `${w("para").toFixed(0)}px`);
+ok(Math.round(w("pre")) === 1200, "6 · <pre> opts out too", `${w("pre").toFixed(0)}px`);
+ok(getComputedStyle(document.getElementById("pr")).maxInlineSize === "none", "6 · container itself is uncapped");
+
+const fails = out.filter((l) => l.startsWith("FAIL")).length;
+out.unshift(`${out.length - fails}/${out.length} PASS${fails ? `  —  ${fails} FAIL` : ""}\n`);
+document.getElementById("r").textContent = out.join("\n");
+document.title = "DONE";
+</script>
+</body>
+</html>

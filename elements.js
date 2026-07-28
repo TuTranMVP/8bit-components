@@ -2527,6 +2527,16 @@ class NesCodeTree extends HTMLElement {
 export function mermaidTheme(root) {
   const cs = getComputedStyle(root || document.documentElement);
   const v = (n, f) => (cs.getPropertyValue(n) || f).trim();
+  // Label size was the one value left to mermaid's own default (16px), and it decides
+  // how much of a diagram is legible: useMaxWidth fits the drawing to its container,
+  // so a bigger font makes a bigger natural drawing that is then scaled down harder —
+  // the labels don't grow, the diagram shrinks. mermaid wants a number for
+  // config.fontSize (layout maths) and a CSS length for themeVariables.fontSize (what
+  // lands in the rendered SVG), so resolve the token to px once and feed both.
+  const fsRaw = v("--mmd-fs", v("--fs-body", "16px"));
+  const rootPx = Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  const fsPx =
+    (/[re]m$/.test(fsRaw) ? Number.parseFloat(fsRaw) * rootPx : Number.parseFloat(fsRaw)) || 16;
   const ink = v("--ink", "#e8e8f0");
   const line = v("--line-hi", "#4b4b6a");
   const panel = v("--panel-2", "#1a1a2e");
@@ -2538,8 +2548,10 @@ export function mermaidTheme(root) {
     securityLevel: "strict",
     theme: "base",
     fontFamily: v("--font-body", "monospace"),
+    fontSize: fsPx,
     themeVariables: {
       darkMode: true,
+      fontSize: `${fsPx}px`,
       background: bg,
       primaryColor: panel,
       primaryTextColor: ink,
@@ -2656,13 +2668,29 @@ class NesMermaid extends HTMLElement {
       this._raw();
       return;
     }
+    // A brought-your-own mermaid is a global we did not create, so themeing it once is
+    // right — but doing it with no seam trapped the integrator: initialize before the
+    // element and this call resets over it, initialize after and there is no "after".
+    // nes:theme is that seam. It fires synchronously, before we touch the lib: amend
+    // detail.config to change any mermaid option, or preventDefault to keep your own
+    // initialize() untouched. No private statics, no race.
     if (globalThis.mermaid && !NesMermaid._themed) {
-      try {
-        lib.initialize(mermaidTheme());
-      } catch {
-        /* app owns config */
-      }
       NesMermaid._themed = true;
+      const config = mermaidTheme();
+      const own = this.dispatchEvent(
+        new CustomEvent("nes:theme", {
+          bubbles: true,
+          cancelable: true,
+          detail: { config, mermaid: lib },
+        }),
+      );
+      if (own) {
+        try {
+          lib.initialize(config);
+        } catch {
+          /* app owns config */
+        }
+      }
     }
     try {
       if (lib.parse) await lib.parse(code);
@@ -2860,14 +2888,38 @@ class NesZoom extends HTMLElement {
     let px = 0;
     let py = 0;
     let drag = false;
+    // .zoom-view sets touch-action:none for the drag, which also takes the browser's
+    // own pinch away — so pinch is ours to implement. Track the live pointers: one is
+    // a pan, two is a scale by how far apart they are now versus at gesture start,
+    // anchored on their midpoint so the spot under the fingers stays put.
+    const pts = new Map();
+    let pinch = null;
+    const spread = () => {
+      const [a, b] = [...pts.values()];
+      return { d: Math.hypot(a.x - b.x, a.y - b.y), x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+    };
     this.viewport.addEventListener("pointerdown", (e) => {
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      this.viewport.setPointerCapture(e.pointerId);
+      if (pts.size === 2) {
+        drag = false;
+        this.viewport.classList.remove("grabbing");
+        pinch = { ...spread(), s: this.s };
+        return;
+      }
+      if (pts.size > 2) return;
       drag = true;
       px = e.clientX;
       py = e.clientY;
-      this.viewport.setPointerCapture(e.pointerId);
       this.viewport.classList.add("grabbing");
     });
     this.viewport.addEventListener("pointermove", (e) => {
+      if (pts.has(e.pointerId)) pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pinch && pts.size === 2) {
+        const now = spread();
+        if (pinch.d > 0) this._zoomAt(pinch.s * (now.d / pinch.d), now.x, now.y);
+        return;
+      }
       if (!drag) return;
       this.tx += e.clientX - px;
       this.ty += e.clientY - py;
@@ -2875,7 +2927,17 @@ class NesZoom extends HTMLElement {
       py = e.clientY;
       this._apply();
     });
-    const end = () => {
+    const end = (e) => {
+      pts.delete(e.pointerId);
+      if (pts.size < 2) pinch = null;
+      // the finger still down resumes the pan from where it is, not from a stale point
+      if (pts.size === 1) {
+        const [p] = [...pts.values()];
+        px = p.x;
+        py = p.y;
+        drag = true;
+        return;
+      }
       drag = false;
       this.viewport.classList.remove("grabbing");
     };
@@ -2893,6 +2955,21 @@ class NesZoom extends HTMLElement {
   }
   zoomTo(s) {
     this.s = Math.min(this._max, Math.max(this._min, s));
+    this._apply();
+  }
+  /** scale to `s` keeping the client point (cx,cy) over the same spot of the stage.
+   *  The stage transform is translate(t) then scale(s) about the viewport centre, so
+   *  holding a point fixed is t' = d(1-k) + t·k, with d the point's offset from that
+   *  centre and k the scale ratio. Used by pinch; the wheel stays centre-anchored. */
+  _zoomAt(s, cx, cy) {
+    const next = Math.min(this._max, Math.max(this._min, s));
+    const k = next / this.s;
+    const r = this.viewport.getBoundingClientRect();
+    const dx = cx - (r.left + r.width / 2);
+    const dy = cy - (r.top + r.height / 2);
+    this.tx = dx * (1 - k) + this.tx * k;
+    this.ty = dy * (1 - k) + this.ty * k;
+    this.s = next;
     this._apply();
   }
   reset() {

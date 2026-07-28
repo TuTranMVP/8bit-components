@@ -3807,7 +3807,13 @@ h2("Thành phần") +
 </article>`,
         ) +
 h2("API") +
-        apiGroups({ attr: [["<code>data-accent</code>", "accent name", "—", "recolor links + list markers"]] }) +
+        apiGroups({
+          attr: [
+            ["<code>data-accent</code>", "accent name", "—", "recolor links + list markers"],
+            ["<code>--prose-measure</code>", "length", "<code>72ch</code>", "the reading measure. It sits on the <strong>children</strong>, not the container, so a table or a diagram beside a paragraph keeps the full width it needs"],
+          ],
+        }) +
+        note("The measure caps each child, and the constructs whose content <em>is</em> width opt out — <code>.table-wrap</code>, <code>table</code>, <code>pre</code>, <code>.codeblock</code>, <code>.code-preview</code>, <code>.diff</code>, <code>.terminal</code>, <code>.card-group</code>, <code>hr</code>, <code>img</code>, <code>svg</code>, <code>video</code>, <code>&lt;nes-code&gt;</code>, <code>&lt;nes-mermaid&gt;</code>, <code>&lt;nes-graph&gt;</code>, <code>&lt;nes-zoom&gt;</code>. A paragraph rewraps when it runs out of room; a table, a <code>&lt;pre&gt;</code> or an SVG cannot — capping the container crushed them.") +
         p("Styles the native elements inside it — <code>h1–h4</code>, <code>p</code>, <code>ul/ol</code> (square bullets), <code>a</code>, <code>code</code>, <code>blockquote</code>, <code>table</code>, <code>hr</code> — with no classes on the children.") +
                 a11y(
           "Prose only styles what's inside it — headings, lists, and links keep their native semantics. Set <code>data-accent</code> on <code>.prose</code> to recolor links and markers.",
@@ -3823,7 +3829,13 @@ h2("API") +
 </article>`,
         ) +
 h2("API") +
-        apiGroups({ attr: [["<code>data-accent</code>", "accent name", "—", "đổi màu link + marker list"]] }) +
+        apiGroups({
+          attr: [
+            ["<code>data-accent</code>", "accent name", "—", "đổi màu link + marker list"],
+            ["<code>--prose-measure</code>", "length", "<code>72ch</code>", "độ dài dòng đọc. Nó nằm trên <strong>các con</strong>, không phải container, nên bảng hay sơ đồ cạnh đoạn văn vẫn giữ đủ bề rộng cần"],
+          ],
+        }) +
+        note("Measure giới hạn từng con, và những cấu trúc mà nội dung <em>chính là</em> bề rộng thì được miễn — <code>.table-wrap</code>, <code>table</code>, <code>pre</code>, <code>.codeblock</code>, <code>.code-preview</code>, <code>.diff</code>, <code>.terminal</code>, <code>.card-group</code>, <code>hr</code>, <code>img</code>, <code>svg</code>, <code>video</code>, <code>&lt;nes-code&gt;</code>, <code>&lt;nes-mermaid&gt;</code>, <code>&lt;nes-graph&gt;</code>, <code>&lt;nes-zoom&gt;</code>. Đoạn văn hết chỗ thì tự bẻ dòng; bảng, <code>&lt;pre&gt;</code> hay SVG thì không — giới hạn container là bóp chết chúng.") +
         p("Style các element gốc bên trong — <code>h1–h4</code>, <code>p</code>, <code>ul/ol</code> (bullet vuông), <code>a</code>, <code>code</code>, <code>blockquote</code>, <code>table</code>, <code>hr</code> — không cần class trên con.") +
                 a11y(
           "Prose chỉ style thứ bên trong nó — heading, list, link giữ ngữ nghĩa gốc. Đặt <code>data-accent</code> trên <code>.prose</code> để đổi màu link và marker.",
@@ -6204,12 +6216,16 @@ for await (const chunk of agentStream())
         h2("API") +
         apiGroups({
           slot: [["<code>&lt;script type='text/mermaid'&gt;</code>", "the diagram source (or the element's plain text)"]],
-          attr: [["<code>src</code>", "string (URL)", "—", "lazy-load the mermaid ESM build from here (this element only)"]],
+          attr: [
+            ["<code>src</code>", "string (URL)", "—", "lazy-load the mermaid ESM build from here (this element only)"],
+            ["<code>--mmd-fs</code>", "length", "<code>var(--fs-body)</code>", "diagram label size. Its own token because a label is not body copy — <code>useMaxWidth</code> fits the drawing to its container, so a smaller label means <em>more diagram</em> legible, not smaller text"],
+          ],
           prop: [["<code>.code</code>", "string", '<code>""</code>', "get/set the source; setting re-renders (debounced) — use for streaming"]],
           method: [["<code>.highlight(labels)</code>", "<code>(string | string[]) → void</code>", "—", "spotlight nodes by label; dims the rest"]],
           event: [
             ["<code>nes:render</code>", "<code>{ ok }</code>", "—", "a diagram finished rendering"],
             ["<code>nes:node</code>", "<code>{ label, id }</code>", "—", "a node was clicked"],
+            ["<code>nes:theme</code>", "<code>{ config, mermaid }</code>", "—", "cancelable, fires once before <code>initialize()</code>: amend <code>detail.config</code> to change any mermaid option, or <code>preventDefault()</code> to keep your own config"],
           ],
         }) +
         crit("Mermaid (~800KB) is <strong>never bundled</strong>. Provide it via <code>globalThis.mermaid</code>, <code>enableMermaid(url)</code>, or <code>src</code> — otherwise the raw source is shown (never a blank box).") +
@@ -6241,12 +6257,15 @@ for await (const chunk of agentStream())
         h2("API") +
         apiGroups({
           slot: [["<code>&lt;script type='text/mermaid'&gt;</code>", "code nguồn diagram (hoặc text thuần của element)"]],
-          attr: [["<code>src</code>", "string (URL)", "—", "lazy-load bản mermaid ESM từ đây (riêng element này)"]],
+          attr: [["<code>src</code>", "string (URL)", "—", "lazy-load bản mermaid ESM từ đây (riêng element này)"],
+            ["<code>--mmd-fs</code>", "length", "<code>var(--fs-body)</code>", "cỡ chữ nhãn trong sơ đồ. Có token riêng vì nhãn không phải chữ thân — <code>useMaxWidth</code> co sơ đồ theo container, nên nhãn nhỏ hơn nghĩa là <em>thấy được nhiều sơ đồ hơn</em>, không phải chữ nhỏ hơn"],
+          ],
           prop: [["<code>.code</code>", "string", '<code>""</code>', "đọc/ghi nguồn; ghi thì re-render (debounce) — dùng cho stream"]],
           method: [["<code>.highlight(labels)</code>", "<code>(string | string[]) → void</code>", "—", "làm nổi node theo nhãn; mờ phần còn lại"]],
           event: [
             ["<code>nes:render</code>", "<code>{ ok }</code>", "—", "diagram render xong"],
             ["<code>nes:node</code>", "<code>{ label, id }</code>", "—", "click vào node"],
+            ["<code>nes:theme</code>", "<code>{ config, mermaid }</code>", "—", "cancelable, bắn một lần trước <code>initialize()</code>: sửa <code>detail.config</code> để đổi bất kỳ tùy chọn mermaid, hoặc <code>preventDefault()</code> để giữ config của bạn"],
           ],
         }) +
         crit("Mermaid (~800KB) <strong>không bao giờ bị bundle</strong>. Cấp qua <code>globalThis.mermaid</code>, <code>enableMermaid(url)</code>, hoặc <code>src</code> — nếu không sẽ hiện code nguồn (không bao giờ ô trống).") +
@@ -6433,8 +6452,9 @@ for await (const chunk of agentStream())
             ["<code>.reset()</code>", "<code>() → void</code>", "—", "back to 1× centered"],
           ],
         }) +
-        note("Wheel to zoom, drag to pan, double-click or <code>0</code> to reset, <code>+</code>/<code>−</code> to step. On touch it takes over one-finger drag (<code>touch-action:none</code>).") +
-        a11y("The viewport is focusable and keyboard-driven; controls are real <code>&lt;button&gt;</code>s with labels."),
+        note("Wheel to zoom, drag to pan, <strong>two-finger pinch to scale</strong> (anchored on the midpoint, so the spot under your fingers stays put), double-click or <code>0</code> to reset, <code>+</code>/<code>−</code> to step. Taking over one-finger drag (<code>touch-action:none</code>) is also what removes the browser's own pinch, which is why this element implements it.") +
+        warn("<code>.zoom-view</code> / <code>.zoom-stage</code> / <code>.zoom-bar</code> are <strong>internals</strong>, scoped to <code>nes-zoom</code>. They only mean anything alongside the transform this element applies — on their own you would get a grab cursor that cannot grab, and <code>.zoom-view</code>'s <code>overflow:hidden</code> would quietly beat a scroll container declared earlier at the same specificity. Wrap content in the element; don't borrow the classes.") +
+        a11y("The viewport is focusable and keyboard-driven; controls are real <code>&lt;button&gt;</code>s with labels. Pinch is additive — the keyboard and button paths are unchanged, so scaling never requires a gesture."),
       vi: () =>
         stage(
           "ZOOM",
@@ -6453,8 +6473,9 @@ for await (const chunk of agentStream())
             ["<code>.reset()</code>", "<code>() → void</code>", "—", "về 1× canh giữa"],
           ],
         }) +
-        note("Cuộn để zoom, kéo để pan, double-click hoặc <code>0</code> để reset, <code>+</code>/<code>−</code> để bước. Trên cảm ứng nó chiếm kéo một ngón (<code>touch-action:none</code>).") +
-        a11y("Viewport focus được và điều khiển bằng phím; nút là <code>&lt;button&gt;</code> thật có nhãn."),
+        note("Cuộn để zoom, kéo để pan, <strong>chụm hai ngón để scale</strong> (neo vào trung điểm, nên chỗ dưới ngón tay đứng yên), double-click hoặc <code>0</code> để reset, <code>+</code>/<code>−</code> để bước. Việc chiếm kéo một ngón (<code>touch-action:none</code>) cũng chính là thứ lấy đi pinch mặc định của browser — nên element này tự làm.") +
+        warn("<code>.zoom-view</code> / <code>.zoom-stage</code> / <code>.zoom-bar</code> là <strong>nội bộ</strong>, đã scope vào <code>nes-zoom</code>. Chúng chỉ có nghĩa cùng với transform mà element này áp — dùng riêng thì bạn được con trỏ grab không kéo được, và <code>overflow:hidden</code> của <code>.zoom-view</code> sẽ âm thầm thắng một scroll container khai báo trước đó cùng specificity. Hãy bọc nội dung bằng element, đừng vay class.") +
+        a11y("Viewport focus được và điều khiển bằng phím; nút là <code>&lt;button&gt;</code> thật có nhãn. Pinch chỉ là bổ sung — đường bàn phím và nút không đổi, nên scale không bao giờ bắt buộc phải có gesture."),
     },
   },
   {

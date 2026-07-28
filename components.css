@@ -1712,10 +1712,36 @@
     color: var(--text);
     font-size: var(--fs-body);
     line-height: var(--lh-body);
-    max-inline-size: 72ch;
 
+    /* The measure belongs to the TEXT, not the container. Capping .prose itself also
+       capped every child that isn't text: a paragraph rewraps when it runs out of
+       room, but a table, a <pre>, a diagram or an image cannot — they get crushed or
+       scaled down to a width they never needed to fit. So each child carries the
+       measure, and the constructs whose content *is* width opt out. Measured by
+       default is the safe direction: something nobody has considered yet reads
+       correctly instead of sprawling. Retune with --prose-measure. */
     &>* {
       margin-block: 0;
+      max-inline-size: var(--prose-measure);
+    }
+
+    &>:is(.table-wrap,
+      table,
+      pre,
+      .codeblock,
+      .code-preview,
+      .diff,
+      .terminal,
+      .card-group,
+      hr,
+      img,
+      svg,
+      video,
+      nes-code,
+      nes-mermaid,
+      nes-graph,
+      nes-zoom) {
+      max-inline-size: none;
     }
 
     &>*+* {
@@ -1783,6 +1809,11 @@
   .datalist {
     display: grid;
     grid-template-columns: auto 1fr;
+    /* the label is 9px mono and the value 13.5px body, so they only line up if BOTH
+       share a baseline group — `align-self` on the dt alone is a group of one and
+       degrades to `start`, which is what made a dd containing inline <code> sit
+       visibly lower than its key. Same shape as .source, which does this already. */
+    align-items: baseline;
     gap: var(--sp-2) var(--sp-4);
     font-size: var(--fs-body);
 
@@ -1792,7 +1823,6 @@
       text-transform: uppercase;
       letter-spacing: var(--ls-chrome);
       color: var(--muted);
-      align-self: baseline;
     }
 
     &>dd {
@@ -3856,12 +3886,17 @@
     padding-block-end: var(--sp-2);
   }
 
-  /* Zoom — pan/zoom viewport for big diagrams & images */
+  /* Zoom — pan/zoom viewport for big diagrams & images.
+     Every internal is scoped to the element that builds it. These rules only make
+     sense together with the transform <nes-zoom> applies to .zoom-stage: on its own
+     .zoom-view is a box with a grab cursor that cannot be grabbed, and its
+     `overflow: hidden` silently beats a scroll container declared earlier at the
+     same specificity (e.g. .mermaid-view), so a tall child is just clipped. */
   nes-zoom {
     position: relative;
   }
 
-  .zoom-view {
+  nes-zoom .zoom-view {
     inline-size: 100%;
     block-size: 100%;
     min-block-size: 12rem;
@@ -3876,7 +3911,7 @@
     }
   }
 
-  .zoom-stage {
+  nes-zoom .zoom-stage {
     inline-size: 100%;
     transform-origin: center center;
     will-change: transform;
@@ -3891,7 +3926,7 @@
     }
   }
 
-  .zoom-bar {
+  nes-zoom .zoom-bar {
     position: absolute;
     inset-block-start: var(--sp-2);
     inset-inline-end: var(--sp-2);
