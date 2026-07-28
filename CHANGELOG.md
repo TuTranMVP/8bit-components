@@ -2,6 +2,25 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.7.3
+
+One `<nes-toc>` fix. No token, class or element API changed; CSS is byte-identical
+to 0.7.2.
+
+### Fixed
+
+- **`<nes-toc>`'s collapsed bar stopped naming the current section after a rebuild.**
+  Setting an observed attribute (`levels`, `label`, `target`) rebuilds the index — new
+  rows, and a new "current section" span. The scroll-spy re-seeded itself with the
+  first heading, but `_mark()` skips an id it believes is already active, so on the
+  rebuild the fresh span was left blank and stayed blank: on a phone, where the bar is
+  the whole index, it read as an empty strip.
+
+  The rebuild now forgets the active id first — the cached one described rows that no
+  longer exist. Found on a bilingual page that writes both `label` and `levels` when the
+  reader switches language, so two rebuilds ran back to back and the second one always
+  matched.
+
 ## 0.7.2
 
 Housekeeping — a dead-code audit. No token, class or element API changed;
