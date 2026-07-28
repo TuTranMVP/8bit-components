@@ -1,4 +1,4 @@
-# 8-BIT NES — full reference (8bit-nes v0.11.0)
+# 8-BIT NES — full reference (8bit-nes v0.12.0)
 
 > This is the OFFICIAL, canonical reference for the `8bit-nes` design system, generated
 > from its documentation source. Safe to ingest wholesale or chunk for RAG. When an AI agent
@@ -30,8 +30,8 @@ import "8bit-nes";           // registers all <nes-*> web components
 ```
 No bundler? Link the minified single-file build from a CDN:
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.11.0/all.min.css">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.11.0/elements.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.12.0/all.min.css">
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.12.0/elements.min.js"></script>
 ```
 ## Framework setup (verified, copy-paste exact)
 Do these steps precisely to install into another repo. Import CSS + elements ONCE at the app entry (never per-component).
@@ -98,6 +98,8 @@ Two grids, enforced by `pnpm check` (scripts/check-scale.mjs): **space lands on 
 - App shell: `--gutter` = `var(--sp-4)`, `--chrome-h` = `var(--ctrl-h-xl)`, `--nav-w` = `15rem`, `--rail-w` = `14rem`. `--gutter` is the one token that steps with the viewport: 16px, then `--sp-5` from `--bp-sm`, then `--sp-7` from `--bp-lg`.
 - Breakpoints — the ONLY widths anything switches at: `--bp-sm` = `36rem`, `--bp-lg` = `56rem`, `--bp-xl` = `74rem`. Layout is intrinsic-first (flex-wrap, auto-fit grids, clamp/min/max), so most modules need no media query. CSS cannot read a var() inside `@media`, so write the literal; use `(width < 74rem)` or `min-width`, never `max-width` (`max-width: X` and `min-width: X` both match at exactly X). In JS read the token: `matchMedia(`(min-width: ${getComputedStyle(document.documentElement).getPropertyValue("--bp-xl")})`)`.
 - Outer spacing belongs to the parent: recipes ship `margin: 0` and size only their own inside.
+- Overlays: use `<nes-popover>` (native popover API, top layer) when the panel is not a menu or the trigger sits inside something that scrolls — `.menu` inside `.dropdown` is absolutely positioned and an ancestor's `overflow` clips it. Destructive confirms are `confirmDialog(opts) -> Promise<boolean>`; never build a bare div for one.
+- `toast(msg, opts)` takes TEXT (pass `html: true` to opt into markup), pauses while hovered or focused, caps the stack at 4, and `accent: "crit"` makes it interrupt (assertive). A sticky toast (`timeout: 0`) always renders a dismiss button.
 - Mobile-first is a DIRECTION: the base block is the phone and `min-width` adds the wider layout. Never write `max-width` or `(width < X)` — the check rejects both.
 - Touch: on `(pointer: coarse)` every interactive box clears the 24x24px WCAG 2.5.8 floor and anything you press to act clears `--tap` = `var(--ctrl-h-lg)` (WCAG 2.5.5); a scrolling list row may use `--tap-dense` = `2.5rem`. A small control does NOT grow — `.checkbox`, `.radio`, `.switch` keep their 22px box and take a 44px tap through a transparent `::before`. Text-entry controls are floored at `max(16px, var(--fs-body))` because iOS Safari zooms the page when a focused field is under 16px. Verified on a real 390x844 phone viewport by `pnpm check:mobile`.
 
@@ -190,7 +192,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Layout & rhythm: https://tutranmvp.github.io/8bit-components/docs.html#/layout
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
-## Component reference (134 components)
+## Component reference (138 components)
 
 ## Element
 
@@ -233,6 +235,16 @@ toast("<b>Saved.</b>", { accent: "good" });
 - selector: `<nes-icon>` (element) · category: Element
 - Pixel icon set on a 16×16 grid. currentColor + 1em, so icons inherit text color/accent and scale with font-size. Vector — razor-sharp at any DPR (low-res & retina). Tree-shakeable named exports.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/icon
+
+### Toolbar
+- selector: `.toolbar` (class) · category: Element
+- A row of actions that scrolls on a phone instead of reflowing under your thumb.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/toolbar
+
+### Split view
+- selector: `<nes-split>` (element) · category: Element
+- Two panes, one divider you can drag, arrow or double-click. Stacks with dir="column".
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/split
 
 ## Form
 
@@ -436,6 +448,16 @@ toast("<b>Saved.</b>", { accent: "good" });
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/toc
 
 ## Overlay
+
+### Popover
+- selector: `<nes-popover>` (element) · category: Overlay
+- An anchored panel in the top layer, so no ancestor's overflow can clip it.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/popover
+
+### Confirm
+- selector: `confirmDialog()` (helper) · category: Overlay
+- A destructive confirm as a promise. Focus starts on Cancel, so Enter is never the answer you regret.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/confirm
 
 ### Modal
 - selector: `<dialog class="modal">` (element) · category: Overlay

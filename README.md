@@ -11,7 +11,7 @@ Reusable across every project in the studio — install it into any repo, no bui
 pnpm add 8bit-nes
 
 # or straight from GitHub (a tag is a valid spec too)
-pnpm add github:TuTranMVP/8bit-components#v0.11.0
+pnpm add github:TuTranMVP/8bit-components#v0.12.0
 ```
 
 ```js
@@ -40,16 +40,16 @@ visit (copy it verbatim — every line earns its place):
 <!-- 2. fonts, at the exact URLs all.min.css resolves url() to → fetched once, in parallel
         with the stylesheet instead of after it -->
 <link rel="preload" as="font" type="font/woff2" crossorigin
-  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.11.0/fonts/nes-sans-var.woff2">
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.12.0/fonts/nes-sans-var.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin
-  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.11.0/fonts/nes-mono-400.woff2">
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.12.0/fonts/nes-mono-400.woff2">
 
 <!-- 3. the system: pinned version + byte-pinned integrity -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.11.0/all.min.css"
-  integrity="sha384-j0Q5YVz0wgcsKFA+nD2m7+ovjvUMZzxbDV/RFwql2+Q2kOnCfv46JFs1dWMB+ABj"
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.12.0/all.min.css"
+  integrity="sha384-Ju2pB0ewRGvpDX0ADlCfGTbFl+VMV1wK1o8WSGirF+UzC9TDgR0/Z1/56izrsudh"
   crossorigin="anonymous">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.11.0/elements.min.js"
-  integrity="sha384-0HDGzTcflYolFqK0jwKj77Abe5zwF4ZlTJgObaaVeef1q2NCr1m6OZn28GcO1tk0"
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.12.0/elements.min.js"
+  integrity="sha384-TUhDdeNtIsWqdJJfTW0WC+xeDeLQkIoiZ9bnlgpvc6fdheiNBfTK/uABktvYZh35"
   crossorigin="anonymous"></script>
 ```
 
@@ -88,7 +88,7 @@ Copy-paste starter, already wired exactly like the above:
 [`examples/cdn-starter.html`](examples/cdn-starter.html) — also live on the docs site at
 `/examples/cdn-starter.html`.
 
-> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.11.0/all.min.css`) and the same
+> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.12.0/all.min.css`) and the same
 > SRI digests — it's the identical npm tarball. Pick *one* origin per page, though: two CDNs
 > means two handshakes for no benefit.
 
@@ -129,9 +129,11 @@ import manifest from "8bit-nes/components.json" with { type: "json" };
 - **CSS** is one layer set; drop what you don't need at the file level via the granular imports.
 - `pnpm build` (esbuild) regenerates the `.min` files; CI fails if the committed ones are stale.
 
-`pnpm check:mobile` is the one check that needs a browser (it drives a real 390×844 phone
-viewport over CDP and hit-tests every control off centre), so it sits outside `pnpm check`:
-`pnpm check:mobile` locally, `CHROME=/path/to/chrome` to point it at your binary.
+`pnpm check:mobile` and `pnpm check:ui` are the checks that need a browser (it drives a real 390×844 phone
+viewport over CDP and hit-tests every control off centre; `check:ui` drives the stateful
+components — a toast that must not parse markup, pause-on-hover, swipe-to-dismiss, an anchored
+popover, a keyboard-moved split, a confirm that resolves false on Esc), so they sit outside
+`pnpm check`. Run them locally; `CHROME=/path/to/chrome` points them at your binary.
 
 ## Release flow (maintainer)
 
@@ -157,11 +159,11 @@ viewport over CDP and hit-tests every control off centre), so it sits outside `p
 
 | Category   | Components                                                                     |
 |------------|--------------------------------------------------------------------------------|
-| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator · Icon (`<nes-icon>` / `8bit-nes/icons`) |
+| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator · Icon (`<nes-icon>` / `8bit-nes/icons`) · **Toolbar** (`.toolbar` — a row of actions that scrolls on a phone instead of reflowing under your thumb) · **Split view** (`<nes-split>` — two panes, one divider you can drag, arrow or double-click; `role="separator"`, 44px hit area on touch) |
 | Form       | Input · Textarea · Select · Checkbox · CheckboxGroup · Radio · RadioGroup · Switch · Field · **Form** (`<nes-form>`) · Slider (`.range`) · Segmented control · Switcher (`<nes-switcher>` — ◀/▶ option cycler) · InputNumber (`<nes-number>`) · InputRating (`<nes-rating>`) · InputTags (`<nes-tags>`) · PinInput (`<nes-pin>`) · ColorPicker · InputDate · InputTime · FileUpload (`<nes-file>`) · Listbox (`<nes-listbox>`) · InputMenu (`<nes-input-menu>`) · SelectMenu (`<nes-select-menu>`) |
-| Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast · Spinner · Meter · Empty state · Banner |
+| Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · **Toast** (`toast()` — text-safe by default, pauses while you read it, swipe-to-dismiss, UNDO action, `crit` interrupts) · Spinner · Meter · Empty state · Banner |
 | Navigation | Tabs (`<nes-tabs>`) · Breadcrumb · Pagination · Steps · Nav list · **Map of Content** (`<nes-toc>` — the live "on this page" index: builds itself from your headings, scroll-spy, mobile-first collapsible bar naming the current section → sticky rail when there's room; renders as the `.outline` recipe)                          |
-| Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) |
+| Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) · **Popover** (`<nes-popover>` — an anchored panel in the **top layer**, so no ancestor's `overflow` can clip it; native popover API for Esc + light dismiss) · **Confirm** (`confirmDialog()` → `Promise<boolean>` — destructive confirm on `<dialog>.showModal()`, focus starts on Cancel) |
 | Data       | Table · Code block · Accordion (`<nes-collapsible>`) · Stat · Rating · Description list · Timeline · Prose · Tree (`<nes-tree>`)           |
 | Chat (AI)  | Chat (`.chat`) · ChatMessages (`<nes-chat-messages>`) · ChatMessage (`.msg`) · ChatPrompt (`<nes-chat-prompt>`) · ChatPromptSubmit (`.chat-submit`) · **Composer** (`.composer` + `.attach` — ChatGPT/Claude-Code-style prompt box: attachments, toolbar, model picker, send) · **Suggestions** (`.suggest` — starters / follow-ups) · **Citations** (`.cite` + `.sources` — grounded answers) · ChatReasoning · ChatTool · ChatShimmer · ChatPalette |
 | Agents (AI) | Agent (`.agent`) · Context usage (`.usage`) · Trace (`.trace`) · Feedback bar (`.feedback`) — AI-First WebUI primitives: a multi-agent status roster, a context/token-budget bar, an orchestration/reasoning trace (zero-JS `<details>`), and the human-in-the-loop feedback footer. Pure CSS recipes an agent can emit straight as HTML; one shared `data-state` vocabulary (queued/thinking/running/done/error) |

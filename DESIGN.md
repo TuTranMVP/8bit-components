@@ -240,11 +240,11 @@ Words are design material — they help someone use the thing.
 
 | Category   | Components                                                                     |
 |------------|--------------------------------------------------------------------------------|
-| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator · Icon (`<nes-icon>` / `8bit-nes/icons`) |
+| Element    | Button · Badge · Chip · Card · Avatar · Kbd · Separator · Icon (`<nes-icon>` / `8bit-nes/icons`) · Toolbar (`.toolbar` — scrolls, does not reflow) · Split view (`<nes-split>` — draggable + keyboard `role="separator"`) |
 | Form       | Input · Textarea · Select · Checkbox · CheckboxGroup · Radio · RadioGroup · Switch · Field · Form (`<nes-form>`) · Slider (`.range`) · Segmented control · Switcher (`<nes-switcher>`) · InputNumber · InputRating · InputTags · PinInput · ColorPicker · InputDate · InputTime · FileUpload · Listbox · InputMenu · SelectMenu |
 | Feedback   | Alert (`.callout`) · Progress (`.pbar`) · Skeleton · Toast · Spinner · Meter · Empty state · Banner |
 | Navigation | Tabs (`<nes-tabs>`) · Breadcrumb · Pagination · Steps · Nav list · Map of Content (`<nes-toc>` — headings → index + scroll-spy; bar on mobile, rail when wide; reuses `.outline`)                          |
-| Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) |
+| Overlay    | Modal (`<dialog>`) · Dropdown (`<details>`) · Tooltip (`[data-tip]`) · Drawer (`<dialog>`) · Popover (`<nes-popover>` — top layer, nothing can clip it) · Confirm (`confirmDialog()` → `Promise<boolean>`) |
 | Data       | Table · Code block · Accordion (`<nes-collapsible>`) · Stat · Rating · Description list · Timeline · Prose · Tree (`<nes-tree>`)           |
 | Chat (AI)  | Chat · ChatMessages (`<nes-chat-messages>`) · ChatMessage · ChatPrompt (`<nes-chat-prompt>`) · ChatPromptSubmit · Composer (`.composer` + `.attach`) · Suggestions (`.suggest`) · Citations (`.cite` + `.sources`) · ChatReasoning · ChatTool · ChatShimmer · ChatPalette |
 | Agents (AI) | Agent (`.agent`) · Context usage (`.usage`) · Trace (`.trace`) · Feedback bar (`.feedback`) — multi-agent status roster, context/token budget, orchestration/reasoning trace (zero-JS `<details>`), human-in-the-loop feedback footer. Stateless recipes an agent emits as HTML; shared `data-state` vocabulary |

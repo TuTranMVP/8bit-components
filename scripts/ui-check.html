@@ -1,0 +1,136 @@
+<!doctype html>
+<!-- Fixtures for `pnpm check:ui` — one instance of each stateful component whose
+     behaviour cannot be seen in CSS. The assertions live in scripts/ui-check.mjs
+     and run in REAL time over CDP, not under --virtual-time-budget: a <dialog>
+     `close` event is never delivered while virtual time fast-forwards, so a
+     promise-based confirm would "fail" for a reason that has nothing to do with
+     the library. Not shipped: `files` in package.json excludes scripts/. -->
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ui check</title>
+<link rel="stylesheet" href="../all.css">
+<script type="module" src="../elements.js"></script>
+<style>#o { font: 12px/1.6 monospace; color: var(--cyan); white-space: pre-wrap; padding: var(--sp-2) }</style>
+</head>
+<body>
+<div id="o">…</div>
+
+<div class="toolbar" style="margin-block: var(--sp-3)">
+  <button class="btn sm">Run</button><button class="btn sm outline">Stop</button>
+  <i class="toolbar-sep"></i><button class="btn sm ghost">Logs</button>
+  <span class="toolbar-gap"></span><button class="btn sm">Deploy</button>
+</div>
+
+<nes-popover placement="bottom-start" id="pop">
+  <button class="btn" id="popbtn">Filters</button>
+  <div class="popover">
+    <b class="popover-title">Filter</b>
+    <label class="check"><input type="checkbox" class="checkbox"> Only failing</label>
+  </div>
+</nes-popover>
+
+<nes-split at="40" min="15" id="sp" style="block-size:10rem;margin-block:var(--sp-3)">
+  <div style="padding:var(--sp-2)">left</div><div style="padding:var(--sp-2)">right</div>
+</nes-split>
+
+<script type="module">
+import { confirmDialog, toast } from "../elements.js";
+
+const R=[]; const ok=(c,l,e="")=>{R.push(`${c?"PASS":"FAIL"}  ${l}${e?" · "+e:""}`);document.getElementById("o").textContent=R.join("\n");};
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const within=(p,ms,l)=>Promise.race([p,wait(ms).then(()=>`TIMEOUT after ${ms}ms (${l})`)]);
+addEventListener("error",e=>{document.getElementById("o").textContent=`THREW: ${e.message} @ ${e.lineno}\n`+R.join("\n")});
+addEventListener("unhandledrejection",e=>{document.getElementById("o").textContent=`REJECTED: ${e.reason}\n`+R.join("\n")});
+await customElements.whenDefined("nes-split"); await wait(120);
+
+/* ---- toast ---- */
+const t1 = toast("<img src=x onerror='window.__pwned=1'>");
+await wait(30);
+ok(!window.__pwned && t1.textContent.includes("<img"), "toast · text by default, markup not parsed", JSON.stringify(t1.textContent.slice(0,18)));
+const t2 = toast("<b>bold</b>", { html: true });
+ok(!!t2.querySelector("b"), "toast · html:true opts in");
+const t3 = toast("Sticky", { timeout: 0 });
+ok(!!t3.querySelector(".toast-x"), "toast · a sticky toast always has a dismiss");
+ok(!t3.querySelector(".toast-bar"), "toast · and no countdown bar");
+let undone = 0;
+const t4 = toast("Deleted", { action: { label: "UNDO", onClick: () => undone++ } });
+t4.querySelector(".toast-act").click();
+await wait(260);
+ok(undone === 1 && !t4.isConnected, "toast · action runs and dismisses", `undone=${undone}`);
+const t5 = toast("Hover me", { timeout: 1000 });
+t5.dispatchEvent(new PointerEvent("pointerenter", { bubbles: true }));
+await wait(1200);
+ok(t5.isConnected && "paused" in t5.dataset, "toast · paused by a pointer outlives its timeout (WCAG 2.2.1)");
+t5.dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
+await wait(1400);
+ok(!t5.isConnected, "toast · and leaves once the pointer does");
+const host = document.querySelector(".toast-host");
+const crit = toast("Boom", { accent: "crit", sound: false });
+ok(host.getAttribute("aria-live") === "assertive", "toast · an error flips the live region to assertive");
+await wait(200);
+ok(host.getAttribute("aria-live") === "polite", "toast · and it goes back to polite");
+for (let i = 0; i < 9; i++) toast(`spam ${i}`, { sound: false });
+ok(host.children.length <= 4, "toast · a runaway loop is capped", `${host.children.length} visible`);
+[...host.children].forEach(c => c.dismiss?.());
+await wait(260);
+// swipe
+const t6 = toast("Swipe", { timeout: 0, sound: false });
+const pe=(ty,x)=>t6.dispatchEvent(new PointerEvent(ty,{pointerId:1,pointerType:"touch",clientX:x,bubbles:true}));
+pe("pointerdown",200); pe("pointermove",120);
+const moved = t6.style.transform;
+pe("pointerup",20);
+await wait(300);
+ok(moved.includes("-80") && !t6.isConnected, "toast · a swipe follows the finger and dismisses", moved);
+
+/* ---- popover ---- */
+const pop = document.getElementById("pop"), panel = pop.querySelector(".popover");
+ok(panel.getAttribute("popover") === "auto", "popover · uses the native popover API (top layer)");
+document.getElementById("popbtn").click();
+await wait(120);
+const pr = panel.getBoundingClientRect(), br = document.getElementById("popbtn").getBoundingClientRect();
+ok(pop.open && pr.top >= br.bottom, "popover · opens below its trigger", `panel.top=${Math.round(pr.top)} btn.bottom=${Math.round(br.bottom)}`);
+ok(document.getElementById("popbtn").getAttribute("aria-expanded") === "true", "popover · trigger announces expanded");
+ok(pr.left >= 0 && pr.right <= innerWidth, "popover · shifted to stay on screen", `${Math.round(pr.left)}…${Math.round(pr.right)} of ${innerWidth}`);
+pop.hide(); await wait(60);
+ok(!pop.open && document.getElementById("popbtn").getAttribute("aria-expanded") === "false", "popover · hide() closes and resets the trigger");
+
+/* ---- split ---- */
+const sp = document.getElementById("sp"), bar = sp.querySelector(".split-bar");
+ok(!!bar && bar.getAttribute("role") === "separator", "split · divider is a real separator");
+ok(sp.at === 40 && bar.getAttribute("aria-valuenow") === "40", "split · honours at=", `${sp.at}`);
+let ev = null; sp.addEventListener("nes:resize", e => ev = e.detail);
+bar.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+ok(sp.at === 42 && ev?.at === 42, "split · arrow moves it 2% and emits nes:resize", `${sp.at}`);
+bar.dispatchEvent(new KeyboardEvent("keydown", { key: "Home", bubbles: true }));
+ok(sp.at === 15, "split · Home goes to min", `${sp.at}`);
+sp.at = 999;
+ok(sp.at === 85, "split · clamped by min from both ends", `${sp.at}`);
+ok(getComputedStyle(sp).gridTemplateColumns.split(" ").length === 3, "split · grid is pane · bar · pane");
+
+/* ---- confirm ---- */
+const p1 = confirmDialog({ title: "Delete branch?", body: "Cannot be undone." });
+await wait(120);
+const dlg = document.querySelector("dialog.modal");
+ok(!!dlg?.open, "confirm · opens a modal <dialog>");
+ok(document.activeElement === dlg.querySelector(".btn.outline"), "confirm · focus starts on Cancel, so Enter is never destructive");
+dlg.querySelector(".btn:not(.outline)").click();
+ok((await within(p1,2000,"confirm true")) === true, "confirm · resolves true on confirm");
+const p2 = confirmDialog({ title: "Again?" });
+await wait(120);
+const d2 = document.querySelector("dialog.modal");
+d2.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+ok((await within(p2,2000,"backdrop")) === false, "confirm · a backdrop click resolves false");
+const p3 = confirmDialog({ title: "Esc?" });
+await wait(80);
+document.querySelector("dialog.modal").close();
+ok((await within(p3,2000,"esc")) === false, "confirm · Esc/close resolves false");
+ok(!document.querySelector("dialog.modal"), "confirm · cleans up after itself");
+
+const fails = R.filter(l=>l.startsWith("FAIL")).length;
+R.unshift(`${R.length-fails}/${R.length} PASS${fails?`  —  ${fails} FAIL`:""}\n`);
+document.getElementById("o").textContent = R.join("\n");
+</script>
+
+</body>
+</html>

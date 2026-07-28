@@ -48,12 +48,57 @@ export type Accent =
 export interface ToastOptions {
   /** Accent name mapped in base.css (`good`/green default — the primary accent). */
   accent?: Accent;
-  /** Auto-dismiss delay in ms; `0` keeps it until removed. Default 3200. */
+  /** Auto-dismiss delay in ms; `0` keeps it (and forces a dismiss button). Default 3200. */
   timeout?: number;
+  /** A mono uppercase line above the message. */
+  title?: string;
+  /** An UNDO-style button; clicking it runs `onClick` and dismisses the toast. */
+  action?: { label: string; onClick?: () => void };
+  /** Show the ✕. Default true (always true when `timeout` is 0). */
+  dismissible?: boolean;
+  /** Treat `msg` as markup. Default false — `msg` is text, so it cannot inject. */
+  html?: boolean;
+  /** How many toasts stay on screen; the oldest beyond this are dropped. Default 4. */
+  max?: number;
+  /** Bleep on show. Default true (`crit` bleeps sad). */
+  sound?: boolean;
 }
 
-/** Show a transient toast (auto-creates a live-region host on first call). */
-export declare function toast(msg: string, opts?: ToastOptions): HTMLElement;
+/** A toast element, with its own dismiss. */
+export interface ToastElement extends HTMLElement {
+  /** Fade it out and remove it. Safe to call twice. */
+  dismiss(): void;
+}
+
+/**
+ * Show a transient toast (auto-creates the live-region host on first call).
+ * `msg` is TEXT unless `html: true`. Pauses while hovered or focused, and can be
+ * swiped away on touch. A `crit` toast interrupts (assertive) instead of waiting.
+ */
+export declare function toast(msg: string, opts?: ToastOptions): ToastElement;
+
+/** Options for {@link confirmDialog}. */
+export interface ConfirmOptions {
+  /** The question, in the header. Default "Are you sure?". */
+  title?: string;
+  /** One line of consequence — say what cannot be undone. */
+  body?: string;
+  /** The destructive button's text. Default "Confirm". */
+  confirmLabel?: string;
+  /** The safe button's text. Default "Cancel". */
+  cancelLabel?: string;
+  /** Accent for the dialog and the confirm button. Default "crit". */
+  accent?: Accent;
+  /** Treat `body` as markup. Default false. */
+  html?: boolean;
+}
+
+/**
+ * A destructive confirm as a promise, on `<dialog>.showModal()`. Resolves false on
+ * Cancel, Esc and a backdrop click. Focus starts on Cancel, so Enter is never the
+ * destructive answer.
+ */
+export declare function confirmDialog(opts?: ConfirmOptions): Promise<boolean>;
 
 /** Highlight code to HTML with `.t-*` token spans (used by <nes-code>). */
 export declare function highlightCode(code: string): string;
@@ -365,6 +410,27 @@ export interface NesPreviewElement extends HTMLElement {
  * Mobile-first: a collapsible sticky bar naming the current section, becoming an
  * open sticky rail from `rail-at`. Renders its list as the `.outline` recipe.
  */
+/** `<nes-popover>` — an anchored panel in the top layer (native popover API). */
+export interface NesPopoverElement extends HTMLElement {
+  /** Where the panel sits; it flips and shifts to stay on screen. */
+  placement?: string;
+  /** Read-only: is it open. */
+  readonly open: boolean;
+  show(): void;
+  hide(): void;
+  toggle(): void;
+  /** Re-position against the trigger (already called on scroll and resize). */
+  place(): void;
+}
+
+/** `<nes-split>` — two panes and a draggable, keyboard-movable divider. */
+export interface NesSplitElement extends HTMLElement {
+  /** The first pane's size in %. Setting it clamps to `min` and fires `nes:resize`. */
+  at: number;
+  /** Read-only: is it stacked (`dir="column"`). */
+  readonly column: boolean;
+}
+
 export interface NesTocElement extends HTMLElement {
   /** the headings currently indexed, in document order. */
   readonly headings: HTMLElement[];
@@ -496,6 +562,8 @@ declare global {
     "nes-logs": NesLogsElement;
     "nes-preview": NesPreviewElement;
     "nes-toc": NesTocElement;
+    "nes-popover": NesPopoverElement;
+    "nes-split": NesSplitElement;
   }
   interface DocumentEventMap {
     "nes:xp": CustomEvent<{ amount: number }>;
@@ -520,6 +588,9 @@ declare global {
     "nes:diff": CustomEvent<DiffStat>;
     "nes:navigate": CustomEvent<{ url: string }>;
     "nes:section": CustomEvent<{ id: string; text: string }>;
+    "nes:open": CustomEvent<void>;
+    "nes:close": CustomEvent<void>;
+    "nes:resize": CustomEvent<{ at: number }>;
     "nes:theme": CustomEvent<{ config: Record<string, unknown>; mermaid: unknown }>;
   }
 }

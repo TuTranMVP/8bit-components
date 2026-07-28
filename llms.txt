@@ -1,8 +1,8 @@
 # 8-BIT NES
 
-> Cross-framework NES-arcade design system — CSS design tokens + class recipes + light-DOM web components (`<nes-*>`). Zero build step, dark-only, square 90° corners, hard shadow. Official source of truth for the `8bit-nes` package (v0.11.0).
+> Cross-framework NES-arcade design system — CSS design tokens + class recipes + light-DOM web components (`<nes-*>`). Zero build step, dark-only, square 90° corners, hard shadow. Official source of truth for the `8bit-nes` package (v0.12.0).
 
-Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";`. Or CDN: `https://cdn.jsdelivr.net/npm/8bit-nes@0.11.0/all.min.css`. The look is themed entirely from `tokens.css`; recolor any block with `data-accent="blue|gold|cyan|purple|good|warn|crit|…"` (default accent `good` = green). Full machine-readable reference: [llms-full.txt](https://tutranmvp.github.io/8bit-components/llms-full.txt) · [components.json](https://tutranmvp.github.io/8bit-components/components.json).
+Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";`. Or CDN: `https://cdn.jsdelivr.net/npm/8bit-nes@0.12.0/all.min.css`. The look is themed entirely from `tokens.css`; recolor any block with `data-accent="blue|gold|cyan|purple|good|warn|crit|…"` (default accent `good` = green). Full machine-readable reference: [llms-full.txt](https://tutranmvp.github.io/8bit-components/llms-full.txt) · [components.json](https://tutranmvp.github.io/8bit-components/components.json).
 
 ## Getting started
 - [Introduction](https://tutranmvp.github.io/8bit-components/docs.html#/intro): A cross-framework component system with the feel of a 1985 arcade cabinet — square pixel boxes, hard shadows, chiptune, and XP. Modern-crisp, dark-only, zero build.
@@ -20,6 +20,8 @@ Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";
 - [Kbd](https://tutranmvp.github.io/8bit-components/docs.html#/kbd) — `.kbd`: Keyboard key hint. Inline, mono, inset — for shortcuts in prose.
 - [Separator](https://tutranmvp.github.io/8bit-components/docs.html#/separator) — `.separator`: Divider between content. Solid or dashed; horizontal or vertical.
 - [Icon](https://tutranmvp.github.io/8bit-components/docs.html#/icon) — `<nes-icon>`: Pixel icon set on a 16×16 grid. currentColor + 1em, so icons inherit text color/accent and scale with font-size. Vector — razor-sharp at any DPR (low-res & retina). Tree-shakeable named exports.
+- [Toolbar](https://tutranmvp.github.io/8bit-components/docs.html#/toolbar) — `.toolbar`: A row of actions that scrolls on a phone instead of reflowing under your thumb.
+- [Split view](https://tutranmvp.github.io/8bit-components/docs.html#/split) — `<nes-split>`: Two panes, one divider you can drag, arrow or double-click. Stacks with dir="column".
 
 ## Form
 - [Input](https://tutranmvp.github.io/8bit-components/docs.html#/input) — `.input`: Single-line text field. Recessed on the screen surface; focus flips the border to gold.
@@ -67,6 +69,8 @@ Install: `pnpm add 8bit-nes` then `import "8bit-nes/all.css"; import "8bit-nes";
 - [Map of Content](https://tutranmvp.github.io/8bit-components/docs.html#/toc) — `<nes-toc>`: The live “on this page” index: it builds itself from your headings, follows the scroll, and hides when there is nothing worth indexing. Mobile-first — a collapsible bar naming the current section, an open rail when there's room.
 
 ## Overlay
+- [Popover](https://tutranmvp.github.io/8bit-components/docs.html#/popover) — `<nes-popover>`: An anchored panel in the top layer, so no ancestor's overflow can clip it.
+- [Confirm](https://tutranmvp.github.io/8bit-components/docs.html#/confirm) — `confirmDialog()`: A destructive confirm as a promise. Focus starts on Cancel, so Enter is never the answer you regret.
 - [Modal](https://tutranmvp.github.io/8bit-components/docs.html#/modal) — `<dialog class="modal">`: Focus-trapping dialog on the native <dialog> element. Opens with showModal().
 - [Dropdown](https://tutranmvp.github.io/8bit-components/docs.html#/dropdown) — `<details class="dropdown">`: Disclosure menu on the native <details> element. Zero JavaScript.
 - [Tooltip](https://tutranmvp.github.io/8bit-components/docs.html#/tooltip) — `[data-tip]`: Label on hover or focus. Pure CSS via a data-tip attribute — no JavaScript.

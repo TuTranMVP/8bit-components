@@ -3,7 +3,7 @@
    No build step. Content is data; a hash router renders one page at a time.
    Language is persisted (localStorage) and auto-detected on first visit.
    ========================================================================== */
-import { enableMermaid, store, toast } from "./elements.js";
+import { confirmDialog, enableMermaid, store, toast } from "./elements.js";
 import { icon, iconNames } from "./icons.js";
 
 // dogfood the Visualize module: opt the docs site into lazy-loading mermaid
@@ -2834,7 +2834,9 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
         stage(
           "TOAST",
           `<button class="btn" data-toast="Settings saved." data-toast-accent="good">Save &amp; toast</button>
-           <button class="btn ghost" data-toast="Nothing to undo." data-toast-accent="warn">Try warn</button>`,
+           <button class="btn outline" data-toast="Note deleted." data-toast-accent="warn" data-toast-action="UNDO">With an action</button>
+           <button class="btn outline" data-accent="crit" data-toast="Build failed: exit 1." data-toast-accent="crit" data-toast-title="error">Error</button>
+           <button class="btn ghost" data-toast="Uploading…" data-toast-timeout="0">Sticky</button>`,
         ) +
         cb(
           `import { toast } from "8bit-nes";
@@ -2843,21 +2845,41 @@ toast("Settings saved.", { accent: "good" });`,
         ) +
         h2("API") +
         api(
-          ["Argument", "Meaning"],
+          ["Argument", "Default", "Meaning"],
           [
-            ["<code>msg</code>", "HTML string shown in the toast"],
-            ["<code>opts.accent</code>", "good (default) · warn · crit · gold · …"],
-            ["<code>opts.timeout</code>", "auto-dismiss ms (0 = keep)"],
+            ["<code>msg</code>", "—", "<b>text</b>, not markup — <code>toast(userInput)</code> can never inject"],
+            ["<code>opts.accent</code>", "<code>good</code>", "good · warn · crit · gold · … (<code>crit</code> also bleeps sad and interrupts)"],
+            ["<code>opts.timeout</code>", "<code>3200</code>", "auto-dismiss ms; <code>0</code> keeps it (and forces a dismiss button)"],
+            ["<code>opts.title</code>", "—", "a mono uppercase line above the message"],
+            ["<code>opts.action</code>", "—", "<code>{ label, onClick }</code> — an UNDO button; clicking it dismisses"],
+            ["<code>opts.dismissible</code>", "<code>true</code>", "show the ✕"],
+            ["<code>opts.html</code>", "<code>false</code>", "opt into markup for <code>msg</code>"],
+            ["<code>opts.max</code>", "<code>4</code>", "how many stay on screen — a runaway loop cannot bury the page"],
+            ["<code>opts.sound</code>", "<code>true</code>", "bleep on show"],
+            ["<code>→ returns</code>", "—", "the element, with <code>.dismiss()</code> on it"],
           ],
         ) +
+        cb(
+          `const t = toast("Uploading…", { timeout: 0 });   // sticky
+// …later
+t.dismiss();
+
+toast("Note deleted", { action: { label: "UNDO", onClick: restore } });
+toast("Build failed", { accent: "crit", title: "error" });`,
+        ) +
+        note(
+          "It <b>pauses while you are reading it</b> — a pointer over the toast or focus inside it stops the countdown and the remaining-time bar (WCAG 2.2.1), and it resumes with the time it had left. On touch you can <b>swipe it away</b>; the ✕ gets a 44px hit area from the coarse-pointer rules.",
+        ) +
         a11y(
-          "Toasts render in a <code>role=\"status\" aria-live=\"polite\"</code> region, so screen readers hear them without focus being stolen.",
+          "Toasts render in one <code>role=\"status\" aria-live=\"polite\"</code> region, so a screen reader hears them without focus being stolen. A <code>crit</code> toast flips that region to <code>assertive</code> for its own insertion and back — an error has to interrupt. A sticky toast always gets a dismiss button, because a timeout is otherwise the only way out.",
         ),
       vi: () =>
         stage(
           "TOAST",
           `<button class="btn" data-toast="Đã lưu cấu hình." data-toast-accent="good">Lưu &amp; toast</button>
-           <button class="btn ghost" data-toast="Không có gì để hoàn tác." data-toast-accent="warn">Thử warn</button>`,
+           <button class="btn outline" data-toast="Đã xoá ghi chú." data-toast-accent="warn" data-toast-action="HOÀN TÁC">Có action</button>
+           <button class="btn outline" data-accent="crit" data-toast="Build thất bại: exit 1." data-toast-accent="crit" data-toast-title="lỗi">Lỗi</button>
+           <button class="btn ghost" data-toast="Đang tải lên…" data-toast-timeout="0">Giữ lại</button>`,
         ) +
         cb(
           `import { toast } from "8bit-nes";
@@ -2866,15 +2888,380 @@ toast("Đã lưu cấu hình.", { accent: "good" });`,
         ) +
         h2("API") +
         api(
-          ["Tham số", "Ý nghĩa"],
+          ["Tham số", "Mặc định", "Ý nghĩa"],
           [
-            ["<code>msg</code>", "chuỗi HTML hiển thị trong toast"],
-            ["<code>opts.accent</code>", "gold (mặc định) · good · warn · crit · …"],
-            ["<code>opts.timeout</code>", "ms tự tắt (0 = giữ lại)"],
+            ["<code>msg</code>", "—", "<b>text</b>, không phải markup — <code>toast(userInput)</code> không thể chèn mã"],
+            ["<code>opts.accent</code>", "<code>good</code>", "good · warn · crit · gold · … (<code>crit</code> kêu tiếng buồn và chen ngang)"],
+            ["<code>opts.timeout</code>", "<code>3200</code>", "ms tự tắt; <code>0</code> là giữ lại (và bắt buộc có nút tắt)"],
+            ["<code>opts.title</code>", "—", "một dòng mono in hoa phía trên nội dung"],
+            ["<code>opts.action</code>", "—", "<code>{ label, onClick }</code> — nút UNDO; bấm vào là toast tắt"],
+            ["<code>opts.dismissible</code>", "<code>true</code>", "hiện dấu ✕"],
+            ["<code>opts.html</code>", "<code>false</code>", "cho phép <code>msg</code> là markup"],
+            ["<code>opts.max</code>", "<code>4</code>", "số toast còn trên màn hình — vòng lặp lỗi không thể lấp kín trang"],
+            ["<code>opts.sound</code>", "<code>true</code>", "kêu khi hiện"],
+            ["<code>→ trả về</code>", "—", "chính element, có kèm <code>.dismiss()</code>"],
           ],
         ) +
+        cb(
+          `const t = toast("Đang tải lên…", { timeout: 0 });   // giữ lại
+// …sau đó
+t.dismiss();
+
+toast("Đã xoá ghi chú", { action: { label: "HOÀN TÁC", onClick: restore } });
+toast("Build thất bại", { accent: "crit", title: "lỗi" });`,
+        ) +
+        note(
+          "Toast <b>tạm dừng khi bạn đang đọc</b> — con trỏ đặt lên hoặc focus vào trong sẽ dừng đồng hồ và thanh thời gian còn lại (WCAG 2.2.1), rồi chạy tiếp đúng phần thời gian còn dư. Trên cảm ứng bạn có thể <b>quẹt để tắt</b>; dấu ✕ được cấp vùng chạm 44px bởi luật con trỏ thô.",
+        ) +
         a11y(
-          "Toast render trong vùng <code>role=\"status\" aria-live=\"polite\"</code>, nên screen reader nghe được mà không bị cướp focus.",
+          "Toast render trong một vùng <code>role=\"status\" aria-live=\"polite\"</code>, nên screen reader nghe được mà không bị cướp focus. Toast <code>crit</code> chuyển vùng đó sang <code>assertive</code> đúng lúc nó xuất hiện rồi trả lại — lỗi thì phải chen ngang. Toast giữ lại luôn có nút tắt, vì nếu không thì hết giờ là con đường duy nhất để nó biến mất.",
+        ),
+    },
+  },
+
+  {
+    id: "toolbar",
+    cat: "Element",
+    name: "Toolbar",
+    desc: {
+      en: "A row of actions that scrolls on a phone instead of reflowing under your thumb.",
+      vi: "Một hàng hành động, trên điện thoại thì cuộn ngang chứ không xô dòng dưới ngón tay bạn.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "TOOLBAR",
+          `<div class="toolbar" style="inline-size:100%">
+            <button class="btn sm">Run</button>
+            <button class="btn sm outline">Stop</button>
+            <i class="toolbar-sep"></i>
+            <button class="btn sm ghost">Logs</button>
+            <span class="toolbar-gap"></span>
+            <button class="btn sm" data-accent="blue">Deploy</button>
+          </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="toolbar">
+  <button class="btn sm">Run</button>
+  <button class="btn sm outline">Stop</button>
+  <i class="toolbar-sep"></i>
+  <button class="btn sm ghost">Logs</button>
+  <span class="toolbar-gap"></span>          <!-- everything after this sits at the far end -->
+  <button class="btn sm">Deploy</button>
+</div>`,
+        ) +
+        h2("Parts") +
+        api(
+          ["Class / element", "Role"],
+          [
+            ["<code>.toolbar</code>", "the row. Scrolls sideways when it runs out of room, scrollbar hidden"],
+            ["<code>.toolbar.wrap</code>", "wrap instead of scroll — for a set of equals, not a sequence"],
+            ["<code>.toolbar-sep</code>", "a hairline divider between groups"],
+            ["<code>.toolbar-gap</code>", "pushes everything after it to the end"],
+          ],
+        ) +
+        note(
+          "It scrolls rather than wraps on purpose: a toolbar that reflows moves the button you were already aiming at. Children never shrink, so a label is never squeezed to two lines.",
+        ) +
+        a11y(
+          "Add <code>role=\"toolbar\"</code> and an <code>aria-label</code> when the row is a single group of controls; then arrow-key navigation between them is expected, so wire it or leave the buttons individually tabbable.",
+        ),
+      vi: () =>
+        stage(
+          "TOOLBAR",
+          `<div class="toolbar" style="inline-size:100%">
+            <button class="btn sm">Chạy</button>
+            <button class="btn sm outline">Dừng</button>
+            <i class="toolbar-sep"></i>
+            <button class="btn sm ghost">Log</button>
+            <span class="toolbar-gap"></span>
+            <button class="btn sm" data-accent="blue">Deploy</button>
+          </div>`,
+          "col",
+        ) +
+        cb(
+          `<div class="toolbar">
+  <button class="btn sm">Chạy</button>
+  <button class="btn sm outline">Dừng</button>
+  <i class="toolbar-sep"></i>
+  <button class="btn sm ghost">Log</button>
+  <span class="toolbar-gap"></span>          <!-- mọi thứ sau đây dạt về cuối hàng -->
+  <button class="btn sm">Deploy</button>
+</div>`,
+        ) +
+        h2("Thành phần") +
+        api(
+          ["Class / element", "Vai trò"],
+          [
+            ["<code>.toolbar</code>", "hàng chứa. Hết chỗ thì cuộn ngang, thanh cuộn được ẩn"],
+            ["<code>.toolbar.wrap</code>", "xuống dòng thay vì cuộn — cho một tập ngang hàng, không phải một chuỗi"],
+            ["<code>.toolbar-sep</code>", "vạch mảnh chia nhóm"],
+            ["<code>.toolbar-gap</code>", "đẩy mọi thứ phía sau về cuối"],
+          ],
+        ) +
+        note(
+          "Cố ý cuộn chứ không xuống dòng: toolbar mà xô dòng sẽ làm nút bạn đang nhắm tới nhảy đi. Con bên trong không bị co, nên nhãn không bao giờ bị bóp thành hai dòng.",
+        ) +
+        a11y(
+          "Thêm <code>role=\"toolbar\"</code> và <code>aria-label</code> khi hàng này là một nhóm control duy nhất; lúc đó người dùng sẽ mong điều hướng bằng phím mũi tên, nên hãy nối phím hoặc để từng nút tự tab được.",
+        ),
+    },
+  },
+  {
+    id: "split",
+    cat: "Element",
+    name: "Split view",
+    desc: {
+      en: "Two panes, one divider you can drag, arrow or double-click. Stacks with dir=\"column\".",
+      vi: "Hai khung, một vạch chia có thể kéo, bấm mũi tên hoặc double-click. Xếp dọc với dir=\"column\".",
+    },
+    body: {
+      en: () =>
+        stage(
+          "SPLIT",
+          `<nes-split at="38" min="15" style="block-size:11rem;inline-size:100%">
+            <div style="padding:var(--sp-3)">${p("Drag the divider — or focus it and press ←/→ (Shift for 10%, Home/End for the ends, double-click to reset).")}</div>
+            <div style="padding:var(--sp-3)">${p("Both panes scroll on their own, so a long list never stretches the frame.")}</div>
+          </nes-split>`,
+          "col",
+        ) +
+        cb(
+          `<nes-split at="38" min="15">
+  <div>left</div>
+  <div>right</div>
+</nes-split>
+
+<nes-split dir="column" at="60">…</nes-split>   <!-- stacked -->`,
+        ) +
+        h2("API") +
+        apiGroups({
+          attr: [
+            ["<code>at</code>", "number", "<code>50</code>", "the first pane's size, in %"],
+            ["<code>min</code>", "number", "<code>10</code>", "how close to either edge the divider may get, in %"],
+            ["<code>dir</code>", "<code>row</code> | <code>column</code>", "<code>row</code>", "side by side, or stacked"],
+            ["<code>label</code>", "string", "<code>Resize</code>", "the divider's accessible name"],
+          ],
+          prop: [["<code>at</code>", "number", "—", "read or set the split; setting it clamps to <code>min</code> and fires <code>nes:resize</code>"]],
+          event: [["<code>nes:resize</code>", "<code>{ at }</code>", "—", "after a drag, a key or a set — bubbles"]],
+        }) +
+        a11y(
+          "The divider is a real <code>&lt;button role=\"separator\"&gt;</code> with <code>aria-valuenow/min/max</code> and <code>aria-orientation</code>, so it is reachable and movable by keyboard: ←/→ (or ↑/↓) by 2%, Shift for 10%, Home/End to the limits, double-click resets to <code>at</code>. On a coarse pointer it keeps its 8px look and gets a 44px hit area.",
+        ),
+      vi: () =>
+        stage(
+          "SPLIT",
+          `<nes-split at="38" min="15" style="block-size:11rem;inline-size:100%">
+            <div style="padding:var(--sp-3)">${p("Kéo vạch chia — hoặc focus vào rồi bấm ←/→ (Shift để nhảy 10%, Home/End về hai đầu, double-click để đặt lại).")}</div>
+            <div style="padding:var(--sp-3)">${p("Hai khung tự cuộn riêng, nên danh sách dài không kéo giãn cái khung.")}</div>
+          </nes-split>`,
+          "col",
+        ) +
+        cb(
+          `<nes-split at="38" min="15">
+  <div>trái</div>
+  <div>phải</div>
+</nes-split>
+
+<nes-split dir="column" at="60">…</nes-split>   <!-- xếp dọc -->`,
+        ) +
+        h2("API") +
+        apiGroups({
+          attr: [
+            ["<code>at</code>", "number", "<code>50</code>", "kích thước khung đầu, tính %"],
+            ["<code>min</code>", "number", "<code>10</code>", "vạch chia được phép tới sát mép bao nhiêu, tính %"],
+            ["<code>dir</code>", "<code>row</code> | <code>column</code>", "<code>row</code>", "cạnh nhau, hay xếp dọc"],
+            ["<code>label</code>", "string", "<code>Resize</code>", "tên hỗ trợ tiếp cận của vạch chia"],
+          ],
+          prop: [["<code>at</code>", "number", "—", "đọc hoặc đặt tỉ lệ; khi đặt sẽ kẹp theo <code>min</code> và bắn <code>nes:resize</code>"]],
+          event: [["<code>nes:resize</code>", "<code>{ at }</code>", "—", "sau khi kéo, bấm phím hoặc gán — có bubble"]],
+        }) +
+        a11y(
+          "Vạch chia là một <code>&lt;button role=\"separator\"&gt;</code> thật với <code>aria-valuenow/min/max</code> và <code>aria-orientation</code>, nên tới được và di chuyển được bằng bàn phím: ←/→ (hoặc ↑/↓) 2%, Shift 10%, Home/End về hai giới hạn, double-click đặt lại về <code>at</code>. Trên con trỏ thô nó vẫn dày 8px nhưng có vùng chạm 44px.",
+        ),
+    },
+  },
+  {
+    id: "popover",
+    cat: "Overlay",
+    name: "Popover",
+    desc: {
+      en: "An anchored panel in the top layer, so no ancestor's overflow can clip it.",
+      vi: "Panel neo theo trigger, nằm ở top layer nên không tổ tiên nào cắt mất nó.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "POPOVER",
+          `<nes-popover placement="bottom-start">
+            <button class="btn">Filters</button>
+            <div class="popover">
+              <b class="popover-title">Filter runs</b>
+              <label class="check"><input type="checkbox" class="checkbox" checked> Only failing</label>
+              <label class="check"><input type="checkbox" class="checkbox"> Include drafts</label>
+            </div>
+          </nes-popover>
+          <nes-popover placement="right">
+            <button class="btn outline">Help</button>
+            <div class="popover">${p("Anything fits in here — this is not a menu.")}</div>
+          </nes-popover>`,
+        ) +
+        cb(
+          `<nes-popover placement="bottom-start">
+  <button class="btn">Filters</button>          <!-- the trigger: first button, or [data-trigger] -->
+  <div class="popover">…anything…</div>          <!-- the panel -->
+</nes-popover>`,
+        ) +
+        h2("API") +
+        apiGroups({
+          attr: [
+            ["<code>placement</code>", "<code>top|bottom|left|right</code>-<code>start|center|end</code>", "<code>bottom-start</code>", "where the panel sits; it flips and shifts to stay on screen"],
+            ["<code>mode</code>", "<code>auto</code> | <code>manual</code>", "<code>auto</code>", "<code>auto</code> light-dismisses (Esc, click outside)"],
+          ],
+          prop: [["<code>open</code>", "boolean", "<code>false</code>", "read-only"]],
+          method: [
+            ["<code>show()</code>", "—", "—", "open it"],
+            ["<code>hide()</code>", "—", "—", "close it"],
+            ["<code>toggle()</code>", "—", "—", "flip it"],
+            ["<code>place()</code>", "—", "—", "re-position (called on scroll/resize already)"],
+          ],
+          event: [
+            ["<code>nes:open</code>", "—", "—", "bubbles when it opens"],
+            ["<code>nes:close</code>", "—", "—", "bubbles when it closes"],
+          ],
+        }) +
+        note(
+          "Use this and not <a href='#/dropdown'>Dropdown</a> when the content is not a menu, or when the trigger lives inside something that scrolls or clips: <code>.menu</code> is absolutely positioned inside its <code>&lt;details&gt;</code>, so an ancestor's <code>overflow</code> cuts it off. A popover is in the top layer and cannot be cut.",
+        ) +
+        a11y(
+          "Built on the native popover API: Esc and click-outside come from <code>popover=\"auto\"</code>, and the top layer means correct stacking with no z-index. The trigger carries <code>aria-expanded</code>. Put a focusable control first in the panel if you want focus to land inside on open.",
+        ),
+      vi: () =>
+        stage(
+          "POPOVER",
+          `<nes-popover placement="bottom-start">
+            <button class="btn">Bộ lọc</button>
+            <div class="popover">
+              <b class="popover-title">Lọc lượt chạy</b>
+              <label class="check"><input type="checkbox" class="checkbox" checked> Chỉ cái lỗi</label>
+              <label class="check"><input type="checkbox" class="checkbox"> Gồm cả bản nháp</label>
+            </div>
+          </nes-popover>
+          <nes-popover placement="right">
+            <button class="btn outline">Trợ giúp</button>
+            <div class="popover">${p("Nhét gì vào đây cũng được — đây không phải menu.")}</div>
+          </nes-popover>`,
+        ) +
+        cb(
+          `<nes-popover placement="bottom-start">
+  <button class="btn">Bộ lọc</button>           <!-- trigger: button đầu tiên, hoặc [data-trigger] -->
+  <div class="popover">…gì cũng được…</div>      <!-- panel -->
+</nes-popover>`,
+        ) +
+        h2("API") +
+        apiGroups({
+          attr: [
+            ["<code>placement</code>", "<code>top|bottom|left|right</code>-<code>start|center|end</code>", "<code>bottom-start</code>", "panel nằm ở đâu; tự lật và dịch để không ra ngoài màn hình"],
+            ["<code>mode</code>", "<code>auto</code> | <code>manual</code>", "<code>auto</code>", "<code>auto</code> tự đóng khi bấm ra ngoài hoặc Esc"],
+          ],
+          prop: [["<code>open</code>", "boolean", "<code>false</code>", "chỉ đọc"]],
+          method: [
+            ["<code>show()</code>", "—", "—", "mở"],
+            ["<code>hide()</code>", "—", "—", "đóng"],
+            ["<code>toggle()</code>", "—", "—", "đảo trạng thái"],
+            ["<code>place()</code>", "—", "—", "đặt lại vị trí (đã tự gọi khi scroll/resize)"],
+          ],
+          event: [
+            ["<code>nes:open</code>", "—", "—", "bubble khi mở"],
+            ["<code>nes:close</code>", "—", "—", "bubble khi đóng"],
+          ],
+        }) +
+        note(
+          "Dùng cái này thay <a href='#/dropdown'>Dropdown</a> khi nội dung không phải menu, hoặc khi trigger nằm trong vùng cuộn/bị cắt: <code>.menu</code> định vị absolute trong <code>&lt;details&gt;</code> nên <code>overflow</code> của tổ tiên sẽ cắt mất. Popover ở top layer nên không thể bị cắt.",
+        ) +
+        a11y(
+          "Dựng trên popover API của trình duyệt: Esc và bấm-ra-ngoài do <code>popover=\"auto\"</code> lo, còn top layer nghĩa là xếp lớp đúng mà không cần z-index. Trigger mang <code>aria-expanded</code>. Muốn focus nhảy vào trong khi mở thì đặt một control focus được lên đầu panel.",
+        ),
+    },
+  },
+  {
+    id: "confirm",
+    cat: "Overlay",
+    name: "Confirm",
+    desc: {
+      en: "A destructive confirm as a promise. Focus starts on Cancel, so Enter is never the answer you regret.",
+      vi: "Hộp xác nhận hành động nguy hiểm, trả về promise. Focus đặt ở Cancel, nên Enter không bao giờ là câu trả lời khiến bạn hối hận.",
+    },
+    body: {
+      en: () =>
+        stage(
+          "CONFIRM",
+          `<button class="btn outline" data-accent="crit" data-confirm="Delete branch?" data-confirm-body="feat/toast-rework has unpushed commits. This cannot be undone." data-confirm-label="Delete">Delete branch…</button>`,
+        ) +
+        cb(
+          `import { confirmDialog } from "8bit-nes";
+
+if (await confirmDialog({
+  title: "Delete branch?",
+  body: "This cannot be undone.",
+  confirmLabel: "Delete",
+})) {
+  await api.deleteBranch();
+}`,
+        ) +
+        h2("API") +
+        api(
+          ["Option", "Default", "Meaning"],
+          [
+            ["<code>title</code>", "<code>Are you sure?</code>", "the question, in the header"],
+            ["<code>body</code>", "—", "one line of consequence — say what cannot be undone"],
+            ["<code>confirmLabel</code>", "<code>Confirm</code>", "the destructive button's text — name the verb, not \"OK\""],
+            ["<code>cancelLabel</code>", "<code>Cancel</code>", "the safe button's text"],
+            ["<code>accent</code>", "<code>crit</code>", "colours the dialog and the confirm button"],
+            ["<code>html</code>", "<code>false</code>", "opt into markup for <code>body</code>"],
+            ["<code>→ returns</code>", "—", "<code>Promise&lt;boolean&gt;</code> — <code>false</code> on Cancel, Esc, or a backdrop click"],
+          ],
+        ) +
+        note(
+          "It is a real <code>&lt;dialog&gt;.showModal()</code>, so the focus trap, Esc, the backdrop and the top layer are the platform's job — the only thing this adds is the wording and which button is dangerous. It removes itself when it closes.",
+        ) +
+        a11y(
+          "Modal semantics come from <code>&lt;dialog&gt;</code>: focus is trapped, the rest of the page is inert, Esc closes. <b>Focus starts on Cancel</b> — a keyboard user pressing Enter out of habit never destroys anything. Every exit resolves the promise, so nothing is left pending.",
+        ),
+      vi: () =>
+        stage(
+          "CONFIRM",
+          `<button class="btn outline" data-accent="crit" data-confirm="Xoá nhánh?" data-confirm-body="feat/toast-rework còn commit chưa push. Không hoàn tác được." data-confirm-label="Xoá">Xoá nhánh…</button>`,
+        ) +
+        cb(
+          `import { confirmDialog } from "8bit-nes";
+
+if (await confirmDialog({
+  title: "Xoá nhánh?",
+  body: "Không hoàn tác được.",
+  confirmLabel: "Xoá",
+})) {
+  await api.deleteBranch();
+}`,
+        ) +
+        h2("API") +
+        api(
+          ["Tuỳ chọn", "Mặc định", "Ý nghĩa"],
+          [
+            ["<code>title</code>", "<code>Are you sure?</code>", "câu hỏi, nằm ở header"],
+            ["<code>body</code>", "—", "một dòng hậu quả — nói rõ cái gì không hoàn tác được"],
+            ["<code>confirmLabel</code>", "<code>Confirm</code>", "chữ trên nút nguy hiểm — gọi tên hành động, đừng ghi \"OK\""],
+            ["<code>cancelLabel</code>", "<code>Cancel</code>", "chữ trên nút an toàn"],
+            ["<code>accent</code>", "<code>crit</code>", "màu của dialog và nút xác nhận"],
+            ["<code>html</code>", "<code>false</code>", "cho phép <code>body</code> là markup"],
+            ["<code>→ trả về</code>", "—", "<code>Promise&lt;boolean&gt;</code> — <code>false</code> khi Cancel, Esc, hoặc bấm ra ngoài"],
+          ],
+        ) +
+        note(
+          "Đây là <code>&lt;dialog&gt;.showModal()</code> thật, nên bẫy focus, Esc, lớp nền và top layer là việc của trình duyệt — phần thêm vào chỉ là câu chữ và việc nút nào là nút nguy hiểm. Đóng xong nó tự xoá mình khỏi DOM.",
+        ) +
+        a11y(
+          "Ngữ nghĩa modal đến từ <code>&lt;dialog&gt;</code>: focus bị bẫy lại, phần còn lại của trang thành inert, Esc đóng được. <b>Focus bắt đầu ở Cancel</b> — người dùng bàn phím bấm Enter theo quán tính sẽ không phá mất gì. Mọi đường ra đều resolve promise, không để lại lời hứa treo lơ lửng.",
         ),
     },
   },
@@ -10040,7 +10427,25 @@ document.addEventListener("click", (e) => {
   }
   const tst = e.target.closest("[data-toast]");
   if (tst) {
-    toast(tst.dataset.toast, { accent: tst.dataset.toastAccent || "gold" });
+    toast(tst.dataset.toast, {
+      accent: tst.dataset.toastAccent || "gold",
+      title: tst.dataset.toastTitle || "",
+      timeout: tst.dataset.toastTimeout ? +tst.dataset.toastTimeout : undefined,
+      action: tst.dataset.toastAction
+        ? { label: tst.dataset.toastAction, onClick: () => toast("Undone.", { accent: "good" }) }
+        : null,
+    });
+    return;
+  }
+  const cf = e.target.closest("[data-confirm]");
+  if (cf) {
+    confirmDialog({
+      title: cf.dataset.confirm,
+      body: cf.dataset.confirmBody || "",
+      confirmLabel: cf.dataset.confirmLabel || "Delete",
+    }).then((yes) =>
+      toast(yes ? "Deleted." : "Cancelled.", { accent: yes ? "crit" : "good" }),
+    );
     return;
   }
   if (e.target.closest("[data-menu]")) {
