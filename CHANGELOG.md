@@ -2,6 +2,82 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.9.0
+
+A spacing/layout audit and the tokens it produced. The 4-based `--sp-*` scale was
+never the problem — **339** declarations already used it. The problem was the
+**151** literal spacing values around it: 66 distinct spellings, most of them off
+any grid (`.6rem` = 9.6px, `.7rem` = 11.2px, `1.6rem` = 25.6px), plus repeated
+magic numbers with no name (`gap: 2px` nine times) and layout metrics that existed
+only inside the docs shell. A hard 90° system has nothing to hide a half-pixel
+behind, so those values were visible as soft edges, not just untidy source.
+
+**Minor, not patch**: a handful of values move by 1–2.4px, and one media query
+changes shape.
+
+### Added
+
+- **The grid law, and a check that enforces it.** Space lands on 4px steps, size
+  lands on 2px steps. `pnpm check` now runs `scripts/check-scale.mjs`, which fails
+  the build on an off-grid literal, on a breakpoint outside the ladder, on a
+  breakpoint written in px instead of rem, and on `max-width` (see below). One
+  escape hatch: a trailing `/* off-grid: why */` comment. Mutation-tested against
+  five drift shapes, including the exact historical one.
+- **`--sp-hair`** (2px) — the single sub-grid rung, for the seam between tiles in a
+  grid, menu or heatmap. Same weight as `--bw-2`, so a seam and a border read as
+  one pixel. Replaces nine hand-typed `gap: 2px|3px`.
+- **Box padding roles** — `--pad-tight` (4/8), `--pad-snug` (8/12), `--pad-box`
+  (12/16), with inline padding one rung above block padding because text needs more
+  air sideways. 40 declarations now go through them, so overriding one retunes a
+  whole subtree: `.compact { --pad-snug: var(--sp-1) var(--sp-2) }`.
+- **Inline padding in em, in two optical classes** — `--chip-py/--chip-px`
+  (.25/.5em) for a standalone chip (`.kbd`, `[data-tip]`, `.cmp-handle`), and
+  `--atom-py/--atom-px` (.05/.35em) for something inside a sentence (inline `code`,
+  `.mention`) whose block padding must not fatten the line box. Six recipes had
+  five different hand-picked values.
+- **`--dot` (10px) and `--pip` (12px)** — the two square markers that repeat across
+  modules: the run-state light (`.agent`, `.sandbox`, `.runbar`, `.ds-bar`, radio
+  pip) and the step marker (`.trace-step`, `.check-item`, `.ckpt-item`, legend
+  swatch). 19 declarations, previously `.6rem`/`.7rem`/`0.9rem`.
+- **A breakpoint ladder: `--bp-sm` 36rem, `--bp-lg` 56rem, `--bp-xl` 74rem.** The
+  only widths anything is allowed to switch at. JS reads the token instead of a
+  literal, so `<nes-toc rail-at>` now defaults to `--bp-xl`.
+- **App shell metrics: `--gutter`, `--chrome-h`, `--nav-w`, `--rail-w`.** The page
+  frame, named once, so two apps built on 8-bit line up. `--chrome-h` is
+  `--ctrl-h-xl` — a top bar exactly one xl control tall, so a search input fills it.
+  `--gutter` is the one token that steps with the viewport (16 → 24 → 48px).
+- **Docs: a "Layout & rhythm" page** (EN + VI) with the scale drawn to scale, and a
+  generated `## Layout, spacing & breakpoints` section in `llms-full.txt` whose
+  values are read out of `tokens.css` at build time, so it cannot drift.
+
+### Fixed
+
+- **A one-pixel-wide window where the docs shell and `<nes-toc>` disagreed.** The
+  shell dropped its rail column at `max-width: 1180px` while the component became a
+  rail at `min-width: 74rem` (1184px), so between them the collapsed bar rendered
+  inside a 224px rail slot. Aligning both to 74rem was not enough: `max-width: X`
+  and `min-width: X` both match at exactly X. Width queries are now exclusive
+  (`@media (width < 74rem)`), the check rejects `max-width` outright, and the
+  boundary is asserted at 1180/1184/1188px.
+- **Three rail-marker modules, three hand-tuned offsets**, 0.4–1px off centre and
+  wrong by a pixel for a 12px marker. All three now derive it:
+  `calc((var(--pip) + var(--bw-2)) / -2)`.
+- **`--gutter` was `clamp(var(--sp-4), 4vw, var(--sp-7))`** in the docs shell — a
+  fluid gutter lands on 47.36px at one width and 43.2px at another. It steps on the
+  ladder instead; this system is rung-based everywhere else (type, controls, space).
+- **16 off-grid spacing nudges and 12 off-grid squares snapped to the grid**, plus
+  hairlines that were tracking a border weight in disguise
+  (`.switch` thumb inset → `--bw-1`, `.swatch` frame → `--bw`).
+
+### Changed
+
+- `docs.html` no longer carries its own shell metrics: `--top-h`, `--side-w` and
+  `--toc-w` now come from `--chrome-h`, `--nav-w` and `--rail-w` (52px, 240px,
+  224px — was 53, 244, 216), and the content gutter is `var(--gutter)`.
+- `.workbench`'s `--wb-rail` is `var(--rail-w)`: one rail width system-wide.
+- The docs' `62ch` measure is a token (`--doc-measure`) instead of a literal typed
+  twice, and `.doc-lead` is `1rem` instead of `1.02rem`.
+
 ## 0.8.0
 
 Six items filed by an integrator reading `all.min.css` and `elements.js` of 0.7.3

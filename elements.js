@@ -480,6 +480,11 @@ function readOptions(host) {
       : { value: String(o), label: String(o) },
   );
 }
+/** A breakpoint from tokens.css (--bp-sm | --bp-lg | --bp-xl), so a component
+ *  that switches shape in JS switches at the same width a media query would.
+ *  Falls back to the ladder's own value if tokens.css was not loaded. */
+const bp = (name, fallback) =>
+  getComputedStyle(document.documentElement).getPropertyValue(`--bp-${name}`).trim() || fallback;
 const _fmtSize = (b) =>
   b < 1024
     ? `${b} B`
@@ -3633,7 +3638,7 @@ class NesToc extends HTMLElement {
     const mode = this.getAttribute("mode");
     if (mode === "bar") return this.removeAttribute("data-rail");
     if (mode === "rail") return this.setAttribute("data-rail", "");
-    this._mq = matchMedia(`(min-width: ${this.getAttribute("rail-at") || "74rem"})`);
+    this._mq = matchMedia(`(min-width: ${this.getAttribute("rail-at") || bp("xl", "74rem")})`);
     this._onMq = () => this.toggleAttribute("data-rail", this._mq.matches);
     this._mq.addEventListener("change", this._onMq);
     this._onMq();

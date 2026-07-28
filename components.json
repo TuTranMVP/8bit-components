@@ -1,6 +1,6 @@
 {
   "name": "8bit-nes",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "title": "8-BIT NES",
   "description": "Cross-framework NES-arcade design system: CSS design tokens + class recipes + light-DOM web components. Zero build, dark-only, square 90° corners, hard shadow.",
   "official": true,
@@ -15,8 +15,8 @@
       "import \"8bit-nes/all.css\";",
       "import \"8bit-nes\";"
     ],
-    "cdnCss": "https://cdn.jsdelivr.net/npm/8bit-nes@0.8.0/all.min.css",
-    "cdnJs": "https://cdn.jsdelivr.net/npm/8bit-nes@0.8.0/elements.min.js"
+    "cdnCss": "https://cdn.jsdelivr.net/npm/8bit-nes@0.9.0/all.min.css",
+    "cdnJs": "https://cdn.jsdelivr.net/npm/8bit-nes@0.9.0/elements.min.js"
   },
   "conventions": {
     "prefix": "nes-",
@@ -74,6 +74,12 @@
       "name": "Theming",
       "description": "One file is the source of truth. Change the look in tokens.css — never in a component.",
       "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/theming"
+    },
+    {
+      "id": "layout",
+      "name": "Layout & rhythm",
+      "description": "Two grids and three breakpoints. Space lands on 4px, size lands on 2px, and only three widths ever switch a layout.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/layout"
     },
     {
       "id": "colors",
@@ -1291,7 +1297,7 @@
     }
   ],
   "counts": {
-    "concepts": 4,
+    "concepts": 5,
     "components": 134
   }
 }

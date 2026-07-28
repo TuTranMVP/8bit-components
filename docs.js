@@ -418,6 +418,173 @@ import "8bit-nes/components.css";`,
     },
   },
   {
+    id: "layout",
+    cat: { en: "Getting Started", vi: "Bắt đầu" },
+    name: { en: "Layout & rhythm", vi: "Layout & nhịp" },
+    desc: {
+      en: "Two grids and three breakpoints. Space lands on 4px, size lands on 2px, and only three widths ever switch a layout.",
+      vi: "Hai lưới và ba breakpoint. Khoảng cách theo bước 4px, kích thước theo bước 2px, và chỉ ba chiều rộng được phép đổi layout.",
+    },
+    body: {
+      en: () =>
+        p(
+          "A hard 90° system has nothing to hide a half-pixel behind, so every value in this library lands on a grid: <b>space on 4px steps, size on 2px steps</b>. <code>pnpm check</code> fails the build if a value drifts off it — the law is enforced, not advisory.",
+        ) +
+        scaleStage() +
+        h2("Space") +
+        api(
+          ["Token", "Value", "Role"],
+          [
+            ["<code>--sp-1 … --sp-7</code>", "4 · 8 · 12 · 16 · 24 · 32 · 48px", "the whole spacing scale — gaps, padding, margins"],
+            ["<code>--sp-hair</code>", "2px", "the one sub-grid rung: a seam between tiles, same weight as <code>--bw-2</code>"],
+            ["<code>--pad-tight</code>", "4px 8px", "badges, dense rows"],
+            ["<code>--pad-snug</code>", "8px 12px", "list rows, cells, chips"],
+            ["<code>--pad-box</code>", "12px 16px", "cards, panels, sections"],
+            ["<code>--chip-py</code> / <code>--chip-px</code>", ".25em / .5em", "a standalone inline chip — em, so it scales with its text"],
+            ["<code>--atom-py</code> / <code>--atom-px</code>", ".05em / .35em", "a thing inside a sentence (inline code, @mention) — must not fatten the line"],
+          ],
+        ) +
+        p(
+          "Inline padding sits one rung above block padding — text needs more air sideways. That is why the three <code>--pad-*</code> roles are pairs, and why overriding one retunes every recipe that uses it:",
+        ) +
+        cb(
+          `/* one line = every list row, cell and chip in this subtree gets denser */
+.compact { --pad-snug: var(--sp-1) var(--sp-2); }`,
+        ) +
+        h2("Size") +
+        api(
+          ["Token", "Value", "Role"],
+          [
+            ["<code>--dot</code>", "10px", "run-state dot — <code>.agent</code>, <code>.sandbox</code>, <code>.runbar</code>, radio pip"],
+            ["<code>--pip</code>", "12px", "step marker — <code>.trace-step</code>, <code>.check-item</code>, legend swatch"],
+            ["<code>--ctrl-h-xs … xl</code>", "28 · 32 · 36 · 44 · 52px", "the shared control height scale (see Sizes)"],
+          ],
+        ) +
+        p(
+          "A marker centred on a rail derives its own offset, so a 10px dot and a 12px marker are never off by a pixel: <code>calc((var(--pip) + var(--bw-2)) / -2)</code>.",
+        ) +
+        h2("Breakpoints") +
+        p(
+          "This system is intrinsic-first — <code>flex-wrap</code>, auto-fit grids, <code>clamp()</code>, <code>min()</code> — so a module normally needs no media query at all (all of <code>components.css</code> has two). These are the only widths anything switches at:",
+        ) +
+        api(
+          ["Token", "Width", "What earns a switch here"],
+          [
+            ["<code>--bp-sm</code>", "36rem · 576px", "a split module drops to one column"],
+            ["<code>--bp-lg</code>", "56rem · 896px", "a persistent sidebar or rail fits"],
+            ["<code>--bp-xl</code>", "74rem · 1184px", "a <b>third</b> column (right rail) fits"],
+          ],
+        ) +
+        callout(
+          "crit",
+          "CSS cannot read a <code>var()</code> inside <code>@media</code>, so a query writes the literal — and <code>max-width: X</code> also overlaps <code>min-width: X</code> at exactly X. Write <code>@media (width &lt; 74rem)</code> (exclusive) or <code>min-width</code> (inclusive), never <code>max-width</code>. In JS, read the token: <code>matchMedia(`(min-width: ${getComputedStyle(document.documentElement).getPropertyValue(\"--bp-xl\")})`)</code>.",
+        ) +
+        h2("App shell") +
+        api(
+          ["Token", "Value", "Role"],
+          [
+            ["<code>--gutter</code>", "16 → 24 → 48px", "page side padding — the one token that steps with the viewport"],
+            ["<code>--chrome-h</code>", "52px (<code>--ctrl-h-xl</code>)", "sticky top bar — exactly one xl control tall, so a search input fills it"],
+            ["<code>--nav-w</code>", "15rem · 240px", "left navigation column"],
+            ["<code>--rail-w</code>", "14rem · 224px", "right rail — <code>&lt;nes-toc&gt;</code>, <code>.wb-rail</code>"],
+          ],
+        ) +
+        cb(
+          `<body>
+  <header class="topbar" style="block-size: var(--chrome-h)">…</header>
+  <div style="display:grid; grid-template-columns: var(--nav-w) minmax(0,1fr) var(--rail-w)">
+    <aside>…</aside>
+    <main style="padding-inline: var(--gutter)">…</main>
+    <nes-toc target="main"></nes-toc>
+  </div>
+</body>`,
+        ) +
+        h2("Do / don't") +
+        `<div class="grid-cards">
+          <div class="callout tip"><b>Do.</b> Reach for a <code>--sp-*</code> rung or a <code>--pad-*</code> role. Let a module size itself and leave outer spacing to the parent — recipes ship <code>margin: 0</code> on purpose.</div>
+          <div class="callout gotcha"><b>Don't.</b> Type <code>.65rem</code> because 8px felt small and 12px felt big. Nothing in this library is between two rungs, and the check will say so.</div>
+        </div>`,
+      vi: () =>
+        p(
+          "Hệ thống góc vuông 90° không có gì để che nửa pixel, nên mọi giá trị trong thư viện đều nằm trên lưới: <b>khoảng cách theo bước 4px, kích thước theo bước 2px</b>. <code>pnpm check</code> sẽ fail nếu một giá trị lệch khỏi lưới — luật được kiểm tra, không phải khuyến nghị.",
+        ) +
+        scaleStage() +
+        h2("Khoảng cách") +
+        api(
+          ["Token", "Giá trị", "Vai trò"],
+          [
+            ["<code>--sp-1 … --sp-7</code>", "4 · 8 · 12 · 16 · 24 · 32 · 48px", "toàn bộ thang khoảng cách — gap, padding, margin"],
+            ["<code>--sp-hair</code>", "2px", "bậc dưới lưới duy nhất: đường ghép giữa các ô, cùng độ dày <code>--bw-2</code>"],
+            ["<code>--pad-tight</code>", "4px 8px", "badge, hàng dày"],
+            ["<code>--pad-snug</code>", "8px 12px", "hàng danh sách, ô, chip"],
+            ["<code>--pad-box</code>", "12px 16px", "card, panel, section"],
+            ["<code>--chip-py</code> / <code>--chip-px</code>", ".25em / .5em", "chip đứng riêng trong một hàng — dùng em nên co giãn theo chữ"],
+            ["<code>--atom-py</code> / <code>--atom-px</code>", ".05em / .35em", "thứ nằm TRONG câu (code inline, @mention) — không được làm dày dòng"],
+          ],
+        ) +
+        p(
+          "Padding ngang cao hơn padding dọc một bậc — chữ cần nhiều không khí hai bên hơn. Vì vậy ba role <code>--pad-*</code> đều là cặp, và ghi đè một cái sẽ chỉnh lại mọi recipe dùng nó:",
+        ) +
+        cb(
+          `/* một dòng = mọi hàng, ô, chip trong nhánh này dày lại */
+.compact { --pad-snug: var(--sp-1) var(--sp-2); }`,
+        ) +
+        h2("Kích thước") +
+        api(
+          ["Token", "Giá trị", "Vai trò"],
+          [
+            ["<code>--dot</code>", "10px", "đèn trạng thái — <code>.agent</code>, <code>.sandbox</code>, <code>.runbar</code>, pip của radio"],
+            ["<code>--pip</code>", "12px", "dấu bước — <code>.trace-step</code>, <code>.check-item</code>, ô màu chú giải"],
+            ["<code>--ctrl-h-xs … xl</code>", "28 · 32 · 36 · 44 · 52px", "thang chiều cao control dùng chung (xem Sizes)"],
+          ],
+        ) +
+        p(
+          "Dấu nằm giữa đường ray tự tính độ lệch của chính nó, nên dot 10px và mark 12px không bao giờ lệch một pixel: <code>calc((var(--pip) + var(--bw-2)) / -2)</code>.",
+        ) +
+        h2("Breakpoint") +
+        p(
+          "Hệ thống ưu tiên layout nội tại — <code>flex-wrap</code>, grid auto-fit, <code>clamp()</code>, <code>min()</code> — nên một module thường không cần media query nào (cả <code>components.css</code> chỉ có hai). Đây là những chiều rộng duy nhất được phép đổi layout:",
+        ) +
+        api(
+          ["Token", "Chiều rộng", "Cái gì xứng đáng đổi ở đây"],
+          [
+            ["<code>--bp-sm</code>", "36rem · 576px", "module chia đôi rớt về một cột"],
+            ["<code>--bp-lg</code>", "56rem · 896px", "vừa đủ cho sidebar/rail cố định"],
+            ["<code>--bp-xl</code>", "74rem · 1184px", "vừa đủ cho cột <b>thứ ba</b> (rail phải)"],
+          ],
+        ) +
+        callout(
+          "crit",
+          "CSS không đọc được <code>var()</code> trong <code>@media</code>, nên query phải viết số thật — và <code>max-width: X</code> trùng với <code>min-width: X</code> đúng tại X. Hãy viết <code>@media (width &lt; 74rem)</code> (loại trừ) hoặc <code>min-width</code> (bao gồm), đừng dùng <code>max-width</code>. Trong JS thì đọc token: <code>matchMedia(`(min-width: ${getComputedStyle(document.documentElement).getPropertyValue(\"--bp-xl\")})`)</code>.",
+        ) +
+        h2("Khung app") +
+        api(
+          ["Token", "Giá trị", "Vai trò"],
+          [
+            ["<code>--gutter</code>", "16 → 24 → 48px", "padding hai bên trang — token duy nhất nhảy bậc theo viewport"],
+            ["<code>--chrome-h</code>", "52px (<code>--ctrl-h-xl</code>)", "thanh trên dính — cao đúng một control xl, nên ô search lấp vừa khít"],
+            ["<code>--nav-w</code>", "15rem · 240px", "cột điều hướng bên trái"],
+            ["<code>--rail-w</code>", "14rem · 224px", "rail bên phải — <code>&lt;nes-toc&gt;</code>, <code>.wb-rail</code>"],
+          ],
+        ) +
+        cb(
+          `<body>
+  <header class="topbar" style="block-size: var(--chrome-h)">…</header>
+  <div style="display:grid; grid-template-columns: var(--nav-w) minmax(0,1fr) var(--rail-w)">
+    <aside>…</aside>
+    <main style="padding-inline: var(--gutter)">…</main>
+    <nes-toc target="main"></nes-toc>
+  </div>
+</body>`,
+        ) +
+        h2("Nên / Không") +
+        `<div class="grid-cards">
+          <div class="callout tip"><b>Nên.</b> Lấy một bậc <code>--sp-*</code> hoặc một role <code>--pad-*</code>. Để module tự lo kích thước bên trong, khoảng cách bên ngoài thuộc về cha — các recipe ship <code>margin: 0</code> là có chủ đích.</div>
+          <div class="callout gotcha"><b>Không.</b> Gõ <code>.65rem</code> chỉ vì 8px thấy nhỏ mà 12px thấy to. Không có gì trong thư viện nằm giữa hai bậc, và bộ check sẽ nói ra.</div>
+        </div>`,
+    },
+  },
+  {
     id: "colors",
     cat: { en: "Getting Started", vi: "Bắt đầu" },
     name: { en: "Colors", vi: "Bảng màu" },
@@ -3563,7 +3730,7 @@ h2("Thành phần") +
 <style>
   /* how far below the page chrome it sticks, and how far a jumped-to
      heading has to clear that chrome — set per breakpoint if you like */
-  :root { --toc-top: 53px; --toc-offset: 5rem; }
+  :root { --toc-top: var(--chrome-h); --toc-offset: calc(var(--chrome-h) + var(--sp-4)); }
 <\/style>`) +
         apiGroups({
           attr: [
@@ -3621,7 +3788,7 @@ ${cb(`document.addEventListener("click", (e) => {
 <style>
   /* dính cách đỉnh bao xa, và heading khi nhảy tới phải vượt qua
      phần chrome dính bao nhiêu — đặt riêng theo breakpoint nếu muốn */
-  :root { --toc-top: 53px; --toc-offset: 5rem; }
+  :root { --toc-top: var(--chrome-h); --toc-offset: calc(var(--chrome-h) + var(--sp-4)); }
 <\/style>`) +
         apiGroups({
           attr: [
@@ -9223,6 +9390,32 @@ function ocTocStage(label) {
        </div>`,
       "col",
     )
+  );
+}
+
+/* the space scale drawn to scale — an OCD reader can see the rungs, not read them */
+function scaleStage() {
+  const rung = (n) =>
+    `<div style="display:flex;align-items:center;gap:var(--sp-3)">
+      <code style="min-inline-size:5.5rem">--sp-${n}</code>
+      <span style="inline-size:var(--sp-${n});block-size:var(--pip);background:var(--primary)"></span>
+      <span style="color:var(--dim);font-size:var(--fs-label)">${[4, 8, 12, 16, 24, 32, 48][n - 1]}px</span>
+    </div>`;
+  const mark = (tok, px, label) =>
+    `<div style="display:flex;align-items:center;gap:var(--sp-3)">
+      <code style="min-inline-size:5.5rem">--${tok}</code>
+      <span style="inline-size:var(--${tok});block-size:var(--${tok});background:var(--gold);border:var(--bw-2) solid var(--line)"></span>
+      <span style="color:var(--dim);font-size:var(--fs-label)">${px}px · ${label}</span>
+    </div>`;
+  return stage(
+    LANG === "vi" ? "thang" : "scale",
+    `<div style="display:flex;flex-direction:column;gap:var(--sp-2)">
+      ${[1, 2, 3, 4, 5, 6, 7].map(rung).join("")}
+      <hr style="inline-size:100%">
+      ${mark("dot", 10, LANG === "vi" ? "đèn trạng thái" : "run-state dot")}
+      ${mark("pip", 12, LANG === "vi" ? "dấu bước" : "step marker")}
+    </div>`,
+    "col",
   );
 }
 

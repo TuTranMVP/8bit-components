@@ -316,7 +316,7 @@
     --accent: var(--gold);
     border: var(--bw-2) solid var(--accent);
     background: color-mix(in srgb, var(--accent) 12%, transparent);
-    padding: var(--sp-3) var(--sp-4);
+    padding: var(--pad-box);
     font-size: var(--fs-body);
 
     & b {
@@ -362,7 +362,7 @@
     background: var(--accent);
     border: var(--bw-2) solid var(--accent-d);
     box-shadow: var(--sh-2);
-    padding: 0.3rem 0.5rem;
+    padding: var(--pad-tight);
     line-height: var(--lh-tight);
 
     /* Default is neutral: light --muted text on the dark --panel-2 (never dark
@@ -409,7 +409,7 @@
     background: var(--panel);
     border: var(--bw-2) solid var(--line-hi);
     box-shadow: var(--sh-2);
-    padding: var(--sp-2) var(--sp-3);
+    padding: var(--pad-snug);
     cursor: pointer;
     transition: transform var(--dur-fast) var(--ease),
       box-shadow var(--dur-fast) var(--ease);
@@ -545,7 +545,7 @@
       background: var(--panel-2);
       border: var(--bw-2) solid var(--line-hi);
       box-shadow: var(--sh-1);
-      padding: .2em .5em;
+      padding: var(--chip-py) var(--chip-px);
       cursor: pointer;
 
       &:hover {
@@ -650,8 +650,8 @@
       flex: none;
       display: grid;
       place-items: center;
-      inline-size: 1.6rem;
-      block-size: 1.6rem;
+      inline-size: 26px;
+      block-size: 26px;
       font-family: var(--font-mono);
       font-weight: 700;
       color: var(--muted);
@@ -762,7 +762,7 @@
     background: var(--panel-2);
     border: var(--bw-2) solid var(--line);
     box-shadow: var(--sh-1);
-    padding: .3em .5em;
+    padding: var(--chip-py) var(--chip-px);
   }
 
   /* --------------------------------------------------------------- SEPARATOR */
@@ -898,8 +898,8 @@
     appearance: none;
     -webkit-appearance: none;
     flex: none;
-    inline-size: 1.15rem;
-    block-size: 1.15rem;
+    inline-size: 18px;
+    block-size: 18px;
     display: inline-grid;
     place-items: center;
     cursor: pointer;
@@ -921,9 +921,9 @@
 
   .checkbox:checked::after {
     content: "";
-    inline-size: .32rem;
-    block-size: .6rem;
-    margin-block-start: -2px;
+    inline-size: 6px;
+    block-size: 10px;
+    margin-block-start: -2px; /* off-grid: optically centres the tick */
     border: solid var(--ink-on-accent);
     border-width: 0 var(--bw-2) var(--bw-2) 0;
     transform: rotate(45deg);
@@ -955,7 +955,7 @@
     flex: none;
     cursor: pointer;
     inline-size: 2.75rem;
-    block-size: 1.4rem;
+    block-size: 22px;
     background: var(--slot);
     border: var(--bw-2) solid var(--line-hi);
     transition: background var(--dur-fast) var(--ease),
@@ -964,9 +964,9 @@
     &::after {
       content: "";
       position: absolute;
-      inset-block: 1px;
-      inset-inline-start: 1px;
-      inline-size: 1.05rem;
+      inset-block: var(--bw-1);
+      inset-inline-start: var(--bw-1);
+      inline-size: 16px;
       background: var(--line-hi);
       border: var(--bw-1) solid var(--line);
       transition: transform var(--dur-fast) var(--ease), background var(--dur-fast);
@@ -1030,7 +1030,7 @@
     background: var(--panel-2);
     border: var(--bw-2) solid var(--line-hi);
     box-shadow: var(--sh-2);
-    padding: .3em .55em;
+    padding: var(--chip-py) var(--chip-px);
   }
 
   /* -------------------------------------------------------------- BREADCRUMB */
@@ -1136,7 +1136,7 @@
     background: none;
     border: 0;
     cursor: pointer;
-    padding: var(--sp-3) var(--sp-4);
+    padding: var(--pad-box);
     border-block-end: var(--accent-bar) solid transparent;
     margin-block-end: calc(var(--bw-2) * -1);
     transition: color var(--dur-fast);
@@ -1183,7 +1183,7 @@
     min-inline-size: 12rem;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--sp-hair);
     background: var(--panel);
     border: var(--bw) solid var(--line-hi);
     box-shadow: var(--sh-4);
@@ -1205,7 +1205,7 @@
     color: var(--text);
     background: none;
     border: 0;
-    padding: var(--sp-2) var(--sp-3);
+    padding: var(--pad-snug);
     cursor: pointer;
 
     &:hover {
@@ -1330,7 +1330,7 @@
     border: var(--bw-2) solid var(--line-hi);
     border-inline-start: var(--accent-bar) solid var(--accent);
     box-shadow: var(--sh-4);
-    padding: var(--sp-3) var(--sp-4);
+    padding: var(--pad-box);
     animation: toast-in var(--dur-mid) var(--ease);
 
     & b {
@@ -1508,8 +1508,8 @@
       flex: none;
       display: grid;
       place-items: center;
-      inline-size: 1.6rem;
-      block-size: 1.6rem;
+      inline-size: 26px;
+      block-size: 26px;
       font-weight: 700;
       color: var(--muted);
       background: var(--slot);
@@ -1546,11 +1546,11 @@
     --accent: var(--good);
     --accent-d: var(--good-d);
     display: inline-flex;
-    gap: 2px;
+    gap: var(--sp-hair);
 
     &>.cell {
-      inline-size: .85rem;
-      block-size: 1.1rem;
+      inline-size: 14px;
+      block-size: 18px;
       background: var(--slot);
       border: var(--bw-2) solid var(--line-hi);
     }
@@ -1849,7 +1849,7 @@
 
     &>li {
       position: relative;
-      margin-inline-start: .3rem;
+      margin-inline-start: var(--sp-1);
       padding-inline-start: var(--sp-5);
       padding-block-end: var(--sp-5);
       border-inline-start: var(--bw-2) solid var(--line-hi);
@@ -1864,9 +1864,9 @@
       content: "";
       position: absolute;
       inset-block-start: 0;
-      inset-inline-start: calc(-.3rem - var(--bw-2));
-      inline-size: .65rem;
-      block-size: .65rem;
+      inset-inline-start: calc((var(--dot) + var(--bw-2)) / -2);
+      inline-size: var(--dot);
+      block-size: var(--dot);
       background: var(--accent);
       border: var(--bw-2) solid var(--accent-d);
       box-shadow: var(--sh-1);
@@ -2023,7 +2023,7 @@
     color: var(--ink);
     background: color-mix(in srgb, var(--accent) 16%, var(--panel));
     border-block-end: var(--bw-2) solid var(--accent);
-    padding: var(--sp-3) var(--sp-4);
+    padding: var(--pad-box);
 
     & b {
       color: var(--accent);
@@ -2054,7 +2054,7 @@
     font-size: var(--fs-chip);
 
     & .lab {
-      padding: var(--sp-2) var(--sp-3);
+      padding: var(--pad-snug);
       margin-block-start: var(--sp-3);
       font-size: var(--fs-label);
       text-transform: uppercase;
@@ -2072,7 +2072,7 @@
       background: none;
       border: 0;
       border-inline-start: var(--accent-bar) solid transparent;
-      padding: var(--sp-2) var(--sp-3);
+      padding: var(--pad-snug);
       cursor: pointer;
       transition: color var(--dur-fast), background var(--dur-fast);
     }
@@ -2137,7 +2137,7 @@
     inline-size: var(--ctrl-h);
     block-size: var(--ctrl-h);
     flex: none;
-    padding: 3px;
+    padding: var(--bw);
     cursor: pointer;
     background: var(--slot);
     border: var(--bw-2) solid var(--line-hi);
@@ -2288,7 +2288,7 @@
       color: var(--muted);
       background: var(--panel-2);
       border: var(--bw) solid var(--line);
-      padding: var(--sp-2) var(--sp-3);
+      padding: var(--pad-snug);
     }
 
     & .name {
@@ -2361,7 +2361,7 @@
     font-size: var(--fs-chip);
     color: var(--ink-on-accent);
     background: var(--accent);
-    padding: 2px var(--sp-2);
+    padding: var(--sp-hair) var(--sp-2);
     line-height: 1.4;
 
     & .x {
@@ -2385,7 +2385,7 @@
     --accent: var(--primary);
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--sp-hair);
     inline-size: 100%;
     max-block-size: 16rem;
     overflow-y: auto;
@@ -2400,7 +2400,7 @@
       font-family: var(--font-body);
       font-size: var(--fs-body);
       color: var(--text);
-      padding: var(--sp-2) var(--sp-3);
+      padding: var(--pad-snug);
       cursor: pointer;
       border: var(--bw) solid transparent;
       transition: background var(--dur-fast), color var(--dur-fast);
@@ -2457,7 +2457,7 @@
     }
 
     & .menu-empty {
-      padding: var(--sp-2) var(--sp-3);
+      padding: var(--pad-snug);
       font-size: var(--fs-chip);
       color: var(--dim);
     }
@@ -2719,7 +2719,7 @@
     &>summary {
       list-style: none;
       cursor: pointer;
-      padding: var(--sp-2) var(--sp-3);
+      padding: var(--pad-snug);
       font-family: var(--font-mono);
       font-size: var(--fs-label);
       text-transform: uppercase;
@@ -2759,7 +2759,7 @@
       gap: var(--sp-2);
       list-style: none;
       cursor: pointer;
-      padding: var(--sp-2) var(--sp-3);
+      padding: var(--pad-snug);
       color: var(--muted);
     }
 
@@ -2793,7 +2793,7 @@
 
     &>span {
       display: block;
-      block-size: .7rem;
+      block-size: var(--pip);
       background: var(--panel-2);
       background-image: linear-gradient(90deg, transparent 0,
           color-mix(in srgb, var(--line-hi) 45%, transparent) 50%, transparent 100%);
@@ -2898,7 +2898,7 @@
     align-items: center;
     gap: var(--sp-2);
     max-inline-size: 14rem;
-    padding: var(--sp-1) var(--sp-2);
+    padding: var(--pad-tight);
     font-family: var(--font-mono);
     font-size: var(--fs-label);
     color: var(--muted);
@@ -2951,7 +2951,7 @@
     background: var(--panel);
     border: var(--bw-2) solid var(--line-hi);
     box-shadow: var(--sh-1);
-    padding: var(--sp-2) var(--sp-3);
+    padding: var(--pad-snug);
     font-family: var(--font-body);
     font-size: var(--fs-body);
     cursor: pointer;
@@ -2984,8 +2984,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-inline-size: 1.1rem;
-    padding: 0 .25rem;
+    min-inline-size: 18px;
+    padding: 0 var(--sp-1);
     font-family: var(--font-mono);
     font-size: .7em;
     font-weight: 700;
@@ -3018,8 +3018,8 @@
 
     & .source-n {
       flex: none;
-      inline-size: 1.3rem;
-      block-size: 1.3rem;
+      inline-size: 20px;
+      block-size: 20px;
       display: grid;
       place-items: center;
       font-family: var(--font-mono);
@@ -3071,7 +3071,7 @@
   .editor-toolbar {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: var(--sp-hair);
     overflow-x: auto;
     padding: var(--sp-2);
     background: var(--panel-2);
@@ -3085,8 +3085,8 @@
 
   .editor-toolbar button {
     flex: none;
-    min-inline-size: 1.9rem;
-    block-size: 1.9rem;
+    min-inline-size: 30px;
+    block-size: 30px;
     padding-inline: var(--sp-2);
     display: inline-grid;
     place-items: center;
@@ -3238,7 +3238,7 @@
       color: var(--cyan);
       background: var(--slot);
       border: var(--bw) solid var(--line);
-      padding: .05em .35em;
+      padding: var(--atom-py) var(--atom-px);
     }
 
     & pre {
@@ -3266,7 +3266,7 @@
       color: var(--accent);
       background: color-mix(in srgb, var(--accent) 16%, transparent);
       border: var(--bw) solid var(--accent);
-      padding: 0 .3em;
+      padding: var(--atom-py) var(--atom-px);
       font-family: var(--font-mono);
       font-size: .9em;
       white-space: nowrap;
@@ -3300,7 +3300,7 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--sp-hair);
     padding: var(--sp-2);
     background: var(--panel);
     border: var(--bw) solid var(--line-hi);
@@ -3432,7 +3432,7 @@
     &>summary {
       list-style: none;
       cursor: pointer;
-      padding: var(--sp-2) var(--sp-3);
+      padding: var(--pad-snug);
       font-family: var(--font-mono);
       font-size: var(--fs-label);
       text-transform: uppercase;
@@ -3464,7 +3464,7 @@
     background: var(--slot);
 
     &>.field-row {
-      padding: var(--sp-3) var(--sp-4);
+      padding: var(--pad-box);
     }
 
     &>.field-row+.field-row {
@@ -3504,7 +3504,7 @@
     align-items: center;
     gap: var(--sp-2);
     inline-size: 100%;
-    padding: var(--sp-3) var(--sp-4);
+    padding: var(--pad-box);
     background: var(--slot);
     border: var(--bw-2) solid var(--line-hi);
     font-family: var(--font-mono);
@@ -3642,8 +3642,8 @@
     & li::before {
       content: "";
       flex: none;
-      inline-size: 0.9rem;
-      block-size: 0.9rem;
+      inline-size: var(--pip);
+      block-size: var(--pip);
       translate: 0 0.15em;
       background: var(--panel-2);
       border: var(--bw-2) solid var(--line-hi);
@@ -3669,7 +3669,7 @@
 
   /* Code block filename header (opt-in via <nes-code file="…">) */
   .cb-file {
-    padding: var(--sp-2) var(--sp-3);
+    padding: var(--pad-snug);
     background: var(--panel-2);
     border: var(--bw-2) solid var(--line-hi);
     border-block-end: 0;
@@ -3712,7 +3712,7 @@
     }
   }
 
-  @media (max-width: 560px) {
+  @media (width < 36rem) {
     .code-tree {
       grid-template-columns: 1fr;
     }
@@ -3953,8 +3953,8 @@
   .anno-pin {
     position: absolute;
     translate: -50% -50%;
-    inline-size: 1.6rem;
-    block-size: 1.6rem;
+    inline-size: 26px;
+    block-size: 26px;
     padding: 0;
     display: inline-flex;
     align-items: center;
@@ -3980,9 +3980,9 @@
     position: absolute;
     z-index: 2;
     inline-size: min(16rem, 80%);
-    margin-block-start: 1.2rem;
-    margin-inline-start: 0.6rem;
-    padding: var(--sp-3) var(--sp-4);
+    margin-block-start: var(--sp-4);
+    margin-inline-start: var(--sp-2);
+    padding: var(--pad-box);
     background: var(--panel-2);
     border: var(--bw-2) solid var(--accent, var(--primary));
     box-shadow: var(--sh-3);
@@ -4044,7 +4044,7 @@
       inset-block-start: 50%;
       inset-inline-start: 50%;
       translate: -50% -50%;
-      padding: 0.2em 0.4em;
+      padding: var(--chip-py) var(--chip-px);
       font-family: var(--font-mono);
       font-size: var(--fs-label);
       color: var(--ink-on-accent);
@@ -4075,8 +4075,8 @@
 
     &::before {
       content: "";
-      inline-size: 0.9rem;
-      block-size: 0.9rem;
+      inline-size: var(--pip);
+      block-size: var(--pip);
       flex: none;
       background: var(--accent, var(--primary));
       border: var(--bw) solid var(--line-hi);
@@ -4166,16 +4166,16 @@
     border: var(--bw-2) solid var(--line-hi);
     border-inline-start: var(--accent-bar) solid var(--state, var(--line-hi));
     box-shadow: var(--sh-3);
-    padding: var(--sp-3) var(--sp-4);
+    padding: var(--pad-box);
 
     /* the status light: steady dot, blinks while the agent is working */
     &::before {
       content: "";
       grid-row: 1 / span 2;
       align-self: start;
-      margin-block-start: .3rem;
-      inline-size: .6rem;
-      block-size: .6rem;
+      margin-block-start: var(--sp-1);
+      inline-size: var(--dot);
+      block-size: var(--dot);
       background: var(--state, var(--dim));
       border: var(--bw-1) solid var(--line);
       box-shadow: var(--sh-1);
@@ -4231,7 +4231,7 @@
 
   .usage-bar {
     display: flex;
-    block-size: 1.1rem;
+    block-size: 18px;
     background: var(--slot);
     border: var(--bw-2) solid var(--line-hi);
     box-shadow: var(--sh-2);
@@ -4263,7 +4263,7 @@
 
     &>.trace-step {
       position: relative;
-      margin-inline-start: .3rem;
+      margin-inline-start: var(--sp-1);
       padding-inline-start: var(--sp-5);
       padding-block-end: var(--sp-4);
       border-inline-start: var(--bw-2) solid var(--line-hi);
@@ -4278,10 +4278,10 @@
     &>.trace-step::before {
       content: "";
       position: absolute;
-      inset-block-start: .15rem;
-      inset-inline-start: calc(-.3rem - var(--bw-2));
-      inline-size: .7rem;
-      block-size: .7rem;
+      inset-block-start: var(--sp-hair);
+      inset-inline-start: calc((var(--pip) + var(--bw-2)) / -2);
+      inline-size: var(--pip);
+      block-size: var(--pip);
       background: var(--state, var(--dim));
       border: var(--bw-2) solid var(--line);
       box-shadow: var(--sh-1);
@@ -4381,7 +4381,7 @@
     border: var(--bw-2) solid var(--line-hi);
     border-inline-start: var(--accent-bar) solid var(--accent);
     box-shadow: var(--sh-3);
-    padding: var(--sp-3) var(--sp-4);
+    padding: var(--pad-box);
     cursor: pointer;
     transition: border-color var(--dur-fast), transform var(--dur-fast) var(--ease);
 
@@ -4453,7 +4453,7 @@
     color: var(--dim);
     background: var(--slot);
     border: var(--bw-1) solid var(--line-hi);
-    padding: .1rem .4rem;
+    padding: var(--sp-hair) var(--sp-2);
     cursor: pointer;
     transition: color var(--dur-fast), border-color var(--dur-fast);
 
@@ -4507,8 +4507,8 @@
   .backlink {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    padding: var(--sp-2) var(--sp-3);
+    gap: var(--sp-hair);
+    padding: var(--pad-snug);
     background: var(--slot);
     border: var(--bw-2) solid var(--line-hi);
     border-inline-start: var(--accent-bar) solid var(--line-hi);
@@ -4645,7 +4645,7 @@
 
     &>a {
       display: block;
-      padding: var(--sp-1) var(--sp-2);
+      padding: var(--pad-tight);
       color: var(--muted);
       border-inline-start: var(--bw-2) solid var(--line-hi);
       transition: color var(--dur-fast), border-color var(--dur-fast);
@@ -4681,7 +4681,7 @@
     display: grid;
     grid-auto-flow: column;
     grid-template-rows: repeat(7, 1fr);
-    gap: 3px;
+    gap: var(--sp-hair);
     inline-size: max-content;
 
     &>i {
@@ -4734,7 +4734,7 @@
       display: flex;
       align-items: center;
       gap: var(--sp-2);
-      padding: var(--sp-1) var(--sp-2);
+      padding: var(--pad-tight);
       font-family: var(--font-mono);
       font-size: var(--fs-label);
       text-transform: uppercase;
@@ -4805,7 +4805,7 @@
     & .palette-list {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: var(--sp-hair);
       max-block-size: min(50vh, 340px);
       overflow-y: auto;
       padding: var(--sp-2);
@@ -4827,7 +4827,7 @@
     display: flex;
     align-items: center;
     gap: var(--sp-3);
-    padding: var(--sp-2) var(--sp-3);
+    padding: var(--pad-snug);
     background: none;
     border: var(--bw-2) solid transparent;
     text-align: start;
@@ -4892,7 +4892,7 @@
     background: color-mix(in srgb, var(--panel) 55%, transparent);
     border: var(--bw-2) solid var(--line-hi);
     border-inline-start: var(--accent-bar) solid var(--accent);
-    padding: var(--sp-3) var(--sp-4);
+    padding: var(--pad-box);
 
     &>.embed-head {
       display: flex;
@@ -4929,7 +4929,7 @@
     color: var(--muted);
     background: var(--slot);
     border: var(--bw-2) solid var(--line-hi);
-    padding: .15rem .5rem;
+    padding: var(--sp-hair) var(--sp-2);
 
     &::before {
       content: "🌱";
@@ -4988,7 +4988,7 @@
     border: var(--bw-2) solid var(--line-hi);
     border-inline-start: var(--accent-bar) solid var(--accent);
     box-shadow: var(--sh-3);
-    padding: var(--sp-3) var(--sp-4);
+    padding: var(--pad-box);
 
     &>.concept-term {
       margin: 0 0 var(--sp-2);
@@ -5061,7 +5061,7 @@
      in. Mobile-first: panes stack and cap their height; from 56rem they sit
      side by side. Drop .wb-rail or .wb-side and the grid re-flows itself. */
   .workbench {
-    --wb-rail: 14rem;
+    --wb-rail: var(--rail-w);
     --wb-side: 22rem;
     --wb-h: 30rem;
     display: grid;
@@ -5133,7 +5133,7 @@
     gap: var(--sp-2) var(--sp-3);
     inline-size: 100%;
     min-block-size: var(--ctrl-h);
-    padding: var(--sp-2) var(--sp-3);
+    padding: var(--pad-snug);
     background: var(--panel-2);
     border: var(--bw-2) solid var(--line-hi);
     font-family: var(--font-mono);
@@ -5240,7 +5240,7 @@
     column-gap: var(--sp-3);
     align-items: start;
     inline-size: 100%;
-    padding: var(--sp-3) var(--sp-4);
+    padding: var(--pad-box);
     background: var(--panel);
     border: var(--bw-2) solid var(--line-hi);
     border-inline-start: var(--accent-bar) solid var(--state, var(--line-hi));
@@ -5249,9 +5249,9 @@
     &::before {
       content: "";
       grid-row: 1 / span 2;
-      margin-block-start: .3rem;
-      inline-size: .6rem;
-      block-size: .6rem;
+      margin-block-start: var(--sp-1);
+      inline-size: var(--dot);
+      block-size: var(--dot);
       background: var(--state, var(--dim));
       border: var(--bw-1) solid var(--line);
       box-shadow: var(--sh-1);
@@ -5380,7 +5380,7 @@
     flex-direction: column;
     gap: var(--sp-2);
     inline-size: 100%;
-    padding: var(--sp-3) var(--sp-4);
+    padding: var(--pad-box);
     background: var(--panel);
     border: var(--bw-2) solid var(--line-hi);
     border-inline-start: var(--accent-bar) solid var(--accent);
@@ -5403,7 +5403,7 @@
     & .perm-target {
       display: block;
       overflow-x: auto;
-      padding: var(--sp-2) var(--sp-3);
+      padding: var(--pad-snug);
       background: var(--slot);
       border: var(--bw-1) solid var(--line-hi);
       font-family: var(--font-mono);
@@ -5463,7 +5463,7 @@
     & .ds-bar {
       display: flex;
       inline-size: 5rem;
-      block-size: .6rem;
+      block-size: var(--dot);
       background: var(--slot);
       border: var(--bw-1) solid var(--line-hi);
 
@@ -5490,7 +5490,7 @@
     align-items: center;
     gap: var(--sp-3);
     inline-size: 100%;
-    padding: var(--sp-2) var(--sp-3);
+    padding: var(--pad-snug);
     background: var(--panel);
     border: var(--bw-1) solid var(--line-hi);
     font-family: var(--font-mono);
@@ -5508,8 +5508,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      inline-size: 1.1rem;
-      block-size: 1.1rem;
+      inline-size: 18px;
+      block-size: 18px;
       background: color-mix(in srgb, var(--mark, var(--steel)) 26%, var(--slot));
       border: var(--bw-1) solid var(--mark, var(--steel));
       font-size: var(--fs-label);
@@ -5578,7 +5578,7 @@
       flex-wrap: wrap;
       align-items: center;
       gap: var(--sp-2) var(--sp-3);
-      padding: var(--sp-2) var(--sp-3);
+      padding: var(--pad-snug);
       background: var(--panel-2);
       font-family: var(--font-mono);
       font-size: var(--fs-label);
@@ -5631,7 +5631,7 @@
       flex-wrap: wrap;
       align-items: center;
       gap: var(--sp-2) var(--sp-3);
-      padding: var(--sp-2) var(--sp-3);
+      padding: var(--pad-snug);
       background: var(--panel);
       border: var(--bw-1) solid var(--line-hi);
       font-size: var(--fs-chip);
@@ -5640,8 +5640,8 @@
       &::before {
         content: "";
         flex: none;
-        inline-size: .7rem;
-        block-size: .7rem;
+        inline-size: var(--pip);
+        block-size: var(--pip);
         background: var(--state, var(--dim));
         border: var(--bw-1) solid var(--line);
         box-shadow: var(--sh-1);
@@ -5686,7 +5686,7 @@
     gap: var(--sp-2) var(--sp-3);
     inline-size: 100%;
     min-block-size: var(--ctrl-h);
-    padding: var(--sp-2) var(--sp-3);
+    padding: var(--pad-snug);
     background: var(--slot);
     border: var(--bw-2) solid var(--line-hi);
     font-family: var(--font-mono);
@@ -5696,8 +5696,8 @@
     &::before {
       content: "";
       flex: none;
-      inline-size: .6rem;
-      block-size: .6rem;
+      inline-size: var(--dot);
+      block-size: var(--dot);
       background: var(--state, var(--dim));
       border: var(--bw-1) solid var(--line);
     }
@@ -5732,7 +5732,7 @@
     inline-size: 100%;
     max-block-size: var(--logs-h, 14rem);
     overflow: auto;
-    padding: var(--sp-2) var(--sp-3);
+    padding: var(--pad-snug);
     background: var(--slot);
     border: var(--bw-2) solid var(--line-hi);
     font-family: var(--font-mono);
@@ -5780,7 +5780,7 @@
     flex-direction: column;
     gap: var(--sp-2);
     inline-size: 100%;
-    padding: var(--sp-3) var(--sp-4);
+    padding: var(--pad-box);
     background: var(--panel);
     border: var(--bw-2) solid var(--line-hi);
     border-inline-start: var(--accent-bar) solid var(--accent);
@@ -5822,7 +5822,7 @@
     & .st-frame {
       display: flex;
       gap: var(--sp-3);
-      padding: var(--sp-1) var(--sp-2);
+      padding: var(--pad-tight);
       white-space: nowrap;
       color: var(--dim);
     }
@@ -5876,10 +5876,10 @@
         content: "";
         position: absolute;
         inset-block-start: 50%;
-        inset-inline-start: calc(-.35rem - var(--bw-1));
+        inset-inline-start: calc((var(--pip) + var(--bw-2)) / -2);
         translate: 0 -50%;
-        inline-size: .7rem;
-        block-size: .7rem;
+        inline-size: var(--pip);
+        block-size: var(--pip);
         background: var(--slot);
         border: var(--bw-2) solid var(--line-hi);
       }
@@ -5927,7 +5927,7 @@
     gap: var(--sp-2) var(--sp-3);
     inline-size: 100%;
     min-block-size: var(--ctrl-h);
-    padding: var(--sp-2) var(--sp-3);
+    padding: var(--pad-snug);
     background: var(--panel);
     border: var(--bw-2) solid var(--line-hi);
     border-inline-start: var(--accent-bar) solid var(--state, var(--line-hi));
@@ -6017,8 +6017,8 @@
        .repo-dirty, so one glance reads the same across the workspace */
     & .ft-dirty {
       flex: none;
-      inline-size: .4rem;
-      block-size: .4rem;
+      inline-size: 6px;
+      block-size: 6px;
       background: var(--gold);
     }
   }
@@ -6243,8 +6243,8 @@
 
     .checkbox,
     .radio {
-      inline-size: 1.4rem;
-      block-size: 1.4rem;
+      inline-size: 22px;
+      block-size: 22px;
     }
 
     .menuitem {

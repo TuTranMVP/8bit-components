@@ -45,10 +45,13 @@
     /*  Zero component restyling: every widget below is a real class.  */
     /* =============================================================== */
     :root {
-      --top-h: 53px;
-      --side-w: 244px;
-      --toc-w: 216px;
+      --top-h: var(--chrome-h);
+      --side-w: var(--nav-w);
+      --toc-w: var(--rail-w);
       --doc-maxw: 820px;
+      /* docs run a tighter measure than the shipped --prose-measure (72ch):
+         these paragraphs sit in an 820px column beside a live demo stage. */
+      --doc-measure: 62ch;
       /* how far a heading jumped to from <nes-toc> clears the sticky top bar */
       --toc-offset: calc(var(--top-h) + var(--sp-4));
     }
@@ -87,7 +90,7 @@
 
     .topbar .search {
       inline-size: min(200px, 34vw);
-      block-size: 2rem;
+      block-size: var(--ctrl-h-sm);
     }
 
     .spacer {
@@ -234,7 +237,7 @@
     /* ---- content column ---- */
     .content {
       min-inline-size: 0;
-      padding: var(--sp-6) clamp(var(--sp-4), 4vw, var(--sp-7));
+      padding: var(--sp-6) var(--gutter);
     }
 
     .doc-wrap {
@@ -274,10 +277,10 @@
 
     .doc-lead {
       color: var(--ink);
-      font-size: 1.02rem;
+      font-size: 1rem;
       font-weight: 450;
       line-height: var(--lh-body);
-      max-inline-size: 62ch;
+      max-inline-size: var(--doc-measure);
       margin-block: var(--sp-3) var(--sp-5);
     }
 
@@ -295,7 +298,7 @@
     .doc-p {
       color: var(--text);
       font-weight: 450;
-      max-inline-size: 62ch;
+      max-inline-size: var(--doc-measure);
       margin-block: var(--sp-3);
     }
 
@@ -346,7 +349,7 @@
       letter-spacing: var(--ls-chrome);
       color: var(--dim);
       background: var(--line);
-      padding: .25em .7em;
+      padding: var(--chip-py) var(--chip-px);
     }
 
     /* typed API sub-tables: a small mono caption per kind (Attributes / Props / … ) */
@@ -450,7 +453,7 @@
     /* ---- drop the rail column before it crowds the content: <nes-toc> switches
          itself to the sticky-bar shape at the same width (rail-at="74rem"), so
          here we only move it above the article instead of hiding it. ---- */
-    @media (max-width:1180px) {
+    @media (width < 74rem) {
       .app {
         grid-template-columns: var(--side-w) minmax(0, 1fr);
       }
@@ -458,7 +461,7 @@
       .app>nes-toc {
         grid-column: 2;
         grid-row: 1;
-        margin-inline: clamp(var(--sp-4), 4vw, var(--sp-7));
+        margin-inline: var(--gutter);
         margin-block-start: var(--sp-4);
       }
 
@@ -470,12 +473,14 @@
 
       /* a jumped-to heading has to clear the top bar AND the collapsed bar */
       :root {
-        --toc-offset: calc(var(--top-h) + 3.4rem);
+        /* the collapsed <nes-toc> bar is one lg control tall inside its 2px
+           border, so the clearance is chrome + bar + a rung of air. */
+        --toc-offset: calc(var(--chrome-h) + var(--ctrl-h-lg) + var(--sp-2));
       }
     }
 
     /* ---- responsive: sidebar becomes a drawer ---- */
-    @media (max-width:860px) {
+    @media (width < 56rem) {
       .app {
         grid-template-columns: 1fr;
       }
@@ -552,7 +557,7 @@
   <header class="topbar">
     <button class="menu-btn btn ghost" aria-label="Bật/tắt điều hướng" data-menu>☰</button>
     <span class="brand" data-home tabindex="0" role="link"><span class="sq">◈</span> 8-BIT NES</span>
-    <span class="badge">v0.8.0</span>
+    <span class="badge">v0.9.0</span>
     <input class="input search" type="search" placeholder="TÌM…" aria-label="Lọc component" data-search>
     <span class="spacer"></span>
     <nav class="top-links">

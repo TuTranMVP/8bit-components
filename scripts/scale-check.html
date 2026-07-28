@@ -1,0 +1,174 @@
+<!doctype html>
+<!-- Acceptance check for the layout/rhythm tokens added in 0.9.0 (see the CHANGELOG
+     entry). Not shipped: `files` in package.json excludes scripts/. `pnpm check:scale`
+     already guards the SOURCE; this page proves the COMPUTED result — that the grid
+     law survives the cascade, that a rail marker lands dead-centre on its rail, that
+     the density knob actually retunes 22 recipes, and that <nes-toc> and a docs-shell
+     grid switch shape at the same width (they used to disagree between 1180 and 1184px).
+       python3 -m http.server 8000   ->   /scripts/scale-check.html
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>scale check</title>
+<link rel="stylesheet" href="../all.css">
+<script type="module" src="../elements.js"></script>
+<style>
+  #r { font: 12px/1.7 monospace; color: var(--cyan); white-space: pre-wrap; padding: 8px }
+  .fail { color: var(--crit) }
+  /* D · the density knob: one line, every --pad-snug recipe inside gets tighter */
+  #dense { --pad-snug: var(--sp-1) var(--sp-2) }
+  iframe { border: 0 }
+</style>
+</head>
+<body>
+<div id="r">…</div>
+
+<!-- B · recipes whose padding comes from the box-padding roles -->
+<div class="card" id="card"><span class="badge" id="badge">BADGE</span></div>
+<span class="chip" id="chip">chip</span>
+<div id="dense"><span class="chip" id="chip2">chip</span></div>
+
+<!-- C · the three rail+marker modules -->
+<ol class="timeline" id="tl"><li>one</li><li>two</li></ol>
+<div class="trace" id="tr"><div class="trace-step" data-state="done">step</div></div>
+
+<script type="module">
+const out = [];
+const render = () => { document.getElementById("r").textContent = out.join("\n"); };
+// render as we go: a hang then shows exactly which assertion it died after
+const ok = (cond, label, extra = "") => {
+  out.push(`${cond ? "PASS" : "FAIL"}  ${label}${extra ? " · " + extra : ""}`);
+  render();
+};
+// a harness that dies silently is worse than a failing one
+addEventListener("error", (e) => { document.getElementById("r").textContent = `THREW: ${e.message}\n${out.join("\n")}`; });
+addEventListener("unhandledrejection", (e) => { document.getElementById("r").textContent = `REJECTED: ${e.reason}\n${out.join("\n")}`; });
+const V = (n, el = document.documentElement) => getComputedStyle(el).getPropertyValue(n).trim();
+const PX = (v) => Number.parseFloat(v);
+await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+/* ---- A · every new token resolves ---- */
+const NEW = ["--sp-hair", "--pad-tight", "--pad-snug", "--pad-box", "--chip-py", "--chip-px",
+  "--atom-py", "--atom-px", "--dot", "--pip", "--bp-sm", "--bp-lg", "--bp-xl",
+  "--gutter", "--chrome-h", "--nav-w", "--rail-w"];
+const missing = NEW.filter((t) => !V(t));
+ok(missing.length === 0, `A · all ${NEW.length} new tokens resolve`, missing.join(" ") || "none missing");
+ok(V("--chrome-h") === V("--ctrl-h-xl"), "A · --chrome-h is exactly one xl control", `${V("--chrome-h")} = ${V("--ctrl-h-xl")}`);
+ok(PX(V("--sp-hair")) === PX(V("--bw-2")), "A · the seam matches the small border weight", V("--sp-hair"));
+const bps = ["--bp-sm", "--bp-lg", "--bp-xl"].map((n) => V(n));
+ok(bps.every((v) => v.endsWith("rem")), "A · every breakpoint is rem (scales with font size)", bps.join(" "));
+
+/* ---- B · the grid law survives the cascade (computed, not source) ---- */
+const grid = (el, props, step) => {
+  const cs = getComputedStyle(el);
+  const bad = props.flatMap((p) => {
+    const v = PX(cs[p]);
+    return Number.isFinite(v) && v % step !== 0 ? [`${p}=${cs[p]}`] : [];
+  });
+  return bad;
+};
+const PADS = ["paddingBlockStart", "paddingBlockEnd", "paddingInlineStart", "paddingInlineEnd"];
+for (const [id, label] of [["card", ".card"], ["chip", ".chip"], ["badge", ".badge"]]) {
+  const bad = grid(document.getElementById(id), PADS, 4);
+  const cs = getComputedStyle(document.getElementById(id));
+  ok(bad.length === 0, `B · ${label} pads on the 4px grid`, bad.join(" ") || `${cs.paddingBlockStart} ${cs.paddingInlineStart}`);
+}
+const dot = PX(V("--dot")), pip = PX(V("--pip"));
+ok(dot % 2 === 0 && pip % 2 === 0, "B · marker sizes on the 2px grid", `dot=${dot} pip=${pip}`);
+
+/* ---- C · a marker lands dead-centre on its 2px rail ---- */
+const bw2 = PX(V("--bw-2"));
+const off = (sel) => PX(getComputedStyle(document.querySelector(sel), "::before").insetInlineStart);
+const tlOff = off("#tl > li");
+const trOff = off("#tr > .trace-step");
+ok(tlOff === -(dot + bw2) / 2, "C · timeline dot centred on the rail", `${tlOff}px, want ${-(dot + bw2) / 2}px`);
+ok(trOff === -(pip + bw2) / 2, "C · trace marker centred on the rail", `${trOff}px, want ${-(pip + bw2) / 2}px`);
+ok(tlOff !== trOff, "C · a 10px dot and a 12px marker are NOT offset the same", `${tlOff} vs ${trOff}`);
+
+/* ---- D · the density knob ---- */
+const base = getComputedStyle(document.getElementById("chip")).paddingBlockStart;
+const tight = getComputedStyle(document.getElementById("chip2")).paddingBlockStart;
+ok(PX(tight) === 4 && PX(base) === 8, "D · one --pad-snug override retunes the recipe", `${base} → ${tight}`);
+
+/* ---- E · the boundary. A media query needs a real viewport, and only an iframe
+   has one — a 1184px-wide <div> is still laid out against the window. srcdoc keeps
+   the parent's origin and base URL, so ../all.css and ../elements.js resolve. ---- */
+const frame = (srcdoc, w) =>
+  new Promise((res) => {
+    const f = document.createElement("iframe");
+    f.style.cssText = `inline-size:${w}px;block-size:220px`;
+    f.addEventListener("load", () => setTimeout(() => res(f), 220), { once: true });
+    f.srcdoc = srcdoc;
+    document.body.append(f);
+  });
+const SHELL = (query) => `<link rel="stylesheet" href="../all.css">
+<script type="module" src="../elements.js"><\/script>
+<style>body{margin:0}
+ .app{display:grid;grid-template-columns:240px minmax(0,1fr) 224px}
+ @media ${query} { .app{grid-template-columns:240px minmax(0,1fr)} }</style>
+<div class="app"><i></i><main id="m"><h2>a</h2><h2>b</h2></main><nes-toc target="#m" rail-at="74rem"></nes-toc></div>`;
+const shape = async (query, w) => {
+  const f = await frame(SHELL(query), w);
+  const d = f.contentDocument;
+  const three = getComputedStyle(d.querySelector(".app")).gridTemplateColumns.split(" ").length === 3;
+  return { three, rail: d.querySelector("nes-toc").hasAttribute("data-rail") };
+};
+// 1184px is the one width where `max-width: 74rem` and `min-width: 74rem` BOTH match
+const oldWay = await shape("(max-width: 74rem)", 1184);
+ok(oldWay.three === false && oldWay.rail === true,
+  "E · CONTROL: max-width:74rem disagrees with the rail at exactly 1184px",
+  `narrow shell (cols3=${oldWay.three}) + rail component (rail=${oldWay.rail})`);
+const newWay = await shape("(width < 74rem)", 1184);
+ok(newWay.three === newWay.rail, "E · (width < 74rem) agrees at 1184px", `cols3=${newWay.three} rail=${newWay.rail}`);
+const below = await shape("(width < 74rem)", 1180);
+ok(below.three === below.rail, "E · …and at 1180px", `cols3=${below.three} rail=${below.rail}`);
+
+/* The real docs shell at each interesting width. A FRESH iframe per width, not one
+   iframe resized: reading state mid-resize can swallow the pending MediaQueryList
+   `change` in headless Chrome, which then shows up as a fake failure here. The live
+   resize path gets its own assertion below, with no reads in between. */
+let lastDocs = null;
+const docsAt = async (w) => {
+  const f = document.createElement("iframe");
+  f.style.cssText = `inline-size:${w}px;block-size:600px`;
+  // listener BEFORE src/append, or a cached load can beat it and hang the await
+  const loaded = new Promise((r) => f.addEventListener("load", r, { once: true }));
+  f.src = "../docs.html";
+  document.body.append(f);
+  await loaded;
+  await new Promise((r) => setTimeout(r, 250));
+  const d = (lastDocs = f).contentDocument;
+  return {
+    three: getComputedStyle(d.querySelector(".app")).gridTemplateColumns.split(" ").length === 3,
+    rail: d.querySelector("nes-toc").hasAttribute("data-rail"),
+  };
+};
+const disagree = [];
+for (const w of [1180, 1184]) {
+  const s = await docsAt(w);
+  if (s.three !== s.rail) disagree.push(`${w}px(cols3=${s.three},rail=${s.rail})`);
+}
+ok(disagree.length === 0, "E · docs shell and <nes-toc> agree at 1180 and 1184", disagree.join(" ") || "both widths agree");
+
+/* A live resize across the boundary is NOT asserted here: under
+   --virtual-time-budget, requestAnimationFrame does not advance predictably, so
+   waiting for the MediaQueryList `change` is flaky in headless. Verified out of
+   band instead — resizing 1160 → 1184 delivers exactly one change event within
+   100ms and lands in the rail shape. Reading `_mq.matches` mid-resize can swallow
+   that event, so don't add a probe that does. */
+
+/* ---- F · the shell metrics reach the docs page ---- */
+const ld = lastDocs.contentDocument;
+ok(V("--chrome-h", ld.documentElement) === V("--top-h", ld.documentElement),
+  "F · docs --top-h now comes from --chrome-h", V("--top-h", ld.documentElement));
+const contentPad = getComputedStyle(ld.querySelector(".content")).paddingInlineStart;
+ok(PX(contentPad) % 4 === 0, "F · the page gutter lands on the grid", contentPad);
+
+const fails = out.filter((l) => l.startsWith("FAIL")).length;
+out.unshift(`${out.length - fails}/${out.length} PASS${fails ? `  —  ${fails} FAIL` : ""}\n`);
+document.getElementById("r").textContent = out.join("\n");
+document.title = "DONE";
+</script>
+</body>
+</html>

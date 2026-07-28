@@ -109,10 +109,32 @@ layout/paint props on scroll (the docs topbar is opaque, no `backdrop-filter`). 
 `linear`. Durations `--dur-fast/-mid/-slow`. Every animation must no-op under
 `prefers-reduced-motion: reduce` (handled globally in `base.css`).
 
-### Spacing
+### Spacing, size & breakpoints — the grid law
 
-One 4-based scale: `--sp-1 .25rem` → `--sp-7 3rem`. Compose spacing from these; don't invent
-one-off pixel gaps.
+Two grids, and `pnpm check` fails the build if a value drifts off either one:
+
+- **Space lands on 4px steps** — always a `--sp-*` rung (`--sp-1 .25rem` → `--sp-7 3rem`).
+  `--sp-hair` (2px) is the single sub-grid rung, for a seam between tiles; it matches `--bw-2`
+  so a seam and a border read as the same pixel.
+- **Size lands on 2px steps** — a hard 90° system has nothing to hide a half-pixel behind, so a
+  9.6px dot beside an 11.2px marker reads as two different greys. Two markers repeat across
+  modules and are tokens: `--dot` 10px (run-state light) and `--pip` 12px (step marker).
+
+Box padding has three named roles — `--pad-tight` 4/8, `--pad-snug` 8/12, `--pad-box` 12/16 —
+with inline padding one rung above block padding (text needs more air sideways). Override one in
+a subtree and every recipe using it retunes; that is the density knob. Inline padding that must
+scale with its text uses em: `--chip-py/--chip-px` for a standalone chip, `--atom-py/--atom-px`
+for something inside a sentence (inline code, `@mention`).
+
+Layout is **intrinsic-first** — `flex-wrap`, auto-fit grids, `clamp()`, `min()` — so a module
+normally needs no media query (all of `components.css` has two). Exactly three widths are allowed
+to switch a layout: `--bp-sm` 36rem, `--bp-lg` 56rem, `--bp-xl` 74rem. CSS cannot read a `var()`
+inside `@media`, so a query writes the literal and the check enforces the ladder. Write
+`(width < X)` or `min-width: X` — never `max-width: X`, which overlaps `min-width: X` at exactly
+X (that one pixel is how the docs rail and `<nes-toc>` once disagreed).
+
+Outer spacing belongs to the parent: recipes ship `margin: 0` and size only their own inside.
+The app frame has its own vocabulary — `--gutter`, `--chrome-h`, `--nav-w`, `--rail-w`.
 
 ### Atmosphere (Chanel rule — remove one accent)
 

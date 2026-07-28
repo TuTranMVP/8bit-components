@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
 const docs = readFileSync(join(ROOT, "docs.js"), "utf8");
+const tokensCss = readFileSync(join(ROOT, "tokens.css"), "utf8");
 
 const BASE = "https://tutranmvp.github.io/8bit-components";
 const REPO = "https://github.com/TuTranMVP/8bit-components";
@@ -184,6 +185,14 @@ for (const m of docs.matchAll(reGS)) {
     docs: `${DOCS}#/${m[1]}`,
   });
 }
+
+/* ---- layout tokens, read straight out of tokens.css so this section cannot
+   drift from the values it documents (the whole point of generating it) ---- */
+const token = (name) => {
+  const m = tokensCss.match(new RegExp(`--${name}:\\s*([^;]+);`));
+  return m ? m[1].trim() : "";
+};
+const tokenList = (names) => names.map((n) => `\`--${n}\` = \`${token(n)}\``).join(", ");
 
 /* ---- extract components (have cat + string name + desc.en) ---- */
 const components = [];
@@ -395,6 +404,16 @@ Change the look ONLY in \`tokens.css\`, never inside a component. Recolor a bloc
 <button class="btn" data-accent="crit">Delete</button>
 \`\`\`
 Accents (semantic): \`good\` = green = success/primary (the DEFAULT), \`warn\` = gold/yellow, \`crit\` = red = error; plus hues \`blue gold cyan purple lime teal indigo pink steel\`.
+
+## Layout, spacing & breakpoints
+Two grids, enforced by \`pnpm check\` (scripts/check-scale.mjs): **space lands on 4px steps, size lands on 2px steps**. Never emit a value between two rungs.
+- Space: ${tokenList(["sp-1", "sp-2", "sp-3", "sp-4", "sp-5", "sp-6", "sp-7"])}. One sub-grid rung for seams between tiles: ${tokenList(["sp-hair"])}.
+- Box padding roles (inline padding is one rung above block padding): ${tokenList(["pad-tight", "pad-snug", "pad-box"])}. Override one in a subtree to retune density everywhere it is used.
+- Inline padding in em: a standalone chip uses ${tokenList(["chip-py", "chip-px"])}; something inside running text (inline code, @mention) uses ${tokenList(["atom-py", "atom-px"])}.
+- Square markers: ${tokenList(["dot", "pip"])}.
+- App shell: ${tokenList(["gutter", "chrome-h", "nav-w", "rail-w"])}. \`--gutter\` is the one token that steps with the viewport: 16px, then \`--sp-5\` from \`--bp-sm\`, then \`--sp-7\` from \`--bp-lg\`.
+- Breakpoints — the ONLY widths anything switches at: ${tokenList(["bp-sm", "bp-lg", "bp-xl"])}. Layout is intrinsic-first (flex-wrap, auto-fit grids, clamp/min/max), so most modules need no media query. CSS cannot read a var() inside \`@media\`, so write the literal; use \`(width < 74rem)\` or \`min-width\`, never \`max-width\` (\`max-width: X\` and \`min-width: X\` both match at exactly X). In JS read the token: \`matchMedia(\`(min-width: \${getComputedStyle(document.documentElement).getPropertyValue("--bp-xl")})\`)\`.
+- Outer spacing belongs to the parent: recipes ship \`margin: 0\` and size only their own inside.
 
 ## Rules for AI agents generating UI with this library
 ${manifest.conventions.rules.map((r, i) => `${i + 1}. ${r}`).join("\n")}
