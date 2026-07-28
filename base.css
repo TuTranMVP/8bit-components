@@ -85,18 +85,18 @@
 
   h1 {
     font-size: var(--fs-h1);
-    font-weight: 700;
+    font-weight: var(--fw-bold);
     font-variant-numeric: tabular-nums;
   }
 
   h2 {
     font-size: var(--fs-h2);
-    font-weight: 700;
+    font-weight: var(--fw-bold);
   }
 
   h3 {
     font-size: var(--fs-h3);
-    font-weight: 700;
+    font-weight: var(--fw-bold);
     text-transform: uppercase;
     letter-spacing: var(--ls-chrome);
   }
@@ -121,7 +121,7 @@
   }
 
   :not(pre)>code {
-    font-size: .9em;
+    font-size: var(--fs-code);
     color: var(--cyan);
     background: var(--slot);
     border: var(--bw-2) solid var(--line);
@@ -131,7 +131,7 @@
   b,
   strong {
     color: var(--ink);
-    font-weight: 700;
+    font-weight: var(--fw-bold);
   }
 
   ::selection {
@@ -146,9 +146,9 @@
      change) — and we deliberately DON'T touch box-shadow, so the component
      keeps its hard shadow. Consistent for every control. ---- */
   :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
-    outline: var(--bw-2) solid var(--gold);
-    outline-offset: calc(-1 * var(--bw-2));
-    border-color: var(--gold);
+    outline: var(--ring-w) solid var(--ring-c);
+    outline-offset: calc(-1 * var(--ring-w));
+    border-color: var(--ring-c);
   }
 
   /* ---- custom scrollbar ---- */
@@ -350,7 +350,7 @@
     content: "";
     position: fixed;
     inset: 0;
-    z-index: 9999;
+    z-index: var(--z-top);
     pointer-events: none;
     background: repeating-linear-gradient(0deg, rgba(0, 0, 0, var(--scanline-opacity)) 0 1px, transparent 1px 3px);
     mix-blend-mode: multiply;

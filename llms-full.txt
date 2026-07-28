@@ -1,4 +1,4 @@
-# 8-BIT NES — full reference (8bit-nes v0.9.0)
+# 8-BIT NES — full reference (8bit-nes v0.10.0)
 
 > This is the OFFICIAL, canonical reference for the `8bit-nes` design system, generated
 > from its documentation source. Safe to ingest wholesale or chunk for RAG. When an AI agent
@@ -30,8 +30,8 @@ import "8bit-nes";           // registers all <nes-*> web components
 ```
 No bundler? Link the minified single-file build from a CDN:
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.9.0/all.min.css">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.9.0/elements.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.10.0/all.min.css">
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.10.0/elements.min.js"></script>
 ```
 ## Framework setup (verified, copy-paste exact)
 Do these steps precisely to install into another repo. Import CSS + elements ONCE at the app entry (never per-component).
@@ -79,9 +79,19 @@ Change the look ONLY in `tokens.css`, never inside a component. Recolor a block 
 ```
 Accents (semantic): `good` = green = success/primary (the DEFAULT), `warn` = gold/yellow, `crit` = red = error; plus hues `blue gold cyan purple lime teal indigo pink steel`.
 
+## Type, weight & layers
+Every scale is a token and `pnpm check` rejects a literal.
+- Type — **every rung is an integer px** at a 16px root (a fractional font size gives every text-sized box a fractional height, and this system has no blur or radius to hide a half-pixel border behind): `--fs-label` = `.5625rem` (9px), `--fs-chip` = `.6875rem` (11px), `--fs-h3` = `.75rem` (12px), `--fs-body` = `.875rem` (14px), `--fs-lead` = `1rem` (16px), `--fs-h2` = `1.0625rem` (17px), `--fs-h1` = `1.625rem` (26px). Inline code and `@mention` use `--fs-code` = `.9em` — relative on purpose, so an atom tracks the sentence it sits in.
+- Leading: `--lh-none` = `1`, `--lh-tight` = `1.25`, `--lh-heading` = `1.4`, `--lh-body` = `1.65`. `--lh-none` is for single-line chrome, where the box owns the height (`--ctrl-h-*`).
+- Weight — **only these three**: `--fw-regular` = `400`, `--fw-medium` = `450`, `--fw-bold` = `700`. NES Mono ships 400 and 700; NES Sans is variable 300–700. Requesting 500 or 600 on mono makes the browser synthesise a bold, which smears the stems. Never emit another value.
+- Icon glyph sizes (their own scale, sized by the box not the text): `--icon-sm` = `14px`, `--icon-md` = `20px`, `--icon-lg` = `28px`, `--icon-xl` = `40px`.
+- Numbers that change go in `--font-mono`: measured at 16px, ten mono digits are the same width whatever the digits (0.00px spread) while ten sans digits vary by 35.67px. That is why no component sets `font-variant-numeric`. Put a live number in sans and add `tabular-nums` yourself.
+- Stacking — one ladder, never a raw number: `--z-raised` = `1`, `--z-pop` = `2`, `--z-sticky` = `20`, `--z-drawer` = `30`, `--z-chrome` = `40`, `--z-overlay` = `100`, `--z-top` = `9999`. A drawer's scrim goes at `calc(var(--z-drawer) - 1)`.
+- State + focus: `--op-disabled` = `.6`, `--op-dim` = `.3`; the focus ring is `--ring-w` = `var(--bw-2)`, `--ring-c` = `var(--gold)` — retint focus in one declaration, and never remove it.
+
 ## Layout, spacing & breakpoints
 Two grids, enforced by `pnpm check` (scripts/check-scale.mjs): **space lands on 4px steps, size lands on 2px steps**. Never emit a value between two rungs.
-- Space: `--sp-1` = `.25rem`, `--sp-2` = `.5rem`, `--sp-3` = `.75rem`, `--sp-4` = `1rem`, `--sp-5` = `1.5rem`, `--sp-6` = `2rem`, `--sp-7` = `3rem`. One sub-grid rung for seams between tiles: `--sp-hair` = `2px`.
+- Space: `--sp-1` = `.25rem` (4px), `--sp-2` = `.5rem` (8px), `--sp-3` = `.75rem` (12px), `--sp-4` = `1rem` (16px), `--sp-5` = `1.5rem` (24px), `--sp-6` = `2rem` (32px), `--sp-7` = `3rem` (48px). One sub-grid rung for seams between tiles: `--sp-hair` = `2px`.
 - Box padding roles (inline padding is one rung above block padding): `--pad-tight` = `var(--sp-1) var(--sp-2)`, `--pad-snug` = `var(--sp-2) var(--sp-3)`, `--pad-box` = `var(--sp-3) var(--sp-4)`. Override one in a subtree to retune density everywhere it is used.
 - Inline padding in em: a standalone chip uses `--chip-py` = `.25em`, `--chip-px` = `.5em`; something inside running text (inline code, @mention) uses `--atom-py` = `.05em`, `--atom-px` = `.35em`.
 - Square markers: `--dot` = `10px`, `--pip` = `12px`.

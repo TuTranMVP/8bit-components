@@ -18,6 +18,13 @@
   .fail { color: var(--crit) }
   /* D · the density knob: one line, every --pad-snug recipe inside gets tighter */
   #dense { --pad-snug: var(--sp-1) var(--sp-2) }
+  /* G · retheming focus is meant to be one declaration */
+  #ring { --ring-c: var(--cyan) }
+  /* inline-block + pre, or the rect is the CONTAINER's width and the digit-width
+     assertion below passes without measuring anything */
+  #mono, #sans { display: inline-block; white-space: pre; font-size: 16px }
+  #mono { font-family: var(--font-mono) }
+  #sans { font-family: var(--font-body) }
   iframe { border: 0 }
 </style>
 </head>
@@ -28,6 +35,11 @@
 <div class="card" id="card"><span class="badge" id="badge">BADGE</span></div>
 <span class="chip" id="chip">chip</span>
 <div id="dense"><span class="chip" id="chip2">chip</span></div>
+
+<!-- G · type, weight, layers, focus, switch -->
+<span id="mono">0123456789</span><span id="sans">0123456789</span>
+<label class="switch-wrap"><input type="checkbox" class="switch" id="sw" checked></label>
+<div id="ring"><button class="btn" id="ringbtn">focus me</button></div>
 
 <!-- C · the three rail+marker modules -->
 <ol class="timeline" id="tl"><li>one</li><li>two</li></ol>
@@ -164,6 +176,58 @@ ok(V("--chrome-h", ld.documentElement) === V("--top-h", ld.documentElement),
   "F · docs --top-h now comes from --chrome-h", V("--top-h", ld.documentElement));
 const contentPad = getComputedStyle(ld.querySelector(".content")).paddingInlineStart;
 ok(PX(contentPad) % 4 === 0, "F · the page gutter lands on the grid", contentPad);
+
+/* ---- G · type scale: every rung an integer px, so no text-sized box lands on a
+   half pixel (there is no blur or radius in this system to hide that behind) ---- */
+const FS = ["--fs-label", "--fs-chip", "--fs-h3", "--fs-body", "--fs-lead", "--fs-h2", "--fs-h1"];
+const probe = document.createElement("span");
+document.body.append(probe);
+const resolved = FS.map((t) => {
+  probe.style.fontSize = `var(${t})`;
+  return [t, PX(getComputedStyle(probe).fontSize)];
+});
+probe.remove();
+const fractional = resolved.filter(([, v]) => !Number.isInteger(v));
+ok(fractional.length === 0, "G · every type rung is an integer px",
+  fractional.map(([t, v]) => `${t}=${v}`).join(" ") || resolved.map(([, v]) => v).join(" · "));
+ok(resolved.every(([, v], i) => i === 0 || v > resolved[i - 1][1]), "G · the scale is monotonic",
+  resolved.map(([t, v]) => `${t.slice(5)}:${v}`).join(" "));
+ok(V("--fs-code").endsWith("em"), "G · inline-code rung is relative, not fixed", V("--fs-code"));
+
+/* ---- G · weight: only the three the faces actually ship ---- */
+const FW = ["--fw-regular", "--fw-medium", "--fw-bold"].map((t) => V(t));
+ok(FW.join(" ") === "400 450 700", "G · weight scale = the shipped axis stops", FW.join(" "));
+// If --font-mono is ever re-themed to a proportional face, its digits stop being
+// equal width and every live counter in the library starts jittering. That is the
+// only reason the library can skip font-variant-numeric — so assert the premise.
+await document.fonts.ready;
+const width = (el, text) => { el.textContent = text; return el.getBoundingClientRect().width; };
+const mono = document.getElementById("mono"), sans = document.getElementById("sans");
+const mSpread = Math.max(width(mono, "1111111111"), width(mono, "0000000000"), width(mono, "4444444444")) -
+  Math.min(width(mono, "1111111111"), width(mono, "0000000000"), width(mono, "4444444444"));
+const sSpread = Math.max(width(sans, "1111111111"), width(sans, "0000000000")) -
+  Math.min(width(sans, "1111111111"), width(sans, "0000000000"));
+ok(mSpread === 0, "G · mono digits are equal width (why no tabular-nums is needed)", `spread ${mSpread.toFixed(2)}px`);
+ok(sSpread > 4, "G · sans digits are NOT — a changing number there needs mono or tabular-nums", `spread ${sSpread.toFixed(2)}px`);
+
+/* ---- G · the stacking ladder is a ladder ---- */
+const Z = ["--z-raised", "--z-pop", "--z-sticky", "--z-drawer", "--z-chrome", "--z-overlay", "--z-top"].map((t) => Number(V(t)));
+ok(Z.every((v, i) => i === 0 || v > Z[i - 1]), "G · --z-* is strictly increasing", Z.join(" < "));
+
+/* ---- G · focus ring rethemes from one declaration ---- */
+document.getElementById("ringbtn").focus();
+const ringOutline = getComputedStyle(document.getElementById("ringbtn")).outlineColor;
+ok(ringOutline === getComputedStyle(document.documentElement).getPropertyValue("--cyan").trim() ||
+   /51,\s*224,\s*224/.test(ringOutline), "G · --ring-c retint the focus ring", ringOutline);
+
+/* ---- G · the switch thumb travels to a symmetric stop ---- */
+const sw = document.getElementById("sw");
+const cs = getComputedStyle(sw), after = getComputedStyle(sw, "::after");
+const tx = Number((after.transform.match(/matrix\(1, 0, 0, 1, ([-\d.]+)/) || [])[1] || NaN);
+const inner = PX(cs.inlineSize) - 2 * PX(cs.borderInlineStartWidth);
+const want = inner - PX(after.inlineSize) - 2 * PX(after.insetInlineStart);
+ok(tx === want, "G · checked thumb stops as far from the right edge as it started from the left",
+  `travel ${tx}px, symmetric ${want}px`);
 
 const fails = out.filter((l) => l.startsWith("FAIL")).length;
 out.unshift(`${out.length - fails}/${out.length} PASS${fails ? `  —  ${fails} FAIL` : ""}\n`);

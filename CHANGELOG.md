@@ -2,6 +2,78 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.10.0
+
+0.9.0 put space and size on a grid. This does the same for the scales that were
+still half-finished: **type, weight, leading, icon size, stacking, state opacity
+and the focus ring**. Same method — measure first, then add only tokens that
+replace declarations that already exist.
+
+What the audit found: 172 font-size declarations already used a token, but
+**font-weight had none at all** — `700` was typed 49 times. `z-index` had one token
+and 11 literals (`1`, `2`, `20`, `9999`, and `37`/`38`/`40` in the docs shell, which
+is how a stacking argument gets lost). Nineteen `opacity` literals, no tokens. And
+one rung of the type scale, `--fs-body`, was **13.5px** — the only fractional value
+in the whole scale.
+
+**Minor, not patch**: body copy grows 0.5px and one switch thumb moves 1.5px.
+
+### Added
+
+- **`--fw-regular` 400 · `--fw-medium` 450 · `--fw-bold` 700** — exactly the axis
+  stops the bundled faces ship. NES Mono has 400 and 700 only; NES Sans is variable
+  300–700. Asking for 500 or 600 on mono makes the browser *synthesise* a bold,
+  which smears the stems and throws away the crispness the system is built on. The
+  check now rejects any other value. (55 declarations.)
+- **`--fs-lead` (16px)** — the rung between body and title, used by the prose `h2`
+  and the lead paragraph, both of which were hard-coding `1rem`.
+- **`--fs-code` (`.9em`)** — inline code and `@mention`, deliberately *relative* so
+  an atom tracks whatever rung the sentence around it is set in. (4 sites.)
+- **`--lh-none` (1)** — single-line chrome, where the box owns the height. Replaces
+  eight `line-height: 1`.
+- **`--icon-sm/md/lg/xl` (14 · 20 · 28 · 40px)** — the icon glyph scale, which an
+  icon gets from its box rather than from the text beside it. `.i-*` and `.icon-box`
+  were carrying these as literals (6 sites), all already on the 2px grid.
+- **A stacking ladder** — `--z-raised` 1 · `--z-pop` 2 · `--z-sticky` 20 ·
+  `--z-drawer` 30 · `--z-chrome` 40 · `--z-overlay` 100 (existing) · `--z-top` 9999.
+  Each rung answers a different question about how far out of the flow a thing sits.
+  A drawer's scrim goes at `calc(var(--z-drawer) - 1)`.
+- **`--op-disabled` (.6) and `--op-dim` (.3)** — two state opacities instead of
+  eight ad-hoc ones.
+- **`--ring-w` / `--ring-c`** — retint every focus ring in one declaration
+  (`:root { --ring-c: var(--cyan) }`). Offset stays in `base.css` because it has to
+  cancel the border, and `box-shadow` is still untouched so a focused control keeps
+  its hard shadow.
+
+### Fixed
+
+- **`--fs-body` was 13.5px, the only fractional rung** → **14px**. A fractional font
+  size gives every text-sized box a fractional height, which lands its hard border
+  on a half pixel; a system with no blur and no radius has nothing to hide that
+  behind. Every rung is now an integer px at the default root size (9 · 11 · 12 ·
+  14 · 16 · 17 · 26), asserted in the harness.
+- **The switch thumb stopped 1.5px short of symmetric.** `translateX(1.28rem)` was
+  hand-tuned against the old fractional thumb, and 0.9.0's 2px-grid snap moved the
+  parts under it. The switch now derives from `--sw-w`/`--sw-h`/`--sw-thumb`, and
+  the travel is `calc(track − 2×border − thumb − 2×inset)` = a symmetric 22px.
+- **Type-scale drift**: a `0.7rem` (11.2px) label that meant `--fs-chip`, a `12px`
+  graph label that meant `--fs-h3`, two `line-height: 1.4` that meant
+  `--lh-heading`.
+
+### Changed
+
+- `pnpm check` gained rule 4: `font-size`, `font-weight`, `line-height` and
+  `z-index` must come from their token scale. A font-size may still be `em`/`%`
+  (an atom should track its sentence), and `@font-face` descriptors are exempt —
+  `font-weight: 400` there names which weight the *file* holds. Mutation-tested
+  against five drift shapes, all caught.
+- `scripts/scale-check.html` is now 27 assertions, including one that measures the
+  premise behind having no `font-variant-numeric` anywhere: ten NES Mono digits are
+  the same width whatever the digits (**0.00px** spread) while ten NES Sans digits
+  vary by **35.67px**. Every live counter in the library is mono. Re-theme
+  `--font-mono` to a proportional face and that assertion fails, which is exactly
+  when you would need `tabular-nums`.
+
 ## 0.9.0
 
 A spacing/layout audit and the tokens it produced. The 4-based `--sp-*` scale was

@@ -193,6 +193,15 @@ const token = (name) => {
   return m ? m[1].trim() : "";
 };
 const tokenList = (names) => names.map((n) => `\`--${n}\` = \`${token(n)}\``).join(", ");
+/** same, but spelling out the px an author actually sees (rem values only) */
+const tokenPx = (names) =>
+  names
+    .map((n) => {
+      const v = token(n);
+      const m = v.match(/^([\d.]+)rem$/);
+      return `\`--${n}\` = \`${v}\`${m ? ` (${Number(m[1]) * 16}px)` : ""}`;
+    })
+    .join(", ");
 
 /* ---- extract components (have cat + string name + desc.en) ---- */
 const components = [];
@@ -405,9 +414,19 @@ Change the look ONLY in \`tokens.css\`, never inside a component. Recolor a bloc
 \`\`\`
 Accents (semantic): \`good\` = green = success/primary (the DEFAULT), \`warn\` = gold/yellow, \`crit\` = red = error; plus hues \`blue gold cyan purple lime teal indigo pink steel\`.
 
+## Type, weight & layers
+Every scale is a token and \`pnpm check\` rejects a literal.
+- Type — **every rung is an integer px** at a 16px root (a fractional font size gives every text-sized box a fractional height, and this system has no blur or radius to hide a half-pixel border behind): ${tokenPx(["fs-label", "fs-chip", "fs-h3", "fs-body", "fs-lead", "fs-h2", "fs-h1"])}. Inline code and \`@mention\` use ${tokenList(["fs-code"])} — relative on purpose, so an atom tracks the sentence it sits in.
+- Leading: ${tokenList(["lh-none", "lh-tight", "lh-heading", "lh-body"])}. \`--lh-none\` is for single-line chrome, where the box owns the height (\`--ctrl-h-*\`).
+- Weight — **only these three**: ${tokenList(["fw-regular", "fw-medium", "fw-bold"])}. NES Mono ships 400 and 700; NES Sans is variable 300–700. Requesting 500 or 600 on mono makes the browser synthesise a bold, which smears the stems. Never emit another value.
+- Icon glyph sizes (their own scale, sized by the box not the text): ${tokenList(["icon-sm", "icon-md", "icon-lg", "icon-xl"])}.
+- Numbers that change go in \`--font-mono\`: measured at 16px, ten mono digits are the same width whatever the digits (0.00px spread) while ten sans digits vary by 35.67px. That is why no component sets \`font-variant-numeric\`. Put a live number in sans and add \`tabular-nums\` yourself.
+- Stacking — one ladder, never a raw number: ${tokenList(["z-raised", "z-pop", "z-sticky", "z-drawer", "z-chrome", "z-overlay", "z-top"])}. A drawer's scrim goes at \`calc(var(--z-drawer) - 1)\`.
+- State + focus: ${tokenList(["op-disabled", "op-dim"])}; the focus ring is ${tokenList(["ring-w", "ring-c"])} — retint focus in one declaration, and never remove it.
+
 ## Layout, spacing & breakpoints
 Two grids, enforced by \`pnpm check\` (scripts/check-scale.mjs): **space lands on 4px steps, size lands on 2px steps**. Never emit a value between two rungs.
-- Space: ${tokenList(["sp-1", "sp-2", "sp-3", "sp-4", "sp-5", "sp-6", "sp-7"])}. One sub-grid rung for seams between tiles: ${tokenList(["sp-hair"])}.
+- Space: ${tokenPx(["sp-1", "sp-2", "sp-3", "sp-4", "sp-5", "sp-6", "sp-7"])}. One sub-grid rung for seams between tiles: ${tokenList(["sp-hair"])}.
 - Box padding roles (inline padding is one rung above block padding): ${tokenList(["pad-tight", "pad-snug", "pad-box"])}. Override one in a subtree to retune density everywhere it is used.
 - Inline padding in em: a standalone chip uses ${tokenList(["chip-py", "chip-px"])}; something inside running text (inline code, @mention) uses ${tokenList(["atom-py", "atom-px"])}.
 - Square markers: ${tokenList(["dot", "pip"])}.
