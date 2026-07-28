@@ -5,5 +5,10 @@
     "source.fixAll.biome": "explicit"
   },
   "files.eol": "\n",
-  "sarif-viewer.connectToGithubCodeScanning": "off"
+  "sarif-viewer.connectToGithubCodeScanning": "off",
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "file": ".vscode/commit.instruction.md"
+    }
+  ]
 }
