@@ -2,6 +2,66 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.12.0
+
+Toast was 25 lines: it could appear and time out. Everything a toast is actually
+for — undo, dismiss, not vanishing while you read it — was missing, and a sticky
+one (`timeout: 0`) had **no way to close at all**. Fixed, plus the four primitives
+an app kept hand-rolling around this library. 134 → 138 components.
+
+**Minor, not patch**: `toast(msg)` now renders `msg` as **text**. Pass
+`html: true` to keep markup.
+
+### Added
+
+- **Toast, finished.** `action: { label, onClick }` for UNDO · a dismiss ✕ (always,
+  for a sticky toast) · **pause while you read it** — a pointer over it or focus
+  inside stops the countdown *and* the remaining-time bar, then resumes with the
+  time it had left (WCAG 2.2.1) · **swipe to dismiss** on touch, following the
+  finger · `title` · `max` (4) so a runaway loop cannot bury the page · `sound`
+  (and `crit` now bleeps `SFX.bad`, not the coin) · the returned element carries
+  `.dismiss()`.
+- **`.toolbar`** — a row of actions that **scrolls** sideways on a phone instead of
+  reflowing: a toolbar that wraps moves the button you were already aiming at.
+  `.toolbar-sep`, `.toolbar-gap` (everything after it goes to the far end), and
+  `.wrap` for a set of equals rather than a sequence.
+- **`<nes-popover>`** — an anchored panel in the **top layer**, on the native
+  popover API. `.menu` inside `.dropdown` is absolutely positioned, so any
+  ancestor's `overflow` clips it; a popover cannot be clipped. Esc and
+  click-outside come from `popover="auto"`; the element only places it, flipping
+  and shifting to stay on screen, and re-places on scroll and resize.
+  `placement="bottom-start|top|right-end|…"`, `nes:open` / `nes:close`.
+- **`<nes-split>`** — two panes and a divider you can drag, arrow (2%, Shift 10%,
+  Home/End) or double-click to reset. A real `<button role="separator">` with
+  `aria-valuenow/min/max`, `at`/`min`/`dir` attributes, `nes:resize`, and a 44px
+  hit area on a coarse pointer while the divider keeps its 8px look.
+- **`confirmDialog(opts) → Promise<boolean>`** — a destructive confirm on
+  `<dialog>.showModal()`, so the focus trap, Esc, the backdrop and the top layer
+  are the platform's. **Focus starts on Cancel**, so Enter out of habit never
+  destroys anything; Cancel, Esc and a backdrop click all resolve `false`, and the
+  dialog removes itself.
+- **`pnpm check:ui`** (`scripts/ui-check.mjs` + `ui-check.html`) — 28 assertions on
+  the behaviour CSS cannot show, in a real browser.
+
+### Fixed
+
+- **`toast()` set `innerHTML` from its argument** — `toast(userInput)` was an
+  injection. It is `textContent` now, with `html: true` to opt in; asserted with an
+  `<img onerror>` payload.
+- **A sticky toast could not be dismissed.** `timeout: 0` had no close button and
+  no handle; it now always renders the ✕, and the element exposes `.dismiss()`.
+- **An error toast announced politely** like a save confirmation. The live region
+  flips to `assertive` for a `crit` insertion and back to `polite` after.
+- **The toast timer leaked** past a manual removal; it is cleared on dismiss.
+
+### Changed
+
+- `scripts/cdp.mjs` now holds the browser plumbing both runtime checks share
+  (serve · launch · emulate · evaluate · report), so `mobile-check` and the new
+  `ui-check` do not each carry 90 lines of CDP. Both wait on **real** time: a
+  `<dialog>` `close` event is never delivered while `--virtual-time-budget`
+  fast-forwards, which made the promise-based confirm look broken when it was not.
+
 ## 0.11.0
 
 The mobile-first pass, measured on a **real phone viewport** instead of a narrow

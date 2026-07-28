@@ -62,6 +62,10 @@ const SELECTOR = {
   progress: ".pbar",
   skeleton: ".skeleton",
   toast: "toast()",
+  toolbar: ".toolbar",
+  split: "<nes-split>",
+  popover: "<nes-popover>",
+  confirm: "confirmDialog()",
   spinner: ".spinner",
   meter: ".meter",
   empty: ".empty",
@@ -433,6 +437,8 @@ Two grids, enforced by \`pnpm check\` (scripts/check-scale.mjs): **space lands o
 - App shell: ${tokenList(["gutter", "chrome-h", "nav-w", "rail-w"])}. \`--gutter\` is the one token that steps with the viewport: 16px, then \`--sp-5\` from \`--bp-sm\`, then \`--sp-7\` from \`--bp-lg\`.
 - Breakpoints — the ONLY widths anything switches at: ${tokenList(["bp-sm", "bp-lg", "bp-xl"])}. Layout is intrinsic-first (flex-wrap, auto-fit grids, clamp/min/max), so most modules need no media query. CSS cannot read a var() inside \`@media\`, so write the literal; use \`(width < 74rem)\` or \`min-width\`, never \`max-width\` (\`max-width: X\` and \`min-width: X\` both match at exactly X). In JS read the token: \`matchMedia(\`(min-width: \${getComputedStyle(document.documentElement).getPropertyValue("--bp-xl")})\`)\`.
 - Outer spacing belongs to the parent: recipes ship \`margin: 0\` and size only their own inside.
+- Overlays: use \`<nes-popover>\` (native popover API, top layer) when the panel is not a menu or the trigger sits inside something that scrolls — \`.menu\` inside \`.dropdown\` is absolutely positioned and an ancestor's \`overflow\` clips it. Destructive confirms are \`confirmDialog(opts) -> Promise<boolean>\`; never build a bare div for one.
+- \`toast(msg, opts)\` takes TEXT (pass \`html: true\` to opt into markup), pauses while hovered or focused, caps the stack at 4, and \`accent: "crit"\` makes it interrupt (assertive). A sticky toast (\`timeout: 0\`) always renders a dismiss button.
 - Mobile-first is a DIRECTION: the base block is the phone and \`min-width\` adds the wider layout. Never write \`max-width\` or \`(width < X)\` — the check rejects both.
 - Touch: on \`(pointer: coarse)\` every interactive box clears the 24x24px WCAG 2.5.8 floor and anything you press to act clears ${tokenList(["tap"])} (WCAG 2.5.5); a scrolling list row may use ${tokenList(["tap-dense"])}. A small control does NOT grow — \`.checkbox\`, \`.radio\`, \`.switch\` keep their 22px box and take a 44px tap through a transparent \`::before\`. Text-entry controls are floored at \`max(16px, var(--fs-body))\` because iOS Safari zooms the page when a focused field is under 16px. Verified on a real 390x844 phone viewport by \`pnpm check:mobile\`.
 

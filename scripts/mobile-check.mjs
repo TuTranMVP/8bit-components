@@ -21,110 +21,17 @@
  * `pnpm check` because it needs a browser binary; run it locally with
  *   pnpm check:mobile            (CHROME=/path/to/chrome to override)
  */
-import { spawn } from "node:child_process";
-import { readFile } from "node:fs/promises";
-import { createServer } from "node:http";
-import { extname, join, normalize } from "node:path";
+import { join } from "node:path";
+import { browser, report, serve, sleep } from "./cdp.mjs";
 
-const ROOT = join(import.meta.dirname, "..");
-const CHROME = process.env.CHROME || "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
-const TYPES = {
-  ".html": "text/html",
-  ".css": "text/css",
-  ".js": "text/javascript",
-  ".mjs": "text/javascript",
-  ".json": "application/json",
-  ".woff2": "font/woff2",
-  ".png": "image/png",
-};
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-/* ---- serve the repo so ES modules and fonts load (file:// blocks both) ---- */
-const server = createServer(async (req, res) => {
-  const path = join(ROOT, normalize(decodeURIComponent(req.url.split("?")[0])));
-  try {
-    const body = await readFile(path);
-    res.writeHead(200, { "content-type": TYPES[extname(path)] || "application/octet-stream" });
-    res.end(body);
-  } catch {
-    res.writeHead(404).end("no");
-  }
-});
-await new Promise((r) => server.listen(0, "127.0.0.1", r));
-const base = `http://127.0.0.1:${server.address().port}`;
-
-/* ---- drive one chrome, two viewports ---- */
-const port = 9600 + (process.pid % 300);
-const chrome = spawn(CHROME, [
-  "--headless=new",
-  "--no-sandbox",
-  "--disable-gpu",
-  `--remote-debugging-port=${port}`,
-  "about:blank",
-]);
+const { base, close: closeServer } = await serve(join(import.meta.dirname, ".."));
+const b = await browser({ onFail: closeServer });
 const bye = (code) => {
-  chrome.kill();
-  server.close();
+  b.kill();
+  closeServer();
   process.exit(code);
 };
-chrome.on("error", (e) => {
-  console.error(`mobile-check: cannot launch a browser (${e.message}).`);
-  console.error("Set CHROME=/path/to/chrome. This check is not part of `pnpm check`.");
-  bye(1);
-});
-
-let target;
-for (let i = 0; i < 80 && !target; i++) {
-  try {
-    const list = await fetch(`http://127.0.0.1:${port}/json/list`).then((r) => r.json());
-    target = list.find((t) => t.type === "page");
-  } catch {}
-  if (!target) await sleep(250);
-}
-if (!target) {
-  console.error("mobile-check: no CDP target");
-  bye(1);
-}
-
-const ws = new WebSocket(target.webSocketDebuggerUrl);
-await new Promise((res, rej) => {
-  ws.addEventListener("open", res, { once: true });
-  ws.addEventListener("error", rej, { once: true });
-});
-let msgId = 0;
-const pending = new Map();
-ws.addEventListener("message", (e) => {
-  const m = JSON.parse(e.data);
-  if (m.id && pending.has(m.id)) {
-    pending.get(m.id)(m);
-    pending.delete(m.id);
-  }
-});
-const send = (method, params = {}) =>
-  new Promise((res) => {
-    const n = ++msgId;
-    pending.set(n, res);
-    ws.send(JSON.stringify({ id: n, method, params }));
-  });
-const evaluate = async (expression) => {
-  const r = await send("Runtime.evaluate", {
-    expression: `(async () => { ${expression} })()`,
-    awaitPromise: true,
-    returnByValue: true,
-  });
-  if (r.result?.exceptionDetails)
-    throw new Error(JSON.stringify(r.result.exceptionDetails).slice(0, 400));
-  return r.result?.result?.value;
-};
-
-await send("Page.enable");
-await send("Runtime.enable");
-
-const out = [];
-const ok = (cond, label, extra = "") => {
-  out.push(`${cond ? "PASS" : "FAIL"}  ${label}${extra ? ` · ${extra}` : ""}`);
-  return cond;
-};
+const { ok, lines, finish } = report("mobile-check");
 
 /** the measurement, run inside the page */
 const MEASURE = `
@@ -169,24 +76,16 @@ return {
 };`;
 
 const at = async (w, h) => {
-  await send("Emulation.setDeviceMetricsOverride", {
-    width: w,
-    height: h,
-    deviceScaleFactor: 2,
-    mobile: true,
-  });
-  await send("Emulation.setTouchEmulationEnabled", { enabled: true, maxTouchPoints: 5 });
-  await send("Emulation.setEmitTouchEventsForMouse", { enabled: true, configuration: "mobile" });
-  await send("Page.navigate", { url: `${base}/scripts/mobile-check.html` });
-  await sleep(1800);
-  return evaluate(MEASURE);
+  await b.emulate({ width: w, height: h, mobile: true });
+  await b.goto(`${base}/scripts/mobile-check.html`);
+  return b.evaluate(MEASURE);
 };
 
 /* ---- 390px: a phone ---- */
 const phone = await at(390, 844);
 // if the emulation did not take, every touch assertion below is vacuous
 if (!ok(phone.coarse === true, "emulation · (pointer: coarse) is live", `width=${phone.width}`)) {
-  console.error(out.join("\n"));
+  console.error(lines.join("\n"));
   console.error("\nmobile-check: refusing to report — the touch rules were never applied.");
   bye(1);
 }
@@ -272,15 +171,9 @@ ok(wide.overflow <= 0, "layout · still no sideways scroll at 600px", `${wide.ov
 
 /* ---- the docs shell is the reference implementation an app copies, so hold it to
    the same floor: open the drawer on a phone and hit-test a navigation row ---- */
-await send("Emulation.setDeviceMetricsOverride", {
-  width: 390,
-  height: 844,
-  deviceScaleFactor: 2,
-  mobile: true,
-});
-await send("Page.navigate", { url: `${base}/docs.html#/button` });
-await sleep(2200);
-const shell = await evaluate(`
+await b.emulate({ width: 390, height: 844, mobile: true });
+await b.goto(`${base}/docs.html#/button`, 2200);
+const shell = await b.evaluate(`
   document.body.setAttribute("data-nav-open", "");
   await new Promise((r) => setTimeout(r, 300));
   const el = document.querySelector(".navlink");
@@ -308,9 +201,4 @@ ok(
   `${shell.cols} col · side=${shell.drawer} · scrim=${shell.scrim}`,
 );
 
-const fails = out.filter((l) => l.startsWith("FAIL")).length;
-console.log(out.join("\n"));
-console.log(
-  `\nmobile-check: ${out.length - fails}/${out.length} PASS${fails ? ` — ${fails} FAIL` : ""}`,
-);
-bye(fails ? 1 : 0);
+bye(finish() ? 1 : 0);

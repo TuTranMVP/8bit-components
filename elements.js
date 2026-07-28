@@ -116,27 +116,155 @@ export function grantXP(amount, srcEl) {
 
 /* ----------------------------------------------------------------- toast */
 let _toastHost = null;
-export function toast(msg, opts = {}) {
-  const { accent = "good", timeout = 3200 } = opts;
+/** the one host, created on first use. `role="status"` + a polite live region, so
+ *  a toast is announced without interrupting; a `crit` toast flips the region to
+ *  assertive for its own insertion (an error has to interrupt) and back after. */
+function toastHost() {
   if (!_toastHost) {
     _toastHost = document.createElement("div");
     _toastHost.className = "toast-host";
     _toastHost.setAttribute("role", "status");
     _toastHost.setAttribute("aria-live", "polite");
+    _toastHost.setAttribute("aria-atomic", "false");
     document.body.appendChild(_toastHost);
   }
-  const t = document.createElement("div");
-  t.className = "toast";
+  return _toastHost;
+}
+
+/**
+ * A toast. `msg` is TEXT by default — pass `html: true` to opt into markup, so
+ * `toast(userInput)` can never inject.
+ *
+ *   toast("Saved");
+ *   toast("Build failed", { accent: "crit" });                 // interrupts, sad bleep
+ *   toast("Note deleted", { action: { label: "UNDO", onClick: undo } });
+ *   const t = toast("Uploading…", { timeout: 0 });  …  t.dismiss();
+ *
+ * opts: accent, timeout (0 = sticky), title, action {label,onClick}, dismissible,
+ *       html, max (visible at once), sound.
+ * Returns the element, with `dismiss()` on it.
+ */
+export function toast(msg, opts = {}) {
+  const {
+    accent = "good",
+    timeout = 3200,
+    title = "",
+    action = null,
+    dismissible = true,
+    html = false,
+    max = 4,
+    sound = true,
+  } = opts;
+  const host = toastHost();
+  const crit = accent === "crit";
+
+  const t = el("div", { class: "toast" });
   t.dataset.accent = accent;
-  t.innerHTML = msg;
-  _toastHost.appendChild(t);
-  bleep(SFX.coin);
-  const kill = () => {
-    t.style.transition = "opacity var(--dur-mid) var(--ease)";
-    t.style.opacity = "0";
-    setTimeout(() => t.remove(), 220);
+  const box = el("div", { class: "toast-msg" });
+  if (title) {
+    const h = el("span", { class: "toast-title" });
+    h.textContent = title;
+    box.append(h);
+  }
+  const body = el("span");
+  if (html) body.innerHTML = msg;
+  else body.textContent = msg;
+  box.append(body);
+  t.append(box);
+
+  if (action?.label) {
+    const b = el("button", { type: "button", class: "btn sm outline toast-act" });
+    b.textContent = action.label;
+    b.addEventListener("click", () => {
+      action.onClick?.();
+      dismiss();
+    });
+    t.append(b);
+  }
+
+  // a sticky toast MUST be dismissible or it can never leave the screen
+  if (dismissible || !timeout) {
+    const x = el("button", { type: "button", class: "toast-x", "aria-label": "Dismiss" });
+    x.textContent = "✕";
+    x.addEventListener("click", dismiss);
+    t.append(x);
+  }
+
+  if (timeout) {
+    t.style.setProperty("--toast-ms", `${timeout}ms`);
+    t.append(el("i", { class: "toast-bar", "aria-hidden": "true" }));
+  }
+
+  // an error interrupts; everything else waits its turn
+  if (crit) host.setAttribute("aria-live", "assertive");
+  host.append(t);
+  if (crit) setTimeout(() => host.setAttribute("aria-live", "polite"), 100);
+
+  // a runaway loop must not bury the screen: drop the oldest beyond `max`
+  while (host.children.length > Math.max(1, max)) host.firstElementChild.remove();
+
+  if (sound) bleep(crit ? SFX.bad : SFX.coin);
+
+  /* ---- time out, but pause while the reader is looking at it (WCAG 2.2.1) ---- */
+  let left = timeout;
+  let startedAt = Date.now();
+  let timer = timeout ? setTimeout(dismiss, timeout) : 0;
+  const pause = () => {
+    if (!timer) return;
+    clearTimeout(timer);
+    timer = 0;
+    left -= Date.now() - startedAt;
+    t.dataset.paused = "";
   };
-  if (timeout) setTimeout(kill, timeout);
+  const resume = () => {
+    if (timer || !timeout) return;
+    startedAt = Date.now();
+    timer = setTimeout(dismiss, Math.max(400, left));
+    delete t.dataset.paused;
+  };
+  t.addEventListener("pointerenter", pause);
+  t.addEventListener("pointerleave", resume);
+  t.addEventListener("focusin", pause);
+  t.addEventListener("focusout", resume);
+
+  /* ---- swipe it away on touch: follow the finger, leave past a third ---- */
+  let x0 = null;
+  t.addEventListener("pointerdown", (e) => {
+    if (e.pointerType === "mouse") return;
+    x0 = e.clientX;
+    pause();
+  });
+  t.addEventListener("pointermove", (e) => {
+    if (x0 === null) return;
+    t.style.transform = `translateX(${e.clientX - x0}px)`;
+  });
+  const endSwipe = (e) => {
+    if (x0 === null) return;
+    const dx = e.clientX - x0;
+    x0 = null;
+    if (Math.abs(dx) > Math.max(60, t.offsetWidth / 3)) dismiss(Math.sign(dx));
+    else {
+      t.style.transition = "transform var(--dur-fast) var(--ease)";
+      t.style.transform = "";
+      setTimeout(() => {
+        t.style.transition = "";
+      }, 160);
+      resume();
+    }
+  };
+  t.addEventListener("pointerup", endSwipe);
+  t.addEventListener("pointercancel", endSwipe);
+
+  function dismiss(dir = 0) {
+    if (!t.isConnected) return;
+    clearTimeout(timer);
+    timer = 0;
+    t.style.transition = "opacity var(--dur-mid) var(--ease), transform var(--dur-mid) var(--ease)";
+    t.style.opacity = "0";
+    if (dir) t.style.transform = `translateX(${dir * 120}%)`;
+    setTimeout(() => t.remove(), 220);
+  }
+  t.dismiss = dismiss;
   return t;
 }
 
@@ -3770,6 +3898,246 @@ class NesToc extends HTMLElement {
 }
 
 /* ------------------------------------------------------------- self-register */
+/* ========================================================================== */
+/*  <nes-popover>  —  an anchored panel in the top layer                      */
+/*  <nes-popover placement="bottom-start">                                     */
+/*    <button class="btn">Filters</button>                                     */
+/*    <div class="popover">…anything…</div>                                    */
+/*  </nes-popover>                                                             */
+/*                                                                             */
+/*  The native popover API owns the hard parts: top layer (so no ancestor's     */
+/*  overflow can clip it — the one thing .dropdown cannot fix), Esc, and click- */
+/*  outside. This element only decides WHERE it goes, and keeps it there while  */
+/*  the page scrolls.                                                          */
+/* ========================================================================== */
+class NesPopover extends HTMLElement {
+  connectedCallback() {
+    if (this._done) return;
+    this._done = true;
+    this.trigger = this.querySelector("[data-trigger], button");
+    this.panel = this.querySelector(".popover") || this.lastElementChild;
+    if (!this.trigger || !this.panel || this.panel === this.trigger) return;
+
+    this.panel.setAttribute("popover", this.getAttribute("mode") || "auto");
+    this.trigger.setAttribute("aria-expanded", "false");
+    this.trigger.addEventListener("click", (e) => {
+      e.preventDefault();
+      this.toggle();
+    });
+    // keep it glued to the trigger while the page moves under it
+    this._reflow = () => this.place();
+    this.panel.addEventListener("toggle", (e) => {
+      const open = e.newState === "open";
+      this.trigger.setAttribute("aria-expanded", String(open));
+      this.toggleAttribute("data-open", open);
+      if (open) {
+        this.place();
+        addEventListener("scroll", this._reflow, { passive: true, capture: true });
+        addEventListener("resize", this._reflow);
+      } else {
+        removeEventListener("scroll", this._reflow, { capture: true });
+        removeEventListener("resize", this._reflow);
+      }
+      this.dispatchEvent(new CustomEvent(open ? "nes:open" : "nes:close", { bubbles: true }));
+    });
+  }
+  disconnectedCallback() {
+    removeEventListener("scroll", this._reflow, { capture: true });
+    removeEventListener("resize", this._reflow);
+  }
+  get open() {
+    return this.hasAttribute("data-open");
+  }
+  show() {
+    this.panel?.showPopover();
+  }
+  hide() {
+    this.panel?.hidePopover();
+  }
+  toggle() {
+    this.panel?.togglePopover();
+  }
+  /** place the panel next to the trigger, flipping and shifting to stay on screen */
+  place() {
+    const gap = 8;
+    const a = this.trigger.getBoundingClientRect();
+    const p = this.panel.getBoundingClientRect();
+    const [side, align = "start"] = (this.getAttribute("placement") || "bottom-start").split("-");
+    const vertical = side === "top" || side === "bottom";
+
+    let top = side === "top" ? a.top - p.height - gap : side === "bottom" ? a.bottom + gap : a.top;
+    let left = side === "left" ? a.left - p.width - gap : side === "right" ? a.right + gap : a.left;
+    if (vertical && align === "end") left = a.right - p.width;
+    if (vertical && align === "center") left = a.left + (a.width - p.width) / 2;
+    if (!vertical && align === "end") top = a.bottom - p.height;
+    if (!vertical && align === "center") top = a.top + (a.height - p.height) / 2;
+
+    // flip to the other side if it would hang off, then shift to fit
+    if (vertical && top + p.height > innerHeight - gap && a.top - p.height - gap > gap)
+      top = a.top - p.height - gap;
+    if (vertical && top < gap && a.bottom + p.height + gap < innerHeight) top = a.bottom + gap;
+    if (!vertical && left + p.width > innerWidth - gap && a.left - p.width - gap > gap)
+      left = a.left - p.width - gap;
+    left = Math.min(Math.max(gap, left), Math.max(gap, innerWidth - p.width - gap));
+    top = Math.min(Math.max(gap, top), Math.max(gap, innerHeight - p.height - gap));
+
+    this.panel.style.inset = `${Math.round(top)}px auto auto ${Math.round(left)}px`;
+  }
+}
+
+/* ========================================================================== */
+/*  <nes-split>  —  two panes, one draggable divider                          */
+/*  <nes-split at="40" min="15">                                               */
+/*    <div>left</div>                                                          */
+/*    <div>right</div>                                                          */
+/*  </nes-split>                                                               */
+/*                                                                             */
+/*  The divider is a real <button role="separator"> so a keyboard can move it   */
+/*  (arrows, Home/End, double-click resets). Drag works with a mouse, a pen or  */
+/*  a thumb — pointer events only, and the divider keeps its 8px look while a   */
+/*  coarse pointer gets a --tap-wide hit area from CSS.                        */
+/* ========================================================================== */
+class NesSplit extends HTMLElement {
+  static get observedAttributes() {
+    return ["at", "dir"];
+  }
+  connectedCallback() {
+    if (this._done) return;
+    this._done = true;
+    const panes = [...this.children].filter((n) => !n.classList.contains("split-bar"));
+    if (panes.length < 2) return;
+    this.bar = el("button", {
+      type: "button",
+      class: "split-bar",
+      role: "separator",
+      tabindex: "0",
+      "aria-label": this.getAttribute("label") || "Resize",
+    });
+    panes[0].after(this.bar);
+    this._sync();
+
+    this.bar.addEventListener("pointerdown", (e) => {
+      this.setAttribute("data-dragging", "");
+      this.bar.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+    this.bar.addEventListener("pointermove", (e) => {
+      if (!this.hasAttribute("data-dragging")) return;
+      const r = this.getBoundingClientRect();
+      const pct = this.column
+        ? ((e.clientY - r.top) / r.height) * 100
+        : ((e.clientX - r.left) / r.width) * 100;
+      this.at = pct;
+    });
+    const stop = () => this.removeAttribute("data-dragging");
+    this.bar.addEventListener("pointerup", stop);
+    this.bar.addEventListener("pointercancel", stop);
+    this.bar.addEventListener("dblclick", () => {
+      this.at = +(this.getAttribute("at") || 50);
+    });
+    this.bar.addEventListener("keydown", (e) => {
+      const step = e.shiftKey ? 10 : 2;
+      const next = { ArrowLeft: -step, ArrowUp: -step, ArrowRight: step, ArrowDown: step }[e.key];
+      if (next !== undefined) {
+        e.preventDefault();
+        this.at = this.at + next;
+      } else if (e.key === "Home") {
+        e.preventDefault();
+        this.at = +(this.getAttribute("min") || 10);
+      } else if (e.key === "End") {
+        e.preventDefault();
+        this.at = 100 - +(this.getAttribute("min") || 10);
+      }
+    });
+  }
+  attributeChangedCallback() {
+    if (this._done) this._sync();
+  }
+  get column() {
+    return this.getAttribute("dir") === "column";
+  }
+  get at() {
+    return this._at ?? +(this.getAttribute("at") || 50);
+  }
+  set at(v) {
+    const min = Math.max(0, +(this.getAttribute("min") || 10));
+    const next = Math.min(100 - min, Math.max(min, Math.round(v * 10) / 10));
+    if (next === this._at) return;
+    this._at = next;
+    this.style.setProperty("--split", `${next}%`);
+    this.bar?.setAttribute("aria-orientation", this.column ? "horizontal" : "vertical");
+    this.bar?.setAttribute("aria-valuenow", String(Math.round(next)));
+    this.bar?.setAttribute("aria-valuemin", String(min));
+    this.bar?.setAttribute("aria-valuemax", String(100 - min));
+    this.dispatchEvent(new CustomEvent("nes:resize", { bubbles: true, detail: { at: next } }));
+  }
+  _sync() {
+    this._at = null;
+    this.at = +(this.getAttribute("at") || 50);
+  }
+}
+
+/* --------------------------------------------------------------- confirm() */
+/**
+ * A destructive confirm, as a promise. Built on <dialog>.showModal(), so the
+ * focus trap, Esc, the backdrop and the top layer are the platform's job — the
+ * only thing added is the wording and which button is dangerous.
+ *
+ *   if (await confirmDialog({ title: "Delete branch?", body: "This cannot be undone." })) …
+ *
+ * Resolves false on Esc, on Cancel, and on a backdrop click. Focus starts on
+ * Cancel, so Enter is never the destructive answer.
+ */
+export function confirmDialog(opts = {}) {
+  const {
+    title = "Are you sure?",
+    body = "",
+    confirmLabel = "Confirm",
+    cancelLabel = "Cancel",
+    accent = "crit",
+    html = false,
+  } = opts;
+  const dlg = el("dialog", { class: "modal" });
+  dlg.dataset.accent = accent;
+  const head = el("div", { class: "head" });
+  const h = el("b");
+  h.textContent = title;
+  head.append(h);
+  const msg = el("p");
+  if (html) msg.innerHTML = body;
+  else msg.textContent = body;
+  const foot = el("div", { class: "foot" });
+  const cancel = el("button", { type: "button", class: "btn outline" });
+  cancel.textContent = cancelLabel;
+  const go = el("button", { type: "button", class: "btn" });
+  go.dataset.accent = accent;
+  go.textContent = confirmLabel;
+  foot.append(cancel, go);
+  dlg.append(head, msg, foot);
+  document.body.append(dlg);
+
+  return new Promise((resolve) => {
+    let answer = false;
+    const close = (v) => {
+      answer = v;
+      dlg.close();
+    };
+    go.addEventListener("click", () => close(true));
+    cancel.addEventListener("click", () => close(false));
+    // a click on the backdrop lands on the <dialog> itself, never on its children
+    dlg.addEventListener("click", (e) => {
+      if (e.target === dlg) close(false);
+    });
+    dlg.addEventListener("close", () => {
+      dlg.remove();
+      resolve(answer);
+    });
+    dlg.showModal();
+    // Enter must not be the destructive answer
+    cancel.focus();
+  });
+}
+
 const defs = {
   "nes-sound": NesSound,
   "nes-collapsible": NesCollapsible,
@@ -3803,6 +4171,8 @@ const defs = {
   "nes-logs": NesLogs,
   "nes-preview": NesPreview,
   "nes-toc": NesToc,
+  "nes-popover": NesPopover,
+  "nes-split": NesSplit,
 };
 for (const [tag, cls] of Object.entries(defs)) {
   if (!customElements.get(tag)) customElements.define(tag, cls);

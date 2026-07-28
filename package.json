@@ -1,6 +1,6 @@
 {
   "name": "8bit-nes",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "NES 8-bit retro-modern design system. Design tokens + class-based CSS components + light-DOM web components. Cross-framework: HTML, Vue 3, Nuxt, React.",
   "license": "MIT",
   "type": "module",
@@ -73,7 +73,8 @@
     "prepublishOnly": "pnpm build && pnpm check",
     "check:pins": "node scripts/check-doc-pins.mjs",
     "check:scale": "node scripts/check-scale.mjs",
-    "check:mobile": "node scripts/mobile-check.mjs"
+    "check:mobile": "node scripts/mobile-check.mjs",
+    "check:ui": "node scripts/ui-check.mjs"
   },
   "repository": {
     "type": "git",

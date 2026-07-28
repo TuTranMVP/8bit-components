@@ -1,6 +1,6 @@
 {
   "name": "8bit-nes",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "title": "8-BIT NES",
   "description": "Cross-framework NES-arcade design system: CSS design tokens + class recipes + light-DOM web components. Zero build, dark-only, square 90° corners, hard shadow.",
   "official": true,
@@ -15,8 +15,8 @@
       "import \"8bit-nes/all.css\";",
       "import \"8bit-nes\";"
     ],
-    "cdnCss": "https://cdn.jsdelivr.net/npm/8bit-nes@0.11.0/all.min.css",
-    "cdnJs": "https://cdn.jsdelivr.net/npm/8bit-nes@0.11.0/elements.min.js"
+    "cdnCss": "https://cdn.jsdelivr.net/npm/8bit-nes@0.12.0/all.min.css",
+    "cdnJs": "https://cdn.jsdelivr.net/npm/8bit-nes@0.12.0/elements.min.js"
   },
   "conventions": {
     "prefix": "nes-",
@@ -394,6 +394,42 @@
       "kind": "helper",
       "description": "Transient confirmation. Fires from JS, auto-dismisses, and is announced politely.",
       "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/toast"
+    },
+    {
+      "id": "toolbar",
+      "name": "Toolbar",
+      "category": "Element",
+      "selector": ".toolbar",
+      "kind": "class",
+      "description": "A row of actions that scrolls on a phone instead of reflowing under your thumb.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/toolbar"
+    },
+    {
+      "id": "split",
+      "name": "Split view",
+      "category": "Element",
+      "selector": "<nes-split>",
+      "kind": "element",
+      "description": "Two panes, one divider you can drag, arrow or double-click. Stacks with dir=\"column\".",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/split"
+    },
+    {
+      "id": "popover",
+      "name": "Popover",
+      "category": "Overlay",
+      "selector": "<nes-popover>",
+      "kind": "element",
+      "description": "An anchored panel in the top layer, so no ancestor's overflow can clip it.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/popover"
+    },
+    {
+      "id": "confirm",
+      "name": "Confirm",
+      "category": "Overlay",
+      "selector": "confirmDialog()",
+      "kind": "helper",
+      "description": "A destructive confirm as a promise. Focus starts on Cancel, so Enter is never the answer you regret.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/confirm"
     },
     {
       "id": "tabs",
@@ -1298,6 +1334,6 @@
   ],
   "counts": {
     "concepts": 5,
-    "components": 134
+    "components": 138
   }
 }

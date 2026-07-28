@@ -1339,9 +1339,97 @@
     box-shadow: var(--sh-4);
     padding: var(--pad-box);
     animation: toast-in var(--dur-mid) var(--ease);
+    /* a swipe writes this; nothing else touches transform */
+    touch-action: pan-y;
 
     & b {
       color: var(--accent);
+    }
+
+    /* the message column, so a title can sit above the body */
+    & .toast-msg {
+      flex: 1;
+      min-inline-size: 0;
+    }
+
+    & .toast-title {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      font-weight: var(--fw-bold);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--accent);
+    }
+
+    /* action + dismiss sit at the end, and never shrink */
+    & .toast-act {
+      flex: none;
+    }
+
+    & .toast-x {
+      flex: none;
+      inline-size: var(--pip);
+      block-size: var(--pip);
+      display: grid;
+      place-items: center;
+      padding: 0;
+      font-family: var(--font-mono);
+      font-size: var(--fs-chip);
+      line-height: var(--lh-none);
+      color: var(--dim);
+      background: none;
+      border: 0;
+      cursor: pointer;
+
+      &:hover {
+        color: var(--ink);
+      }
+    }
+
+    /* paused by a pointer or by focus: the reader gets to finish reading
+       (WCAG 2.2.1). The bar is the only motion, so it is also the only thing to
+       stop — the toast itself never moves while paused. */
+    &[data-paused] .toast-bar {
+      animation-play-state: paused;
+    }
+
+    /* remaining-time bar: --toast-ms comes from the timeout the caller gave */
+    & .toast-bar {
+      position: absolute;
+      inset-block-end: 0;
+      inset-inline-start: 0;
+      block-size: var(--sp-hair);
+      background: var(--accent);
+      animation: toast-time var(--toast-ms, 3200ms) linear forwards;
+    }
+
+    &:has(.toast-bar) {
+      position: relative;
+      overflow: hidden;
+    }
+  }
+
+  /* the dismiss × is a 12px glyph — on a thumb it needs a real box (--tap) */
+  @media (pointer: coarse) {
+    .toast-x {
+      position: relative;
+    }
+
+    .toast-x::after {
+      content: "";
+      position: absolute;
+      inset: calc((var(--tap) - var(--pip)) / -2);
+    }
+  }
+
+  @keyframes toast-time {
+    from {
+      inline-size: 100%;
+    }
+
+    to {
+      inline-size: 0%;
     }
   }
 
@@ -6215,6 +6303,158 @@
     }
   }
 
+  /* ===================================================================== */
+  /*  WAVE 8 — the primitives an app kept hand-rolling: a toolbar, an anchored */
+  /*  panel that nothing can clip, and a split view you can drag.            */
+  /* ===================================================================== */
+
+  /* ----------------------------------------------------------------- TOOLBAR */
+  /* A row of actions. On a phone it SCROLLS rather than wrapping into a ragged
+     block — a toolbar that reflows moves the button you were aiming at.
+     `.wrap` opts into wrapping when the actions are equals, not a sequence.
+     (.editor-toolbar is the editor's own tuned variant of the same idea.)      */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--pad-snug);
+    background: var(--panel);
+    border: var(--bw-2) solid var(--line-hi);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* a control in a toolbar keeps its size; the row scrolls instead */
+    &>* {
+      flex: none;
+    }
+
+    &.wrap {
+      flex-wrap: wrap;
+      overflow: visible;
+    }
+
+    /* everything after this sits at the far end */
+    & .toolbar-gap {
+      flex: 1 1 auto;
+      min-inline-size: var(--sp-2);
+    }
+
+    & .toolbar-sep {
+      align-self: stretch;
+      inline-size: var(--bw-2);
+      margin-inline: var(--sp-1);
+      background: var(--line-hi);
+    }
+  }
+
+  /* ----------------------------------------------------------------- POPOVER */
+  /* An anchored panel on the native popover API: it lives in the top layer, so
+     unlike .menu (absolute, inside .dropdown) NO ancestor overflow can clip it —
+     the reason a dropdown inside a scrolling pane always looked cut off. Esc and
+     click-outside come free from popover="auto"; <nes-popover> only places it. */
+  .popover {
+    position: fixed;
+    margin: 0;
+    inline-size: max-content;
+    max-inline-size: min(92vw, 22rem);
+    padding: var(--pad-box);
+    color: var(--text);
+    background: var(--panel);
+    border: var(--bw-2) solid var(--line-hi);
+    box-shadow: var(--sh-4);
+
+    /* light-dismiss handles the click-away, so the backdrop stays invisible */
+    &::backdrop {
+      background: none;
+    }
+
+    &:popover-open {
+      animation: pop-in var(--dur-fast) var(--ease);
+    }
+
+    & .popover-title {
+      display: block;
+      margin-block-end: var(--sp-2);
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      font-weight: var(--fw-bold);
+      text-transform: uppercase;
+      letter-spacing: var(--ls-chrome);
+      color: var(--accent, var(--primary));
+    }
+  }
+
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+
+  /* ------------------------------------------------------------------- SPLIT */
+  /* Two panes and a divider you can drag, arrow, or double-click to reset.
+     --split is the first pane's size; the divider is a real separator so a
+     keyboard can move it. Mobile-first: `dir="column"` stacks, and the divider
+     gets a --tap-wide hit area on a coarse pointer without getting fatter.      */
+  nes-split {
+    --split: 50%;
+    display: grid;
+    grid-template-columns: var(--split) auto minmax(0, 1fr);
+    inline-size: 100%;
+    background: var(--slot);
+    border: var(--bw-2) solid var(--line-hi);
+
+    &[dir="column"] {
+      grid-template-columns: none;
+      grid-template-rows: var(--split) auto minmax(0, 1fr);
+    }
+
+    &>* {
+      min-inline-size: 0;
+      overflow: auto;
+    }
+
+    & .split-bar {
+      position: relative;
+      inline-size: var(--sp-2);
+      background: var(--line-hi);
+      border: 0;
+      padding: 0;
+      cursor: col-resize;
+      touch-action: none;
+
+      &:hover,
+      &:focus-visible {
+        background: var(--accent, var(--primary));
+      }
+    }
+
+    &[dir="column"] .split-bar {
+      inline-size: auto;
+      block-size: var(--sp-2);
+      cursor: row-resize;
+    }
+
+    /* while dragging, the panes must not eat the pointer or select text */
+    &[data-dragging] {
+      user-select: none;
+
+      &>* {
+        pointer-events: none;
+      }
+
+      & .split-bar {
+        pointer-events: auto;
+        background: var(--accent, var(--primary));
+      }
+    }
+  }
+
   /* ---- touch targets: on a coarse pointer every interactive box clears the
      WCAG 2.5.8 floor (24×24px), and anything you press to *act* gets --tap (44px,
      2.5.5). Sizes only ever bump up, so nothing shifts on a mouse. Measured on a
@@ -6260,6 +6500,19 @@
        so the whole row is the target — make that row a real one (it measured 28px). */
     .check {
       min-block-size: var(--tap);
+    }
+
+    /* the split divider stays 8px wide; the thumb gets --tap either side of it */
+    .split-bar::after {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      inset-inline: calc((var(--tap) - var(--sp-2)) / -2);
+    }
+
+    nes-split[dir="column"] .split-bar::after {
+      inset-inline: 0;
+      inset-block: calc((var(--tap) - var(--sp-2)) / -2);
     }
 
     /* the tab's × is a 10px glyph — give it a real box to hit */
