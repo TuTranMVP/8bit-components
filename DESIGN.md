@@ -71,12 +71,27 @@ Two faces, deliberately paired. Self-hosted woff2 (Latin + Vietnamese subset, fu
   labels, numbers, code, nav, headings. Uppercase + `--ls-chrome` tracking for labels.
 - **`--font-body` — NES Sans** (variable 300–700): body copy, prose. Sentence case.
 
-Type scale (rem, 16px base): `--fs-label .5625` · `--fs-chip .6875` · `--fs-h3 .75` ·
-`--fs-body .84375` · `--fs-h2 1.0625` · `--fs-h1 1.625`. Only rungs that are actually used exist.
+Type scale — kept in rem so a reader's own font size scales the UI, but **every rung is an
+integer px** at the 16px default: `--fs-label` 9 · `--fs-chip` 11 · `--fs-h3` 12 · `--fs-body` 14 ·
+`--fs-lead` 16 · `--fs-h2` 17 · `--fs-h1` 26. A fractional font size gives every text-sized box a
+fractional height, which lands its hard border on a half pixel — there is no blur and no radius
+here to hide that behind. Only rungs that are actually used exist. `--fs-code` (`.9em`) is
+deliberately **relative**: an atom inside a sentence tracks whatever rung the sentence is set in.
+Leading: `--lh-none` 1 (single-line chrome, where `--ctrl-h-*` owns the height) · `--lh-tight`
+1.25 · `--lh-heading` 1.4 · `--lh-body` 1.65.
+
+**Three weights, and only three.** `--fw-regular` 400 · `--fw-medium` 450 · `--fw-bold` 700 —
+exactly the axis stops the bundled faces ship. NES Mono has 400 and 700; NES Sans is variable
+300–700. Ask for 500 or 600 on mono and the browser *synthesises* the bold, smearing the stems.
+
+**A number that changes goes in mono.** Measured at 16px on the bundled faces: ten mono digits are
+the same width whatever the digits (0.00px spread), ten sans digits vary by 35.67px — a `1` is
+3.5px narrower than a `0`. Every live counter in the library is mono, which is why no component
+sets `font-variant-numeric`. Put a live number in sans and add `tabular-nums` yourself, or the
+layout twitches on every tick.
 
 **Crisp text rules.** Reading text is bright (`--text`/`--ink`) on a **solid** ground — never over
-a striped/scanline layer. Body copy in dense docs may go slightly heavier (~450) for definition.
-Chrome is mono-uppercase; body is sans sentence-case. Don't mix the roles.
+a striped/scanline layer. Chrome is mono-uppercase; body is sans sentence-case. Don't mix the roles.
 
 ### Shape & corners  ← *the decision*
 
@@ -100,6 +115,18 @@ the grid; keeping the whole system square makes the press-in — not a corner tr
 `box-shadow: Npx Npx 0 var(--line)` — offset, **zero blur, pure black**. Depth like a stacked
 sprite, never a soft glow. Rungs `--sh-1`…`--sh-5` (1px pressed → 6px hero). On `:active`,
 interactive elements drop to `--sh-1` and `translate(2px,2px)` — the press.
+
+### Stacking, state & focus
+
+One ladder, so nothing has to guess a number: `--z-raised` 1 (a lifted sibling) · `--z-pop` 2
+(over its own module) · `--z-sticky` 20 (sticks in the page) · `--z-drawer` 30 (off-canvas; its
+scrim is `calc(var(--z-drawer) - 1)`) · `--z-chrome` 40 (sticky top bar) · `--z-overlay` 100
+(menu / tooltip / toast / dialog) · `--z-top` 9999 (the CRT overlay, nothing else).
+
+Two state opacities, not eight: `--op-disabled` .6 (`:disabled`, or already decided) and
+`--op-dim` .3 (data pushed to the background). Focus is `--ring-w` + `--ring-c` — retint every
+focus ring in one declaration, never remove it, and never touch `box-shadow` (a focused control
+keeps its hard shadow).
 
 ### Motion
 

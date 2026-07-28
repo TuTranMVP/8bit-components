@@ -5,6 +5,8 @@
  *   1. space  lands on 4px steps  (a --sp-* rung; --sp-hair is the one 2px exception)
  *   2. size   lands on 2px steps  (a square marker edge never falls mid-pixel)
  *   3. every @media width is one of the three --bp-* rungs in tokens.css
+ *   4. font-size / font-weight / line-height / z-index come from their token scale
+ *      (a font-size may be em/%-relative — an atom inside a sentence should track it)
  *
  * Rule 3 exists because CSS cannot read a var() inside @media: a query has to
  * write the literal, so nothing stops two modules from switching 4px apart.
@@ -12,7 +14,8 @@
  * while <nes-toc> became a rail at 74rem (1184px), so between those two widths
  * the collapsed bar rendered inside the 224px rail slot.
  *
- * Escape hatch: end the line with  /* off-grid: why *​/  and it is allowed.
+ * Escape hatch: end the line with  /* off-grid: why *​/  (or off-scale:) and it
+ * is allowed.
  */
 import { globSync, readFileSync } from "node:fs";
 
@@ -33,6 +36,35 @@ const SIZE =
 /** border/shadow/notch widths are not space or size — they have their own scale */
 const CUSTOM_SPACE = /^--(?:sp|pad|gap|gutter|ctrl-px)/;
 const CUSTOM_SIZE = /^--(?:dot|pip|ctrl-h|chrome-h|nav-w|rail-w|toc-w|side-w|doc-maxw|maxw)/;
+
+/** rule 4: properties whose value must come from a scale, not a literal. A design
+    system that ships 700 in 49 places cannot change its weight; one that ships
+    z-index: 38 has already lost the argument about what sits on top. */
+const FROM_SCALE = [
+  {
+    prop: "font-size",
+    ok: (v) =>
+      /var\(--(?:fs|icon|ctrl-fs|mmd-fs|sz)/.test(v) ||
+      /[\d.]+(?:em|%)/.test(v) ||
+      /^(?:inherit|smaller|larger)$/.test(v),
+    why: "font-size must come from a --fs-* / --icon-* rung (em or % is fine — an atom inside a sentence should track it)",
+  },
+  {
+    prop: "font-weight",
+    ok: (v) => /var\(--fw-/.test(v),
+    why: "font-weight must be --fw-regular | --fw-medium | --fw-bold — the only weights the bundled faces ship; anything else is synthesised and looks soft",
+  },
+  {
+    prop: "line-height",
+    ok: (v) => /var\(--lh-/.test(v) || /^(?:normal|inherit)$/.test(v),
+    why: "line-height must come from a --lh-* rung",
+  },
+  {
+    prop: "z-index",
+    ok: (v) => /var\(--z-/.test(v),
+    why: "z-index must come from the --z-* ladder",
+  },
+];
 
 /** the ladder: --bp-* from tokens.css, in px, for comparing against @media */
 const tokens = readFileSync("tokens.css", "utf8");
@@ -55,9 +87,14 @@ function fail(file, line, found, why) {
 
 for (const file of FILES) {
   const lines = readFileSync(file, "utf8").split("\n");
+  let inFontFace = false;
   lines.forEach((raw, i) => {
     const line = i + 1;
-    if (/\/\*\s*off-grid:/.test(raw)) return;
+    // @font-face descriptors are not properties — `font-weight: 400` there names
+    // which weight the FILE contains, so the token scale does not apply.
+    if (/@font-face/.test(raw)) inFontFace = true;
+    else if (inFontFace && /^\s*\}/.test(raw)) inFontFace = false;
+    if (/\/\*\s*off-(?:grid|scale):/.test(raw)) return;
     const src = raw.replace(/\/\*.*?\*\//g, "");
 
     // ---- rule 3: @media widths ----
@@ -88,6 +125,12 @@ for (const file of FILES) {
     if (!m) return;
     const [, prop, value] = m;
     if (prop === "--sp-hair") return; // this token *is* the documented 2px exception
+
+    // ---- rule 4: value must come from a scale ----
+    const scale = FROM_SCALE.find((r) => r.prop === prop);
+    if (scale && !inFontFace && !scale.ok(value.trim()))
+      fail(file, line, `${prop}: ${value.trim()}`, scale.why);
+
     const isSpace = SPACE.test(prop) || CUSTOM_SPACE.test(prop);
     const isSize = SIZE.test(prop) || CUSTOM_SIZE.test(prop);
     if (!isSpace && !isSize) return;
@@ -116,5 +159,5 @@ if (errors.length) {
   process.exit(1);
 }
 console.log(
-  `check-scale: space on 4px, size on 2px, ${ladder.size} breakpoints (${[...ladder.values()].join(" ")}) — ${FILES.length} files clean.`,
+  `check-scale: space on 4px, size on 2px, type/weight/leading/layer on their scales, ${ladder.size} breakpoints (${[...ladder.values()].join(" ")}) — ${FILES.length} files clean.`,
 );

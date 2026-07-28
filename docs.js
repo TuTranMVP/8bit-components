@@ -422,8 +422,8 @@ import "8bit-nes/components.css";`,
     cat: { en: "Getting Started", vi: "Bắt đầu" },
     name: { en: "Layout & rhythm", vi: "Layout & nhịp" },
     desc: {
-      en: "Two grids and three breakpoints. Space lands on 4px, size lands on 2px, and only three widths ever switch a layout.",
-      vi: "Hai lưới và ba breakpoint. Khoảng cách theo bước 4px, kích thước theo bước 2px, và chỉ ba chiều rộng được phép đổi layout.",
+      en: "Every scale in one place: space on 4px, size on 2px, integer type rungs, three weights, one stacking ladder, three breakpoints — all enforced by pnpm check.",
+      vi: "Mọi thang đo ở một chỗ: khoảng cách 4px, kích thước 2px, bậc chữ số nguyên, ba độ đậm, một thang xếp lớp, ba breakpoint — tất cả đều được pnpm check kiểm tra.",
     },
     body: {
       en: () =>
@@ -478,6 +478,52 @@ import "8bit-nes/components.css";`,
         callout(
           "crit",
           "CSS cannot read a <code>var()</code> inside <code>@media</code>, so a query writes the literal — and <code>max-width: X</code> also overlaps <code>min-width: X</code> at exactly X. Write <code>@media (width &lt; 74rem)</code> (exclusive) or <code>min-width</code> (inclusive), never <code>max-width</code>. In JS, read the token: <code>matchMedia(`(min-width: ${getComputedStyle(document.documentElement).getPropertyValue(\"--bp-xl\")})`)</code>.",
+        ) +
+        h2("Type") +
+        p(
+          "Six rungs, and <b>every one is an integer px</b> at the default root size. A fractional font size gives every text-sized box a fractional height, which puts its hard border on a half pixel — and this system has no blur and no radius to hide that behind. Kept in <code>rem</code>, so a reader's own font size still scales the UI.",
+        ) +
+        api(
+          ["Token", "Value", "Role"],
+          [
+            ["<code>--fs-label</code>", "9px", "eyebrow / scope / uppercase mono chrome"],
+            ["<code>--fs-chip</code>", "11px", "chip · value · inline code"],
+            ["<code>--fs-h3</code>", "12px", "section heading (mono, uppercase)"],
+            ["<code>--fs-body</code>", "14px", "sans body copy"],
+            ["<code>--fs-lead</code>", "16px", "lead paragraph · prose <code>h2</code>"],
+            ["<code>--fs-h2</code>", "17px", "card / world title"],
+            ["<code>--fs-h1</code>", "26px", "hero · power number"],
+            ["<code>--fs-code</code>", "<code>.9em</code>", "inline code / <code>@mention</code> — <b>relative</b>, so an atom tracks the sentence it sits in"],
+            ["<code>--lh-none · tight · heading · body</code>", "1 · 1.25 · 1.4 · 1.65", "leading. <code>--lh-none</code> is for single-line chrome, where the box owns the height"],
+            ["<code>--icon-sm … xl</code>", "14 · 20 · 28 · 40px", "icon glyph sizes — their own scale, sized by the box, not by the text beside it"],
+          ],
+        ) +
+        callout(
+          "crit",
+          "<b>Three weights, not nine.</b> <code>--fw-regular</code> 400 · <code>--fw-medium</code> 450 · <code>--fw-bold</code> 700 — exactly what the bundled faces ship (NES Mono has 400 and 700; NES Sans is variable 300–700). Ask for 500 or 600 on mono and the browser <i>synthesises</i> a bold: it smears the stems and throws away the crispness the whole system is built on.",
+        ) +
+        note(
+          "<b>Numbers that change belong in mono.</b> Measured on the bundled faces at 16px: ten mono digits are the same width whatever the digits (spread <b>0.00px</b>), while ten sans digits vary by <b>35.67px</b> — a <code>1</code> is 3.5px narrower than a <code>0</code>. Every live counter in this library is mono, which is why none of them needs <code>font-variant-numeric</code>. Put a changing number in sans and you must add <code>tabular-nums</code> yourself, or the layout twitches on every tick.",
+        ) +
+        h2("Layers, state & focus") +
+        api(
+          ["Token", "Value", "Role"],
+          [
+            ["<code>--z-raised</code>", "1", "a sibling lifted above its neighbours"],
+            ["<code>--z-pop</code>", "2", "something popping over its own module (annotation popover, drag ghost)"],
+            ["<code>--z-sticky</code>", "20", "sticks inside the page (a rail, a table header)"],
+            ["<code>--z-drawer</code>", "30", "off-canvas panel — its scrim goes at <code>calc(var(--z-drawer) - 1)</code>"],
+            ["<code>--z-chrome</code>", "40", "app chrome that outranks the page (sticky top bar)"],
+            ["<code>--z-overlay</code>", "100", "menu · tooltip · toast · dialog"],
+            ["<code>--z-top</code>", "9999", "the CRT overlay, and nothing else"],
+            ["<code>--op-disabled</code>", ".6", "<code>:disabled</code>, and anything already decided"],
+            ["<code>--op-dim</code>", ".3", "data pushed to the background (a dimmed series, a raw source)"],
+            ["<code>--ring-w</code> / <code>--ring-c</code>", "<code>--bw-2</code> / <code>--gold</code>", "the focus ring — retint focus in one declaration"],
+          ],
+        ) +
+        cb(
+          `/* focus rings in brand cyan, everywhere, one line */
+:root { --ring-c: var(--cyan); }`,
         ) +
         h2("App shell") +
         api(
@@ -556,6 +602,52 @@ import "8bit-nes/components.css";`,
         callout(
           "crit",
           "CSS không đọc được <code>var()</code> trong <code>@media</code>, nên query phải viết số thật — và <code>max-width: X</code> trùng với <code>min-width: X</code> đúng tại X. Hãy viết <code>@media (width &lt; 74rem)</code> (loại trừ) hoặc <code>min-width</code> (bao gồm), đừng dùng <code>max-width</code>. Trong JS thì đọc token: <code>matchMedia(`(min-width: ${getComputedStyle(document.documentElement).getPropertyValue(\"--bp-xl\")})`)</code>.",
+        ) +
+        h2("Chữ") +
+        p(
+          "Sáu bậc, và <b>mỗi bậc là số nguyên px</b> ở cỡ gốc mặc định. Font-size lẻ làm mọi hộp co theo chữ có chiều cao lẻ, kéo viền cứng của nó xuống nửa pixel — hệ này không có blur cũng chẳng có bo góc để che chỗ đó. Vẫn giữ đơn vị <code>rem</code> để cỡ chữ người đọc tự chọn vẫn phóng được cả UI.",
+        ) +
+        api(
+          ["Token", "Giá trị", "Vai trò"],
+          [
+            ["<code>--fs-label</code>", "9px", "eyebrow / phạm vi / chrome mono in hoa"],
+            ["<code>--fs-chip</code>", "11px", "chip · giá trị · code inline"],
+            ["<code>--fs-h3</code>", "12px", "tiêu đề mục (mono, in hoa)"],
+            ["<code>--fs-body</code>", "14px", "chữ thân bài (sans)"],
+            ["<code>--fs-lead</code>", "16px", "đoạn mở đầu · <code>h2</code> trong prose"],
+            ["<code>--fs-h2</code>", "17px", "tiêu đề card / world"],
+            ["<code>--fs-h1</code>", "26px", "hero · số lớn"],
+            ["<code>--fs-code</code>", "<code>.9em</code>", "code inline / <code>@mention</code> — <b>tương đối</b>, để atom co theo câu chứa nó"],
+            ["<code>--lh-none · tight · heading · body</code>", "1 · 1.25 · 1.4 · 1.65", "độ cao dòng. <code>--lh-none</code> dành cho chrome một dòng, nơi cái hộp quyết định chiều cao"],
+            ["<code>--icon-sm … xl</code>", "14 · 20 · 28 · 40px", "cỡ glyph icon — thang riêng, vì icon được quyết bởi hộp của nó, không phải chữ bên cạnh"],
+          ],
+        ) +
+        callout(
+          "crit",
+          "<b>Ba độ đậm, không phải chín.</b> <code>--fw-regular</code> 400 · <code>--fw-medium</code> 450 · <code>--fw-bold</code> 700 — đúng những gì hai font đi kèm có (NES Mono chỉ có 400 và 700; NES Sans là variable 300–700). Xin 500 hay 600 trên mono là browser <i>tự tổng hợp</i> nét đậm: nó làm nhòe thân chữ và phá luôn độ sắc nét mà cả hệ thống dựng lên.",
+        ) +
+        note(
+          "<b>Số có thay đổi thì phải đặt trong mono.</b> Đo trên hai font đi kèm ở 16px: mười chữ số mono luôn cùng bề rộng bất kể là số nào (lệch <b>0.00px</b>), còn mười chữ số sans lệch tới <b>35.67px</b> — số <code>1</code> hẹp hơn số <code>0</code> 3.5px. Mọi bộ đếm sống trong thư viện đều là mono, nên không cần <code>font-variant-numeric</code>. Nếu bạn đặt số thay đổi vào sans thì phải tự thêm <code>tabular-nums</code>, không thì layout giật mỗi lần số nhảy.",
+        ) +
+        h2("Lớp, trạng thái & focus") +
+        api(
+          ["Token", "Giá trị", "Vai trò"],
+          [
+            ["<code>--z-raised</code>", "1", "một phần tử nhấc lên trên các phần tử cùng cấp"],
+            ["<code>--z-pop</code>", "2", "thứ nhô lên trong chính module của nó (popover chú thích, bóng kéo)"],
+            ["<code>--z-sticky</code>", "20", "dính trong trang (rail, header bảng)"],
+            ["<code>--z-drawer</code>", "30", "panel trượt ngoài — scrim của nó dùng <code>calc(var(--z-drawer) - 1)</code>"],
+            ["<code>--z-chrome</code>", "40", "chrome của app, trên cả trang (thanh trên dính)"],
+            ["<code>--z-overlay</code>", "100", "menu · tooltip · toast · dialog"],
+            ["<code>--z-top</code>", "9999", "lớp CRT, và không gì khác"],
+            ["<code>--op-disabled</code>", ".6", "<code>:disabled</code>, và thứ đã chốt xong"],
+            ["<code>--op-dim</code>", ".3", "dữ liệu đẩy ra hậu cảnh (chuỗi bị làm mờ, nguồn thô)"],
+            ["<code>--ring-w</code> / <code>--ring-c</code>", "<code>--bw-2</code> / <code>--gold</code>", "vòng focus — đổi màu focus bằng một khai báo"],
+          ],
+        ) +
+        cb(
+          `/* vòng focus màu cyan, toàn hệ thống, một dòng */
+:root { --ring-c: var(--cyan); }`,
         ) +
         h2("Khung app") +
         api(

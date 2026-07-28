@@ -113,24 +113,53 @@
     --font-mono: "NES Mono", ui-monospace, "Cascadia Code", Menlo, monospace;
     --font-body: "NES Sans", system-ui, -apple-system, sans-serif;
 
-    /* type scale (rem, 16px base). Only the rungs actually used. */
+    /* type scale (rem, 16px base). Only the rungs actually used — and every rung is
+       an INTEGER px at the default root size. A fractional font size gives every
+       text-sized box a fractional height, which puts its hard border on a half
+       pixel; in a system with no blur and no radius there is nothing to hide that
+       behind. (Kept in rem so a reader's own font size still scales the UI.) */
     --fs-label: .5625rem;
     /* 9px  · eyebrow / scope / uppercase mono   */
     --fs-chip: .6875rem;
     /* 11px · chip / value / code inline         */
-    --fs-body: .84375rem;
-    /* 13.5px · sans body                        */
     --fs-h3: .75rem;
     /* 12px · section mono heading               */
+    --fs-body: .875rem;
+    /* 14px · sans body                          */
+    --fs-lead: 1rem;
+    /* 16px · lead paragraph / prose h2          */
     --fs-h2: 1.0625rem;
     /* 17px · world / card title                 */
     --fs-h1: 1.625rem;
     /* 26px · hero / power number                */
+    --fs-code: .9em;
+    /* inline code / @mention — RELATIVE on purpose: an atom inside a sentence
+       tracks the sentence, whatever rung that sentence is set in. */
+
     --lh-tight: 1.25;
     --lh-body: 1.65;
     --lh-heading: 1.4;
+    --lh-none: 1;
+    /* single-line chrome: a key cap, a close ×, a rating star — the box owns the
+       height (--ctrl-h-*), so the line must not add any of its own. */
     --ls-chrome: .06em;
     /* letter-spacing for uppercase mono chrome  */
+
+    /* ---- weight: EXACTLY the weights the bundled faces ship.
+       NES Mono has 400 and 700 only; NES Sans is variable 300–700. Asking for 500
+       or 600 on mono makes the browser synthesise a bold — it smears the stems and
+       kills the crispness the whole system is built on. Stay on these three. ---- */
+    --fw-regular: 400;
+    --fw-medium: 450;
+    /* sans body — a hair above regular, still one axis stop, never synthetic */
+    --fw-bold: 700;
+
+    /* ---- icon glyph sizes: their own scale, because an icon is sized by its box,
+       not by the text rung next to it. All on the 2px grid. ---- */
+    --icon-sm: 14px;
+    --icon-md: 20px;
+    --icon-lg: 28px;
+    --icon-xl: 40px;
 
     /* ---- spacing scale (4-based, DRY) ---- */
     --sp-1: .25rem;
@@ -248,9 +277,35 @@
     --ctrl-pad: var(--ctrl-px-md);
     --ctrl-fs: var(--ctrl-fs-md);
 
-    /* ---- stacking: overlays sit above chrome, below scanlines (9999) ---- */
+    /* ---- stacking: ONE ladder, so nothing ever has to guess a number. Each rung
+       answers a different question about how far out of the flow a thing sits. ---- */
+    --z-raised: 1;
+    /* a sibling lifted above its neighbours (a pressed button in a group)  */
+    --z-pop: 2;
+    /* something popping over its OWN module (annotation popover, drag ghost) */
+    --z-sticky: 20;
+    /* sticks inside the page (a rail, a table header)                       */
+    --z-drawer: 30;
+    /* off-canvas panel + its scrim (scrim = calc(var(--z-drawer) - 1))      */
+    --z-chrome: 40;
+    /* app chrome that outranks the page (sticky top bar)                    */
     --z-overlay: 100;
     /* dropdown menu / tooltip / toast / dialog */
+    --z-top: 9999;
+    /* the CRT overlay, and nothing else — it must never be covered          */
+
+    /* ---- state opacity: two answers, not eight ---- */
+    --op-disabled: .6;
+    /* :disabled, and anything already decided/settled */
+    --op-dim: .3;
+    /* data pushed to the background (a dimmed series, a raw source)         */
+
+    /* ---- focus ring: retheme focus in ONE line by setting --ring-c.
+       Width and colour only — the offset stays in base.css because it has to
+       cancel the border, and box-shadow is deliberately untouched so a focused
+       control keeps its hard shadow. ---- */
+    --ring-w: var(--bw-2);
+    --ring-c: var(--gold);
 
     /* ---- breakpoints: THREE, and only three.
        This system is intrinsic-first — flex-wrap, auto-fit grids, clamp(),
