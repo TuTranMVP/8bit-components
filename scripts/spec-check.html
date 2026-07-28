@@ -47,18 +47,30 @@
 import { mermaidTheme } from "../elements.js";
 
 const out = [];
-const ok = (cond, label, extra = "") =>
+const render = () => { document.getElementById("r").textContent = out.join("\n"); };
+// render as we go, and surface a throw: a harness that dies silently is worse than
+// a failing one — it looks exactly like a harness that has not finished yet.
+const ok = (cond, label, extra = "") => {
   out.push(`${cond ? "PASS" : "FAIL"}  ${label}${extra ? " · " + extra : ""}`);
+  render();
+};
+addEventListener("error", (e) => { document.getElementById("r").textContent = `THREW: ${e.message} @ ${e.filename}:${e.lineno}\n${out.join("\n")}`; });
+addEventListener("unhandledrejection", (e) => { document.getElementById("r").textContent = `REJECTED: ${e.reason}\n${out.join("\n")}`; });
 await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
 /* ---- 1 · mermaidTheme carries a font size, driven by --mmd-fs ---- */
 const base = mermaidTheme();
 ok(typeof base.fontSize === "number" && base.fontSize > 0, "1 · config.fontSize is a number", `= ${base.fontSize}`);
 ok(base.themeVariables.fontSize === `${base.fontSize}px`, "1 · themeVariables.fontSize is a CSS length", base.themeVariables.fontSize);
-const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
-ok(Math.abs(base.fontSize - 0.84375 * rootPx) < 0.6, "1 · default resolves --fs-body rem → px", `${base.fontSize} vs ${0.84375 * rootPx}`);
-const probe = document.getElementById("fs12");
-const twelve = mermaidTheme(probe);
+// resolve the token rather than retyping its value: this assertion outlived
+// --fs-body changing from 13.5px to 14px, and its message was still saying 13.5
+const probe = document.createElement("span");
+probe.style.fontSize = "var(--fs-body)";
+document.body.append(probe);
+const bodyPx = parseFloat(getComputedStyle(probe).fontSize);
+probe.remove();
+ok(Math.abs(base.fontSize - bodyPx) < 0.6, "1 · default resolves --fs-body rem → px", `${base.fontSize} vs ${bodyPx}`);
+const twelve = mermaidTheme(document.getElementById("fs12"));
 ok(twelve.fontSize === 12 && twelve.themeVariables.fontSize === "12px", "1 · --mmd-fs:12px wins", JSON.stringify(twelve.themeVariables.fontSize));
 
 /* ---- 2 · nes:theme is a real seam for a BYO mermaid ---- */

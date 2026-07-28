@@ -480,10 +480,15 @@ function readOptions(host) {
       : { value: String(o), label: String(o) },
   );
 }
-/** A breakpoint from tokens.css (--bp-sm | --bp-lg | --bp-xl), so a component
- *  that switches shape in JS switches at the same width a media query would.
+/** A breakpoint from tokens.css (--bp-sm | --bp-lg | --bp-xl), so JS switches at
+ *  the same width a media query does — there is no other way to share the number,
+ *  because CSS cannot read a var() inside @media. Exported: an app doing its own
+ *  matchMedia should read the ladder rather than retype 74rem.
+ *
+ *    matchMedia(`(min-width: ${bp("lg")})`).matches
+ *
  *  Falls back to the ladder's own value if tokens.css was not loaded. */
-const bp = (name, fallback) =>
+export const bp = (name, fallback = { sm: "36rem", lg: "56rem", xl: "74rem" }[name]) =>
   getComputedStyle(document.documentElement).getPropertyValue(`--bp-${name}`).trim() || fallback;
 const _fmtSize = (b) =>
   b < 1024

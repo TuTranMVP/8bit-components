@@ -52,8 +52,11 @@
       /* docs run a tighter measure than the shipped --prose-measure (72ch):
          these paragraphs sit in an 820px column beside a live demo stage. */
       --doc-measure: 62ch;
-      /* how far a heading jumped to from <nes-toc> clears the sticky top bar */
-      --toc-offset: calc(var(--top-h) + var(--sp-4));
+      /* How far a heading jumped to from <nes-toc> clears the sticky chrome. Below
+         --bp-xl the toc is a collapsed bar under the top bar, so a heading has to
+         clear both: chrome + one lg control (the bar) + a rung of air. The rail
+         layout drops it back to chrome + a rung. */
+      --toc-offset: calc(var(--chrome-h) + var(--ctrl-h-lg) + var(--sp-2));
     }
 
     /* ---- top bar ---- */
@@ -63,9 +66,9 @@
       z-index: var(--z-chrome);
       display: flex;
       align-items: center;
-      gap: var(--sp-4);
+      gap: var(--sp-2);
       block-size: var(--top-h);
-      padding-inline: var(--sp-4);
+      padding-inline: var(--sp-3);
       background: var(--screen);
       /* opaque (no backdrop-filter) → the sticky bar never repaints on scroll */
       border-block-end: var(--bw) solid var(--line-hi);
@@ -88,9 +91,13 @@
       color: var(--gold);
     }
 
-    .topbar .search {
-      inline-size: min(200px, 34vw);
-      block-size: var(--ctrl-h-sm);
+    /* search · top links · version badge · sound: desktop chrome. A phone keeps
+       menu · brand · language, which is what actually fits. */
+    .topbar .search,
+    .top-links,
+    .topbar .badge,
+    .topbar nes-sound {
+      display: none;
     }
 
     .spacer {
@@ -116,7 +123,7 @@
     }
 
     .menu-btn {
-      display: none;
+      display: inline-flex;
     }
 
     /* ---- EN / VI language switch ---- */
@@ -170,19 +177,47 @@
     }
 
     /* ---- app grid: sidebar + content ---- */
+    /* ---- mobile-first: this base block IS the phone. One column, the navigation
+         off-canvas, the top bar decluttered. Everything wider is added by a
+         min-width query below — nothing is ever taken away by a max-width, so a
+         narrow viewport never has to un-style a desktop layout it never used. ---- */
     .app {
       display: grid;
-      grid-template-columns: var(--side-w) minmax(0, 1fr) var(--toc-w);
+      grid-template-columns: 1fr;
       align-items: start;
     }
 
+    /* the drawer is out of flow, so the single column is column 1 */
+    .app>nes-toc,
+    .app>.content {
+      grid-column: 1;
+    }
+
     .side {
-      position: sticky;
+      position: fixed;
       inset-block-start: var(--top-h);
+      inset-inline-start: 0;
+      z-index: var(--z-drawer);
+      inline-size: min(82vw, 300px);
       block-size: calc(100dvh - var(--top-h));
       overflow-y: auto;
+      background: var(--screen);
       border-inline-end: var(--bw) solid var(--line-hi);
       padding: var(--sp-5) var(--sp-3) var(--sp-7);
+      transform: translateX(-100%);
+      transition: transform var(--dur-mid) var(--ease);
+    }
+
+    body[data-nav-open] .side {
+      transform: none;
+    }
+
+    body[data-nav-open] .scrim {
+      display: block;
+      position: fixed;
+      inset: var(--top-h) 0 0;
+      z-index: calc(var(--z-drawer) - 1);
+      background: color-mix(in srgb, var(--bg) 60%, transparent);
     }
 
     .side-grp {
@@ -208,6 +243,9 @@
       font-family: var(--font-mono);
       font-size: var(--fs-chip);
       color: var(--muted);
+      /* a drawer row is the primary way to navigate on a phone, so it owes --tap
+         (padding alone left it at 42px) */
+      min-block-size: var(--tap);
       padding: var(--sp-2) var(--sp-3);
       border-inline-start: var(--accent-bar) solid transparent;
       cursor: pointer;
@@ -237,7 +275,7 @@
     /* ---- content column ---- */
     .content {
       min-inline-size: 0;
-      padding: var(--sp-6) var(--gutter);
+      padding: var(--sp-5) var(--gutter);
     }
 
     .doc-wrap {
@@ -450,10 +488,10 @@
       --toc-top: var(--top-h);
     }
 
-    /* ---- drop the rail column before it crowds the content: <nes-toc> switches
-         itself to the sticky-bar shape at the same width (rail-at="74rem"), so
-         here we only move it above the article instead of hiding it. ---- */
-    @media (width < 74rem) {
+    /* ---- --bp-lg (56rem): there is room for a permanent navigation column, so
+         the drawer becomes a rail and the top bar gets its chrome back. Two
+         columns; <nes-toc> stays the sticky bar above the article. ---- */
+    @media (min-width: 56rem) {
       .app {
         grid-template-columns: var(--side-w) minmax(0, 1fr);
       }
@@ -471,82 +509,73 @@
         padding-block-start: var(--sp-4);
       }
 
-      /* a jumped-to heading has to clear the top bar AND the collapsed bar */
-      :root {
-        /* the collapsed <nes-toc> bar is one lg control tall inside its 2px
-           border, so the clearance is chrome + bar + a rung of air. */
-        --toc-offset: calc(var(--chrome-h) + var(--ctrl-h-lg) + var(--sp-2));
-      }
-    }
-
-    /* ---- responsive: sidebar becomes a drawer ---- */
-    @media (width < 56rem) {
-      .app {
-        grid-template-columns: 1fr;
-      }
-
-      /* the drawer leaves the flow, so the single column is column 1 */
-      .app>nes-toc,
-      .app>.content {
-        grid-column: 1;
-      }
-
       .side {
-        position: fixed;
-        inset-block-start: var(--top-h);
-        inset-inline-start: 0;
-        z-index: var(--z-drawer);
-        inline-size: min(82vw, 300px);
-        background: var(--screen);
-        transform: translateX(-100%);
-        transition: transform var(--dur-mid) var(--ease);
-      }
-
-      body[data-nav-open] .side {
+        position: sticky;
+        z-index: auto;
+        inline-size: auto;
+        background: none;
         transform: none;
       }
 
+      .menu-btn,
       body[data-nav-open] .scrim {
-        display: block;
-        position: fixed;
-        inset: var(--top-h) 0 0;
-        z-index: calc(var(--z-drawer) - 1);
-        background: color-mix(in srgb, var(--bg) 60%, transparent);
+        display: none;
       }
 
-      .menu-btn {
+      .topbar {
+        gap: var(--sp-4);
+        padding-inline: var(--sp-4);
+      }
+
+      .topbar .search {
+        display: block;
+        inline-size: min(200px, 34vw);
+        block-size: var(--ctrl-h-sm);
+      }
+
+      .top-links {
+        display: flex;
+      }
+
+      .topbar .badge,
+      .topbar nes-sound {
         display: inline-flex;
       }
 
-      /* declutter the top bar on phones — keep brand · lang · sound */
-      .topbar {
-        gap: var(--sp-2);
-        padding-inline: var(--sp-3);
-      }
-
-      .topbar .search,
-      .top-links,
-      .topbar .badge {
-        display: none;
-      }
-
-      /* the sound toggle is decorative chrome — drop it on phones so
-         brand · language switch always fit cleanly */
-      .topbar nes-sound {
-        display: none;
-      }
-
-      /* bigger tap targets in the drawer */
       .navlink {
-        padding-block: var(--sp-3);
+        padding: var(--sp-2) var(--sp-3);
       }
 
       .content {
-        padding: var(--sp-5) var(--sp-4);
+        padding: var(--sp-6) var(--gutter);
+      }
+    }
+
+    /* ---- --bp-xl (74rem): room for a THIRD column, so the table of contents
+         becomes the right rail. <nes-toc> flips its own shape at the same width
+         (rail-at defaults to --bp-xl), which is why both must be one rung. ---- */
+    @media (min-width: 74rem) {
+      .app {
+        grid-template-columns: var(--side-w) minmax(0, 1fr) var(--toc-w);
       }
 
-      .doc-lead {
-        font-size: var(--fs-lead);
+      .app>nes-toc {
+        grid-column: 3;
+        grid-row: 1;
+        margin-inline: 0;
+        margin-block-start: 0;
+      }
+
+      .app>.content {
+        grid-column: 2;
+        grid-row: 1;
+        padding-block-start: var(--sp-6);
+      }
+
+      /* the rail shows the whole outline, so a jumped-to heading only has to clear
+         the top bar — not the collapsed bar as well */
+      :root {
+        --toc-offset: calc(var(--chrome-h) + var(--sp-4));
       }
     }
   </style>
@@ -557,7 +586,7 @@
   <header class="topbar">
     <button class="menu-btn btn ghost" aria-label="Bật/tắt điều hướng" data-menu>☰</button>
     <span class="brand" data-home tabindex="0" role="link"><span class="sq">◈</span> 8-BIT NES</span>
-    <span class="badge">v0.10.0</span>
+    <span class="badge">v0.11.0</span>
     <input class="input search" type="search" placeholder="TÌM…" aria-label="Lọc component" data-search>
     <span class="spacer"></span>
     <nav class="top-links">

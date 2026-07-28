@@ -1,0 +1,57 @@
+<!doctype html>
+<!-- Fixtures for `pnpm check:mobile`. One instance of every interactive recipe, with
+     nothing else on the page, so the runner can measure hit boxes on a real phone
+     viewport. Not shipped: `files` in package.json excludes scripts/.
+     The assertions live in scripts/mobile-check.mjs — a page cannot check itself
+     here, because (pointer: coarse) is false in a plain headless window and every
+     touch rule would silently pass. -->
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>mobile check</title>
+<link rel="stylesheet" href="../all.css">
+<script type="module" src="../elements.js"></script>
+<style>
+  body { padding: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-4) }
+  .row { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center }
+</style>
+</head>
+<body>
+
+<div class="row">
+  <button class="btn" data-probe="btn">Act</button>
+  <button class="btn icon" data-probe="btn-icon" aria-label="Settings">⚙</button>
+  <button class="chip" data-probe="chip">Chip</button>
+</div>
+
+<input class="input" data-probe="input" placeholder="text">
+<textarea class="textarea" data-probe="textarea">t</textarea>
+<select class="select" data-probe="select"><option>a</option></select>
+<input type="color" class="swatch" data-probe="swatch" value="#56d364">
+
+<label class="check" data-probe="check-box"><input type="checkbox" class="checkbox" data-probe="checkbox"> Checkbox</label>
+<label class="check" data-probe="check-radio"><input type="radio" class="radio" name="r" data-probe="radio"> Radio</label>
+<label class="check" data-probe="check-switch"><input type="checkbox" class="switch" data-probe="switch"> Switch</label>
+
+<nav class="pagination">
+  <button class="pg" data-probe="pg">1</button><button class="pg" data-probe="pg2">2</button>
+</nav>
+<div class="segment">
+  <button class="seg on" data-probe="seg">A</button><button class="seg" data-probe="seg2">B</button>
+</div>
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" aria-selected="true" data-probe="tab">One</button>
+  <button class="tab" role="tab" data-probe="tab2">Two</button>
+</div>
+<div class="stepper">
+  <button data-probe="stepper-down">−</button><input class="input" value="1"><button data-probe="stepper-up">+</button>
+</div>
+
+<nes-code-tree data-probe="code-tree">
+  <script type="application/json">
+    {"src/app.js": "export const go = () => 1;", "README.md": "# hi"}
+  </script>
+</nes-code-tree>
+
+</body>
+</html>

@@ -58,6 +58,11 @@ export declare function toast(msg: string, opts?: ToastOptions): HTMLElement;
 /** Highlight code to HTML with `.t-*` token spans (used by <nes-code>). */
 export declare function highlightCode(code: string): string;
 
+/** A breakpoint width read from tokens.css, so JS switches shape at the same width
+ *  a media query does (CSS cannot read a var() inside `@media`).
+ *  `matchMedia(`(min-width: ${bp("lg")})`)` */
+export declare function bp(name: "sm" | "lg" | "xl", fallback?: string): string;
+
 /* ---- custom elements ---- */
 
 export interface NesSoundElement extends HTMLElement {}

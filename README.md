@@ -11,7 +11,7 @@ Reusable across every project in the studio — install it into any repo, no bui
 pnpm add 8bit-nes
 
 # or straight from GitHub (a tag is a valid spec too)
-pnpm add github:TuTranMVP/8bit-components#v0.10.0
+pnpm add github:TuTranMVP/8bit-components#v0.11.0
 ```
 
 ```js
@@ -40,16 +40,16 @@ visit (copy it verbatim — every line earns its place):
 <!-- 2. fonts, at the exact URLs all.min.css resolves url() to → fetched once, in parallel
         with the stylesheet instead of after it -->
 <link rel="preload" as="font" type="font/woff2" crossorigin
-  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.10.0/fonts/nes-sans-var.woff2">
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.11.0/fonts/nes-sans-var.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin
-  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.10.0/fonts/nes-mono-400.woff2">
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.11.0/fonts/nes-mono-400.woff2">
 
 <!-- 3. the system: pinned version + byte-pinned integrity -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.10.0/all.min.css"
-  integrity="sha384-95XtLQ/nUh4NiQFs3ytcopSpKkeg+UEiWXPLENS4WsQdgR6SdZtG1PPnr2r2ou4+"
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.11.0/all.min.css"
+  integrity="sha384-j0Q5YVz0wgcsKFA+nD2m7+ovjvUMZzxbDV/RFwql2+Q2kOnCfv46JFs1dWMB+ABj"
   crossorigin="anonymous">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.10.0/elements.min.js"
-  integrity="sha384-Ke4OQELElQBBqXwHcVW/1giRt8A6gb/vi2kdNQuR8rxaDrVW1ssibIkzqJwyTmeH"
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.11.0/elements.min.js"
+  integrity="sha384-0HDGzTcflYolFqK0jwKj77Abe5zwF4ZlTJgObaaVeef1q2NCr1m6OZn28GcO1tk0"
   crossorigin="anonymous"></script>
 ```
 
@@ -88,7 +88,7 @@ Copy-paste starter, already wired exactly like the above:
 [`examples/cdn-starter.html`](examples/cdn-starter.html) — also live on the docs site at
 `/examples/cdn-starter.html`.
 
-> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.10.0/all.min.css`) and the same
+> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.11.0/all.min.css`) and the same
 > SRI digests — it's the identical npm tarball. Pick *one* origin per page, though: two CDNs
 > means two handshakes for no benefit.
 
@@ -128,6 +128,10 @@ import manifest from "8bit-nes/components.json" with { type: "json" };
   so importing the module always wires the components.
 - **CSS** is one layer set; drop what you don't need at the file level via the granular imports.
 - `pnpm build` (esbuild) regenerates the `.min` files; CI fails if the committed ones are stale.
+
+`pnpm check:mobile` is the one check that needs a browser (it drives a real 390×844 phone
+viewport over CDP and hit-tests every control off centre), so it sits outside `pnpm check`:
+`pnpm check:mobile` locally, `CHROME=/path/to/chrome` to point it at your binary.
 
 ## Release flow (maintainer)
 
@@ -179,7 +183,8 @@ button / card / chip downstream picks it up via `--accent`.
 sub-grid exception), size lands on 2px steps, **every type rung is an integer px** (9 · 11 · 12 ·
 14 · 16 · 17 · 26), weight is one of exactly three (`--fw-regular` 400 · `--fw-medium` 450 ·
 `--fw-bold` 700 — the only stops the bundled faces ship), `z-index` comes from one `--z-*` ladder,
-and exactly three widths switch a layout —
+and exactly three widths switch a layout, always **mobile-first** (`min-width` only — the base
+block is the phone) —
 `--bp-sm` 36rem, `--bp-lg` 56rem, `--bp-xl` 74rem. `pnpm check` fails the build on a value
 that drifts off either grid, on a breakpoint outside the ladder, and on `max-width` (which
 overlaps `min-width` at exactly the same width). Box padding has three roles you can override

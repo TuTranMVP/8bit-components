@@ -277,6 +277,20 @@
     --ctrl-pad: var(--ctrl-px-md);
     --ctrl-fs: var(--ctrl-fs-md);
 
+    /* ---- touch: two tap sizes, and the reason each exists.
+       WCAG 2.5.8 (AA) sets the FLOOR at 24×24px — nothing interactive may be
+       smaller on a coarse pointer, and this library's check measures it on a real
+       phone viewport. 2.5.5 (AAA) asks for 44×44, which is what a thumb actually
+       wants, so that is the default. --tap-dense is for list rows and chips where
+       44px each would push the content of a phone screen off the bottom; it still
+       clears the floor by 16px. A visual box never has to grow to satisfy this —
+       an invisible ::after hit area works and keeps the pixel look (see .wt-dot,
+       .checkbox, .radio, .switch). ---- */
+    --tap: var(--ctrl-h-lg);
+    /* 44px · anything you press to act */
+    --tap-dense: 2.5rem;
+    /* 40px · rows in a list you scroll through */
+
     /* ---- stacking: ONE ladder, so nothing ever has to guess a number. Each rung
        answers a different question about how far out of the flow a thing sits. ---- */
     --z-raised: 1;

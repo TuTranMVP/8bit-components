@@ -2,6 +2,73 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.11.0
+
+The mobile-first pass, measured on a **real phone viewport** instead of a narrow
+desktop window. That distinction is the whole story: in a plain headless window
+both `(pointer: coarse)` and `(pointer: fine)` are **false**, so every touch rule
+in this library would pass a test without ever being applied. This release adds a
+CDP-driven check that emulates a 390×844 phone with touch, and hit-tests each
+control off centre rather than trusting a box measurement.
+
+What that found, and what was already right: the iOS 16px focus-zoom floor and the
+44px control heights **already shipped** (measured, not assumed). Three things did
+not: a colour swatch was 36×44 on touch — the coarse rule bumped only its height,
+so a 44px tap missed sideways and a square control stopped being square; a
+pagination button was 32px wide; and the checkbox / radio / switch boxes sat at
+22px with no enlarged hit area, under the 24×24px WCAG 2.5.8 floor.
+
+**Minor, not patch**: the docs shell's responsive direction is inverted (same
+result, different source), and three touch targets grow on coarse pointers only.
+
+### Added
+
+- **`--tap` (44px, `--ctrl-h-lg`) and `--tap-dense` (40px)** — the two tap sizes,
+  each with its reason: `--tap` is anything you press to act (WCAG 2.5.5),
+  `--tap-dense` is a row in a list you scroll, where 44px each would push a phone
+  screen's content off the bottom; it still clears the 24px floor by 16px.
+- **A 44px hit area for the three controls that must stay small.** `.checkbox`,
+  `.radio` and `.switch` keep their 22px box and their hard 2px border, and take a
+  44px tap through a transparent centred `::before` — the technique `.wt-dot`
+  already used. The accessibility floor now costs the pixel look nothing.
+- **`pnpm check:mobile`** (`scripts/mobile-check.mjs` + `mobile-check.html`) — a
+  zero-dependency CDP driver (node's own http server + the global `WebSocket`) that
+  emulates the phone, asserts 13 things, and **refuses to report** if the emulation
+  did not take, because a silent pass there is worse than a failure. It is not part
+  of `pnpm check`: that one stays hermetic, this one needs a browser
+  (`CHROME=/path/to/chrome` to point it anywhere).
+- **`bp(name)` is exported** — `matchMedia(`(min-width: ${bp("lg")})`)`. JS and CSS
+  cannot share a breakpoint any other way, since `@media` cannot read a `var()`.
+- Docs: a **Touch & mobile** section on `#/layout` (EN + VI) and the rules in
+  `DESIGN.md` / `README.md` / the generated `llms-full.txt` section.
+
+### Fixed
+
+- **`.swatch` was 36×44 on a coarse pointer** — the tap missed sideways, and a
+  square control rendered as a rectangle. Square controls now grow in both axes.
+- **`.pg` and `.stepper > button` were 32px wide** — one-glyph controls now get a
+  square `--tap-dense` target.
+- **A drawer navigation row measured 42px** in the docs shell — 2px under `--tap`.
+
+### Changed
+
+- **The docs shell is mobile-first.** Its base block is now the phone (one column,
+  off-canvas drawer, decluttered top bar) and two `min-width` queries *add* the
+  sidebar at `--bp-lg` and the table-of-contents rail at `--bp-xl`. It used to be
+  the reverse — a desktop base that two `max-width` queries took apart — which
+  meant a phone had to un-style a layout it never used.
+- **`pnpm check` now rejects `max-width` and `(width < X)` outright.** Mobile-first
+  is a direction, not a breakpoint: the base block describes the phone, `min-width`
+  adds. (It already rejected `max-width` for the boundary-overlap reason from
+  0.9.0; this extends it to the range syntax that replaced it.) `.code-tree` was
+  the last desktop-first module in `components.css` and is now inverted too.
+- `z-index: auto` is accepted by the check — it is not a magic number, it says
+  "this element creates no layer", which is what a mobile-first reset needs.
+- Both browser harnesses now render assertions as they run and surface a throw.
+  `spec-check.html` had gone silent after an unrelated change and looked identical
+  to a harness still working; its `--fs-body` assertion also still named 13.5px
+  after 0.10.0 moved it to 14px, so it now resolves the token instead.
+
 ## 0.10.0
 
 0.9.0 put space and size on a grid. This does the same for the scales that were
