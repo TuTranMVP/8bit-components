@@ -479,6 +479,34 @@ import "8bit-nes/components.css";`,
           "crit",
           "CSS cannot read a <code>var()</code> inside <code>@media</code>, so a query writes the literal — and <code>max-width: X</code> also overlaps <code>min-width: X</code> at exactly X. Write <code>@media (width &lt; 74rem)</code> (exclusive) or <code>min-width</code> (inclusive), never <code>max-width</code>. In JS, read the token: <code>matchMedia(`(min-width: ${getComputedStyle(document.documentElement).getPropertyValue(\"--bp-xl\")})`)</code>.",
         ) +
+        h2("Touch & mobile") +
+        p(
+          "Mobile-first is a direction, not a breakpoint: <b>the base block is the phone</b> and a <code>min-width</code> query <i>adds</i> the wider layout. Nothing is ever taken away by a <code>max-width</code> — so a phone never has to un-style a desktop layout it never used, and the check rejects <code>max-width</code> outright.",
+        ) +
+        api(
+          ["Token", "Value", "Role"],
+          [
+            ["<code>--tap</code>", "44px (<code>--ctrl-h-lg</code>)", "anything you press to act — WCAG 2.5.5"],
+            ["<code>--tap-dense</code>", "40px", "a row in a list you scroll; still 16px above the floor"],
+          ],
+        ) +
+        p(
+          "On <code>(pointer: coarse)</code> every interactive box clears the <b>24×24px WCAG 2.5.8 floor</b>, and anything you press to act clears <code>--tap</code>. A small control never grows to get there — a checkbox stays 22px and takes a 44px tap through a transparent <code>::before</code>, so the pixel look survives the accessibility floor:",
+        ) +
+        cb(
+          `/* what the library already does for you, on touch only */
+@media (pointer: coarse) {
+  .checkbox, .radio, .switch { position: relative }
+  :is(.checkbox, .radio, .switch)::before {
+    content: ""; position: absolute; inset-block-start: 50%; inset-inline-start: 50%;
+    translate: -50% -50%;
+    inline-size: max(100%, var(--tap)); block-size: max(100%, var(--tap));
+  }
+}`,
+        ) +
+        note(
+          "Text-entry controls are floored at <code>max(16px, var(--fs-body))</code> on a coarse pointer, because iOS Safari zooms the whole page when you focus a field whose font is under 16px. <code>pnpm check:mobile</code> drives a real 390×844 phone viewport over CDP — a plain headless window reports neither <code>coarse</code> nor <code>fine</code>, so every touch rule would pass without ever being applied — and hit-tests each control 12px and 22px off centre rather than trusting a box measurement.",
+        ) +
         h2("Type") +
         p(
           "Six rungs, and <b>every one is an integer px</b> at the default root size. A fractional font size gives every text-sized box a fractional height, which puts its hard border on a half pixel — and this system has no blur and no radius to hide that behind. Kept in <code>rem</code>, so a reader's own font size still scales the UI.",
@@ -602,6 +630,34 @@ import "8bit-nes/components.css";`,
         callout(
           "crit",
           "CSS không đọc được <code>var()</code> trong <code>@media</code>, nên query phải viết số thật — và <code>max-width: X</code> trùng với <code>min-width: X</code> đúng tại X. Hãy viết <code>@media (width &lt; 74rem)</code> (loại trừ) hoặc <code>min-width</code> (bao gồm), đừng dùng <code>max-width</code>. Trong JS thì đọc token: <code>matchMedia(`(min-width: ${getComputedStyle(document.documentElement).getPropertyValue(\"--bp-xl\")})`)</code>.",
+        ) +
+        h2("Cảm ứng & mobile") +
+        p(
+          "Mobile-first là một <i>hướng</i>, không phải một breakpoint: <b>khối cơ sở chính là điện thoại</b>, còn <code>min-width</code> <i>thêm</i> layout rộng vào. Không bao giờ dùng <code>max-width</code> để gỡ bớt — nhờ vậy điện thoại không phải hủy một layout desktop mà nó chưa từng dùng, và bộ check chặn thẳng <code>max-width</code>.",
+        ) +
+        api(
+          ["Token", "Giá trị", "Vai trò"],
+          [
+            ["<code>--tap</code>", "44px (<code>--ctrl-h-lg</code>)", "thứ bạn bấm để hành động — WCAG 2.5.5"],
+            ["<code>--tap-dense</code>", "40px", "một hàng trong danh sách cuộn; vẫn cao hơn sàn 16px"],
+          ],
+        ) +
+        p(
+          "Với <code>(pointer: coarse)</code>, mọi hộp tương tác đều vượt <b>sàn 24×24px của WCAG 2.5.8</b>, và thứ nào bấm để hành động thì vượt <code>--tap</code>. Control nhỏ <i>không</i> phải phình ra để đạt điều đó — checkbox vẫn 22px và nhận cú chạm 44px qua một <code>::before</code> trong suốt, nên vẻ pixel vẫn còn nguyên:",
+        ) +
+        cb(
+          `/* thư viện đã làm sẵn cho bạn, chỉ trên thiết bị chạm */
+@media (pointer: coarse) {
+  .checkbox, .radio, .switch { position: relative }
+  :is(.checkbox, .radio, .switch)::before {
+    content: ""; position: absolute; inset-block-start: 50%; inset-inline-start: 50%;
+    translate: -50% -50%;
+    inline-size: max(100%, var(--tap)); block-size: max(100%, var(--tap));
+  }
+}`,
+        ) +
+        note(
+          "Các control nhập chữ được đặt sàn <code>max(16px, var(--fs-body))</code> trên con trỏ thô, vì iOS Safari sẽ zoom cả trang khi bạn focus vào field có cỡ chữ dưới 16px. <code>pnpm check:mobile</code> điều khiển một viewport điện thoại thật 390×844 qua CDP — cửa sổ headless thường báo cả <code>coarse</code> lẫn <code>fine</code> đều false, nên mọi luật cảm ứng sẽ pass mà chẳng hề được áp dụng — rồi hit-test từng control lệch tâm 12px và 22px thay vì tin vào số đo hộp.",
         ) +
         h2("Chữ") +
         p(

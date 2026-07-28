@@ -61,8 +61,10 @@ const FROM_SCALE = [
   },
   {
     prop: "z-index",
-    ok: (v) => /var\(--z-/.test(v),
-    why: "z-index must come from the --z-* ladder",
+    // `auto` is not a magic number — it says "this element creates no layer",
+    // which is exactly what a mobile-first reset needs to say.
+    ok: (v) => /var\(--z-/.test(v) || /^(?:auto|inherit)$/.test(v),
+    why: "z-index must come from the --z-* ladder (or `auto` to opt out of a layer)",
   },
 ];
 
@@ -102,12 +104,17 @@ for (const file of FILES) {
       // `max-width: X` and `min-width: X` BOTH match at exactly X, so a shell and a
       // component pinned to the same rung still disagree on that one pixel width.
       // Mobile-first `min-width: X` (inclusive) or `(width < X)` (exclusive) cannot.
-      if (/max-width:/.test(src))
+      // Mobile-first, one direction only: the base block describes the phone and a
+      // min-width query ADDS the wider layout. A max-width (or `width <`) query
+      // takes a desktop layout away from a viewport that never used it — and
+      // `max-width: X` also overlaps `min-width: X` at exactly X, which is how the
+      // docs rail and <nes-toc> once disagreed on a single pixel width.
+      if (/max-width:|width\s*<=?/.test(src))
         fail(
           file,
           line,
           src.trim(),
-          "use (width < X) instead of max-width: X — the two overlap at exactly X",
+          "mobile-first: write (min-width: X) and put the phone shape in the base block",
         );
       for (const [, n, unit] of src.matchAll(
         /(?:(?:min|max)-width:|width\s*[<>]=?)\s*([\d.]+)(px|rem|em)/g,

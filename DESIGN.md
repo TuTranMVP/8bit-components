@@ -186,7 +186,21 @@ is `tokens, base, components, utilities` so page authors can override without `!
 - Native elements first: real `<button>`, `<dialog>`, `<details>`, `<select>`, `<input>` — free
   keyboard + AT behaviour. Add ARIA only to fill gaps (e.g. `<nes-tabs>` = full WAI-ARIA tabs).
 - Color never alone: pair `crit`/`warn` states with text.
-- Respect `prefers-reduced-motion`. Ship responsive down to mobile (sidebar → drawer).
+- Respect `prefers-reduced-motion`.
+- **Mobile-first is a direction, not a breakpoint.** The base block is the phone; a `min-width`
+  query *adds* the wider layout. `max-width` (and `width <`) are rejected by `pnpm check`: a phone
+  should never have to un-style a desktop layout it never used, and `max-width: X` overlaps
+  `min-width: X` at exactly X.
+- **Touch targets.** On `(pointer: coarse)` every interactive box clears the 24×24px floor
+  (WCAG 2.5.8) and anything you press to act clears `--tap` 44px (2.5.5); a row in a scrolling
+  list may use `--tap-dense` 40px. A small control **does not grow** to get there — `.checkbox`,
+  `.radio` and `.switch` keep their 22px box and take a 44px tap through a transparent `::before`,
+  so the accessibility floor costs the pixel look nothing.
+- **Text entry is floored at 16px on touch** (`max(16px, var(--fs-body))`), because iOS Safari
+  zooms the whole page when a focused field's font is smaller.
+- `pnpm check:mobile` proves all of it on a real 390×844 phone viewport over CDP, hit-testing each
+  control off centre. A plain headless window reports neither `coarse` nor `fine`, so a touch rule
+  there passes without ever being applied — never verify this without emulation.
 
 ---
 
