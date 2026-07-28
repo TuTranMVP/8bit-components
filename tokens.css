@@ -216,5 +216,14 @@
     --scanline-opacity: .06;
     /* CRT lines, subtle */
     --maxw: 960px;
+
+    /* reading measure for .prose children — the text, not the container, so a table
+       or a diagram beside it keeps the full width it needs */
+    --prose-measure: 72ch;
+
+    /* diagram label size for <nes-mermaid>. Its own rung because a label is not body
+       copy: it may go smaller than the reading size without dragging prose down.
+       Falls back to --fs-body so a page that sets nothing stays coherent. */
+    --mmd-fs: var(--fs-body);
   }
 }

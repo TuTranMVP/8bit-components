@@ -164,8 +164,10 @@ export interface NesCodeTreeElement extends HTMLElement {}
 
 /* ---- Visualize module ---- */
 
-/** Mermaid config (themeVariables + fonts) mapped to 8-BIT NES tokens. Pass the
- *  result to `mermaid.initialize(...)` when bringing your own mermaid instance. */
+/** Mermaid config (themeVariables + fonts + label size) mapped to 8-BIT NES tokens.
+ *  Label size comes from `--mmd-fs` (falling back to `--fs-body`), resolved to px so
+ *  both `config.fontSize` (number) and `themeVariables.fontSize` (CSS length) agree.
+ *  Pass the result to `mermaid.initialize(...)` when bringing your own instance. */
 export declare function mermaidTheme(root?: Element): Record<string, unknown>;
 
 /** Opt into lazy-loading mermaid from `url` (a CDN or self-hosted ESM build).
@@ -178,8 +180,10 @@ export declare function enableMermaid(url: string): void;
  * is never bundled — it uses `globalThis.mermaid`, a per-element `src`, or the
  * URL from {@link enableMermaid}. Streaming-safe: assign `.code` on each chunk;
  * partial/invalid syntax keeps the last good render. Renders with
- * `securityLevel:"strict"` since AI output is untrusted. Emits `nes:render` and
- * `nes:node` (on node click).
+ * `securityLevel:"strict"` since AI output is untrusted. Emits `nes:render`,
+ * `nes:node` (on node click), and `nes:theme` — cancelable, once, before
+ * `initialize()`: amend `detail.config` to change any mermaid option, or
+ * `preventDefault()` to keep a config you set yourself.
  */
 export interface NesMermaidElement extends HTMLElement {
   /** current diagram source; set it to (re-)render (debounced). */
@@ -511,5 +515,6 @@ declare global {
     "nes:diff": CustomEvent<DiffStat>;
     "nes:navigate": CustomEvent<{ url: string }>;
     "nes:section": CustomEvent<{ id: string; text: string }>;
+    "nes:theme": CustomEvent<{ config: Record<string, unknown>; mermaid: unknown }>;
   }
 }

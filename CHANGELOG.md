@@ -2,6 +2,71 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.8.0
+
+Six items filed by an integrator reading `all.min.css` and `elements.js` of 0.7.3
+while fixing a real symptom. Four were places where the library already did the
+right thing somewhere else and not here; two were capability gaps. **Minor, not
+patch**: three of them change how shipped CSS behaves.
+
+### Fixed
+
+- **`.prose` capped the container, not the text.** `max-inline-size: 72ch` on
+  `.prose` also capped every child that is not text: a spec table was crushed to
+  one word per column and a diagram drew its labels smaller to fit a width it did
+  not need to fit. A paragraph rewraps when it runs out of room; a table, a
+  `<pre>` or an SVG cannot. The measure now sits on the children (`--prose-measure`,
+  still 72ch), and the constructs whose content *is* width opt out —
+  `.table-wrap`, `table`, `pre`, `.codeblock`, `.code-preview`, `.diff`,
+  `.terminal`, `.card-group`, `hr`, `img`, `svg`, `video`, `<nes-code>`,
+  `<nes-mermaid>`, `<nes-graph>`, `<nes-zoom>`. Measured by default is the safe
+  direction: a construct nobody has considered yet reads correctly instead of
+  sprawling.
+- **`.datalist` asked for baseline alignment in a way that could not work.**
+  `align-self: baseline` sat on `dt` alone, and a baseline group of one degrades to
+  `start` — so a 9px mono key and a 13.5px value shared a row's top edge while
+  their text did not, worst when the value held an inline `<code>` whose padding
+  pushed it further down. `align-items: baseline` now sits on the grid, where
+  `.source` has always had it. Measured: the two baselines are 0.00px apart, both
+  rows.
+- **`<nes-zoom>`'s internals were global class names.** `.zoom-view` /
+  `.zoom-stage` / `.zoom-bar` are built by the element but were declared top-level,
+  so putting `.zoom-view` on anything else produced a box with a grab cursor that
+  cannot be grabbed — and its `overflow: hidden`, declared later than
+  `.mermaid-view`'s `overflow: auto` at equal specificity, silently removed the
+  scroll container too, clipping tall content with nothing in the console to say
+  why. All three are now scoped to `nes-zoom`.
+
+### Added
+
+- **`--mmd-fs`** — diagram label size for `<nes-mermaid>`, the one value
+  `mermaidTheme()` had left to mermaid's own 16px default. It decides how much of a
+  diagram is legible: `useMaxWidth` fits the drawing to its container, so a larger
+  font makes a larger natural drawing that is then scaled down harder — the labels
+  do not grow, the diagram shrinks. Its own token (falling back to `--fs-body`)
+  because a label is not body copy and should be able to go smaller without
+  dragging prose with it. Resolved to px once and fed to both `config.fontSize`
+  (a number, for layout maths) and `themeVariables.fontSize` (a CSS length, what
+  lands in the rendered SVG).
+- **`nes:theme`** — a seam for a brought-your-own mermaid. The element themes a
+  global it did not create, exactly once, which was right; doing it with no hook
+  was not. `initialize()` before the element and this call reset over it;
+  after, and there was no "after". The event is cancelable and fires synchronously
+  before the library is touched: amend `detail.config` to change any mermaid
+  option, or `preventDefault()` to keep a config you set yourself. No private
+  static to reach for, no race.
+- **Two-finger pinch in `<nes-zoom>`.** `.zoom-view` sets `touch-action: none` for
+  the drag, which is also what removes the browser's own pinch — so on a phone, the
+  case the component exists for, the reader could pan but had to hunt for the `+`
+  button to scale. Pinch now comes from the pointers already being tracked: two
+  down scales by the ratio of their distance to the distance at gesture start,
+  anchored on the midpoint so the spot under the fingers stays put. Lifting one
+  finger resumes the pan from where it is. No new listener types, no dependency;
+  the wheel, keyboard and button paths are unchanged.
+- `scripts/spec-check.html` — one runnable page that asserts all six above with the
+  measured value beside each. Not shipped (`files` excludes `scripts/`); serve the
+  repo root and open it. These are the regressions that would otherwise be silent.
+
 ## 0.7.3
 
 One `<nes-toc>` fix. No token, class or element API changed; CSS is byte-identical
