@@ -11,7 +11,7 @@ Reusable across every project in the studio — install it into any repo, no bui
 pnpm add 8bit-nes
 
 # or straight from GitHub (a tag is a valid spec too)
-pnpm add github:TuTranMVP/8bit-components#v0.8.0
+pnpm add github:TuTranMVP/8bit-components#v0.9.0
 ```
 
 ```js
@@ -40,16 +40,16 @@ visit (copy it verbatim — every line earns its place):
 <!-- 2. fonts, at the exact URLs all.min.css resolves url() to → fetched once, in parallel
         with the stylesheet instead of after it -->
 <link rel="preload" as="font" type="font/woff2" crossorigin
-  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.8.0/fonts/nes-sans-var.woff2">
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.9.0/fonts/nes-sans-var.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin
-  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.8.0/fonts/nes-mono-400.woff2">
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.9.0/fonts/nes-mono-400.woff2">
 
 <!-- 3. the system: pinned version + byte-pinned integrity -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.8.0/all.min.css"
-  integrity="sha384-YjUQdJzr1cqnL44Moa7B2my1xHGiLtUSLU/57XrhKVRG3g1/meDerT3b5RByfvGJ"
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.9.0/all.min.css"
+  integrity="sha384-70uHNIFpFZ25lR74hSBOZxiNkkVP0qlfeHhragVE+i1rXgo3EUCrpaQsEs3AazQu"
   crossorigin="anonymous">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.8.0/elements.min.js"
-  integrity="sha384-fSlpqvafjEUAMGdFGdQm7jTgwi65JzBFbmg4cpxJ6E8soR33VyteackyR5U4jfTQ"
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.9.0/elements.min.js"
+  integrity="sha384-Ke4OQELElQBBqXwHcVW/1giRt8A6gb/vi2kdNQuR8rxaDrVW1ssibIkzqJwyTmeH"
   crossorigin="anonymous"></script>
 ```
 
@@ -88,7 +88,7 @@ Copy-paste starter, already wired exactly like the above:
 [`examples/cdn-starter.html`](examples/cdn-starter.html) — also live on the docs site at
 `/examples/cdn-starter.html`.
 
-> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.8.0/all.min.css`) and the same
+> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.9.0/all.min.css`) and the same
 > SRI digests — it's the identical npm tarball. Pick *one* origin per page, though: two CDNs
 > means two handshakes for no benefit.
 
@@ -174,6 +174,15 @@ Run the docs site locally with `pnpm demo`, then open `/docs.html`.
 Everything reads from `:root`. **Change the look in `tokens.css`, never in a component.**
 One block = one accent: set `data-accent="blue|gold|cyan|purple|good|warn|crit"`, and the
 button / card / chip downstream picks it up via `--accent`.
+
+**The grid law.** Space lands on 4px steps (a `--sp-*` rung; `--sp-hair` 2px is the one
+sub-grid exception), size lands on 2px steps, and exactly three widths switch a layout —
+`--bp-sm` 36rem, `--bp-lg` 56rem, `--bp-xl` 74rem. `pnpm check` fails the build on a value
+that drifts off either grid, on a breakpoint outside the ladder, and on `max-width` (which
+overlaps `min-width` at exactly the same width). Box padding has three roles you can override
+to retune density in one line — `--pad-tight` 4/8, `--pad-snug` 8/12, `--pad-box` 12/16 — and
+the app frame has `--gutter`, `--chrome-h`, `--nav-w`, `--rail-w`. Full table:
+[Layout & rhythm](https://tutranmvp.github.io/8bit-components/docs.html#/layout).
 
 ## Signature
 

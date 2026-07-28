@@ -141,6 +141,38 @@
     --sp-6: 2rem;
     --sp-7: 3rem;
 
+    /* THE GRID LAW — two rules, enforced by `pnpm check` (scripts/check-scale.mjs):
+       · space  lands on 4px steps → always a --sp-* rung (or --sp-hair below)
+       · size   lands on 2px steps → a square marker edge never falls mid-pixel
+       A hard 90° system has nothing to hide a half-pixel behind, so a 9.6px dot
+       beside an 11.2px marker reads as two different greys. On-grid = crisp. */
+
+    /* the one sub-grid rung: a hairline of space. Same weight as --bw-2, so a
+       seam between tiles and a border between them are the same pixel. Use it
+       for grid/menu gaps and for chips too short for --sp-1. */
+    --sp-hair: 2px;
+
+    /* ---- box padding roles: the three densities the recipes actually use.
+       Inline padding sits one rung above block padding — the system's optical
+       rule (text needs more air sideways). Retune density for a whole app in
+       three lines instead of hunting 40 declarations. ---- */
+    --pad-tight: var(--sp-1) var(--sp-2);
+    /*  4/8  · badges, dense rows      */
+    --pad-snug: var(--sp-2) var(--sp-3);
+    /*  8/12 · list rows, cells, chips */
+    --pad-box: var(--sp-3) var(--sp-4);
+    /* 12/16 · cards, panels, sections */
+
+    /* ---- inline padding, in em so it scales with the text it sits in.
+       Two optical classes, because they answer different questions:
+       chip = a standalone thing in a row (kbd, tooltip, handle)
+       atom = a thing INSIDE a sentence (inline code, @mention) — must not
+              fatten the line box, so its block padding stays near zero. ---- */
+    --chip-py: .25em;
+    --chip-px: .5em;
+    --atom-py: .05em;
+    --atom-px: .35em;
+
     /* ---- shape: system is square (90° corners), never a radius.
        --notch only drives the optional .pixel-box helper — not buttons. ---- */
     --notch: 6px;
@@ -154,6 +186,14 @@
     --accent-bar: 6px;
     /* left classifier bar */
     /* No radius token by design — the whole system is square, no exceptions. */
+
+    /* square markers — the two that repeat across modules. Both on the 2px grid
+       so their edges stay hard. Anything else square is a one-off: snap it to
+       2px and keep it local (see --sz / --wb-* for that pattern). */
+    --dot: 10px;
+    /* run-state dot: .agent · .sandbox · .runbar · .deploy-stage · radio pip */
+    --pip: 12px;
+    /* step marker: .trace-step · .check-item · .ckpt-item · legend swatch     */
 
     /* ---- SIGNATURE elevation: hard shadow, zero blur, pure black ---- */
     --sh-1: 1px 1px 0 var(--line);
@@ -212,6 +252,35 @@
     --z-overlay: 100;
     /* dropdown menu / tooltip / toast / dialog */
 
+    /* ---- breakpoints: THREE, and only three.
+       This system is intrinsic-first — flex-wrap, auto-fit grids, clamp(),
+       min()/max() — so a module normally needs no media query at all (6k lines
+       of components.css contain two). These are the only widths anything is
+       allowed to switch at, so two modules on one page never disagree.
+
+       CSS cannot read a var() inside @media, so a query writes the literal rem
+       value; `pnpm check` fails if a literal drifts off this ladder. JS reads
+       the token instead: matchMedia(`(min-width: ${bp("lg")})`). ---- */
+    --bp-sm: 36rem;
+    /*  576px · a split module drops to one column      */
+    --bp-lg: 56rem;
+    /*  896px · a persistent sidebar/rail fits          */
+    --bp-xl: 74rem;
+    /* 1184px · a THIRD column (right rail) fits        */
+
+    /* ---- app shell: the page frame, named once so two apps built on 8-bit
+       line up — and so "make it tighter" is one line, not a sweep. ---- */
+    --gutter: var(--sp-4);
+    /* page side padding. Stepped on the ladder below, not clamp(…4vw…): a fluid
+       gutter lands on 47.36px at one width and 43.2px at another, and this system
+       is rung-based everywhere else (type, controls, space). 16 → 24 → 48. */
+    --chrome-h: var(--ctrl-h-xl);
+    /* sticky top bar — exactly one xl control tall, so a search input fills it */
+    --nav-w: 15rem;
+    /* 240px · left navigation column  */
+    --rail-w: 14rem;
+    /* 224px · right rail (<nes-toc>, .wb-rail) */
+
     /* ---- atmosphere (kept restrained · Chanel rule) ---- */
     --scanline-opacity: .06;
     /* CRT lines, subtle */
@@ -225,5 +294,19 @@
        copy: it may go smaller than the reading size without dragging prose down.
        Falls back to --fs-body so a page that sets nothing stays coherent. */
     --mmd-fs: var(--fs-body);
+  }
+
+  /* the gutter is the one token that steps with the viewport — the two queries the
+     ladder exists for. Mobile-first `min-width`, so the phone value needs no query. */
+  @media (min-width: 36rem) {
+    :root {
+      --gutter: var(--sp-5);
+    }
+  }
+
+  @media (min-width: 56rem) {
+    :root {
+      --gutter: var(--sp-7);
+    }
   }
 }

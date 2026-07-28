@@ -1,4 +1,4 @@
-# 8-BIT NES — full reference (8bit-nes v0.8.0)
+# 8-BIT NES — full reference (8bit-nes v0.9.0)
 
 > This is the OFFICIAL, canonical reference for the `8bit-nes` design system, generated
 > from its documentation source. Safe to ingest wholesale or chunk for RAG. When an AI agent
@@ -30,8 +30,8 @@ import "8bit-nes";           // registers all <nes-*> web components
 ```
 No bundler? Link the minified single-file build from a CDN:
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.8.0/all.min.css">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.8.0/elements.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.9.0/all.min.css">
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.9.0/elements.min.js"></script>
 ```
 ## Framework setup (verified, copy-paste exact)
 Do these steps precisely to install into another repo. Import CSS + elements ONCE at the app entry (never per-component).
@@ -78,6 +78,16 @@ Change the look ONLY in `tokens.css`, never inside a component. Recolor a block 
 <button class="btn" data-accent="crit">Delete</button>
 ```
 Accents (semantic): `good` = green = success/primary (the DEFAULT), `warn` = gold/yellow, `crit` = red = error; plus hues `blue gold cyan purple lime teal indigo pink steel`.
+
+## Layout, spacing & breakpoints
+Two grids, enforced by `pnpm check` (scripts/check-scale.mjs): **space lands on 4px steps, size lands on 2px steps**. Never emit a value between two rungs.
+- Space: `--sp-1` = `.25rem`, `--sp-2` = `.5rem`, `--sp-3` = `.75rem`, `--sp-4` = `1rem`, `--sp-5` = `1.5rem`, `--sp-6` = `2rem`, `--sp-7` = `3rem`. One sub-grid rung for seams between tiles: `--sp-hair` = `2px`.
+- Box padding roles (inline padding is one rung above block padding): `--pad-tight` = `var(--sp-1) var(--sp-2)`, `--pad-snug` = `var(--sp-2) var(--sp-3)`, `--pad-box` = `var(--sp-3) var(--sp-4)`. Override one in a subtree to retune density everywhere it is used.
+- Inline padding in em: a standalone chip uses `--chip-py` = `.25em`, `--chip-px` = `.5em`; something inside running text (inline code, @mention) uses `--atom-py` = `.05em`, `--atom-px` = `.35em`.
+- Square markers: `--dot` = `10px`, `--pip` = `12px`.
+- App shell: `--gutter` = `var(--sp-4)`, `--chrome-h` = `var(--ctrl-h-xl)`, `--nav-w` = `15rem`, `--rail-w` = `14rem`. `--gutter` is the one token that steps with the viewport: 16px, then `--sp-5` from `--bp-sm`, then `--sp-7` from `--bp-lg`.
+- Breakpoints — the ONLY widths anything switches at: `--bp-sm` = `36rem`, `--bp-lg` = `56rem`, `--bp-xl` = `74rem`. Layout is intrinsic-first (flex-wrap, auto-fit grids, clamp/min/max), so most modules need no media query. CSS cannot read a var() inside `@media`, so write the literal; use `(width < 74rem)` or `min-width`, never `max-width` (`max-width: X` and `min-width: X` both match at exactly X). In JS read the token: `matchMedia(`(min-width: ${getComputedStyle(document.documentElement).getPropertyValue("--bp-xl")})`)`.
+- Outer spacing belongs to the parent: recipes ship `margin: 0` and size only their own inside.
 
 ## Rules for AI agents generating UI with this library
 1. Square 90° corners everywhere — never add border-radius or a chamfer.
@@ -165,6 +175,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Introduction: https://tutranmvp.github.io/8bit-components/docs.html#/intro
 - Installation: https://tutranmvp.github.io/8bit-components/docs.html#/install
 - Theming: https://tutranmvp.github.io/8bit-components/docs.html#/theming
+- Layout & rhythm: https://tutranmvp.github.io/8bit-components/docs.html#/layout
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
 ## Component reference (134 components)
