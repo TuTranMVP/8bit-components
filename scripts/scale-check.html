@@ -210,15 +210,62 @@ const sSpread = Math.max(width(sans, "1111111111"), width(sans, "0000000000")) -
 ok(mSpread === 0, "G · mono digits are equal width (why no tabular-nums is needed)", `spread ${mSpread.toFixed(2)}px`);
 ok(sSpread > 4, "G · sans digits are NOT — a changing number there needs mono or tabular-nums", `spread ${sSpread.toFixed(2)}px`);
 
+/* ---- G · the large-screen type step. An iframe has its own viewport, which is the
+   only way to evaluate a min-width rule from inside one page. ---- */
+const TYPE_PAGE = `<link rel="stylesheet" href="../all.css">
+<body style="margin:0"><span id="p">x</span></body>`;
+const rungsAt = async (w) => {
+  const f = await frame(TYPE_PAGE, w);
+  return f.contentWindow.eval(`
+    (() => {
+      const el = document.getElementById("p"), out = [];
+      for (const t of ["--fs-label","--fs-chip","--fs-h3","--fs-body","--fs-lead","--fs-h2","--fs-h1"]) {
+        el.style.fontSize = "var(" + t + ")";
+        out.push(Number.parseFloat(getComputedStyle(el).fontSize));
+      }
+      return out;
+    })()`);
+};
+const small = await rungsAt(1599);
+const large = await rungsAt(1600);
+ok(small.join(" ") === "9 11 12 14 16 17 26", "G · below --bp-2xl the scale is unchanged", small.join(" · "));
+ok(large.join(" ") === "10 12 13 16 18 20 32", "G · at --bp-2xl every rung steps up one notch", large.join(" · "));
+ok(large.every((v) => Number.isInteger(v)) && large.every((v, i) => i === 0 || v >= large[i - 1]),
+  "G · the stepped scale is still integer px and monotonic", large.join(" · "));
+
 /* ---- G · the stacking ladder is a ladder ---- */
 const Z = ["--z-raised", "--z-pop", "--z-sticky", "--z-drawer", "--z-chrome", "--z-overlay", "--z-top"].map((t) => Number(V(t)));
 ok(Z.every((v, i) => i === 0 || v > Z[i - 1]), "G · --z-* is strictly increasing", Z.join(" < "));
 
-/* ---- G · focus ring rethemes from one declaration ---- */
-document.getElementById("ringbtn").focus();
-const ringOutline = getComputedStyle(document.getElementById("ringbtn")).outlineColor;
-ok(ringOutline === getComputedStyle(document.documentElement).getPropertyValue("--cyan").trim() ||
-   /51,\s*224,\s*224/.test(ringOutline), "G · --ring-c retint the focus ring", ringOutline);
+/* ---- G · focus ring rethemes from one declaration. NOT via .focus(): script
+   focus does not satisfy the :focus-visible heuristic, so the computed outline is
+   whatever the unfocused state is — the assertion would pass or fail by accident.
+   Check the two halves that actually make the retheme work instead. ---- */
+const ringVar = getComputedStyle(document.getElementById("ringbtn")).getPropertyValue("--ring-c").trim();
+ok(/33e0e0|51,\s*224,\s*224|var\(--cyan\)/.test(ringVar), "G · --ring-c override reaches the control", ringVar);
+// all.css is three @imports, and every file wraps its rules in @layer — so the
+// focus rule sits two container levels down. Walk, do not flatMap one level.
+const walk = (rules, hit = []) => {
+  for (const r of rules || []) {
+    if (r.selectorText?.includes(":focus-visible") && r.style?.outline) hit.push(r);
+    if (r.cssRules) walk(r.cssRules, hit);
+    else if (r.styleSheet) {
+      try {
+        walk(r.styleSheet.cssRules, hit);
+      } catch {}
+    }
+  }
+  return hit;
+};
+const focusRule = walk([...document.styleSheets].flatMap((sh) => {
+  try {
+    return [...sh.cssRules];
+  } catch {
+    return [];
+  }
+}))[0];
+ok(/var\(--ring-w\)/.test(focusRule?.style.outline || "") && /var\(--ring-c\)/.test(focusRule?.style.outline || ""),
+  "G · and the focus rule is written in those tokens", focusRule?.style.outline || "(no rule found)");
 
 /* ---- G · the switch thumb travels to a symmetric stop ---- */
 const sw = document.getElementById("sw");

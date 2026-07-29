@@ -198,7 +198,7 @@ is `tokens, base, components, utilities` so page authors can override without `!
   so the accessibility floor costs the pixel look nothing.
 - **Text entry is floored at 16px on touch** (`max(16px, var(--fs-body))`), because iOS Safari
   zooms the whole page when a focused field's font is smaller.
-- `pnpm check:mobile` proves all of it on a real 390×844 phone viewport over CDP, hit-testing each
+- `pnpm check:viewport` proves all of it on a real 390×844 phone viewport over CDP, hit-testing each
   control off centre. A plain headless window reports neither `coarse` nor `fine`, so a touch rule
   there passes without ever being applied — never verify this without emulation.
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * mobile-check — the mobile-first promises, measured on a real phone viewport.
+ * viewport-check — the promises at both ends of the breakpoint ladder, measured on
+ * real viewports: a 390x844 phone with touch, and a large desktop.
  *
  * Everything in here needs `(pointer: coarse)` to be TRUE, and a plain headless
  * window reports neither coarse nor fine — so every touch rule would pass without
@@ -8,7 +9,7 @@
  * itself: `Emulation.setDeviceMetricsOverride {mobile:true}` +
  * `setTouchEmulationEnabled` is the only way to make those rules real.
  *
- * Asserts, at 390x844 and again at 600x844:
+ * Asserts, at 390x844 and 600x844 (phone) and at 1440 / 2560 (desktop):
  *   · the emulation actually took (or the run is meaningless — fail loudly)
  *   · every interactive box clears 24x24px          (WCAG 2.5.8, the AA floor)
  *   · every thing you press to act clears --tap     (44px, WCAG 2.5.5)
@@ -16,10 +17,12 @@
  *   · text-entry controls compute >= 16px           (or iOS zooms the page on focus)
  *   · the page never scrolls sideways on a phone
  *   · a module that has a wide shape starts in its narrow one (mobile-first)
+ *   · a large screen steps the type up and widens the container, while prose stays
+ *     measured and the table of contents stays beside the text it indexes
  *
  * Zero dependencies: node's own http server + global WebSocket. Not part of
  * `pnpm check` because it needs a browser binary; run it locally with
- *   pnpm check:mobile            (CHROME=/path/to/chrome to override)
+ *   pnpm check:viewport            (CHROME=/path/to/chrome to override)
  */
 import { join } from "node:path";
 import { browser, report, serve, sleep } from "./cdp.mjs";
@@ -31,7 +34,7 @@ const bye = (code) => {
   closeServer();
   process.exit(code);
 };
-const { ok, lines, finish } = report("mobile-check");
+const { ok, lines, finish } = report("viewport-check");
 
 /** the measurement, run inside the page */
 const MEASURE = `
@@ -77,7 +80,7 @@ return {
 
 const at = async (w, h) => {
   await b.emulate({ width: w, height: h, mobile: true });
-  await b.goto(`${base}/scripts/mobile-check.html`);
+  await b.goto(`${base}/scripts/viewport-check.html`);
   return b.evaluate(MEASURE);
 };
 
@@ -86,7 +89,7 @@ const phone = await at(390, 844);
 // if the emulation did not take, every touch assertion below is vacuous
 if (!ok(phone.coarse === true, "emulation · (pointer: coarse) is live", `width=${phone.width}`)) {
   console.error(lines.join("\n"));
-  console.error("\nmobile-check: refusing to report — the touch rules were never applied.");
+  console.error("\nviewport-check: refusing to report — the touch rules were never applied.");
   bye(1);
 }
 const missFloor = Object.entries(phone.targets).filter(([, t]) => !t.floor);
@@ -200,5 +203,42 @@ ok(
   "docs shell · phone base is one column + off-canvas drawer + scrim",
   `${shell.cols} col · side=${shell.drawer} · scrim=${shell.scrim}`,
 );
+
+/* ---- the other end of the ladder: a large desktop must USE its width, and the
+   rail must stay next to the text it indexes (it drifted 435px away at 2560px,
+   875px at 3440px before the shell was capped and centred) ---- */
+for (const w of [1440, 2560]) {
+  await b.emulate({ width: w, height: 1200, mobile: false });
+  await b.goto(`${base}/docs.html#/button`, 2000);
+  const big = await b.evaluate(`
+    const r = (s) => document.querySelector(s).getBoundingClientRect();
+    const wrap = r(".doc-wrap");
+    return {
+      page: Math.round(wrap.width),
+      stage: Math.round(r(".stage").width),
+      para: Math.round(r(".doc-p").width),
+      gapToRail: Math.round(r("nes-toc").left - wrap.right),
+      body: Number.parseFloat(getComputedStyle(document.querySelector(".doc-p")).fontSize),
+      overflow: document.documentElement.scrollWidth - innerWidth,
+    };`);
+  const wide = w >= 1600;
+  ok(
+    big.body === (wide ? 16 : 14),
+    `desktop ${w} · body copy is ${wide ? 16 : 14}px`,
+    `${big.body}px`,
+  );
+  ok(
+    big.page === (wide ? 1120 : 820),
+    `desktop ${w} · the page container is ${wide ? 1120 : 820}px`,
+    `${big.page}px`,
+  );
+  ok(
+    big.para < big.stage,
+    `desktop ${w} · prose stays measured while a demo takes the width`,
+    `para ${big.para} < stage ${big.stage}`,
+  );
+  ok(big.gapToRail < 120, `desktop ${w} · the rail stays beside the text`, `${big.gapToRail}px`);
+  ok(big.overflow <= 0, `desktop ${w} · no sideways scroll`, `${big.overflow}px`);
+}
 
 bye(finish() ? 1 : 0);

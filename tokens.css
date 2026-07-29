@@ -336,6 +336,8 @@
     /*  896px · a persistent sidebar/rail fits          */
     --bp-xl: 74rem;
     /* 1184px · a THIRD column (right rail) fits        */
+    --bp-2xl: 100rem;
+    /* 1600px · a large desktop: the shell can breathe and the type steps up */
 
     /* ---- app shell: the page frame, named once so two apps built on 8-bit
        line up — and so "make it tighter" is one line, not a sweep. ---- */
@@ -376,6 +378,35 @@
   @media (min-width: 56rem) {
     :root {
       --gutter: var(--sp-7);
+    }
+  }
+
+  /* ---- large desktop (--bp-2xl): one step up the SAME scale, not a new one.
+     14px body is right for a laptop and small on a 27" screen at arm's length, so
+     every rung moves one notch: 10 · 12 · 13 · 16 · 18 · 20 · 32. Still integer px
+     at the default root, still monotonic — the two things `pnpm check` and
+     scripts/scale-check.html assert about the type scale.
+
+     Stepped, never fluid: `clamp()` would land body copy on 15.37px at some widths,
+     and a fractional font size gives every text-sized box a fractional height.
+     Spacing does NOT step — density stays; the extra room goes to the container
+     (see --doc-maxw in docs.html), which is what a wide screen is actually for. ---- */
+  @media (min-width: 100rem) {
+    :root {
+      --fs-label: .625rem;
+      /* 10px */
+      --fs-chip: .75rem;
+      /* 12px */
+      --fs-h3: .8125rem;
+      /* 13px */
+      --fs-body: 1rem;
+      /* 16px */
+      --fs-lead: 1.125rem;
+      /* 18px */
+      --fs-h2: 1.25rem;
+      /* 20px */
+      --fs-h1: 2rem;
+      /* 32px */
     }
   }
 }
