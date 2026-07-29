@@ -473,6 +473,7 @@ import "8bit-nes/components.css";`,
             ["<code>--bp-sm</code>", "36rem · 576px", "a split module drops to one column"],
             ["<code>--bp-lg</code>", "56rem · 896px", "a persistent sidebar or rail fits"],
             ["<code>--bp-xl</code>", "74rem · 1184px", "a <b>third</b> column (right rail) fits"],
+            ["<code>--bp-2xl</code>", "100rem · 1600px", "a large desktop: the type steps one rung up, and a shell can widen its container"],
           ],
         ) +
         callout(
@@ -505,7 +506,7 @@ import "8bit-nes/components.css";`,
 }`,
         ) +
         note(
-          "Text-entry controls are floored at <code>max(16px, var(--fs-body))</code> on a coarse pointer, because iOS Safari zooms the whole page when you focus a field whose font is under 16px. <code>pnpm check:mobile</code> drives a real 390×844 phone viewport over CDP — a plain headless window reports neither <code>coarse</code> nor <code>fine</code>, so every touch rule would pass without ever being applied — and hit-tests each control 12px and 22px off centre rather than trusting a box measurement.",
+          "Text-entry controls are floored at <code>max(16px, var(--fs-body))</code> on a coarse pointer, because iOS Safari zooms the whole page when you focus a field whose font is under 16px. <code>pnpm check:viewport</code> drives a real 390×844 phone viewport over CDP — a plain headless window reports neither <code>coarse</code> nor <code>fine</code>, so every touch rule would pass without ever being applied — and hit-tests each control 12px and 22px off centre rather than trusting a box measurement.",
         ) +
         h2("Type") +
         p(
@@ -525,6 +526,9 @@ import "8bit-nes/components.css";`,
             ["<code>--lh-none · tight · heading · body</code>", "1 · 1.25 · 1.4 · 1.65", "leading. <code>--lh-none</code> is for single-line chrome, where the box owns the height"],
             ["<code>--icon-sm … xl</code>", "14 · 20 · 28 · 40px", "icon glyph sizes — their own scale, sized by the box, not by the text beside it"],
           ],
+        ) +
+        note(
+          "<b>On a large screen every rung steps up one notch</b> — from <code>--bp-2xl</code> (1600px): 10 · 12 · 13 · <b>16</b> · 18 · 20 · 32. 14px body copy is right for a laptop and small on a 27\" screen at arm's length. It is <i>stepped</i>, never <code>clamp()</code>d: a fluid size lands body copy on 15.37px at some widths, and a fractional font size gives every text-sized box a fractional height. Spacing does not step — the extra room goes to the container instead, which is what a wide screen is for.",
         ) +
         callout(
           "crit",
@@ -562,6 +566,9 @@ import "8bit-nes/components.css";`,
             ["<code>--nav-w</code>", "15rem · 240px", "left navigation column"],
             ["<code>--rail-w</code>", "14rem · 224px", "right rail — <code>&lt;nes-toc&gt;</code>, <code>.wb-rail</code>"],
           ],
+        ) +
+        note(
+          "<b>On a large screen, widen the container — not the measure.</b> Prose is capped by <code>--prose-measure</code> on the <i>children</i>, so a wider container only feeds what actually wanted the room: tables, code blocks, demos, split views. This site does exactly that from <code>--bp-2xl</code>: the page grows 820 → 1120px, nav and rail by one rung each, and the whole grid is capped and centred (<code>max-inline-size</code> + <code>margin-inline: auto</code>) — otherwise at 2560px the table of contents sits 435px away from the text it indexes, and 875px away at 3440px.",
         ) +
         cb(
           `<body>
@@ -625,6 +632,7 @@ import "8bit-nes/components.css";`,
             ["<code>--bp-sm</code>", "36rem · 576px", "module chia đôi rớt về một cột"],
             ["<code>--bp-lg</code>", "56rem · 896px", "vừa đủ cho sidebar/rail cố định"],
             ["<code>--bp-xl</code>", "74rem · 1184px", "vừa đủ cho cột <b>thứ ba</b> (rail phải)"],
+            ["<code>--bp-2xl</code>", "100rem · 1600px", "desktop lớn: thang chữ nhảy lên một bậc, và shell được phép nới container"],
           ],
         ) +
         callout(
@@ -657,7 +665,7 @@ import "8bit-nes/components.css";`,
 }`,
         ) +
         note(
-          "Các control nhập chữ được đặt sàn <code>max(16px, var(--fs-body))</code> trên con trỏ thô, vì iOS Safari sẽ zoom cả trang khi bạn focus vào field có cỡ chữ dưới 16px. <code>pnpm check:mobile</code> điều khiển một viewport điện thoại thật 390×844 qua CDP — cửa sổ headless thường báo cả <code>coarse</code> lẫn <code>fine</code> đều false, nên mọi luật cảm ứng sẽ pass mà chẳng hề được áp dụng — rồi hit-test từng control lệch tâm 12px và 22px thay vì tin vào số đo hộp.",
+          "Các control nhập chữ được đặt sàn <code>max(16px, var(--fs-body))</code> trên con trỏ thô, vì iOS Safari sẽ zoom cả trang khi bạn focus vào field có cỡ chữ dưới 16px. <code>pnpm check:viewport</code> điều khiển một viewport điện thoại thật 390×844 qua CDP — cửa sổ headless thường báo cả <code>coarse</code> lẫn <code>fine</code> đều false, nên mọi luật cảm ứng sẽ pass mà chẳng hề được áp dụng — rồi hit-test từng control lệch tâm 12px và 22px thay vì tin vào số đo hộp.",
         ) +
         h2("Chữ") +
         p(
@@ -677,6 +685,9 @@ import "8bit-nes/components.css";`,
             ["<code>--lh-none · tight · heading · body</code>", "1 · 1.25 · 1.4 · 1.65", "độ cao dòng. <code>--lh-none</code> dành cho chrome một dòng, nơi cái hộp quyết định chiều cao"],
             ["<code>--icon-sm … xl</code>", "14 · 20 · 28 · 40px", "cỡ glyph icon — thang riêng, vì icon được quyết bởi hộp của nó, không phải chữ bên cạnh"],
           ],
+        ) +
+        note(
+          "<b>Trên màn hình lớn mọi bậc nhảy lên một notch</b> — từ <code>--bp-2xl</code> (1600px): 10 · 12 · 13 · <b>16</b> · 18 · 20 · 32. Chữ thân bài 14px là đúng cho laptop nhưng nhỏ trên màn 27\" ở khoảng cách tay với. Đây là <i>nhảy bậc</i>, không phải <code>clamp()</code>: giá trị mượt sẽ cho ra 15.37px ở một số chiều rộng, mà font-size lẻ thì làm mọi hộp co theo chữ có chiều cao lẻ. Khoảng cách <i>không</i> nhảy — chỗ dư dành cho container, đó mới là điều màn hình rộng dùng để làm.",
         ) +
         callout(
           "crit",
@@ -714,6 +725,9 @@ import "8bit-nes/components.css";`,
             ["<code>--nav-w</code>", "15rem · 240px", "cột điều hướng bên trái"],
             ["<code>--rail-w</code>", "14rem · 224px", "rail bên phải — <code>&lt;nes-toc&gt;</code>, <code>.wb-rail</code>"],
           ],
+        ) +
+        note(
+          "<b>Màn hình lớn thì nới container — đừng nới measure.</b> Chữ đã bị giới hạn bởi <code>--prose-measure</code> đặt trên <i>các con</i>, nên container rộng ra chỉ nuôi đúng những thứ cần chỗ: bảng, code block, demo, split view. Trang này làm y như vậy từ <code>--bp-2xl</code>: trang rộng 820 → 1120px, nav và rail mỗi bên thêm một bậc, và cả lưới được kẹp lại rồi canh giữa (<code>max-inline-size</code> + <code>margin-inline: auto</code>) — nếu không thì ở 2560px mục lục nằm cách chữ nó đang đánh chỉ mục tới 435px, còn ở 3440px là 875px.",
         ) +
         cb(
           `<body>

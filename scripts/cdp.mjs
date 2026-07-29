@@ -5,7 +5,7 @@
  * Why CDP and not `chrome --headless --dump-dom --virtual-time-budget=…`:
  *   · touch rules need real emulation — in a plain headless window BOTH
  *     (pointer: coarse) and (pointer: fine) are false, so every one of them
- *     passes without being applied (see mobile-check.mjs)
+ *     passes without being applied (see viewport-check.mjs)
  *   · some events are never delivered while virtual time is fast-forwarding —
  *     a MediaQueryList `change`, and a <dialog>`close` — so assertions that wait
  *     on them fail for a reason that has nothing to do with the library

@@ -11,7 +11,7 @@ Reusable across every project in the studio — install it into any repo, no bui
 pnpm add 8bit-nes
 
 # or straight from GitHub (a tag is a valid spec too)
-pnpm add github:TuTranMVP/8bit-components#v0.12.0
+pnpm add github:TuTranMVP/8bit-components#v0.13.0
 ```
 
 ```js
@@ -40,15 +40,15 @@ visit (copy it verbatim — every line earns its place):
 <!-- 2. fonts, at the exact URLs all.min.css resolves url() to → fetched once, in parallel
         with the stylesheet instead of after it -->
 <link rel="preload" as="font" type="font/woff2" crossorigin
-  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.12.0/fonts/nes-sans-var.woff2">
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.13.0/fonts/nes-sans-var.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin
-  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.12.0/fonts/nes-mono-400.woff2">
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.13.0/fonts/nes-mono-400.woff2">
 
 <!-- 3. the system: pinned version + byte-pinned integrity -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.12.0/all.min.css"
-  integrity="sha384-Ju2pB0ewRGvpDX0ADlCfGTbFl+VMV1wK1o8WSGirF+UzC9TDgR0/Z1/56izrsudh"
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.13.0/all.min.css"
+  integrity="sha384-f74tFwx/Zy/N1Cgwds6BMkz0ViElN9YkjAZZAZarGVIcW+pZ5L661t9k4q/8ZW/O"
   crossorigin="anonymous">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.12.0/elements.min.js"
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.13.0/elements.min.js"
   integrity="sha384-TUhDdeNtIsWqdJJfTW0WC+xeDeLQkIoiZ9bnlgpvc6fdheiNBfTK/uABktvYZh35"
   crossorigin="anonymous"></script>
 ```
@@ -88,7 +88,7 @@ Copy-paste starter, already wired exactly like the above:
 [`examples/cdn-starter.html`](examples/cdn-starter.html) — also live on the docs site at
 `/examples/cdn-starter.html`.
 
-> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.12.0/all.min.css`) and the same
+> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.13.0/all.min.css`) and the same
 > SRI digests — it's the identical npm tarball. Pick *one* origin per page, though: two CDNs
 > means two handshakes for no benefit.
 
@@ -129,11 +129,17 @@ import manifest from "8bit-nes/components.json" with { type: "json" };
 - **CSS** is one layer set; drop what you don't need at the file level via the granular imports.
 - `pnpm build` (esbuild) regenerates the `.min` files; CI fails if the committed ones are stale.
 
-`pnpm check:mobile` and `pnpm check:ui` are the checks that need a browser (it drives a real 390×844 phone
-viewport over CDP and hit-tests every control off centre; `check:ui` drives the stateful
-components — a toast that must not parse markup, pause-on-hover, swipe-to-dismiss, an anchored
-popover, a keyboard-moved split, a confirm that resolves false on Esc), so they sit outside
-`pnpm check`. Run them locally; `CHROME=/path/to/chrome` points them at your binary.
+Two checks need a browser, so they sit outside `pnpm check` (which stays hermetic for CI):
+
+- **`pnpm check:viewport`** — both ends of the breakpoint ladder on real viewports over CDP: a
+  390×844 phone with touch (every control hit-tested off centre, the 24px floor, the iOS 16px
+  entry floor) and a large desktop (the type step, the widened container, prose still measured,
+  the rail still beside the text).
+- **`pnpm check:ui`** — every fixture page in a real browser: the stateful components
+  (`ui-check`), the scales (`scale-check`), and the upstream spec items (`spec-check`). It fails
+  if a page reports a FAIL, throws, **or never reports at all**.
+
+`CHROME=/path/to/chrome` points them at your binary.
 
 ## Release flow (maintainer)
 

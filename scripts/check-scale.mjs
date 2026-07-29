@@ -71,7 +71,9 @@ const FROM_SCALE = [
 /** the ladder: --bp-* from tokens.css, in px, for comparing against @media */
 const tokens = readFileSync("tokens.css", "utf8");
 const ladder = new Map();
-for (const [, name, n, unit] of tokens.matchAll(/--bp-([a-z]+):\s*([\d.]+)(px|rem);/g)) {
+// [a-z0-9]+, not [a-z]+: a rung may be named --bp-2xl, and missing it would make
+// every query at that width look "off the ladder"
+for (const [, name, n, unit] of tokens.matchAll(/--bp-([a-z0-9]+):\s*([\d.]+)(px|rem);/g)) {
   if (unit !== "rem")
     fail(
       "tokens.css",

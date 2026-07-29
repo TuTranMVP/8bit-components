@@ -1,4 +1,4 @@
-# 8-BIT NES — full reference (8bit-nes v0.12.0)
+# 8-BIT NES — full reference (8bit-nes v0.13.0)
 
 > This is the OFFICIAL, canonical reference for the `8bit-nes` design system, generated
 > from its documentation source. Safe to ingest wholesale or chunk for RAG. When an AI agent
@@ -30,8 +30,8 @@ import "8bit-nes";           // registers all <nes-*> web components
 ```
 No bundler? Link the minified single-file build from a CDN:
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.12.0/all.min.css">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.12.0/elements.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.13.0/all.min.css">
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.13.0/elements.min.js"></script>
 ```
 ## Framework setup (verified, copy-paste exact)
 Do these steps precisely to install into another repo. Import CSS + elements ONCE at the app entry (never per-component).
@@ -82,6 +82,7 @@ Accents (semantic): `good` = green = success/primary (the DEFAULT), `warn` = gol
 ## Type, weight & layers
 Every scale is a token and `pnpm check` rejects a literal.
 - Type — **every rung is an integer px** at a 16px root (a fractional font size gives every text-sized box a fractional height, and this system has no blur or radius to hide a half-pixel border behind): `--fs-label` = `.5625rem` (9px), `--fs-chip` = `.6875rem` (11px), `--fs-h3` = `.75rem` (12px), `--fs-body` = `.875rem` (14px), `--fs-lead` = `1rem` (16px), `--fs-h2` = `1.0625rem` (17px), `--fs-h1` = `1.625rem` (26px). Inline code and `@mention` use `--fs-code` = `.9em` — relative on purpose, so an atom tracks the sentence it sits in.
+- From `--bp-2xl` (1600px) every type rung steps up one notch (10 · 12 · 13 · 16 · 18 · 20 · 32) — stepped, never clamp()ed, and spacing does not follow: on a wide screen widen the CONTAINER, not the measure.
 - Leading: `--lh-none` = `1`, `--lh-tight` = `1.25`, `--lh-heading` = `1.4`, `--lh-body` = `1.65`. `--lh-none` is for single-line chrome, where the box owns the height (`--ctrl-h-*`).
 - Weight — **only these three**: `--fw-regular` = `400`, `--fw-medium` = `450`, `--fw-bold` = `700`. NES Mono ships 400 and 700; NES Sans is variable 300–700. Requesting 500 or 600 on mono makes the browser synthesise a bold, which smears the stems. Never emit another value.
 - Icon glyph sizes (their own scale, sized by the box not the text): `--icon-sm` = `14px`, `--icon-md` = `20px`, `--icon-lg` = `28px`, `--icon-xl` = `40px`.
@@ -96,12 +97,12 @@ Two grids, enforced by `pnpm check` (scripts/check-scale.mjs): **space lands on 
 - Inline padding in em: a standalone chip uses `--chip-py` = `.25em`, `--chip-px` = `.5em`; something inside running text (inline code, @mention) uses `--atom-py` = `.05em`, `--atom-px` = `.35em`.
 - Square markers: `--dot` = `10px`, `--pip` = `12px`.
 - App shell: `--gutter` = `var(--sp-4)`, `--chrome-h` = `var(--ctrl-h-xl)`, `--nav-w` = `15rem`, `--rail-w` = `14rem`. `--gutter` is the one token that steps with the viewport: 16px, then `--sp-5` from `--bp-sm`, then `--sp-7` from `--bp-lg`.
-- Breakpoints — the ONLY widths anything switches at: `--bp-sm` = `36rem`, `--bp-lg` = `56rem`, `--bp-xl` = `74rem`. Layout is intrinsic-first (flex-wrap, auto-fit grids, clamp/min/max), so most modules need no media query. CSS cannot read a var() inside `@media`, so write the literal; use `(width < 74rem)` or `min-width`, never `max-width` (`max-width: X` and `min-width: X` both match at exactly X). In JS read the token: `matchMedia(`(min-width: ${getComputedStyle(document.documentElement).getPropertyValue("--bp-xl")})`)`.
+- Breakpoints — the ONLY widths anything switches at: `--bp-sm` = `36rem`, `--bp-lg` = `56rem`, `--bp-xl` = `74rem`, `--bp-2xl` = `100rem`. Layout is intrinsic-first (flex-wrap, auto-fit grids, clamp/min/max), so most modules need no media query. CSS cannot read a var() inside `@media`, so write the literal; use `(width < 74rem)` or `min-width`, never `max-width` (`max-width: X` and `min-width: X` both match at exactly X). In JS read the token: `matchMedia(`(min-width: ${getComputedStyle(document.documentElement).getPropertyValue("--bp-xl")})`)`.
 - Outer spacing belongs to the parent: recipes ship `margin: 0` and size only their own inside.
 - Overlays: use `<nes-popover>` (native popover API, top layer) when the panel is not a menu or the trigger sits inside something that scrolls — `.menu` inside `.dropdown` is absolutely positioned and an ancestor's `overflow` clips it. Destructive confirms are `confirmDialog(opts) -> Promise<boolean>`; never build a bare div for one.
 - `toast(msg, opts)` takes TEXT (pass `html: true` to opt into markup), pauses while hovered or focused, caps the stack at 4, and `accent: "crit"` makes it interrupt (assertive). A sticky toast (`timeout: 0`) always renders a dismiss button.
 - Mobile-first is a DIRECTION: the base block is the phone and `min-width` adds the wider layout. Never write `max-width` or `(width < X)` — the check rejects both.
-- Touch: on `(pointer: coarse)` every interactive box clears the 24x24px WCAG 2.5.8 floor and anything you press to act clears `--tap` = `var(--ctrl-h-lg)` (WCAG 2.5.5); a scrolling list row may use `--tap-dense` = `2.5rem`. A small control does NOT grow — `.checkbox`, `.radio`, `.switch` keep their 22px box and take a 44px tap through a transparent `::before`. Text-entry controls are floored at `max(16px, var(--fs-body))` because iOS Safari zooms the page when a focused field is under 16px. Verified on a real 390x844 phone viewport by `pnpm check:mobile`.
+- Touch: on `(pointer: coarse)` every interactive box clears the 24x24px WCAG 2.5.8 floor and anything you press to act clears `--tap` = `var(--ctrl-h-lg)` (WCAG 2.5.5); a scrolling list row may use `--tap-dense` = `2.5rem`. A small control does NOT grow — `.checkbox`, `.radio`, `.switch` keep their 22px box and take a 44px tap through a transparent `::before`. Text-entry controls are floored at `max(16px, var(--fs-body))` because iOS Safari zooms the page when a focused field is under 16px. Verified on a real 390x844 phone viewport by `pnpm check:viewport`.
 
 ## Rules for AI agents generating UI with this library
 1. Square 90° corners everywhere — never add border-radius or a chamfer.

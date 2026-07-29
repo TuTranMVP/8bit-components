@@ -415,9 +415,12 @@
       overscroll-behavior-x: contain;
     }
 
+    /* --fs-label (9px) is a chrome rung — an eyebrow, a scope. An API table is
+       something you READ, so it gets the chip rung (11px, 12px on a large screen)
+       and rides the --bp-2xl type step with everything else. */
     .doc-page .table td,
     .doc-page .table th {
-      font-size: var(--fs-label);
+      font-size: var(--fs-chip);
       line-height: var(--lh-body);
       vertical-align: top;
     }
@@ -551,6 +554,35 @@
       }
     }
 
+    /* ---- --bp-2xl (100rem): a large desktop. The measure keeps prose readable on
+         its own (--doc-measure, 62ch), so the container is free to grow — and what
+         grows with it is exactly what wanted the room: demo stages, API tables,
+         code blocks, split views. At 2560px this was 1266px of empty column beside
+         an 820px page. The nav and the rail widen by one --sp-7 too, so long
+         component names stop wrapping. ---- */
+    @media (min-width: 100rem) {
+      :root {
+        --doc-maxw: 1120px;
+        --nav-w: 18rem;
+        --rail-w: 17rem;
+        --app-maxw: 112rem;
+      }
+
+      /* Cap and centre the whole shell, or the rail drifts away from the text it
+         indexes: at 2560px that gap measured 435px, at 3440px 875px. Capping the
+         grid — not just the page — keeps navigation, prose and index one object. */
+      .app {
+        max-inline-size: var(--app-maxw);
+        margin-inline: auto;
+      }
+
+      /* the top bar stays full-bleed but its contents line up with that grid:
+         pad by half the leftover, floored at a normal gutter. No wrapper element. */
+      .topbar {
+        padding-inline: max(var(--sp-4), calc((100% - var(--app-maxw)) / 2));
+      }
+    }
+
     /* ---- --bp-xl (74rem): room for a THIRD column, so the table of contents
          becomes the right rail. <nes-toc> flips its own shape at the same width
          (rail-at defaults to --bp-xl), which is why both must be one rung. ---- */
@@ -586,7 +618,7 @@
   <header class="topbar">
     <button class="menu-btn btn ghost" aria-label="Bật/tắt điều hướng" data-menu>☰</button>
     <span class="brand" data-home tabindex="0" role="link"><span class="sq">◈</span> 8-BIT NES</span>
-    <span class="badge">v0.12.0</span>
+    <span class="badge">v0.13.0</span>
     <input class="input search" type="search" placeholder="TÌM…" aria-label="Lọc component" data-search>
     <span class="spacer"></span>
     <nav class="top-links">

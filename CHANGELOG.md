@@ -2,6 +2,76 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.13.0
+
+Large screens. Measured on the docs site first, because the numbers make the case:
+
+| viewport | content column | the page | **empty** | prose | demo stage | body | table cell |
+|---|---|---|---|---|---|---|---|
+| 1440 | 966 | 820 | 146 | 558 | 820 | 14px | **9px** |
+| 1920 | 1446 | 820 | **626** | 558 | 820 | 14px | **9px** |
+| 2560 | 2086 | 820 | **1266** | 558 | 820 | 14px | **9px** |
+
+`--doc-maxw: 820px` capped *everything* — API tables and live demos included —
+while 1266px of the column sat empty at 2560px, and no type rung changed at any
+width. Worse on ultra-wide: the table of contents ended up **435px** from the text
+it indexes at 2560px, **875px** at 3440px.
+
+Nothing below 1600px moves except one docs table font (see Fixed). Mobile is
+untouched, deliberately — it was already right.
+
+### Added
+
+- **`--bp-2xl` (100rem · 1600px)** — a fourth ladder rung, earned: nothing in the
+  system switched anywhere between 1184px and infinity.
+- **The type scale steps one notch up from `--bp-2xl`** — 10 · 12 · 13 · **16** · 18
+  · 20 · 32. 14px body copy is right for a laptop and small on a 27" screen at
+  arm's length. Same seven rungs, one media block, so every app on the system gets
+  it: `--mmd-fs`, `--ctrl-fs-*` and every recipe follow because they already point
+  at these tokens.
+  Stepped, **never `clamp()`ed**: a fluid size lands body copy on 15.37px at some
+  widths, and a fractional font size gives every text-sized box a fractional height
+  — the thing 0.10.0 removed. Still integer px, still monotonic, both asserted.
+  Spacing does **not** step: density stays, and the room goes to the container.
+- **The docs shell uses the width** from `--bp-2xl`: page 820 → **1120px**, nav and
+  rail one rung wider, and the whole grid **capped at 112rem and centred** so
+  navigation, prose and index stay one object instead of drifting apart. The top
+  bar stays full-bleed but its contents line up with that grid via
+  `padding-inline: max(var(--sp-4), calc((100% - var(--app-maxw)) / 2))` — no
+  wrapper element, no structural change.
+  What grows is exactly what wanted the room: **demo stages, API tables, code
+  blocks, split views**. Prose does not — `--prose-measure` caps the *children*, so
+  a paragraph stays at 62ch (558px → 638px once the body rung steps).
+
+### Fixed
+
+- **The docs API tables were 9px** (`--fs-label`, a chrome rung meant for an eyebrow
+  or a scope). A table you read is not chrome: they are on the chip rung now — 11px
+  everywhere, 12px past `--bp-2xl`.
+- **`check-scale` could not see a rung whose name contains a digit.** The ladder was
+  parsed with `--bp-([a-z]+)`, so adding `--bp-2xl` made every query at 1600px look
+  "off the ladder" — the guard's own regex, found by using it.
+- **`scale-check.html`'s focus-ring assertion passed by accident.** It called
+  `.focus()` and read `outlineColor`, but script focus does not satisfy the
+  `:focus-visible` heuristic, so it was reading the unfocused state. It now checks
+  the two halves that make the retheme work: that `--ring-c` reaches the control,
+  and that the focus rule is written in `var(--ring-w)` / `var(--ring-c)` — walking
+  `@import` and `@layer` recursively, which is where those rules actually live.
+
+### Changed
+
+- **`scripts/page-check.mjs`** runs any fixture page in a real browser and fails the
+  command if the page reports a FAIL, throws, **or never reports at all**.
+  `pnpm check:ui` now runs all three pages (`ui-check`, `scale-check`,
+  `spec-check`) through it. They used to be driven by hand with
+  `--headless --dump-dom --virtual-time-budget`, where `requestAnimationFrame` does
+  not advance predictably: `scale-check` hung there and produced its `…` placeholder,
+  which is indistinguishable from a page still working.
+- **`check:mobile` → `check:viewport`** (`scripts/viewport-check.mjs`): it now
+  measures both ends of the ladder — the phone promises as before, plus a large
+  desktop stepping its type, widening its container, keeping prose measured and the
+  rail beside the text. 13 → 23 assertions.
+
 ## 0.12.0
 
 Toast was 25 lines: it could appear and time out. Everything a toast is actually
