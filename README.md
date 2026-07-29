@@ -11,7 +11,7 @@ Reusable across every project in the studio — install it into any repo, no bui
 pnpm add 8bit-nes
 
 # or straight from GitHub (a tag is a valid spec too)
-pnpm add github:TuTranMVP/8bit-components#v0.13.0
+pnpm add github:TuTranMVP/8bit-components#v0.14.0
 ```
 
 ```js
@@ -40,15 +40,15 @@ visit (copy it verbatim — every line earns its place):
 <!-- 2. fonts, at the exact URLs all.min.css resolves url() to → fetched once, in parallel
         with the stylesheet instead of after it -->
 <link rel="preload" as="font" type="font/woff2" crossorigin
-  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.13.0/fonts/nes-sans-var.woff2">
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.14.0/fonts/nes-sans-var.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin
-  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.13.0/fonts/nes-mono-400.woff2">
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.14.0/fonts/nes-mono-400.woff2">
 
 <!-- 3. the system: pinned version + byte-pinned integrity -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.13.0/all.min.css"
-  integrity="sha384-f74tFwx/Zy/N1Cgwds6BMkz0ViElN9YkjAZZAZarGVIcW+pZ5L661t9k4q/8ZW/O"
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.14.0/all.min.css"
+  integrity="sha384-OxkG+e0WpJZJ0a47JaeiW4w5BeVmlffxaqvqq83ZcDRYahcWqxQRMs9otoVTiK5/"
   crossorigin="anonymous">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.13.0/elements.min.js"
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.14.0/elements.min.js"
   integrity="sha384-TUhDdeNtIsWqdJJfTW0WC+xeDeLQkIoiZ9bnlgpvc6fdheiNBfTK/uABktvYZh35"
   crossorigin="anonymous"></script>
 ```
@@ -88,7 +88,7 @@ Copy-paste starter, already wired exactly like the above:
 [`examples/cdn-starter.html`](examples/cdn-starter.html) — also live on the docs site at
 `/examples/cdn-starter.html`.
 
-> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.13.0/all.min.css`) and the same
+> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.14.0/all.min.css`) and the same
 > SRI digests — it's the identical npm tarball. Pick *one* origin per page, though: two CDNs
 > means two handshakes for no benefit.
 

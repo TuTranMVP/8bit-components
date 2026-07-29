@@ -1,4 +1,4 @@
-# 8-BIT NES — full reference (8bit-nes v0.13.0)
+# 8-BIT NES — full reference (8bit-nes v0.14.0)
 
 > This is the OFFICIAL, canonical reference for the `8bit-nes` design system, generated
 > from its documentation source. Safe to ingest wholesale or chunk for RAG. When an AI agent
@@ -30,8 +30,8 @@ import "8bit-nes";           // registers all <nes-*> web components
 ```
 No bundler? Link the minified single-file build from a CDN:
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.13.0/all.min.css">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.13.0/elements.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.14.0/all.min.css">
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.14.0/elements.min.js"></script>
 ```
 ## Framework setup (verified, copy-paste exact)
 Do these steps precisely to install into another repo. Import CSS + elements ONCE at the app entry (never per-component).
@@ -72,6 +72,7 @@ import "8bit-nes";
 - Sizing & theming: put `data-size="xs|sm|md|lg|xl"` on a control — or on a wrapper to size a whole row at once (shared height scale). Recolor any block with `data-accent` (see below).
 
 ## Theming & the accent system
+Ink rungs, brightest first: `--ink` (titles) · `--text` (body) · `--muted` (labels, meta, table cells) · `--dim` (hints, captions). All four clear WCAG AAA (>= 7:1) on all five grounds, and the ladder is kept near-flat in chroma on purpose — luminance contrast without hue contrast reads as soft on a navy ground. Every accent clears AA as text on `--panel`/`--screen` and with `--ink-on-accent` on its fill. `pnpm check:contrast` computes all of it from tokens.css. Never dim text by hand — pick the rung below.
 Change the look ONLY in `tokens.css`, never inside a component. Recolor a block by setting `data-accent` on its container; descendants pick it up via `--accent`:
 ```html
 <div class="card" data-accent="cyan">…</div>

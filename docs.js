@@ -771,9 +771,12 @@ import "8bit-nes/components.css";`,
         swatches([
           ["--ink", "#f8f9ff", "titles"],
           ["--text", "#e8eaff", "body"],
-          ["--muted", "#c2c6f3", "labels"],
-          ["--dim", "#a7ace1", "hints"],
+          ["--muted", "#d6d8ee", "labels · 12.32:1"],
+          ["--dim", "#c0c2de", "hints · 9.92:1"],
         ]) +
+        note(
+          "<b>The ink ladder is built on two axes, not one.</b> Contrast was never the weak part — every rung already cleared AAA. Chroma was: the old ladder got <i>bluer</i> as it got darker (7 → 23 → <b>49</b> → <b>58</b>), so <code>--muted</code> was blue text on a navy ground — the eye got luminance separation and almost no hue separation, which reads as soft however high the ratio is. Chroma is nearly flat now (7 → 23 → 24 → 30) and the lightness steps are even (Δ L* 4.9 / 6.3 / 7.7 — the old 12.2 cliff between <code>--text</code> and <code>--muted</code> is what made muted feel like it dropped out). <code>pnpm check:contrast</code> computes all of it from <code>tokens.css</code> and fails the build below AAA on any ground, below AA for any accent used as text, or if a step in the ladder exceeds 9 L*.",
+        ) +
         h2("Brand") +
         swatches([
           ["--blue", "#5c94fc", "primary"],
@@ -782,7 +785,7 @@ import "8bit-nes/components.css";`,
           ["--gold-d", "#c99700", "hover / border"],
           ["--cyan", "#33e0e0", "info · code"],
           ["--cyan-d", "#1f9e9e", "hover / border"],
-          ["--purple", "#b357e0", "special"],
+          ["--purple", "#b759e5", "special"],
           ["--purple-d", "#7d33a8", "hover / border"],
         ]) +
         h2("Extended wheel") +
@@ -804,7 +807,7 @@ import "8bit-nes/components.css";`,
           ["--good-d", "#2f9e3f", "hover / border"],
           ["--warn", "#ff9e2c", "caution"],
           ["--warn-d", "#c46e00", "hover / border"],
-          ["--crit", "#e6394a", "error"],
+          ["--crit", "#f23c4e", "error"],
           ["--crit-d", "#a81f2e", "hover / border"],
         ]) +
         p(
@@ -826,9 +829,12 @@ import "8bit-nes/components.css";`,
         swatches([
           ["--ink", "#f8f9ff", "tiêu đề"],
           ["--text", "#e8eaff", "thân"],
-          ["--muted", "#c2c6f3", "nhãn"],
-          ["--dim", "#a7ace1", "gợi ý"],
+          ["--muted", "#d6d8ee", "nhãn · 12.32:1"],
+          ["--dim", "#c0c2de", "gợi ý · 9.92:1"],
         ]) +
+        note(
+          "<b>Thang chữ dựng trên hai trục, không phải một.</b> Độ tương phản chưa bao giờ là chỗ yếu — mọi bậc đều đã vượt AAA. Chỗ yếu là chroma: thang cũ càng tối càng <i>xanh</i> (7 → 23 → <b>49</b> → <b>58</b>), nên <code>--muted</code> là chữ xanh trên nền navy — mắt có tương phản độ sáng nhưng gần như không có tương phản sắc, và như vậy thì đọc vẫn thấy nhoè dù tỉ lệ có cao. Giờ chroma gần như phẳng (7 → 23 → 24 → 30) và các bước sáng đều nhau (Δ L* 4.9 / 6.3 / 7.7 — chính vực 12.2 giữa <code>--text</code> và <code>--muted</code> làm muted như bị rơi mất). <code>pnpm check:contrast</code> tính toàn bộ từ <code>tokens.css</code> và fail build nếu dưới AAA trên bất kỳ nền nào, dưới AA với accent dùng làm chữ, hoặc một bước trong thang vượt 9 L*.",
+        ) +
         h2("Thương hiệu") +
         swatches([
           ["--blue", "#5c94fc", "chính"],
@@ -837,7 +843,7 @@ import "8bit-nes/components.css";`,
           ["--gold-d", "#c99700", "hover / viền"],
           ["--cyan", "#33e0e0", "info · code"],
           ["--cyan-d", "#1f9e9e", "hover / viền"],
-          ["--purple", "#b357e0", "đặc biệt"],
+          ["--purple", "#b759e5", "đặc biệt"],
           ["--purple-d", "#7d33a8", "hover / viền"],
         ]) +
         h2("Vòng màu mở rộng") +
@@ -859,7 +865,7 @@ import "8bit-nes/components.css";`,
           ["--good-d", "#2f9e3f", "hover / viền"],
           ["--warn", "#ff9e2c", "cảnh báo"],
           ["--warn-d", "#c46e00", "hover / viền"],
-          ["--crit", "#e6394a", "lỗi"],
+          ["--crit", "#f23c4e", "lỗi"],
           ["--crit-d", "#a81f2e", "hover / viền"],
         ]) +
         p(

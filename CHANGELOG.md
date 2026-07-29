@@ -2,6 +2,63 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.14.0
+
+`--muted` read soft, and the reason was not contrast. Measured, every ink rung
+already cleared **AAA** on every ground — `--muted` was 10.46:1 on `--panel`. The
+weak axis was **chroma**: the ladder got *bluer* as it got darker, so the label
+rung was blue text on a navy ground. Luminance separation without hue separation
+reads as soft however high the ratio is.
+
+| rung | before | L* | chroma | after | L* | chroma | on `--panel` |
+|---|---|---|---|---|---|---|---|
+| `--ink` | #f8f9ff | 98.0 | 7 | *unchanged* | 98.0 | 7 | 16.50 |
+| `--text` | #e8eaff | 93.1 | 23 | *unchanged* | 93.1 | 23 | 14.57 |
+| `--muted` | #c2c6f3 | 80.9 | **49** | **#d6d8ee** | 86.8 | **24** | 10.46 → **12.32** |
+| `--dim` | #a7ace1 | 71.7 | **58** | **#c0c2de** | 79.1 | **30** | 7.95 → **9.92** |
+
+Chroma is near-flat now (7 · 23 · 24 · 30) and the lightness steps are even —
+Δ L* **4.9 / 6.3 / 7.7**, where they used to be 4.9 / **12.2** / 9.3. That 12.2
+cliff between `--text` and `--muted` is what made muted feel like it dropped out.
+
+### Fixed
+
+- **`--muted` and `--dim` are brighter and much less blue** (above). `--muted` is
+  text-only in this library (72 colour uses, zero fills), so nothing inverts;
+  `--dim` also backs the idle run-state marker, which simply reads clearer.
+- **Two accents failed AA as text.** An accent is text as often as it is a fill —
+  `.btn.link`, an error hint, an agent name — and on `--panel`:
+  `--crit` was **4.17:1** (error copy under AA) and `--purple` **4.42:1**. Lifted
+  along their own hue to **#f23c4e** (4.57) and **#b759e5** (4.60); because the
+  fills got lighter too, `--ink-on-accent` on them improved 4.71 → 5.16 and
+  5.00 → 5.20. `--crit-d` / `--purple-d` are untouched, so borders and hovers keep
+  their weight.
+
+### Added
+
+- **`pnpm check:contrast`** (`scripts/check-contrast.mjs`) — the colour contract,
+  computed from `tokens.css` with the WCAG relative-luminance formula. Zero
+  dependencies and no browser, so unlike `check:viewport` / `check:ui` it is
+  **hermetic and runs inside `pnpm check`**. It fails on:
+  - an ink rung below **AAA (7:1)** on any of the five grounds — this library's
+    smallest text is 9–12px uppercase mono, and WCAG stops scaling its requirement
+    below 18px, so AA is not a sufficient floor for the rungs that label things;
+  - any accent below **AA (4.5)** as text on `--panel`/`--screen`, or
+    `--ink-on-accent` below AA on any accent fill;
+  - an ink ladder that is not monotone in L*, or that has a step over **9 L*** —
+    the cliff rule, so the shape that caused this release cannot come back.
+
+  Mutation-tested against six drift shapes, including the exact historical values:
+  the old `--crit` (4.17), the old `--purple` (4.42), a dimmed `--muted`, the old
+  `--muted` (re-opens the 12.2 cliff), a `--dim` brighter than `--muted`, and a
+  `--ink-on-accent` too dark for its fill. All six caught.
+
+### Changed
+
+- The Colors page shows each ink rung with its measured ratio, and both language
+  versions explain the two-axis ladder; `DESIGN.md` carries the rule, and
+  `llms-full.txt` tells an agent to pick the rung below rather than dim text by hand.
+
 ## 0.13.0
 
 Large screens. Measured on the docs site first, because the numbers make the case:
