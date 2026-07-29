@@ -56,15 +56,23 @@
     --line-hi: #4646a0;
     /* inner highlight border / hover — brighter for definition */
 
-    /* ---- ink hierarchy: high-contrast on dark, all well above AA on --panel ---- */
+    /* ---- ink hierarchy: four rungs, and the ladder is built on TWO axes.
+       Luminance was never the problem — every rung already cleared AAA. The problem
+       was chroma: the old ladder got *bluer* as it got darker (7 → 23 → 49 → 58),
+       so --muted was blue text on a navy ground. The eye had luminance separation
+       and almost no hue separation, which reads as soft however high the ratio is.
+       Chroma is nearly flat now (7 → 23 → 24 → 30) and the lightness steps are
+       even (Δ L* 4.9 / 6.3 / 7.7 — the old 12.2 cliff between text and muted is
+       what made muted feel like it dropped out). Ratios on --panel, measured by
+       `pnpm check:contrast`, which fails the build below AAA on any ground. ---- */
     --ink: #f8f9ff;
-    /* titles, numbers */
+    /* titles, numbers                    · L* 98.0 · 16.50:1 */
     --text: #e8eaff;
-    /* body / description — bright, high contrast */
-    --muted: #c2c6f3;
-    /* labels, meta */
-    --dim: #a7ace1;
-    /* scope, hints, captions */
+    /* body / description                 · L* 93.1 · 14.57:1 */
+    --muted: #d6d8ee;
+    /* labels, meta, table cells          · L* 86.8 · 12.32:1 (was 10.46) */
+    --dim: #c0c2de;
+    /* scope, hints, captions             · L* 79.1 ·  9.92:1 (was  7.95) */
 
     /* ---- brand palette: each accent = base + deep pair.
        base   → fills, dots, bars, text-on-dark
@@ -75,8 +83,8 @@
     --gold-d: #c99700;    /* XP / highlight / eyebrow / CTA */
     --cyan: #33e0e0;
     --cyan-d: #1f9e9e;    /* code / gem / info */
-    --purple: #b357e0;
-    --purple-d: #7d33a8;  /* special / magic */
+    --purple: #b759e5;
+    --purple-d: #7d33a8;  /* special / magic — 4.60:1 as text on --panel (was 4.42, under AA) */
 
     /* ---- extended wheel: fills the hue gaps so `data-accent` spans the circle.
        Same base + -d contract; each vivid enough for --ink-on-accent on the fill. */
@@ -96,8 +104,10 @@
     --good-d: #2f9e3f;    /* active / success / stage clear */
     --warn: #ff9e2c;
     --warn-d: #c46e00;    /* pending / caution */
-    --crit: #e6394a;
-    --crit-d: #a81f2e;    /* critical / error / blocked / boss */
+    --crit: #f23c4e;
+    --crit-d: #a81f2e;    /* critical / error / blocked / boss — 4.57:1 as text on
+                             --panel (was 4.17, i.e. error text failed AA), and its
+                             fill went 4.71 → 5.16 against --ink-on-accent */
 
     /* ink drawn ON TOP of a solid accent (never white on gold/green/cyan) */
     --ink-on-accent: #0a0a1a;

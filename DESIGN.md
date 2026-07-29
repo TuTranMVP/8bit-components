@@ -63,6 +63,16 @@ and the item never reads smaller than an outlined sibling. Borders on recessed/n
 (input, code, table-wrap) use `--line-hi`. Any recipe that sets `--accent` locally must also set
 `--accent-d`, or an ancestor `data-accent` will split the fill from its border.
 
+**The ink ladder has two axes.** Contrast alone was never the weak part — all four rungs cleared
+AAA on every ground. Chroma was: the ladder used to get *bluer* as it got darker (7 → 23 → 49 →
+58), so `--muted` was blue text on a navy ground. Luminance separation without hue separation
+reads as soft at any ratio. Keep chroma near-flat (7 → 23 → 24 → 30) and the lightness steps even
+(Δ L* 4.9 / 6.3 / 7.7); a step over 9 L* makes the lower rung read as dropped out.
+`pnpm check:contrast` computes every pairing from `tokens.css` and fails the build below AAA for an
+ink rung on any ground, below AA for an accent used as text or for `--ink-on-accent` on a fill, or
+if the ladder is not monotone. An accent is text as often as it is a fill — `--crit` sat at 4.17:1
+as text (error copy failing AA) and `--purple` at 4.42:1 until that check existed.
+
 ### Typography
 
 Two faces, deliberately paired. Self-hosted woff2 (Latin + Vietnamese subset, full diacritics).

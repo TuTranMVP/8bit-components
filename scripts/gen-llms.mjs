@@ -411,7 +411,8 @@ import "${pkg.name}";
 - Sizing & theming: put \`data-size="xs|sm|md|lg|xl"\` on a control — or on a wrapper to size a whole row at once (shared height scale). Recolor any block with \`data-accent\` (see below).
 
 ## Theming & the accent system
-Change the look ONLY in \`tokens.css\`, never inside a component. Recolor a block by setting \`data-accent\` on its container; descendants pick it up via \`--accent\`:
+Ink rungs, brightest first: \`--ink\` (titles) · \`--text\` (body) · \`--muted\` (labels, meta, table cells) · \`--dim\` (hints, captions). All four clear WCAG AAA (>= 7:1) on all five grounds, and the ladder is kept near-flat in chroma on purpose — luminance contrast without hue contrast reads as soft on a navy ground. Every accent clears AA as text on \`--panel\`/\`--screen\` and with \`--ink-on-accent\` on its fill. \`pnpm check:contrast\` computes all of it from tokens.css. Never dim text by hand — pick the rung below.
+Change the look ONLY in \`tokens.css\`, never inside a component. Recolor a component by setting \`data-accent\` ON THAT COMPONENT — it applies to the element carrying the attribute, because every recipe declares its own \`--accent\` and a declaration beats an inherited value. Put it on each component you want recoloured:
 \`\`\`html
 <div class="card" data-accent="cyan">…</div>
 <button class="btn" data-accent="crit">Delete</button>
