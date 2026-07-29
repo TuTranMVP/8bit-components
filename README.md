@@ -46,7 +46,7 @@ visit (copy it verbatim — every line earns its place):
 
 <!-- 3. the system: pinned version + byte-pinned integrity -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.14.0/all.min.css"
-  integrity="sha384-OxkG+e0WpJZJ0a47JaeiW4w5BeVmlffxaqvqq83ZcDRYahcWqxQRMs9otoVTiK5/"
+  integrity="sha384-f2y6hcXjoQt4lcUeMEOzwTNmDbGz3yE65SjPHVctBwApoGuYlYVDjeeCTxaBzAxD"
   crossorigin="anonymous">
 <script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.14.0/elements.min.js"
   integrity="sha384-TUhDdeNtIsWqdJJfTW0WC+xeDeLQkIoiZ9bnlgpvc6fdheiNBfTK/uABktvYZh35"
@@ -184,8 +184,10 @@ Run the docs site locally with `pnpm demo`, then open `/docs.html`.
 ## The contract
 
 Everything reads from `:root`. **Change the look in `tokens.css`, never in a component.**
-One block = one accent: set `data-accent="blue|gold|cyan|purple|good|warn|crit"`, and the
-button / card / chip downstream picks it up via `--accent`.
+One component = one accent: set `data-accent="blue|gold|cyan|purple|good|warn|crit"` **on the
+component** and its fill, dots, bars and borders follow via `--accent` / `--accent-d`. It applies
+to the element you put it on — a recipe declares its own `--accent`, so it keeps that rather than
+inheriting a wrapper's. Accent a row of components by setting the attribute on each.
 
 **The grid law.** Space lands on 4px steps (a `--sp-*` rung; `--sp-hair` 2px is the one
 sub-grid exception), size lands on 2px steps, **every type rung is an integer px** (9 · 11 · 12 ·

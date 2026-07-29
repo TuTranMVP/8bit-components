@@ -333,7 +333,7 @@ import "8bit-nes/components.css";`,
     body: {
       en: () =>
         p(
-          "Every component reads from <code>:root</code>. Set <code>data-accent</code> on a block and the button, card, chip, and badge inside it all pick up <code>--accent</code>.",
+          "Every component reads from <code>:root</code>. Set <code>data-accent</code> <b>on a component</b> — a button, a card, a chip, a badge — and its fill, dots, bars and borders follow via <code>--accent</code> / <code>--accent-d</code>. It applies to the element you put it on: each recipe declares its own <code>--accent</code>, and a declaration on the element beats an inherited one, so a component keeps its accent instead of taking a wrapper's. To accent several, set the attribute on each.",
         ) +
         accentStage() +
         cb(
@@ -375,7 +375,7 @@ import "8bit-nes/components.css";`,
         </div>`,
       vi: () =>
         p(
-          "Mọi component đọc từ <code>:root</code>. Đặt <code>data-accent</code> lên một khối và button, card, chip, badge bên trong đều nhận <code>--accent</code>.",
+          "Mọi component đọc từ <code>:root</code>. Đặt <code>data-accent</code> <b>lên chính component</b> — button, card, chip, badge — thì nền, dot, bar và viền của nó đi theo qua <code>--accent</code> / <code>--accent-d</code>. Nó áp dụng cho đúng element bạn đặt lên: mỗi recipe tự khai báo <code>--accent</code> của nó, mà khai báo trên element thắng giá trị kế thừa, nên component giữ accent của mình chứ không lấy của thẻ bọc. Muốn nhiều cái đổi màu thì đặt thuộc tính lên từng cái.",
         ) +
         accentStage() +
         cb(

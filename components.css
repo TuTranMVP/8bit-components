@@ -358,6 +358,12 @@
     font-weight: var(--fw-bold);
     text-transform: uppercase;
     letter-spacing: var(--ls-chrome);
+    /* The badge is the one accent-filled recipe whose DEFAULT fill is dark
+       (--accent is --panel-2 above), so light ink is correct — 13.07:1. The moment
+       an accent lands on it, or on an ancestor, the fill turns bright and that same
+       ink drops to 1.25:1 on gold. So the ink follows the fill: --ink-on-accent
+       clears AA on all twelve accents (worst 5.16:1, asserted by check:contrast). */
+    color: var(--text);
     background: var(--accent);
     border: var(--bw-2) solid var(--accent-d);
     box-shadow: var(--sh-2);
@@ -391,6 +397,14 @@
       --accent: var(--crit);
       --accent-d: var(--crit-d);
     }
+  }
+
+  /* Only when the accent is on the badge ITSELF. An ancestor's data-accent does not
+     reach it — .badge declares --accent in @layer components, and a declaration on
+     the element beats an inherited value — so keying on a wrapper would paint
+     near-black ink on the badge's own dark fill (measured 1.26:1). */
+  .badge[data-accent] {
+    color: var(--ink-on-accent);
   }
 
   /* ------------------------------------------------------------------- CHIP */

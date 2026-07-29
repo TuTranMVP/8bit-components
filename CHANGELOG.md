@@ -53,8 +53,26 @@ cliff between `--text` and `--muted` is what made muted feel like it dropped out
   `--muted` (re-opens the 12.2 cliff), a `--dim` brighter than `--muted`, and a
   `--ink-on-accent` too dark for its fill. All six caught.
 
+- **An accented `.badge` was unreadable.** `0b879b6` on main removed
+  `color: var(--muted)` from `.badge`, which was right for its default fill
+  (`--accent` is `--panel-2` there, so it now inherits `--text` at **13.07:1**) —
+  but a badge carrying `data-accent` paints a *bright* fill, and light ink on it
+  measured **1.25:1** on gold, **1.62** on good, **3.19** on crit. It was equally
+  broken before that commit (muted-on-gold ≈ 1.4:1). `.badge[data-accent]` now uses
+  `--ink-on-accent`: 13.18 · 10.17 · 5.16 · 7.97 · 12.02 · 5.20 across the accents.
+
 ### Changed
 
+- **The accent contract said something the CSS does not do.** README, the Theming
+  page and `llms-full.txt` all promised that `data-accent` on a wrapper is picked up
+  by "the button, card, chip, and badge inside". Measured with a wrapper set to
+  `cyan`: `.btn`, `.chip` and `.card` all stayed on `#56d364` (their own primary) and
+  `.badge` on `#1c1c56` — because every recipe declares its own `--accent` in
+  `@layer components`, and a declaration on the element beats an inherited value.
+  Only the element carrying the attribute is recoloured. The wording now says that,
+  in all three places. (Making the inheritance real is a separate decision: it would
+  repaint any component sitting inside an accent-setting ancestor, which is a much
+  larger behaviour change than a wording fix.)
 - The Colors page shows each ink rung with its measured ratio, and both language
   versions explain the two-axis ladder; `DESIGN.md` carries the rule, and
   `llms-full.txt` tells an agent to pick the rung below rather than dim text by hand.
