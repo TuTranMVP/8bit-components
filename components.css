@@ -358,7 +358,6 @@
     font-weight: var(--fw-bold);
     text-transform: uppercase;
     letter-spacing: var(--ls-chrome);
-    color: var(--muted);
     background: var(--accent);
     border: var(--bw-2) solid var(--accent-d);
     box-shadow: var(--sh-2);
