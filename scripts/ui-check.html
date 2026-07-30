@@ -30,6 +30,19 @@
   </div>
 </nes-popover>
 
+<!-- the six items an integrator filed against 0.14.0 -->
+<article class="prose" id="pr" style="inline-size:900px">
+  <p>Claim<a class="cite" id="cite-in" href="#s1">1</a>.</p>
+  <nes-walkthrough id="wt"><section data-title="A">x</section><section data-title="B">y</section></nes-walkthrough>
+</article>
+<a class="cite" id="cite-out" href="#s1">1</a>
+<div class="palette"><div class="palette-list" id="pl"><button class="result">a</button></div></div>
+<!-- a div, not a <dialog>: the confirm assertions above look for the one dialog.modal confirmDialog() makes -->
+<div class="modal" id="mod"><div class="palette"><div class="palette-list" id="pl-modal"><button class="result">a</button></div></div></div>
+<dialog class="drawer" id="dr-end"><b>END</b></dialog>
+<dialog class="drawer start" id="dr-start"><b>START</b></dialog>
+<nes-zoom id="zoomer" aria-label="d" style="display:block;inline-size:300px;block-size:150px"><svg viewBox="0 0 100 50" width="300" height="150" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="50" fill="#0d0d2b"/></svg></nes-zoom>
+
 <nes-split at="40" min="15" id="sp" style="block-size:10rem;margin-block:var(--sp-3)">
   <div style="padding:var(--sp-2)">left</div><div style="padding:var(--sp-2)">right</div>
 </nes-split>
@@ -126,6 +139,53 @@ await wait(80);
 document.querySelector("dialog.modal").close();
 ok((await within(p3,2000,"esc")) === false, "confirm · Esc/close resolves false");
 ok(!document.querySelector("dialog.modal"), "confirm · cleans up after itself");
+
+/* ---- the six items filed against 0.14.0 ---- */
+const ink = (el) => {
+  const rg = document.createRange(); rg.selectNodeContents(el);
+  const i = rg.getBoundingClientRect(), b = el.getBoundingClientRect();
+  return +((i.top + i.height / 2) - (b.top + b.height / 2)).toFixed(2);
+};
+const cs = (id, p) => getComputedStyle(document.getElementById(id))[p];
+
+// 1 · the citation digit is centred by its INK, not by its line box
+const off = Math.abs(ink(document.getElementById("cite-out")));
+ok(CSS.supports("text-box-trim", "trim-both") ? off < 0.5 : off < 1.2,
+  "cite · the digit is centred on its ink", `${off}px off centre`);
+
+// 2 · .prose a must not repaint the library's own citation chip
+ok(cs("cite-in", "color") === cs("cite-out", "color") &&
+   cs("cite-in", "textDecorationLine") === cs("cite-out", "textDecorationLine"),
+  "cite · looks the same inside .prose as outside", `${cs("cite-in","color")} / ${cs("cite-in","textDecorationLine")}`);
+
+// 3 · the zoom hint exists only while a gesture does
+const z = document.getElementById("zoomer"), stage = z.querySelector(".zoom-stage"), view = z.querySelector(".zoom-view");
+const atRest = getComputedStyle(stage).willChange;
+view.dispatchEvent(new WheelEvent("wheel", { deltaY: -1, bubbles: true, cancelable: true }));
+const during = getComputedStyle(stage).willChange;
+await wait(400);
+ok(atRest === "auto" && during === "transform" && getComputedStyle(stage).willChange === "auto",
+  "zoom · will-change is a gesture hint, not a permanent layer", `${atRest} → ${during} → ${getComputedStyle(stage).willChange}`);
+
+// 4 · a width-driven element in prose is not squeezed to the reading measure
+ok(cs("wt", "maxInlineSize") === "none", "prose · <nes-walkthrough> opts out of the measure", cs("wt", "maxInlineSize"));
+
+// 5 · the palette's height cap belongs to the overlay, not the list
+const inPage = cs("pl", "maxBlockSize"), inModal = cs("pl-modal", "maxBlockSize");
+ok(inPage === "none" && inModal !== "none", "palette · capped in an overlay, free in a page", `page ${inPage} · modal ${inModal}`);
+
+// 6 · a drawer on a real <dialog> opens on the side it says
+const dEnd = document.getElementById("dr-end"), dStart = document.getElementById("dr-start");
+dEnd.showModal(); await wait(450);
+const re = dEnd.getBoundingClientRect(); dEnd.close();
+dStart.showModal(); await wait(450);
+const rs = dStart.getBoundingClientRect(); dStart.close();
+/* a fixed element's containing block is the viewport WITHOUT the scrollbar, which is
+   documentElement.clientWidth — innerWidth counts the scrollbar and reads 10px wide */
+const vw = document.documentElement.clientWidth;
+ok(Math.round(re.right) === vw && Math.round(rs.left) === 0,
+  "drawer · end hugs the end edge, .start hugs the start",
+  `end ${Math.round(re.left)}–${Math.round(re.right)} · start ${Math.round(rs.left)}–${Math.round(rs.right)} of ${vw}`);
 
 const fails = R.filter(l=>l.startsWith("FAIL")).length;
 R.unshift(`${R.length-fails}/${R.length} PASS${fails?`  —  ${fails} FAIL`:""}\n`);

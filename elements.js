@@ -3019,6 +3019,7 @@ class NesZoom extends HTMLElement {
       "wheel",
       (e) => {
         e.preventDefault();
+        this._hint?.();
         this.zoomBy(e.deltaY < 0 ? 1.12 : 1 / 1.12);
       },
       { passive: false },
@@ -3032,11 +3033,26 @@ class NesZoom extends HTMLElement {
     // anchored on their midpoint so the spot under the fingers stays put.
     const pts = new Map();
     let pinch = null;
+    /* `will-change: transform` used to sit in the stylesheet, which keeps a
+       compositing layer alive for every zoom stage for the page's whole life — and
+       vector content rasterised into that layer only re-sharpens after the gesture
+       settles. Hint while the gesture is live, drop it shortly after: the browser
+       gets its warning exactly when the transform is about to change. */
+    let hintOff = 0;
+    const hint = () => {
+      this.stage.style.willChange = "transform";
+      clearTimeout(hintOff);
+      hintOff = setTimeout(() => {
+        this.stage.style.willChange = "";
+      }, 200);
+    };
+    this._hint = hint;
     const spread = () => {
       const [a, b] = [...pts.values()];
       return { d: Math.hypot(a.x - b.x, a.y - b.y), x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
     };
     this.viewport.addEventListener("pointerdown", (e) => {
+      hint();
       pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
       this.viewport.setPointerCapture(e.pointerId);
       if (pts.size === 2) {
@@ -3053,6 +3069,7 @@ class NesZoom extends HTMLElement {
     });
     this.viewport.addEventListener("pointermove", (e) => {
       if (pts.has(e.pointerId)) pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pinch || drag) hint();
       if (pinch && pts.size === 2) {
         const now = spread();
         if (pinch.d > 0) this._zoomAt(pinch.s * (now.d / pinch.d), now.x, now.y);
@@ -3083,6 +3100,7 @@ class NesZoom extends HTMLElement {
     this.viewport.addEventListener("pointercancel", end);
     this.viewport.addEventListener("dblclick", () => this.reset());
     this.viewport.addEventListener("keydown", (e) => {
+      if (e.key === "+" || e.key === "=" || e.key === "-" || e.key === "0") this._hint?.();
       if (e.key === "+" || e.key === "=") this.zoomBy(1.25);
       else if (e.key === "-") this.zoomBy(1 / 1.25);
       else if (e.key === "0") this.reset();
