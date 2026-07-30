@@ -407,6 +407,13 @@
     color: var(--ink-on-accent);
   }
 
+  /* The height cap belongs to the OVERLAY, not the list: a palette dropped into a
+     page should grow and let the page scroll, or the reader gets a scroller inside
+     a scroller with two thumbs to choose from. */
+  :is(dialog, .modal) .palette-list {
+    max-block-size: min(50vh, 340px);
+  }
+
   /* ------------------------------------------------------------------- CHIP */
   .chip {
     --accent: var(--primary);
@@ -1748,6 +1755,11 @@
     --accent: var(--primary);
     position: fixed;
     inset-block: 0;
+    /* An open modal <dialog> gets `inset-inline: 0` from the UA sheet, which
+       over-constrains the box: with both sides set the start edge wins, so this
+       drawer opened on the LEFT (measured x=1 in a 1200px viewport) and .start had
+       nothing left to do. Releasing the start edge is what makes `end` mean end. */
+    inset-inline-start: auto;
     inset-inline-end: 0;
     margin: 0;
     block-size: 100dvh;
@@ -1848,7 +1860,15 @@
       nes-code,
       nes-mermaid,
       nes-graph,
-      nes-zoom) {
+      nes-zoom,
+      nes-walkthrough,
+      nes-compare,
+      nes-annotate,
+      nes-preview,
+      nes-diff,
+      nes-logs,
+      nes-code-tree,
+      nes-split) {
       max-inline-size: none;
     }
 
@@ -1860,7 +1880,9 @@
       margin-block-start: var(--sp-6);
     }
 
-    & a {
+    /* :not(.cite) — a citation marker IS an <a>, and `.prose a` (0,1,1) outranks
+       `.cite` (0,1,0), so prose was repainting the library's own citation chip. */
+    & a:not(.cite) {
       color: var(--accent);
       text-decoration: underline;
       text-underline-offset: 3px;
@@ -3110,6 +3132,29 @@
     }
   }
 
+  /* A citation marker is a single digit in a box, and flex centres the LINE BOX,
+     not the ink: the font's ascent and descent are asymmetric, so the glyph sits
+     0.85px high — a whole device pixel at 2x, on the one element whose job is to
+     look like a printed superscript.
+
+     `text-box-trim` fixes it, but only on a BLOCK container (it does nothing on the
+     inline-flex above — measured, still -0.85px), and trimming removes the
+     half-leading, so the box collapses to cap height and the padding has to come
+     back explicitly. That means the rule cannot be written unguarded: a browser
+     without support would apply the display change and the padding but not the
+     trim, and the chip would render 23.7px tall instead of 15.7px. Inside
+     @supports, an old browser keeps today's construction and a new one gets a
+     glyph centred to 0.38px. */
+  @supports (text-box-trim: trim-both) {
+    .cite {
+      display: inline-block;
+      text-align: center;
+      text-box-trim: trim-both;
+      text-box-edge: cap alphabetic;
+      padding-block: var(--sp-1);
+    }
+  }
+
   .sources {
     display: flex;
     flex-direction: column;
@@ -4025,7 +4070,12 @@
   nes-zoom .zoom-stage {
     inline-size: 100%;
     transform-origin: center center;
-    will-change: transform;
+    /* No static `will-change: transform`. Declared in CSS it keeps a compositing
+       layer alive for every zoom stage on the page, for the page's whole life —
+       what MDN warns against — and vector content rasterised into that layer only
+       re-sharpens once the gesture settles. <nes-zoom> sets the hint on
+       pointerdown/wheel and drops it ~200ms after the gesture ends: present while
+       it is needed, absent otherwise. */
 
     & svg,
     & img {
@@ -4917,7 +4967,6 @@
       display: flex;
       flex-direction: column;
       gap: var(--sp-hair);
-      max-block-size: min(50vh, 340px);
       overflow-y: auto;
       padding: var(--sp-2);
     }

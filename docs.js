@@ -4062,7 +4062,8 @@ h2("Thành phần") +
     body: {
       en: () =>
         drawerStage({
-          open: "Open drawer",
+          open: "From the end",
+          openStart: "From the start",
           title: "Filters",
           body: "Any content fits — fields, a menu, a form. Esc closes it and focus is trapped inside.",
           close: "Done",
@@ -4074,14 +4075,18 @@ h2("Thành phần") +
   <div class="head"><span class="title">Filters</span></div>
   <!-- fields / menu / form -->
   <form method="dialog"><button class="btn ghost">Done</button></form>
-</dialog>`,
+</dialog>
+
+<!-- .start comes from the left instead (right in RTL) -->
+<dialog class="drawer start" id="nav">…</dialog>`,
         ) +
         a11y(
           "Same native <code>&lt;dialog&gt;</code> as the modal: focus is trapped, <kbd class=\"kbd\">Esc</kbd> closes, and focus returns to the opener. Slide-in is skipped under reduced-motion.",
         ),
       vi: () =>
         drawerStage({
-          open: "Mở drawer",
+          open: "Từ mép cuối",
+          openStart: "Từ mép đầu",
           title: "Bộ lọc",
           body: "Nội dung gì cũng vừa — field, menu, form. Esc để đóng và focus bị giữ bên trong.",
           close: "Xong",
@@ -4093,7 +4098,10 @@ h2("Thành phần") +
   <div class="head"><span class="title">Bộ lọc</span></div>
   <!-- field / menu / form -->
   <form method="dialog"><button class="btn ghost">Xong</button></form>
-</dialog>`,
+</dialog>
+
+<!-- .start vào từ bên trái (bên phải khi RTL) -->
+<dialog class="drawer start" id="nav">…</dialog>`,
         ) +
         a11y(
           "Cùng <code>&lt;dialog&gt;</code> gốc như modal: giữ focus, <kbd class=\"kbd\">Esc</kbd> đóng, và focus trả về nút mở. Hiệu ứng trượt bị bỏ khi reduced-motion.",
@@ -4535,7 +4543,7 @@ h2("API") +
             ["<code>--prose-measure</code>", "length", "<code>72ch</code>", "the reading measure. It sits on the <strong>children</strong>, not the container, so a table or a diagram beside a paragraph keeps the full width it needs"],
           ],
         }) +
-        note("The measure caps each child, and the constructs whose content <em>is</em> width opt out — <code>.table-wrap</code>, <code>table</code>, <code>pre</code>, <code>.codeblock</code>, <code>.code-preview</code>, <code>.diff</code>, <code>.terminal</code>, <code>.card-group</code>, <code>hr</code>, <code>img</code>, <code>svg</code>, <code>video</code>, <code>&lt;nes-code&gt;</code>, <code>&lt;nes-mermaid&gt;</code>, <code>&lt;nes-graph&gt;</code>, <code>&lt;nes-zoom&gt;</code>. A paragraph rewraps when it runs out of room; a table, a <code>&lt;pre&gt;</code> or an SVG cannot — capping the container crushed them.") +
+        note("The measure caps each child, and the constructs whose content <em>is</em> width opt out — <code>.table-wrap</code>, <code>table</code>, <code>pre</code>, <code>.codeblock</code>, <code>.code-preview</code>, <code>.diff</code>, <code>.terminal</code>, <code>.card-group</code>, <code>hr</code>, <code>img</code>, <code>svg</code>, <code>video</code>, <code>&lt;nes-code&gt;</code>, <code>&lt;nes-mermaid&gt;</code>, <code>&lt;nes-graph&gt;</code>, <code>&lt;nes-zoom&gt;</code>, <code>&lt;nes-walkthrough&gt;</code>, <code>&lt;nes-compare&gt;</code>, <code>&lt;nes-annotate&gt;</code>, <code>&lt;nes-preview&gt;</code>, <code>&lt;nes-diff&gt;</code>, <code>&lt;nes-logs&gt;</code>, <code>&lt;nes-code-tree&gt;</code>, <code>&lt;nes-split&gt;</code>. A paragraph rewraps when it runs out of room; a table, a <code>&lt;pre&gt;</code> or an SVG cannot — capping the container crushed them. The rule of thumb: if the element's content <em>is</em> its width, it belongs on that list.") +
         p("Styles the native elements inside it — <code>h1–h4</code>, <code>p</code>, <code>ul/ol</code> (square bullets), <code>a</code>, <code>code</code>, <code>blockquote</code>, <code>table</code>, <code>hr</code> — with no classes on the children.") +
                 a11y(
           "Prose only styles what's inside it — headings, lists, and links keep their native semantics. Set <code>data-accent</code> on <code>.prose</code> to recolor links and markers.",
@@ -4557,7 +4565,7 @@ h2("API") +
             ["<code>--prose-measure</code>", "length", "<code>72ch</code>", "độ dài dòng đọc. Nó nằm trên <strong>các con</strong>, không phải container, nên bảng hay sơ đồ cạnh đoạn văn vẫn giữ đủ bề rộng cần"],
           ],
         }) +
-        note("Measure giới hạn từng con, và những cấu trúc mà nội dung <em>chính là</em> bề rộng thì được miễn — <code>.table-wrap</code>, <code>table</code>, <code>pre</code>, <code>.codeblock</code>, <code>.code-preview</code>, <code>.diff</code>, <code>.terminal</code>, <code>.card-group</code>, <code>hr</code>, <code>img</code>, <code>svg</code>, <code>video</code>, <code>&lt;nes-code&gt;</code>, <code>&lt;nes-mermaid&gt;</code>, <code>&lt;nes-graph&gt;</code>, <code>&lt;nes-zoom&gt;</code>. Đoạn văn hết chỗ thì tự bẻ dòng; bảng, <code>&lt;pre&gt;</code> hay SVG thì không — giới hạn container là bóp chết chúng.") +
+        note("Measure giới hạn từng con, và những cấu trúc mà nội dung <em>chính là</em> bề rộng thì được miễn — <code>.table-wrap</code>, <code>table</code>, <code>pre</code>, <code>.codeblock</code>, <code>.code-preview</code>, <code>.diff</code>, <code>.terminal</code>, <code>.card-group</code>, <code>hr</code>, <code>img</code>, <code>svg</code>, <code>video</code>, <code>&lt;nes-code&gt;</code>, <code>&lt;nes-mermaid&gt;</code>, <code>&lt;nes-graph&gt;</code>, <code>&lt;nes-zoom&gt;</code>, <code>&lt;nes-walkthrough&gt;</code>, <code>&lt;nes-compare&gt;</code>, <code>&lt;nes-annotate&gt;</code>, <code>&lt;nes-preview&gt;</code>, <code>&lt;nes-diff&gt;</code>, <code>&lt;nes-logs&gt;</code>, <code>&lt;nes-code-tree&gt;</code>, <code>&lt;nes-split&gt;</code>. Đoạn văn hết chỗ thì tự bẻ dòng; bảng, <code>&lt;pre&gt;</code> hay SVG thì không — giới hạn container là bóp chết chúng. Quy tắc: nội dung của element <em>chính là</em> bề rộng của nó thì nó thuộc danh sách này.") +
         p("Style các element gốc bên trong — <code>h1–h4</code>, <code>p</code>, <code>ul/ol</code> (bullet vuông), <code>a</code>, <code>code</code>, <code>blockquote</code>, <code>table</code>, <code>hr</code> — không cần class trên con.") +
                 a11y(
           "Prose chỉ style thứ bên trong nó — heading, list, link giữ ngữ nghĩa gốc. Đặt <code>data-accent</code> trên <code>.prose</code> để đổi màu link và marker.",
@@ -8010,7 +8018,7 @@ for await (const chunk of agentStream())
             ["<code>.palette-empty</code>", "the \"no matches\" state"],
           ],
         ) +
-        note(`This is the shell — filter the rows and move <code>.active</code> with ↑/↓ in JS. Open it inside a <a href="#/modal">Modal</a> for a real Cmd-K overlay.`) +
+        note(`This is the shell — filter the rows and move <code>.active</code> with ↑/↓ in JS. Open it inside a <a href="#/modal">Modal</a> for a real Cmd-K overlay. The list only caps its height inside an overlay (<code>&lt;dialog&gt;</code> or <code>.modal</code>); in a page it grows and the page scrolls, so you never get a scroller inside a scroller.`) +
         a11y(`Use <code>role="listbox"</code> + <code>aria-activedescendant</code> on the input so arrow-key selection is announced; Enter activates the active row, Esc closes.`),
       vi: () =>
         stage(
@@ -8042,7 +8050,7 @@ for await (const chunk of agentStream())
             ["<code>.palette-empty</code>", "trạng thái \"không khớp\""],
           ],
         ) +
-        note(`Đây là phần vỏ — lọc hàng và di chuyển <code>.active</code> bằng ↑/↓ trong JS. Mở trong <a href="#/modal">Modal</a> để có overlay Cmd-K thật.`) +
+        note(`Đây là phần vỏ — lọc hàng và di chuyển <code>.active</code> bằng ↑/↓ trong JS. Mở trong <a href="#/modal">Modal</a> để có overlay Cmd-K thật. Danh sách chỉ giới hạn chiều cao khi nằm trong overlay (<code>&lt;dialog&gt;</code> hoặc <code>.modal</code>); ở trong trang nó cứ cao lên và trang tự cuộn, nên không bao giờ có scroller lồng scroller.`) +
         a11y(`Dùng <code>role="listbox"</code> + <code>aria-activedescendant</code> trên input để chọn bằng phím mũi tên được đọc; Enter kích hoạt hàng active, Esc đóng.`),
     },
   },
@@ -10212,13 +10220,18 @@ function drawerStage(t) {
   return stage(
     "DRAWER",
     `<button class="btn" data-open="demo-drawer">${t.open}</button>
-     <dialog class="drawer" id="demo-drawer" data-accent="cyan">
+     <button class="btn outline" data-open="demo-drawer-start">${t.openStart}</button>
+     ${["demo-drawer", "demo-drawer-start"]
+       .map(
+         (id, i) => `<dialog class="drawer${i ? " start" : ""}" id="${id}" data-accent="cyan">
        <div class="head"><span class="title">${t.title}</span></div>
        <p class="doc-p" style="margin:0">${t.body}</p>
        <form method="dialog" style="margin-block-start:var(--sp-5)">
          <button class="btn ghost">${t.close}</button>
        </form>
      </dialog>`,
+       )
+       .join("")}`,
   );
 }
 

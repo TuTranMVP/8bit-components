@@ -2,6 +2,71 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.15.0
+
+Six items filed by a repo consuming this library. Every one was reproduced in a
+real browser before it was touched, and every fix carries a regression assertion
+in `pnpm check:ui` (now 34 assertions). Two were reported with a diagnosis that
+did not survive measurement — those are written up below rather than quietly
+patched, because the difference matters to anyone reading the fix.
+
+### Fixed
+
+- **A citation digit sat off-centre.** `.cite` centred its *line box*, and a line
+  box carries the font's ascent and descent — for a single digit that is a lot of
+  empty space above and none below, so the glyph rode **0.85px high** in a 16px
+  chip. Now centred on its **ink** under `@supports (text-box-trim: trim-both)`:
+  **0.85px → 0.38px** off centre, and the chip grew 15.7 → 16.8px because the
+  padding is finally doing what it says. Browsers without `text-box-trim` are
+  untouched. The reported fix (adding the property to the existing rule) is a
+  no-op — `.cite` is `inline-flex`, and `text-box-trim` only acts on a block
+  container's own line boxes, so the block had to be `inline-block`, and it had to
+  come **after** `.cite` or the equal-specificity rule below it wins.
+
+- **`.prose a` repainted the library's own citation chip.** `.prose a` is
+  (0,1,1); `.cite` is (0,1,0). Inside prose, a citation came out link-coloured and
+  underlined. Now `& a:not(.cite)`, and the chip measures identical in and out of
+  prose (`rgb(51,224,224)`, no underline).
+
+- **Eight width-driven elements were squeezed to the reading measure.**
+  `.prose > *` caps every child at `--prose-measure` and the constructs whose
+  content *is* width opt out — but the list had gone stale. Added
+  `<nes-walkthrough>`, `<nes-compare>`, `<nes-annotate>`, `<nes-preview>`,
+  `<nes-diff>`, `<nes-logs>`, `<nes-code-tree>`, `<nes-split>`. A walkthrough in
+  an article was being crushed to 72ch.
+
+- **The palette's height cap belonged to the overlay, not the list.**
+  `.palette-list` capped itself at `min(50vh, 340px)` everywhere, so a palette
+  placed *in a page* became a scroller inside a scroller — two thumbs, and the
+  page's own scroll no longer reaches the rows. The cap now lives on
+  `:is(dialog, .modal) .palette-list`: **`none` in a page, `340px` in an overlay**.
+
+- **`.drawer` opened on the wrong edge.** `.drawer` sets `inset-inline-end: 0`,
+  but `dialog` ships a UA `inset-inline-start` that the shorthand-free override
+  never cleared, so the panel was pinned to *both* edges and resolved to the
+  start. Explicit `inset-inline-start: auto`: an end drawer now measures
+  `848–1200` of 1200 and `.start` measures `0–352` (it was starting at x=1).
+
+- **`<nes-zoom>` held a compositor layer for its whole life.**
+  `will-change: transform` was static on `.zoom-stage`. It is now raised on
+  pointer-down / wheel / keyboard zoom and dropped 200ms after the gesture:
+  measured `auto → transform → auto`. Honest note: the reported *symptom* —
+  blurred text while zoomed — did **not** reproduce here (10 vs 8 intermediate
+  pixels across an edge at 4.36×, i.e. the same rasterisation either way). The
+  hint was removed on MDN's grounds — `will-change` is for imminent change, not
+  permanent state — not because a blur was confirmed.
+
+### Docs
+
+- The drawer page now demos **both** edges, so `.start` is visible and not just
+  described. (The report said this page only showed a plain box; it has always
+  used a real `<dialog class="drawer">` — as does the zoom page, which uses an
+  inline SVG, not the `<img>` the report assumed. Both notes are wrong for this
+  repo, and mentioned here so the record is straight.)
+- The palette page states where the height cap applies and why.
+- The `.prose` opt-out list in the layout page is back in sync with the CSS, plus
+  the rule of thumb that generates it: *if the content is the width, it opts out.*
+
 ## 0.14.0
 
 `--muted` read soft, and the reason was not contrast. Measured, every ink rung
