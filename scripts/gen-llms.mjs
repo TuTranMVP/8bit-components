@@ -88,6 +88,7 @@ const SELECTOR = {
   datalist: ".datalist",
   timeline: ".timeline",
   prose: ".prose",
+  callout: ".callout",
   tree: "<nes-tree>",
   chat: ".chat",
   chatmessages: "<nes-chat-messages>",

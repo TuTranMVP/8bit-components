@@ -49,9 +49,14 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  :where(img, svg, canvas) {
+  /* height: auto so the aspect ratio survives the cap — a width/height attribute
+     is a presentational hint, which any author declaration outranks, so without
+     this a capped image keeps its attribute height and stretches. <video> was
+     missing from the list entirely, so it had no cap anywhere in the library. */
+  :where(img, svg, canvas, video) {
     display: block;
     max-width: 100%;
+    height: auto;
   }
 
   html {

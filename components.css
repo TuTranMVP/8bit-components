@@ -4,9 +4,15 @@
    Every value flows from tokens.css. Uses native CSS nesting.
    ========================================================================== */
 
+/* inherits: true so that BOTH forms work — on the bar, <span class="pbar"
+   style="--fill:64%">, and on the piece that draws it, <i style="--fill:64%">.
+   It was false, which made `.pbar { --fill: 0% }` unreadable by anything: the
+   child resolved this registration's own initial-value instead, so a consumer who
+   set it on the container (what that declaration implies) got a bar stuck at 0%
+   with no error anywhere. Registered so it can be transitioned. */
 @property --fill {
   syntax: "<percentage>";
-  inherits: false;
+  inherits: true;
   initial-value: 0%;
 }
 
@@ -314,10 +320,41 @@
   /* ---------------------------------------------------------------- CALLOUT */
   .callout {
     --accent: var(--gold);
+    --mark: "*";
+    position: relative;
     border: var(--bw-2) solid var(--accent);
     background: color-mix(in srgb, var(--accent) 12%, transparent);
     padding: var(--pad-box);
+    /* the inline half of --pad-box, plus the marker column */
+    padding-inline-start: calc(var(--sp-4) + var(--sp-5));
     font-size: var(--fs-body);
+
+    /* WCAG 2.2 · 1.4.1 Use of Color. Hue was the ONLY thing saying which kind of
+       callout this is, and hue is not enough here: warn (#ff9e2c) against gotcha
+       (#f23c4e) is the warning/danger pair that matters most, and memo against the
+       default was not "two warm yellows" but the same gold — measured identical,
+       so those two were indistinguishable at 100%, not merely close. It bites
+       hardest where callouts are generated: a consumer rendering `> [!WARNING]`
+       has to strip the marker, and then the kind exists nowhere on screen.
+
+       Absolutely positioned in a reserved gutter so it holds for any content
+       shape — inline text, one <p>, or a stack of blocks. The glyph is decorative
+       to a screen reader (`/ ""`), because the panel's own label carries the kind
+       in text; the unslashed declaration above it is the fallback for engines that
+       do not parse alt text. Opt out with --mark: none (add
+       padding-inline-start: var(--sp-4) to reclaim the gutter). */
+    &::before {
+      content: var(--mark);
+      content: var(--mark) / "";
+      position: absolute;
+      inset-block-start: var(--sp-3);
+      inset-inline-start: var(--sp-4);
+      inline-size: var(--sp-5);
+      font-family: var(--font-mono);
+      font-weight: var(--fw-bold);
+      line-height: inherit;
+      color: var(--accent);
+    }
 
     & b {
       color: var(--accent);
@@ -325,26 +362,32 @@
 
     &.tip {
       --accent: var(--good);
+      --mark: "+";
     }
 
     &.gotcha {
       --accent: var(--crit);
+      --mark: "X";
     }
 
     &.memo {
       --accent: var(--gold);
+      --mark: "#";
     }
 
     &.quest {
       --accent: var(--purple);
+      --mark: "?";
     }
 
     &.info {
       --accent: var(--blue);
+      --mark: "i";
     }
 
     &.warn {
       --accent: var(--warn);
+      --mark: "!";
     }
   }
 
@@ -613,7 +656,17 @@
 
   /* --------------------------------------------------------- PROGRESS / XP BAR */
   .pbar {
+    /* Also the guard: --fill inherits now, so this stops an ancestor's value from
+       leaking in and filling a bar nobody set. */
     --fill: 0%;
+    /* A <span> is inline, and an inline box ignores inline-size, block-size and
+       overflow — so a standalone .pbar measured 2px wide (its own borders) by
+       45.1px tall, and its <i> resolved --fill against the PAGE rather than the
+       bar. It only ever worked as a flex item, where the parent blockifies it,
+       which is how this library's own <nes-hud> uses it and why the published
+       example <span class="pbar"><i style="--fill:64%"></i></span> renders a
+       sliver when pasted into a plain div. */
+    display: block;
     block-size: 1rem;
     background: var(--slot);
     border: var(--bw-2) solid var(--line-hi);
@@ -1309,13 +1362,22 @@
       letter-spacing: var(--ls-chrome);
       color: var(--muted);
       text-align: start;
+      vertical-align: top;
       padding: var(--sp-3);
       background: var(--panel-2);
       border-block-end: var(--bw-2) solid var(--line-hi);
       white-space: nowrap;
     }
 
+    /* A data grid is read ACROSS. The browser's default vertical-align: middle is
+       right for a <td> in a prose document and wrong here: the moment one cell in a
+       row wraps, every short cell floats to the middle of its own height and no two
+       values share a top edge. Measured at 390px on a four-column row whose last
+       cell wrapped to 164px, the first-line tops spread 57.8px — the row reads as
+       four unrelated fragments instead of one record. Narrow is the common case on
+       a phone, so this is the default, not a variant. */
     & td {
+      vertical-align: top;
       padding: var(--sp-3);
       border-block-end: var(--bw-2) solid color-mix(in srgb, var(--line-hi) 45%, transparent);
       font-variant-numeric: tabular-nums;
@@ -1854,9 +1916,6 @@
       .terminal,
       .card-group,
       hr,
-      img,
-      svg,
-      video,
       nes-code,
       nes-mermaid,
       nes-graph,
@@ -1870,6 +1929,23 @@
       nes-code-tree,
       nes-split) {
       max-inline-size: none;
+    }
+
+    /* Media is a THIRD case, not a member of the list above. Everything on that
+       list has a safe way to be too wide — a <pre> and a .table-wrap scroll inside
+       themselves, nes-zoom pans, nes-code scrolls — so `none` costs them nothing.
+       An <img> has no such escape: `none` hands it its intrinsic width and it walks
+       straight out of the page (a 1400px image in a 390px card measured
+       scrollWidth 1422 vs clientWidth 390 — sideways scroll on a phone, from a
+       stylesheet-only page). Two different caps were being collapsed into one:
+       --prose-measure is a READING limit media should escape, 100% is a CONTAINER
+       limit nothing may. It gets its own rule rather than a later override because
+       :is() takes the specificity of its most specific argument — .table-wrap makes
+       the list (0,2,0), so a (0,1,1) media rule after it would lose and read as a
+       fix that does nothing. block-size keeps the aspect ratio once width is capped. */
+    &>:is(img, svg, video) {
+      max-inline-size: 100%;
+      block-size: auto;
     }
 
     &>*+* {

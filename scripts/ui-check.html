@@ -43,6 +43,35 @@
 <dialog class="drawer start" id="dr-start"><b>START</b></dialog>
 <nes-zoom id="zoomer" aria-label="d" style="display:block;inline-size:300px;block-size:150px"><svg viewBox="0 0 100 50" width="300" height="150" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="50" fill="#0d0d2b"/></svg></nes-zoom>
 
+<!-- the four items filed against 0.15.0 -->
+<div style="inline-size:320px" id="narrow">
+  <article class="prose">
+    <img id="wide" width="1400" height="300" alt=""
+         src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+  </article>
+</div>
+
+<div style="inline-size:360px"><table class="table" id="grid">
+  <tbody><tr>
+    <td id="g1">A1</td>
+    <td id="g2">short</td>
+    <td id="g3">a cell long enough that it has to wrap onto several lines and make this row much taller than one line of text</td>
+  </tr></tbody>
+</table></div>
+
+<div class="callout" id="co-default">d</div>
+<div class="callout tip" id="co-tip">t</div>
+<div class="callout memo" id="co-memo">m</div>
+<div class="callout quest" id="co-quest">q</div>
+<div class="callout info" id="co-info">i</div>
+<div class="callout warn" id="co-warn">w</div>
+<div class="callout gotcha" id="co-gotcha">g</div>
+<div class="callout warn" id="co-off" style="--mark:none">off</div>
+
+<span class="pbar" id="pb-out" style="inline-size:200px;--fill:50%"><i id="fi-out"></i></span>
+<span class="pbar" id="pb-in" style="inline-size:200px"><i id="fi-in" style="--fill:50%"></i></span>
+<span class="pbar" id="pb-none" style="inline-size:200px"><i id="fi-none"></i></span>
+
 <nes-split at="40" min="15" id="sp" style="block-size:10rem;margin-block:var(--sp-3)">
   <div style="padding:var(--sp-2)">left</div><div style="padding:var(--sp-2)">right</div>
 </nes-split>
@@ -186,6 +215,42 @@ const vw = document.documentElement.clientWidth;
 ok(Math.round(re.right) === vw && Math.round(rs.left) === 0,
   "drawer · end hugs the end edge, .start hugs the start",
   `end ${Math.round(re.left)}–${Math.round(re.right)} · start ${Math.round(rs.left)}–${Math.round(rs.right)} of ${vw}`);
+
+/* ---- the four items filed against 0.15.0 ---- */
+await new Promise(r => requestAnimationFrame(r));
+
+// 1 · media escapes the reading measure, never the container
+const wide = document.getElementById("wide");
+ok(cs("wide", "maxInlineSize") === "100%", "prose · media keeps the container cap", cs("wide", "maxInlineSize"));
+ok(Math.round(wide.getBoundingClientRect().width) <= 320,
+  "prose · a 1400px-wide image fits a 320px container",
+  `${Math.round(wide.getBoundingClientRect().width)}px of 320`);
+
+// 2 · a data grid is read across, so a wrapped row still shares one top edge
+const top = (id) => { const rg = document.createRange(); rg.selectNodeContents(document.getElementById(id)); return rg.getBoundingClientRect().top; };
+const tops = ["g1","g2","g3"].map(top);
+const spread = +(Math.max(...tops) - Math.min(...tops)).toFixed(1);
+ok(cs("g1", "verticalAlign") === "top" && spread < 1,
+  "table · a wrapped row keeps every cell on one top edge",
+  `${cs("g1","verticalAlign")} · ${spread}px spread over ${Math.round(document.getElementById("g1").getBoundingClientRect().height)}px`);
+
+// 3 · WCAG 1.4.1 — a callout kind is not carried by hue alone
+const KINDS = ["default","tip","memo","quest","info","warn","gotcha"];
+const marks = KINDS.map(k => getComputedStyle(document.getElementById("co-" + k), "::before").content);
+ok(new Set(marks).size === KINDS.length && !marks.includes("none"),
+  "callout · every kind carries a distinct non-colour marker", marks.join(" "));
+ok(getComputedStyle(document.getElementById("co-off"), "::before").content === "none",
+  "callout · --mark: none opts the marker out");
+
+// 4 · --fill reads the same set on the bar or on the piece that draws it
+const w = (id) => +document.getElementById(id).getBoundingClientRect().width.toFixed(1);
+ok(w("fi-out") === w("fi-in") && w("fi-out") > 0,
+  "pbar · --fill works on the container and on the <i>", `${w("fi-out")}px vs ${w("fi-in")}px`);
+ok(w("fi-none") === 0, "pbar · and an unset bar stays empty", `${w("fi-none")}px`);
+const pb = document.getElementById("pb-out").getBoundingClientRect();
+ok(cs("pb-out", "display") === "block" && Math.round(pb.width) === 200 && Math.round(pb.height) === 16,
+  "pbar · a standalone bar takes the size it is given",
+  `${cs("pb-out","display")} ${Math.round(pb.width)}x${Math.round(pb.height)}`);
 
 const fails = R.filter(l=>l.startsWith("FAIL")).length;
 R.unshift(`${R.length-fails}/${R.length} PASS${fails?`  —  ${fails} FAIL`:""}\n`);

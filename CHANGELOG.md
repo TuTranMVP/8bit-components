@@ -2,6 +2,90 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.16.0
+
+Four items filed by the same consuming repo, measured against the shipped bytes
+of 0.15.0. All four reproduced. Measuring them turned up a **fifth** defect that
+nobody reported and that explains half of item 4's symptom, and it also showed
+that the sideways-scroll guard in this repo — and the one the report proposed —
+were both **vacuous**. Details below, because those two are the parts worth
+reading.
+
+### Fixed
+
+- **`.prose > img` escaped the container, not just the reading measure.**
+  Everything on the opt-out list has a safe way to be too wide — a `<pre>` and a
+  `.table-wrap` scroll inside themselves, `<nes-zoom>` pans — so `max-inline-size:
+  none` costs them nothing. An image has no such escape: `none` hands it its
+  intrinsic width. Measured with a 1400px image in a 390px card, no consumer CSS:
+  **scrollWidth 1422 vs clientWidth 390**, i.e. sideways scroll on a phone from a
+  stylesheet-only page. Media now gets its own rule — it escapes `--prose-measure`
+  and keeps a `100%` container cap, two limits that `none` was collapsing into one.
+
+  The fix the report suggested (a `.prose > :is(img, svg, video)` rule *after* the
+  list) is a **no-op**: `:is()` takes the specificity of its most specific argument,
+  so `.table-wrap` makes the opt-out list `(0,2,0)` and a later media rule at
+  `(0,1,1)` loses. The three entries had to come **off** the list instead.
+
+- **`<video>` had no cap anywhere in the library**, and a capped image kept its
+  attribute height and stretched. The base reset now covers
+  `:where(img, svg, canvas, video)` with `height: auto`.
+
+- **`.table` cells inherited the browser's `vertical-align: middle`.** Right for a
+  `<td>` in a prose document, wrong for a data grid, which is read across: one
+  wrapping cell floats every short cell in its row to the middle of its own height.
+  Measured at 390px on a four-column row that wrapped to 164px, the first-line tops
+  spread **57.8px → 0px**. Narrow is the common case on a phone, so `top` is the
+  default rather than a variant.
+
+- **A `.callout` said which kind it was in hue and nothing else** (WCAG 2.2 ·
+  1.4.1). Worse than reported: `.memo` against the default was not "two warm
+  yellows" but the *same* gold — measured byte-identical, so those two were
+  indistinguishable at 100%, not merely close. Each kind now carries a marker
+  glyph: `*` `+` `#` `?` `i` `!` `X`. It is absolutely positioned in a reserved
+  gutter so it holds for any content shape — inline text, one `<p>`, or a stack of
+  blocks — and is decorative to a screen reader (`content: … / ""`), because the
+  panel's own label carries the kind in text. Override or drop it with `--mark`.
+
+- **`.pbar` only worked as a flex item.** *(Not reported — found while measuring
+  item 4.)* A `<span>` is inline, and an inline box ignores `inline-size`,
+  `block-size` and `overflow`, so a standalone bar measured **2px wide by 45.1px
+  tall** and its `<i>` resolved `--fill` against the *page* instead of the bar. It
+  looked fine everywhere it was used — `<nes-hud>` puts it in a flex row, which
+  blockifies it — so the published example `<span class="pbar"><i style="--fill:64%">
+  </i></span>` rendered a sliver when pasted into a plain div. `display: block`:
+  all three contexts now measure 200×16 with a 98px fill.
+
+- **`--fill` was registered `inherits: false`**, which made `.pbar { --fill: 0% }`
+  unreadable by anything — the child resolved the registration's own initial-value,
+  so a consumer setting it on the container got a bar stuck at 0% with no error.
+  Now `inherits: true`: both forms work, and that declaration becomes the guard
+  that stops an ancestor's value from leaking in.
+
+### Changed
+
+- **`pnpm check:viewport` was measuring overflow against the wrong number.**
+  `scrollWidth - innerWidth` is vacuous under mobile emulation: when content
+  overflows, `innerWidth` *grows with it*. Proven by mutation — with the media bug
+  put back, the old denominator reports `0px` and passes 23/23; `clientWidth`
+  reports **1026px** and fails. The report's proposed gallery check
+  (`scrollWidth === innerWidth`) has the same flaw and would not have caught item 1.
+  All three call sites now use `document.documentElement.clientWidth`, and the
+  phone fixture carries media declared 1400px wide so the guard has something to
+  catch.
+
+### Added
+
+- **A `.callout` page in the docs.** The recipe shipped in the CSS from the start
+  and was never documented — which is a fair part of why a consumer ended up
+  prepending their own emoji. Seven kinds, their accents and markers, and `--mark`.
+- **Seven regression assertions** in `pnpm check:ui` (42, was 34), one per item
+  plus the `.pbar` sizing and the `--mark: none` opt-out.
+- The Table page states why cells align top, and what to do about `th`'s
+  `white-space: nowrap` with no floor on `td` (`min-inline-size` on the column that
+  matters). The Progress page documents both `--fill` placements and that the track
+  is a block. The Prose page documents media as the third case.
+
 ## 0.15.0
 
 Six items filed by a repo consuming this library. Every one was reproduced in a

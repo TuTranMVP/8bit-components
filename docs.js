@@ -2790,13 +2790,16 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
     body: {
       en: () =>
         stage("PBAR", `<span class="pbar" style="inline-size:280px"><i style="--fill:64%"></i></span>`, "col") +
-        cb(`<span class="pbar"><i style="--fill:64%"></i></span>`) +
+        cb(`<span class="pbar" style="inline-size:280px"><i style="--fill:64%"></i></span>
+
+<!-- --fill reads the same on the bar itself -->
+<span class="pbar" style="--fill:64%"><i></i></span>`) +
         api(
           ["Part", "Role"],
           [
-            ["<code>.pbar</code>", "track"],
+            ["<code>.pbar</code>", "track — a block, so give it a width or let it fill its parent"],
             ["<code>.pbar > i</code>", "fill"],
-            ["<code>--fill</code>", "0%–100% (animates in steps)"],
+            ["<code>--fill</code>", "0%–100% (animates in steps). Set it on the bar or on the <code>&lt;i&gt;</code> — both read the same"],
           ],
         ) +
         a11y(
@@ -2804,13 +2807,16 @@ el.innerHTML = icon("search", { size: 20, label: "Tìm" });`,
         ),
       vi: () =>
         stage("PBAR", `<span class="pbar" style="inline-size:280px"><i style="--fill:64%"></i></span>`, "col") +
-        cb(`<span class="pbar"><i style="--fill:64%"></i></span>`) +
+        cb(`<span class="pbar" style="inline-size:280px"><i style="--fill:64%"></i></span>
+
+<!-- --fill đặt ngay trên thanh cũng cho kết quả y hệt -->
+<span class="pbar" style="--fill:64%"><i></i></span>`) +
         api(
           ["Thành phần", "Vai trò"],
           [
-            ["<code>.pbar</code>", "đường ray"],
+            ["<code>.pbar</code>", "đường ray — là block, nên hãy cho nó bề rộng hoặc để nó lấp đầy phần tử cha"],
             ["<code>.pbar > i</code>", "phần tô đầy"],
-            ["<code>--fill</code>", "0%–100% (chạy theo bước)"],
+            ["<code>--fill</code>", "0%–100% (chạy theo bước). Đặt trên thanh hoặc trên <code>&lt;i&gt;</code> — cả hai đều đọc như nhau"],
           ],
         ) +
         a11y(
@@ -3611,6 +3617,9 @@ h2("Parts") +
           ["<code>.table</code>", "the table — mono headers, row hover, square cells"],
           ["<code>.table-wrap</code>", "overflow-x scroll region (make it a focusable <code>role=region</code>)"],
         ]) +
+        note(
+          "Cells align to the <b>top</b>, because a data grid is read across: with the browser's default <code>vertical-align: middle</code>, one wrapping cell floats every short cell in its row to the middle of its own height and no two values share a top edge. Headers also carry <code>white-space: nowrap</code> and body cells do not — so a header holds its column open while the column under it collapses to its longest word. If that is the wrong trade for your data, put a <code>min-inline-size</code> on the <code>&lt;td&gt;</code> that matters.",
+        ) +
                 a11y(
           "Use real <code>&lt;thead&gt;</code>/<code>&lt;th scope&gt;</code>. Make the scroll wrapper focusable (<code>tabindex=\"0\"</code>, <code>role=\"region\"</code>, <code>aria-label</code>) so keyboard users can scroll it.",
         ),
@@ -3629,6 +3638,9 @@ h2("Thành phần") +
           ["<code>.table</code>", "bảng — header mono, hover hàng, ô vuông"],
           ["<code>.table-wrap</code>", "vùng cuộn ngang (cho focus được, <code>role=region</code>)"],
         ]) +
+        note(
+          "Ô canh <b>trên</b>, vì bảng dữ liệu được đọc theo chiều ngang: với mặc định <code>vertical-align: middle</code> của trình duyệt, chỉ cần một ô xuống dòng là mọi ô ngắn trong hàng đó trôi ra giữa chiều cao của chính nó và không ô nào chung mép trên. Header có <code>white-space: nowrap</code> còn ô thân bảng thì không — nên header giữ cột mở ra trong khi cột bên dưới co lại bằng từ dài nhất. Nếu dữ liệu của bạn không hợp với đánh đổi đó, đặt <code>min-inline-size</code> cho <code>&lt;td&gt;</code> cần thiết.",
+        ) +
                 a11y(
           "Dùng <code>&lt;thead&gt;</code>/<code>&lt;th scope&gt;</code> thật. Cho khung cuộn focus được (<code>tabindex=\"0\"</code>, <code>role=\"region\"</code>, <code>aria-label</code>) để người dùng bàn phím cuộn được.",
         ),
@@ -4197,6 +4209,75 @@ h2("Thành phần") +
 
   /* ---------------------------------------------------- WAVE 3 · FEEDBACK */
   {
+    id: "callout",
+    cat: "Feedback",
+    name: "Callout",
+    desc: {
+      en: "An inline aside inside a document — distinct from the page-level .banner. Seven kinds, each with its own accent and marker.",
+      vi: "Hộp chú thích nội dòng trong tài liệu — khác .banner cấp trang. Bảy loại, mỗi loại một màu nhấn và một dấu riêng.",
+    },
+    body: {
+      en: () =>
+        calloutStage([
+          ["", "Plain — the default gold."],
+          ["tip", "<b>TIP</b> — a shortcut worth knowing."],
+          ["warn", "<b>CAUTION</b> — this can bite."],
+          ["gotcha", "<b>CRITICAL</b> — this will break something."],
+        ]) +
+        cb(
+          `<div class="callout warn"><b>CAUTION</b> — this can bite.</div>
+
+<!-- turn the marker off, and reclaim its gutter -->
+<div class="callout warn" style="--mark:none;padding-inline-start:var(--sp-4)">…</div>`,
+        ) +
+        api(
+          ["Class", "Accent", "Marker"],
+          [
+            ["<code>.callout</code>", "gold", "<code>*</code>"],
+            ["<code>.tip</code>", "good", "<code>+</code>"],
+            ["<code>.memo</code>", "gold", "<code>#</code>"],
+            ["<code>.quest</code>", "purple", "<code>?</code>"],
+            ["<code>.info</code>", "blue", "<code>i</code>"],
+            ["<code>.warn</code>", "warn", "<code>!</code>"],
+            ["<code>.gotcha</code>", "crit", "<code>X</code>"],
+            ["<code>--mark</code>", "—", "override the glyph, or <code>none</code> to drop it"],
+          ],
+        ) +
+        a11y(
+          "The marker exists because colour alone cannot say which kind this is (WCAG 2.2 · 1.4.1): <code>.warn</code> against <code>.gotcha</code> is the pair that matters most, and <code>.memo</code> is the same gold as the default. It is decorative to a screen reader, so keep carrying the kind in text too — a bold <code>&lt;b&gt;</code> label is the pattern these docs use.",
+        ),
+      vi: () =>
+        calloutStage([
+          ["", "Mặc định — vàng."],
+          ["tip", "<b>MẸO</b> — một lối tắt đáng biết."],
+          ["warn", "<b>THẬN TRỌNG</b> — chỗ này dễ sập."],
+          ["gotcha", "<b>QUAN TRỌNG</b> — cái này sẽ làm hỏng thứ khác."],
+        ]) +
+        cb(
+          `<div class="callout warn"><b>THẬN TRỌNG</b> — chỗ này dễ sập.</div>
+
+<!-- tắt dấu, và lấy lại phần lề của nó -->
+<div class="callout warn" style="--mark:none;padding-inline-start:var(--sp-4)">…</div>`,
+        ) +
+        api(
+          ["Class", "Màu nhấn", "Dấu"],
+          [
+            ["<code>.callout</code>", "gold", "<code>*</code>"],
+            ["<code>.tip</code>", "good", "<code>+</code>"],
+            ["<code>.memo</code>", "gold", "<code>#</code>"],
+            ["<code>.quest</code>", "purple", "<code>?</code>"],
+            ["<code>.info</code>", "blue", "<code>i</code>"],
+            ["<code>.warn</code>", "warn", "<code>!</code>"],
+            ["<code>.gotcha</code>", "crit", "<code>X</code>"],
+            ["<code>--mark</code>", "—", "đổi ký tự, hoặc <code>none</code> để bỏ hẳn"],
+          ],
+        ) +
+        a11y(
+          "Dấu tồn tại vì chỉ riêng màu không nói được đây là loại nào (WCAG 2.2 · 1.4.1): <code>.warn</code> với <code>.gotcha</code> là cặp quan trọng nhất, và <code>.memo</code> cùng màu vàng với mặc định. Dấu này screen reader không đọc, nên vẫn hãy ghi loại bằng chữ — nhãn <code>&lt;b&gt;</code> in đậm là cách các trang này dùng.",
+        ),
+    },
+  },
+  {
     id: "banner",
     cat: "Feedback",
     name: "Banner",
@@ -4543,7 +4624,7 @@ h2("API") +
             ["<code>--prose-measure</code>", "length", "<code>72ch</code>", "the reading measure. It sits on the <strong>children</strong>, not the container, so a table or a diagram beside a paragraph keeps the full width it needs"],
           ],
         }) +
-        note("The measure caps each child, and the constructs whose content <em>is</em> width opt out — <code>.table-wrap</code>, <code>table</code>, <code>pre</code>, <code>.codeblock</code>, <code>.code-preview</code>, <code>.diff</code>, <code>.terminal</code>, <code>.card-group</code>, <code>hr</code>, <code>img</code>, <code>svg</code>, <code>video</code>, <code>&lt;nes-code&gt;</code>, <code>&lt;nes-mermaid&gt;</code>, <code>&lt;nes-graph&gt;</code>, <code>&lt;nes-zoom&gt;</code>, <code>&lt;nes-walkthrough&gt;</code>, <code>&lt;nes-compare&gt;</code>, <code>&lt;nes-annotate&gt;</code>, <code>&lt;nes-preview&gt;</code>, <code>&lt;nes-diff&gt;</code>, <code>&lt;nes-logs&gt;</code>, <code>&lt;nes-code-tree&gt;</code>, <code>&lt;nes-split&gt;</code>. A paragraph rewraps when it runs out of room; a table, a <code>&lt;pre&gt;</code> or an SVG cannot — capping the container crushed them. The rule of thumb: if the element's content <em>is</em> its width, it belongs on that list.") +
+        note("The measure caps each child, and the constructs whose content <em>is</em> width opt out — <code>.table-wrap</code>, <code>table</code>, <code>pre</code>, <code>.codeblock</code>, <code>.code-preview</code>, <code>.diff</code>, <code>.terminal</code>, <code>.card-group</code>, <code>hr</code>, <code>img</code>, <code>svg</code>, <code>video</code>, <code>&lt;nes-code&gt;</code>, <code>&lt;nes-mermaid&gt;</code>, <code>&lt;nes-graph&gt;</code>, <code>&lt;nes-zoom&gt;</code>, <code>&lt;nes-walkthrough&gt;</code>, <code>&lt;nes-compare&gt;</code>, <code>&lt;nes-annotate&gt;</code>, <code>&lt;nes-preview&gt;</code>, <code>&lt;nes-diff&gt;</code>, <code>&lt;nes-logs&gt;</code>, <code>&lt;nes-code-tree&gt;</code>, <code>&lt;nes-split&gt;</code>. A paragraph rewraps when it runs out of room; a table, a <code>&lt;pre&gt;</code> or an SVG cannot — capping the container crushed them. The rule of thumb: if the element's content <em>is</em> its width, it belongs on that list. <b>Media is a third case</b>: <code>&lt;img&gt;</code>, <code>&lt;svg&gt;</code> and <code>&lt;video&gt;</code> escape the reading measure but keep a <code>100%</code> container cap, because everything on the opt-out list has a safe way to be too wide — a <code>&lt;pre&gt;</code> scrolls, <code>&lt;nes-zoom&gt;</code> pans — and an image has none.") +
         p("Styles the native elements inside it — <code>h1–h4</code>, <code>p</code>, <code>ul/ol</code> (square bullets), <code>a</code>, <code>code</code>, <code>blockquote</code>, <code>table</code>, <code>hr</code> — with no classes on the children.") +
                 a11y(
           "Prose only styles what's inside it — headings, lists, and links keep their native semantics. Set <code>data-accent</code> on <code>.prose</code> to recolor links and markers.",
@@ -4565,7 +4646,7 @@ h2("API") +
             ["<code>--prose-measure</code>", "length", "<code>72ch</code>", "độ dài dòng đọc. Nó nằm trên <strong>các con</strong>, không phải container, nên bảng hay sơ đồ cạnh đoạn văn vẫn giữ đủ bề rộng cần"],
           ],
         }) +
-        note("Measure giới hạn từng con, và những cấu trúc mà nội dung <em>chính là</em> bề rộng thì được miễn — <code>.table-wrap</code>, <code>table</code>, <code>pre</code>, <code>.codeblock</code>, <code>.code-preview</code>, <code>.diff</code>, <code>.terminal</code>, <code>.card-group</code>, <code>hr</code>, <code>img</code>, <code>svg</code>, <code>video</code>, <code>&lt;nes-code&gt;</code>, <code>&lt;nes-mermaid&gt;</code>, <code>&lt;nes-graph&gt;</code>, <code>&lt;nes-zoom&gt;</code>, <code>&lt;nes-walkthrough&gt;</code>, <code>&lt;nes-compare&gt;</code>, <code>&lt;nes-annotate&gt;</code>, <code>&lt;nes-preview&gt;</code>, <code>&lt;nes-diff&gt;</code>, <code>&lt;nes-logs&gt;</code>, <code>&lt;nes-code-tree&gt;</code>, <code>&lt;nes-split&gt;</code>. Đoạn văn hết chỗ thì tự bẻ dòng; bảng, <code>&lt;pre&gt;</code> hay SVG thì không — giới hạn container là bóp chết chúng. Quy tắc: nội dung của element <em>chính là</em> bề rộng của nó thì nó thuộc danh sách này.") +
+        note("Measure giới hạn từng con, và những cấu trúc mà nội dung <em>chính là</em> bề rộng thì được miễn — <code>.table-wrap</code>, <code>table</code>, <code>pre</code>, <code>.codeblock</code>, <code>.code-preview</code>, <code>.diff</code>, <code>.terminal</code>, <code>.card-group</code>, <code>hr</code>, <code>img</code>, <code>svg</code>, <code>video</code>, <code>&lt;nes-code&gt;</code>, <code>&lt;nes-mermaid&gt;</code>, <code>&lt;nes-graph&gt;</code>, <code>&lt;nes-zoom&gt;</code>, <code>&lt;nes-walkthrough&gt;</code>, <code>&lt;nes-compare&gt;</code>, <code>&lt;nes-annotate&gt;</code>, <code>&lt;nes-preview&gt;</code>, <code>&lt;nes-diff&gt;</code>, <code>&lt;nes-logs&gt;</code>, <code>&lt;nes-code-tree&gt;</code>, <code>&lt;nes-split&gt;</code>. Đoạn văn hết chỗ thì tự bẻ dòng; bảng, <code>&lt;pre&gt;</code> hay SVG thì không — giới hạn container là bóp chết chúng. Quy tắc: nội dung của element <em>chính là</em> bề rộng của nó thì nó thuộc danh sách này. <b>Media là trường hợp thứ ba</b>: <code>&lt;img&gt;</code>, <code>&lt;svg&gt;</code> và <code>&lt;video&gt;</code> thoát khỏi measure nhưng vẫn giữ mức chặn <code>100%</code> theo container, vì mọi thứ trong danh sách miễn trừ đều có cách rộng quá mà vẫn an toàn — <code>&lt;pre&gt;</code> thì cuộn, <code>&lt;nes-zoom&gt;</code> thì kéo — còn ảnh thì không.") +
         p("Style các element gốc bên trong — <code>h1–h4</code>, <code>p</code>, <code>ul/ol</code> (bullet vuông), <code>a</code>, <code>code</code>, <code>blockquote</code>, <code>table</code>, <code>hr</code> — không cần class trên con.") +
                 a11y(
           "Prose chỉ style thứ bên trong nó — heading, list, link giữ ngữ nghĩa gốc. Đặt <code>data-accent</code> trên <code>.prose</code> để đổi màu link và marker.",
@@ -10246,6 +10327,15 @@ function stepperStage(label) {
         <button type="button" aria-label="+">+</button>
       </div>
     </label>`,
+    "col",
+  );
+}
+function calloutStage(rows) {
+  return stage(
+    "CALLOUT",
+    rows
+      .map(([cls, html]) => `<div class="callout ${cls}" style="inline-size:100%">${html}</div>`)
+      .join(""),
     "col",
   );
 }
