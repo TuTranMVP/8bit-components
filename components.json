@@ -1,6 +1,6 @@
 {
   "name": "8bit-nes",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "title": "8-BIT NES",
   "description": "Cross-framework NES-arcade design system: CSS design tokens + class recipes + light-DOM web components. Zero build, dark-only, square 90° corners, hard shadow.",
   "official": true,
@@ -15,8 +15,8 @@
       "import \"8bit-nes/all.css\";",
       "import \"8bit-nes\";"
     ],
-    "cdnCss": "https://cdn.jsdelivr.net/npm/8bit-nes@0.15.0/all.min.css",
-    "cdnJs": "https://cdn.jsdelivr.net/npm/8bit-nes@0.15.0/elements.min.js"
+    "cdnCss": "https://cdn.jsdelivr.net/npm/8bit-nes@0.16.0/all.min.css",
+    "cdnJs": "https://cdn.jsdelivr.net/npm/8bit-nes@0.16.0/elements.min.js"
   },
   "conventions": {
     "prefix": "nes-",
@@ -601,6 +601,15 @@
       "kind": "class",
       "description": "A − [n] + control around a native number input. Wire the buttons to step the value.",
       "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/stepper"
+    },
+    {
+      "id": "callout",
+      "name": "Callout",
+      "category": "Feedback",
+      "selector": ".callout",
+      "kind": "class",
+      "description": "An inline aside inside a document — distinct from the page-level .banner. Seven kinds, each with its own accent and marker.",
+      "docs": "https://tutranmvp.github.io/8bit-components/docs.html#/callout"
     },
     {
       "id": "banner",
@@ -1334,6 +1343,6 @@
   ],
   "counts": {
     "concepts": 5,
-    "components": 138
+    "components": 139
   }
 }

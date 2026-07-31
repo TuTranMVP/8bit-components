@@ -53,5 +53,18 @@
   </script>
 </nes-code-tree>
 
+<!-- Media declared far wider than the phone. `.prose > *` opts media out of the
+     READING measure, and for a while that opted it out of the container cap too,
+     which put 1400px of image in a 390px card. A 1x1 data URI carries no weight;
+     the width/height attributes are what makes it wide. -->
+<article class="prose">
+  <p>Media that is declared wider than the phone must still fit it.</p>
+  <img id="wide-img" width="1400" height="300" alt=""
+       src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+  <svg id="wide-svg" width="1400" height="120" viewBox="0 0 1400 120" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1400" height="120" fill="#1b1b3a"/>
+  </svg>
+</article>
+
 </body>
 </html>

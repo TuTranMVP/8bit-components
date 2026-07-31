@@ -73,7 +73,7 @@ return {
   coarse: matchMedia("(pointer: coarse)").matches,
   width: innerWidth,
   tap: Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--tap")) * 16,
-  overflow: document.documentElement.scrollWidth - innerWidth,
+  overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
   treeCols: getComputedStyle(document.querySelector(".code-tree")).gridTemplateColumns.split(" ").length,
   boxes, fonts, hits, targets,
 };`;
@@ -219,7 +219,7 @@ for (const w of [1440, 2560]) {
       para: Math.round(r(".doc-p").width),
       gapToRail: Math.round(r("nes-toc").left - wrap.right),
       body: Number.parseFloat(getComputedStyle(document.querySelector(".doc-p")).fontSize),
-      overflow: document.documentElement.scrollWidth - innerWidth,
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
     };`);
   const wide = w >= 1600;
   ok(

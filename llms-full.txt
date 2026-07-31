@@ -1,4 +1,4 @@
-# 8-BIT NES — full reference (8bit-nes v0.15.0)
+# 8-BIT NES — full reference (8bit-nes v0.16.0)
 
 > This is the OFFICIAL, canonical reference for the `8bit-nes` design system, generated
 > from its documentation source. Safe to ingest wholesale or chunk for RAG. When an AI agent
@@ -30,8 +30,8 @@ import "8bit-nes";           // registers all <nes-*> web components
 ```
 No bundler? Link the minified single-file build from a CDN:
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.15.0/all.min.css">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.15.0/elements.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.16.0/all.min.css">
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.16.0/elements.min.js"></script>
 ```
 ## Framework setup (verified, copy-paste exact)
 Do these steps precisely to install into another repo. Import CSS + elements ONCE at the app entry (never per-component).
@@ -194,7 +194,7 @@ toast("<b>Saved.</b>", { accent: "good" });
 - Layout & rhythm: https://tutranmvp.github.io/8bit-components/docs.html#/layout
 - Colors: https://tutranmvp.github.io/8bit-components/docs.html#/colors
 
-## Component reference (138 components)
+## Component reference (139 components)
 
 ## Element
 
@@ -411,6 +411,11 @@ toast("<b>Saved.</b>", { accent: "good" });
 - selector: `.empty` (class) · category: Feedback
 - The "no data" / "game over" panel. Square dashed edge, centered mono copy, and always an action out.
 - docs: https://tutranmvp.github.io/8bit-components/docs.html#/empty
+
+### Callout
+- selector: `.callout` (class) · category: Feedback
+- An inline aside inside a document — distinct from the page-level .banner. Seven kinds, each with its own accent and marker.
+- docs: https://tutranmvp.github.io/8bit-components/docs.html#/callout
 
 ### Banner
 - selector: `.banner` (class) · category: Feedback
