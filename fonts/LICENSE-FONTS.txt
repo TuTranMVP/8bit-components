@@ -1,14 +1,34 @@
 Bundled fonts — both licensed under SIL Open Font License 1.1:
 
-1. IoskeleyMono (Iosevka-based custom build)
-   Source: https://github.com/ahatem/IoskeleyMono (release v2.0.0)
-   Subset: Latin + Vietnamese + punctuation + arrows + geometric shapes
-   Files: ioskeley-mono-400.woff2, ioskeley-mono-700.woff2
+1. NES Mono  ←  IoskeleyMono (Iosevka-based custom build)
+   Source:  https://github.com/ahatem/IoskeleyMono  release v2.1.0
+   Upstream files: Normal/Hinted/IoskeleyMono-Regular.ttf and -Bold.ttf
+                   (Iosevka v34.4.0, ttfautohint v1.8.4)
+   Bundled as: nes-mono-400.woff2, nes-mono-700.woff2
 
-2. Space Grotesk (variable, wght 300-700)
-   Source: https://github.com/floriankarsten/space-grotesk
-   Subset: Latin + Vietnamese + punctuation
-   File: space-grotesk-var.woff2
+2. NES Sans  ←  Space Grotesk (variable, wght 300–700)
+   Source:  https://github.com/floriankarsten/space-grotesk  v2.000
+   Bundled as: nes-sans-var.woff2
 
-Subsetting: fonttools/pyftsubset, all OpenType layout features preserved.
-Full Vietnamese diacritic coverage verified post-subset.
+Subset — reproduce either mono face exactly with:
+
+  pyftsubset IoskeleyMono-Regular.ttf \
+    --unicodes="U+0000-024F,U+0259,U+1E00-1EFF,U+2000-206F,U+20AB,U+2190-21FF,U+25A0-25FF" \
+    --layout-features="ccmp,locl,calt,dlig,zero,onum,lnum,frac,numr,dnom" \
+    --flavor=woff2 --output-file=nes-mono-400.woff2
+
+That range is Latin + Vietnamese + punctuation + ₫ + arrows + geometric shapes, and
+it matches the `unicode-range` in tokens.css — the two have to agree or the browser
+downloads a face it then cannot use.
+
+The feature list is deliberate, not `*`. Iosevka ships 24 private cherry-picking
+tags (APLF, HSKL, JLIA, MTLB, PHPX, RAKU, SWFT, WFLM …) that swap in
+language-specific glyph shapes and only ever fire behind an explicit
+font-feature-settings. Nothing in this library asks for them, so they and their 346
+unreachable alternates are dropped: 67.4 kB → 54.8 kB per face, with every one of
+the 1088 subset codepoints keeping its exact outline and 600-unit advance. What is
+kept is what actually renders: ccmp and locl (Vietnamese mark composition), calt and
+dlig (the code ligatures), and the numeric set.
+
+Vietnamese coverage is asserted, not assumed — `pnpm check:ui` measures every
+diacritic at 0.6em in a real browser, which a fallback glyph cannot fake.
