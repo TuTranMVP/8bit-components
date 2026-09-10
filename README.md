@@ -11,7 +11,7 @@ Reusable across every project in the studio — install it into any repo, no bui
 pnpm add 8bit-nes
 
 # or straight from GitHub (a tag is a valid spec too)
-pnpm add github:TuTranMVP/8bit-components#v0.16.0
+pnpm add github:TuTranMVP/8bit-components#v0.17.0
 ```
 
 ```js
@@ -40,15 +40,15 @@ visit (copy it verbatim — every line earns its place):
 <!-- 2. fonts, at the exact URLs all.min.css resolves url() to → fetched once, in parallel
         with the stylesheet instead of after it -->
 <link rel="preload" as="font" type="font/woff2" crossorigin
-  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.16.0/fonts/nes-sans-var.woff2">
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.17.0/fonts/nes-sans-var.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin
-  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.16.0/fonts/nes-mono-400.woff2">
+  href="https://cdn.jsdelivr.net/npm/8bit-nes@0.17.0/fonts/nes-mono-400.woff2">
 
 <!-- 3. the system: pinned version + byte-pinned integrity -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.16.0/all.min.css"
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/8bit-nes@0.17.0/all.min.css"
   integrity="sha384-bnFVHVR0cb4DTlgB65iWy3avLsXlwZAz9CzgSZW8/U/+XnBxbko+ZgIiSs2kkSdi"
   crossorigin="anonymous">
-<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.16.0/elements.min.js"
+<script type="module" src="https://cdn.jsdelivr.net/npm/8bit-nes@0.17.0/elements.min.js"
   integrity="sha384-SfWC08i1nvFLoCQd9rUoNGTjMCXhZ97Cl7Hfx4EDrqj3Mkieuf/+q0Qwi6jeVItg"
   crossorigin="anonymous"></script>
 ```
@@ -88,7 +88,7 @@ Copy-paste starter, already wired exactly like the above:
 [`examples/cdn-starter.html`](examples/cdn-starter.html) — also live on the docs site at
 `/examples/cdn-starter.html`.
 
-> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.16.0/all.min.css`) and the same
+> **unpkg instead?** Same paths (`https://unpkg.com/8bit-nes@0.17.0/all.min.css`) and the same
 > SRI digests — it's the identical npm tarball. Pick *one* origin per page, though: two CDNs
 > means two handshakes for no benefit.
 
@@ -221,7 +221,7 @@ browser synthesizes oblique — `font-synthesis: style` keeps the real weights c
 while allowing the slant, which costs **0 bytes** vs a ~100 KB italic set. `<b>/<strong>` → 700,
 `<i>/<em>` → oblique.
 
-Latin + Vietnamese subset (~171KB tổng), full diacritic coverage verified. License: `fonts/LICENSE-FONTS.txt` (SIL OFL 1.1).
+Latin + Vietnamese subset — **147 kB** for all three faces (mono 54.8 kB per weight, sans 37.4 kB), 1088 codepoints each. Full diacritic coverage is **asserted** by `pnpm check:ui`, not just claimed: every Vietnamese glyph is measured at 0.6em in a real browser, which a fallback cannot fake. Mono is IoskeleyMono v2.1.0 (Iosevka v34.4.0); provenance and the exact reproducible `pyftsubset` command are in `fonts/LICENSE-FONTS.txt` (SIL OFL 1.1).
 Zero-FOUT: preload 2 file critical — snippet trong comment đầu `tokens.css`.
 ## Wire it up
 

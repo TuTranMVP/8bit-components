@@ -210,6 +210,27 @@ const sSpread = Math.max(width(sans, "1111111111"), width(sans, "0000000000")) -
 ok(mSpread === 0, "G · mono digits are equal width (why no tabular-nums is needed)", `spread ${mSpread.toFixed(2)}px`);
 ok(sSpread > 4, "G · sans digits are NOT — a changing number there needs mono or tabular-nums", `spread ${sSpread.toFixed(2)}px`);
 
+/* The bundled faces are SUBSETS, and this is a Vietnamese library — a subset built
+   with the wrong unicode-range drops the diacritics and nothing announces it: the
+   browser silently falls back and the text still reads. The mono face is fixed
+   pitch at 0.6em, so any glyph that came from a fallback instead measures something
+   else. That makes the advance a decisive test for "this glyph is really ours". */
+const EM = 100;
+mono.style.fontSize = `${EM}px`;
+const VIET = "ừẫợỗệẹđĐăâêôơưẤỀỘỚỰẽỹọụịỳ₫";
+const offGrid = [...VIET].filter((c) => Math.abs(width(mono, c) - EM * 0.6) > 0.01);
+ok(offGrid.length === 0, "G · every Vietnamese glyph comes from the mono subset, not a fallback",
+  offGrid.length ? `fell back: ${offGrid.join(" ")}` : `${VIET.length} glyphs all 0.6em`);
+mono.style.fontSize = "";
+sans.style.fontSize = `${EM}px`;
+const sansViet = width(sans, VIET);
+sans.style.fontFamily = "serif";
+const sansFallback = width(sans, VIET);
+sans.style.fontFamily = "";
+sans.style.fontSize = "";
+ok(document.fonts.check(`${EM}px "NES Sans"`) && Math.abs(sansViet - sansFallback) > 1,
+  "G · and the sans subset carries them too", `NES Sans ${sansViet.toFixed(1)}px vs serif ${sansFallback.toFixed(1)}px`);
+
 /* ---- G · the large-screen type step. An iframe has its own viewport, which is the
    only way to evaluate a min-width rule from inside one page. ---- */
 const TYPE_PAGE = `<link rel="stylesheet" href="../all.css">

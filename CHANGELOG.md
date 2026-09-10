@@ -2,6 +2,71 @@
 
 All notable changes to `8bit-nes`. Follows [Semantic Versioning](https://semver.org).
 
+## 0.17.0
+
+Asked to upgrade the bundled mono to **IoskeleyMono v2.1.0**. It was already on it,
+in every way that reaches a browser — so the release is the thing the comparison
+turned up instead: the subset was carrying **18.6% of dead weight**.
+
+### The upgrade itself is a no-op, and that is a measurement, not an assumption
+
+The shipped faces were built from **Iosevka v34.4.0 / ttfautohint v1.8.4** — the
+exact base v2.1.0 pins to. Rebuilt both faces from the v2.1.0 `Normal/Hinted` TTFs
+and compared every one of the **1088 subset codepoints**, decomposing composites so
+the comparison sees outlines rather than component names:
+
+| | shipped v2.0.0 vs v2.1.0 |
+|---|---|
+| outline differences | **0** |
+| advance differences | **0** |
+| vertical metrics, cap/x-height, upem | identical |
+| Vietnamese coverage | identical |
+
+*(The first pass reported 535 "differences" and was wrong — a `RecordingPen` records
+`addComponent` calls for composite glyphs, so it was diffing glyph **names**, which
+v2.1.0 restores. The tell was that Regular and Bold produced identical hashes, which
+no real outline comparison can. `DecomposingRecordingPen` gives 0.)*
+
+Every fix in v2.1.0 is either already present here or aimed at a build this library
+does not ship: restored glyph names (terminal ligatures), `isFixedPitch` in **Nerd**
+builds (ours is already 1), a smaller **web** build (ours is a custom subset and was
+already smaller than their new 94 kB), dropped Condensed, dropped unhinted WOFF2.
+A straight re-subset from v2.1.0 comes out **160–268 bytes larger** for byte-identical
+rendering — so swapping binaries alone would have cost every consumer a re-download
+and every digest a change, for nothing.
+
+### Changed
+
+- **The mono subset dropped 18.6%: 134.4 kB → 109.5 kB** (67.4 → 54.8 kB per face,
+  and the 400 face is preloaded). It was built with `--layout-features='*'`, which
+  keeps Iosevka's **24 private cherry-picking tags** — `APLF` `HSKL` `JLIA` `MTLB`
+  `PHPX` `RAKU` `SWFT` `WFLM` and friends, which swap in language-specific glyph
+  shapes and only ever fire behind an explicit `font-feature-settings`. Nothing in
+  this library asks for them. They and their **346 unreachable alternates** are gone
+  (1918 → 1572 glyphs); what renders is kept — `ccmp` and `locl` (Vietnamese mark
+  composition), `calt` and `dlig` (code ligatures), and the numeric set.
+
+  Verified rather than trusted: all 1088 codepoints present, **0 outline and 0
+  advance differences**, and 21 rendered probes — Latin, Vietnamese, `=> != -> <= >=`,
+  arrows, geometric shapes, both weights and the sans — measured **pixel-identical to
+  three decimals** in a real browser before and after.
+
+- **`fonts/LICENSE-FONTS.txt` named three files that do not exist.** It listed
+  `ioskeley-mono-400.woff2` / `-700.woff2` / `space-grotesk-var.woff2` against a
+  release of **v2.0.0**; the bundle is `nes-mono-*.woff2` / `nes-sans-var.woff2`. For
+  an OFL attribution file that is the one thing it has to get right. Rewritten with
+  the real filenames, the upstream release and Iosevka version actually verified, and
+  the exact `pyftsubset` command that reproduces either face byte-for-byte.
+
+### Added
+
+- **Two font-coverage assertions** in `pnpm check:ui` (`scale-check` is 33, was 31).
+  This is a Vietnamese library shipping *subset* faces, and a wrong `unicode-range`
+  fails silently — the browser falls back and the text still reads. The mono face is
+  fixed pitch, so every glyph it owns advances exactly **0.6em**; anything that came
+  from a fallback measures something else. Mutation-tested with a subset built without
+  `U+1E00-1EFF` and `U+20AB`: the guard fails and names all 18 glyphs that fell back.
+
 ## 0.16.0
 
 Four items filed by the same consuming repo, measured against the shipped bytes
